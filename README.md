@@ -1,6 +1,6 @@
 # Freamework Lego
 
-Lego es un freamework de php basado en componentes visuales 
+Lego es un freamework de php basado en componentes 
 
 # requisitos para el proyecto
 
