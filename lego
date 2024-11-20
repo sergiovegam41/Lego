@@ -1,0 +1,27 @@
+<?php
+// Asegurarse de que se está ejecutando desde la CLI
+if (php_sapi_name() !== 'cli') {
+    exit("Este script solo puede ejecutarse desde la línea de comandos.\n");
+}
+
+// Obtener los argumentos desde la línea de comandos
+$args = $argv;
+
+// Comprobar si el argumento "migrate" está presente
+if (in_array('migrate', $args)) {
+    echo "Ejecutando migraciones...\n";
+
+    // Ruta del archivo a ejecutar
+    $filePath = __DIR__ . '/database/migrate.php';
+
+    if (file_exists($filePath)) {
+        // Incluir y ejecutar el archivo
+        require_once $filePath;
+        echo "\n";
+        echo "Migración completada.\n";
+    } else {
+        echo "Error: No se encontró el archivo en la ruta $filePath.\n";
+    }
+} else {
+    echo "Uso: php script.php migrate\n";
+}
