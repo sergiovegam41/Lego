@@ -773,10 +773,3 @@ function getThumbnail($size, $nombre_archivo, $tmp_name, $type, $anchura, $hmax)
     //return $tthumb;
     return $nombre_archivo;
 }
-function retornar_json_servicios($html,$html_tabs)
-{		
-	$modelos[]= array('html_form'=>$html,'html_tabs'=>"$html_tabs");	
-	$res = json_encode($modelos);
-	echo ($res); 
-}
-

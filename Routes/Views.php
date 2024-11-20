@@ -1,6 +1,6 @@
 <?php
 
-namespace routes;
+namespace Routes;
 
 use Flight;
 

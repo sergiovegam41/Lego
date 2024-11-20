@@ -15,7 +15,7 @@ class Response
 
     static function uri( string $html, string $title = "" )
     {
-        retornar_json_servicios(null, "", $html, null, '', null, null,  $title); 
+        echo $html;
         die;
     }
 

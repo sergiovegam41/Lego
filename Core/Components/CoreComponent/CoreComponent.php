@@ -49,7 +49,7 @@ abstract class CoreComponent {
         ]));
 
         return <<<HTML
-        <img class="d-none"  src="{$url_servidor}/imagenes/3x3.png" width="0" onload="loadModulesWithArguments({$modules});">
+        <img class="d-none"  src="{$url_servidor}/assets/images/1x1.jpg" width="0" onload="loadModulesWithArguments({$modules});">
 HTML;
     }
 
@@ -63,7 +63,7 @@ HTML;
 
         $modules = htmlentities(json_encode($dependencies));
         return <<<HTML
-        <img class="d-none"  src="{$url_servidor}/imagenes/3x3.png" width="0" onload="loadModules({$modules});">
+        <img class="d-none"  src="{$url_servidor}/assets/images/1x1.jpg" width="0" onload="loadModules({$modules});">
 HTML;
     }
 

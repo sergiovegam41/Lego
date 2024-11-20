@@ -1,10 +1,10 @@
 <?php
 
-namespace routes;
+namespace Routes;
 
 use Flight;
 
-class Views {
+class Api {
 
     static public function handle() {
  
