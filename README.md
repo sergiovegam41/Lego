@@ -11,7 +11,7 @@ Lego es un freamework de php basado en componentes
 # pasos para la instalacion
 
 - Clonar el repositorio
-- configurar .env en basado en .env.example 
+- configurar .env basado en .env.example 
 - correr `dockcer compose up -d --build`
 - correr `docker-compose exec app composer install`
 - correr `docker-compose exec app composer dump-autoload`
