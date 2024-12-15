@@ -20,7 +20,7 @@ class MainComponent extends CoreComponent
   ];
 
   protected $CSS_PATHS = [
-    "assets/css/base.css"
+
   ];
 
   public function __construct( $config)
@@ -29,47 +29,19 @@ class MainComponent extends CoreComponent
     $this->config = $config;
   }
 
-  public function renderAll(): string
-  {
 
-    $component   = $this->component();
-    $css_imports = $this->css_imports();
-    $js_imports  = $this->js_imports();
-    $js_imports_with_arg  = $this->js_imports_with_arg();
-
-    return <<<HTML
-
-      <!-- dependencias css -->
-      {$css_imports}
-
-      <!-- cuerpo del componente -->
-      {$component}
-
-      <!-- dependencias js -->
-      {$js_imports}
-      
-      <!-- dependencias with arg js -->
-      {$js_imports_with_arg}
-
-    HTML;
-  }
-
-  public function render(): string
-  {
-    $component = $this->component();
-    return $component;
-  }
 
   protected function component(): string
   {
     $this->JS_PATHS_WITH_ARG[] = [
 
-      new ScriptCoreDTO("assets/js/Home/home.js?v=1", [
+      new ScriptCoreDTO("assets/js/home/home.js?v=1", [
         "hello" => "Word",
         
       ])
 
     ];
+
     return <<<HTML
 
       <!DOCTYPE html>
@@ -79,6 +51,9 @@ class MainComponent extends CoreComponent
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Home</title> 
+          <link rel="stylesheet" href="./assets/css/core/base.css">
+          <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
+          <!-- Solo necesitamos una versión de Babel -->
 
 
       </head>
@@ -88,9 +63,6 @@ class MainComponent extends CoreComponent
 
           <section class="home">
 
-          
-
-
               <div class="content" >
 
                   <img src="assets/images/hi.jpg" alt="">
@@ -98,18 +70,12 @@ class MainComponent extends CoreComponent
                   <p>Navega por el menu de inicio para empezar.</p>
               
               </div>
-
-            
               
           </section>
-
-          <!-- Incluye funciones base del freamework -->
-          <script src="assets/js/Main/sidebar/SidebarScrtipt.js" type="module"></script>
           
+          <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
+
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-
-
-
 
       </body>
 

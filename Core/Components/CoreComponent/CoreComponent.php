@@ -17,9 +17,9 @@ abstract class CoreComponent {
         $this->config = $config;
     }
 
-    abstract public function render(): string;
     abstract protected function component(): string;
 
+    
     protected function css_imports(): string {
 
         $cssDependencies = $this->CSS_PATHS;
@@ -40,17 +40,18 @@ abstract class CoreComponent {
         
         global $url_servidor, $id_usuario_actual;
 
-        $modules = htmlentities(json_encode([
+        $modules = json_encode([
             "context"=>[
                 "url_servidor" => $url_servidor,
                 "id_usuario_actual" => $id_usuario_actual
             ],
             "data"=>$this->JS_PATHS_WITH_ARG
-        ]));
+        ]);
 
+   
         return <<<HTML
-        <img class="d-none"  src="{$url_servidor}/assets/images/1x1.jpg" width="0" onload="loadModulesWithArguments({$modules});">
-HTML;
+         <script>window.addEventListener('load',()=>window.lego.loadModulesWithArguments({$modules}));</script>
+        HTML;
     }
 
 
@@ -61,10 +62,10 @@ HTML;
     private function generate_modulesJs(array $dependencies){
         global $url_servidor;
 
-        $modules = htmlentities(json_encode($dependencies));
+        $modules = json_encode($dependencies);
         return <<<HTML
-        <img class="d-none"  src="{$url_servidor}/assets/images/1x1.jpg" width="0" onload="loadModules({$modules});">
-HTML;
+            <script>window.addEventListener('load',()=>window.lego.loadModules({$modules}));</script>
+        HTML;
     }
 
     private function generate_imports(array $dependencies, string $type): string {
@@ -75,17 +76,7 @@ HTML;
         foreach ($dependencies as $path) {
             if ($type == 'css') {
 
-//             $content = file_get_contents(__DIR__."/../../../".explode("?",$path)[0]);
 
-//             $minifier = new Minify\CSS();
-//             $minifier->add($content);
-
-//             // Obtener el contenido minificado
-//             $minifiedContent = $minifier->minify();
-
-//             $html_result .= <<<HTML
-            
-//             <style>{$minifiedContent}</style>
 // HTML;
             $html_result .= <<<HTML
             
@@ -93,7 +84,6 @@ HTML;
 HTML;
 
 
-// <!-- <link rel="stylesheet" href="{$path}?v={$r}" /> -->
 
             } else if ($type == 'js') {
                 $html_result  .= <<<HTML
@@ -123,5 +113,36 @@ HTML;
             $result[] = $val . "?v=$date";
         }
         $this->CSS_PATHS = $result;
+    }
+
+    public function render(): string
+    {
+  
+      $component   = $this->component();
+      $css_imports = $this->css_imports();
+      $js_imports  = $this->js_imports();
+      $js_imports_with_arg  = $this->js_imports_with_arg();
+  
+      return <<<HTML
+  
+        <!-- dependencias css -->
+        {$css_imports}
+  
+        <!-- cuerpo del componente -->
+        {$component}
+  
+        <!-- dependencias js -->
+        {$js_imports}
+        
+        <!-- dependencias with arg js -->
+        {$js_imports_with_arg}
+  
+      HTML;
+    }
+  
+    public function html(): string
+    {
+      $component = $this->component();
+      return $component;
     }
 }

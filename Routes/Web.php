@@ -13,7 +13,7 @@ class Web {
         Flight::route('GET /',function (){
 
             $componet = new MainComponent([ ]);
-            Response::uri($componet->renderAll());
+            Response::uri($componet->render());
         } );
 
         Flight::route('GET /admin', function () {

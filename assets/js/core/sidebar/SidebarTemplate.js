@@ -1,28 +1,5 @@
 
-
-
-
-const HOST_NAME = `${window.location.protocol}//${window.location.host}`;
-    
-const MENU_LIST = [
-   {
-       "name" : "Home",
-       "icon" : "home-outline",
-       "url" : HOST_NAME + '/resourses/home' 
-   },
-
-    {
-        "name" : "Departamentos",
-        "icon" : "map-outline",
-        "url"  : HOST_NAME + '/resourses/cruds/essays' 
-    },
-    {
-        "name" : "Usuarios",
-        "icon" : "person-circle-outline",
-        "url"  : HOST_NAME + '/resourses/cruds/users/' 
-    },
-
-];
+import { HOST_NAME, MENU_LIST } from './../config.js';
 
 export class Sidebar extends HTMLElement {
 
@@ -51,7 +28,7 @@ export class Sidebar extends HTMLElement {
       const template = document.createElement('template');
       template.innerHTML = `     
   
-      <link rel="stylesheet" href="${ HOST_NAME + '/resourses/utils/css/SidebarStyle.css' }">
+      <link rel="stylesheet" href="${ HOST_NAME + '/assets/css/core/sidebar/SidebarStyle.css' }">
       <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
 
