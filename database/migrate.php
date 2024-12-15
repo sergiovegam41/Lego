@@ -1,6 +1,6 @@
 <?php 
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../bootstrap/bootstrap.php';
+require __DIR__ . '/../Core/bootstrap.php';
 
 echo Migrations::execute();
  
