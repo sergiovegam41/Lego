@@ -66,7 +66,7 @@ export class Sidebar extends HTMLElement {
               <ul class="menu-links" id="menu-links">
                  
 
-                  ${ FINAL_MENU_LIST }
+                ${ FINAL_MENU_LIST }
 
 
               </ul>

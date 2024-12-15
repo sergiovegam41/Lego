@@ -60,18 +60,25 @@ class MainComponent extends CoreComponent
       <body>
           
           <side-bar> </side-bar>
+      
+          <div id="parent-content" >
 
-          <section class="home">
+            <div id="content-sidebar-shade"> 
+            
+              <!-- esto etsa puesto para hacer la 'sombra' del sidebar y que el contenido se adapte -->
 
-              <div class="content" >
+            </div>
 
-                  <img src="assets/images/hi.jpg" alt="">
-                  <h1 id="saludo" class="text">  Bienvenido  </h1>
-                  <p>Navega por el menu de inicio para empezar.</p>
+            <div id="principal-content-viwer"> 
+          
+            <!-- contendio de la pagina actual -->
+
+
+          
+
+            </div>
               
-              </div>
-              
-          </section>
+          </div>
           
           <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
 

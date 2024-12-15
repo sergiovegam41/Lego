@@ -1,4 +1,3 @@
-
 import { Sidebar } from './SidebarTemplate.js';
 import { MENU_LIST } from './../config.js';
 // import Sortable from 'sortablejs';
@@ -11,6 +10,7 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
 
     
   console.log("siee")
+
 
 
       //deff web componet
@@ -142,42 +142,34 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
 
 
   function addEventForToggle() {
-    
     const body = document.querySelector('body'),
     sidebar = body.querySelector('nav'),
     toggle = body.querySelector(".toggle"),
-    searchBtn = body.querySelector(".search-box");
-  
-  
-    body.querySelector('.home').style = 'opacity: 0;transform: translateX(250px); transition: .5s;';
-    body.querySelector('.home').style = 'opacity: 1;transform: translateX(250px); transition: .5s;';
-    toggle.addEventListener("click" , () =>{
-      sidebar.classList.toggle("close");
-  
-      if(sidebar.classList[1] != null){
-        body.querySelector('.home').style = 'background: red !important; transition: .5s;';
-        body.querySelector('.home').style = 'transform: translateX(90px); transition: .5s;';
-  
-      }else{
-        body.querySelector('.home').style = 'transform: translateX(250px); transition: .5s;';
-  
-      }
-  
-    })
-  
-    searchBtn.addEventListener("click" , () =>{
-      sidebar.classList.remove("close");
-  
-      if(sidebar.classList[1] != null){
-        body.querySelector('.home').style = 'transform: translateX(90px); transition: .5s;';
-  
-      }else{
-        body.querySelector('.home').style = 'transform: translateX(250px); transition: .5s;';
-  
-      }
+    searchBtn = body.querySelector(".search-box"),
+    contentViewer = document.querySelector('#principal-content-viwer'),
+    sidebarShade = document.querySelector('#content-sidebar-shade');
+
+    toggle.addEventListener("click" , () => {
+        sidebar.classList.toggle("close");
+
+        if(sidebar.classList.contains("close")){
+            // Cuando el sidebar está cerrado
+            contentViewer.style.width = '95%';
+            sidebarShade.style.width = '5%';
+        } else {
+            // Cuando el sidebar está abierto
+            contentViewer.style.width = '86.4%';
+            sidebarShade.style.width = '13.6%';
+        }
     })
 
-  
+    searchBtn.addEventListener("click" , () => {
+        sidebar.classList.remove("close");
+        
+        // Al abrir el sidebar con el botón de búsqueda
+        contentViewer.style.width = '86.4%';
+        sidebarShade.style.width = '13.6%';
+    })
   }
 
 
