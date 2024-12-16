@@ -42,6 +42,8 @@
     padding-right: 5px;
 }
 
+
+
 .sidebar .icon {
     min-width: 60px;
     border-radius: 6px;
@@ -61,6 +63,7 @@
 .icon{
     color: black;
     transform: scale(.5);
+    
 }
 
 .sidebar .text{
@@ -300,7 +303,10 @@ body.dark .switch::before{
 
 
 
-
+.menu-parent{
+    display: flex;
+    flex-direction: column;
+}
 
 
 

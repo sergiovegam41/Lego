@@ -131,3 +131,83 @@ a {
 
 
 
+    
+
+
+
+body.dark .module-container{
+    background-color: #242526;
+}
+
+
+#home-page{
+    padding:10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  #menu {
+    width: 200px;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  #menu .lego-module {
+    margin: 5px 0;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #menu .lego-module.active {
+    background-color: #4caf50;
+    color: white;
+  }
+  #menu .lego-module.inactive {
+    background-color: #ff9800;
+    color: white;
+  }
+  #menu .lego-module .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+  }
+  #menu .lego-module.active .close-btn,
+  #menu .lego-module.inactive .close-btn {
+    display: block;
+  }
+  #main {
+    flex: 1;
+    padding: 10px;
+    overflow: auto;
+  }
+  .module-container {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+  }
+  .module-container.active {
+    display: block;
+  }             

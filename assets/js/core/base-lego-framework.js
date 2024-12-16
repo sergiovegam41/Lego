@@ -1,11 +1,15 @@
-import { _loadModulesWithArguments, _loadModules } from "./modules/loads-scripts.js";
-import { ready } from './sidebar/SidebarScrtipt.js';
-
+import { _loadModulesWithArguments, _loadModules } from "./modules/windows-manager/loads-scripts.js";
+import { activeMenu } from './modules/sidebar/SidebarScrtipt.js';
+// import {_activeMenus, _openModule, _closeModule} from './modules/windows-manager/windows-manager.js'
 
 window.lego = window.lego || {};
 
 lego.loadModulesWithArguments = _loadModulesWithArguments;
 lego.loadModules = _loadModules;
 
+// lego.openModule = _openModule;
+// lego.closeModule = _closeModule;
+// lego.activeMenus = _activeMenus;
 
-ready()
+activeMenu()
+// _activeMenus()

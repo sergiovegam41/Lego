@@ -36,11 +36,12 @@ class MainComponent extends CoreComponent
     $this->JS_PATHS_WITH_ARG[] = [
 
       new ScriptCoreDTO("assets/js/home/home.js?v=1", [
-        "hello" => "Word",
-        
+        "hello" => "Word"
       ])
 
     ];
+
+    $MenuComponent = (new MenuComponent([]))->render();
 
     return <<<HTML
 
@@ -59,7 +60,8 @@ class MainComponent extends CoreComponent
       </head>
       <body>
           
-          <side-bar> </side-bar>
+          
+          {$MenuComponent}
       
           <div id="parent-content" >
 
@@ -71,18 +73,19 @@ class MainComponent extends CoreComponent
 
             <div id="principal-content-viwer"> 
           
-            <!-- contendio de la pagina actual -->
-            <h1>Hola mundo</h1>
+              <div id="home-page">
+            
+                
 
-
+              </div>
 
             </div>
               
           </div>
           
           <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
-
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+
 
       </body>
 

@@ -28,6 +28,7 @@ export async function _loadModules(scripts) {
  * @returns {string} Código JavaScript transformado
  */
 function transformJSX(code) {
+    
     if (typeof Babel === 'undefined') {
         throw new Error('Babel is not loaded');
     }
@@ -55,9 +56,7 @@ function executeCode(code) {
     try {
         // Crear un contexto con exports
         const contextCode = `
-           
             ${code}
-        
         `;
         return (new Function(contextCode))();
     } catch (error) {
