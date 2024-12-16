@@ -39,12 +39,20 @@ body {
 
 
 body.dark {
+
     --body-color: #18191a;
     --sidebar-color: #242526;
     --primary-color: #3a3b3c;
     --primary-color-light: #3a3b3c;
     --toggle-color: #fff;
     --text-color: black;
+}
+
+body.dark ion-icon, body.dark .name {
+     
+    color: white;
+
+    
 }
 
 
@@ -94,6 +102,32 @@ body.dark {
 
 
 
+
+
+/* Variables por defecto (light mode) */
+body.root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: white;
+}
+  
+/* Dark mode variables */
+body.dark {
+    --background-color: #121212;
+    --text-color: white;
+    --primary-color: #121212;
+}
+  
+/* Usa las variables en tu diseño */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    color: var(--primary-color);
+}
 
 
 

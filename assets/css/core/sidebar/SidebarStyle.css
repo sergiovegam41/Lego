@@ -89,17 +89,22 @@
 }
 
 .sidebar header .logo-text span{
-
+/* 
     background: -webkit-linear-gradient(200deg,black,black );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     color: tomato;  
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
-    
+     */
+     color: black;
 
 }
 
+body.dark .sidebar header .logo-text span{
 
+    color: white;
+
+}
 
 
 header .image-text .name {

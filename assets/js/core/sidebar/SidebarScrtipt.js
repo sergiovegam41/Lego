@@ -54,6 +54,27 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
           }
         }
       });
+
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+      
+        // Aplica el tema guardado al cargar la página
+        if (currentTheme === 'dark') {
+          document.querySelector('body').classList.add('dark');
+        }
+      
+        toggleButton.addEventListener('click', () => {
+
+          const isDarkMode = document.querySelector('body').classList.toggle('dark');
+          localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+          document.querySelector('#theme-toggle ion-icon').name= isDarkMode ? 'sunny-outline':'moon-outline'
+          // moon-outline
+          // sunny-outline
+
+        });
+      });
     
         
   }
@@ -146,7 +167,6 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
     sidebar = body.querySelector('nav'),
     toggle = body.querySelector(".toggle"),
     searchBtn = body.querySelector(".search-box"),
-    contentViewer = document.querySelector('#principal-content-viwer'),
     sidebarShade = document.querySelector('#content-sidebar-shade');
 
     toggle.addEventListener("click" , () => {
@@ -168,7 +188,7 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
         
         // Al abrir el sidebar con el botón de búsqueda
         // contentViewer.style.width = '86.4%';
-        sidebarShade.style= " min-width: 100px";
+        sidebarShade.style= " min-width: 260px";
     })
   }
 

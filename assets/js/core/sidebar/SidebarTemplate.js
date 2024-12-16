@@ -37,7 +37,7 @@ export class Sidebar extends HTMLElement {
       <header>
           <div class="image-text">
               <span class="image">
-                  <img class="user-image" src="https://i5.walmartimages.com/asr/a62c3579-a13b-44ad-bf9e-72db61e08f07.ed5e64dbe56724993c88376740b7db28.jpeg?odnHeight=320&odnWidth=320&odnBg=FFFFFF" alt="">
+                  <img class="user-image" src="/assets/images/logo.png" alt="">
                   <!-- <p>Sergio Vega</p> -->
               </span>
 
@@ -74,6 +74,12 @@ export class Sidebar extends HTMLElement {
 
           <div class="bottom-content">
 
+                        <li class="" id="theme-toggle">
+                  <a >
+                      <ion-icon class ='icon'  name="moon-outline"></ion-icon>
+                      <span class="text nav-text">Theme</span>
+                  </a>
+              </li>
           <hr>
               <li class="">
                   <a href="${   HOST_NAME    }">
@@ -81,6 +87,10 @@ export class Sidebar extends HTMLElement {
                       <span class="text nav-text">Logout</span>
                   </a>
               </li>
+
+
+
+           
 
               
           </div>
