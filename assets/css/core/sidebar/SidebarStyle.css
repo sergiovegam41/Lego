@@ -291,6 +291,19 @@ body.dark .mode .sun-moon i.moon{
 body.dark .switch::before{
     left: 20px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* .drag{
     opacity: 0;
 } */
@@ -300,5 +313,8 @@ body.dark .switch::before{
 }
 
 
-
+/* 
+#principal-page-viwer{
+    overflow-y: hidden !;
+} */
 

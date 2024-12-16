@@ -72,9 +72,9 @@ class MainComponent extends CoreComponent
             <div id="principal-content-viwer"> 
           
             <!-- contendio de la pagina actual -->
+            <h1>Hola mundo</h1>
 
 
-          
 
             </div>
               

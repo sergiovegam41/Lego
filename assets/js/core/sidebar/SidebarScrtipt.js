@@ -154,12 +154,12 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
 
         if(sidebar.classList.contains("close")){
             // Cuando el sidebar está cerrado
-            contentViewer.style.width = '95%';
-            sidebarShade.style.width = '5%';
+            // contentViewer.style.width = '95%';
+            sidebarShade.style= " min-width: 100px";
         } else {
             // Cuando el sidebar está abierto
-            contentViewer.style.width = '86.4%';
-            sidebarShade.style.width = '13.6%';
+            // contentViewer.style.width = '86.4%';
+            sidebarShade.style= " min-width: 260px";
         }
     })
 
@@ -167,8 +167,8 @@ import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
         sidebar.classList.remove("close");
         
         // Al abrir el sidebar con el botón de búsqueda
-        contentViewer.style.width = '86.4%';
-        sidebarShade.style.width = '13.6%';
+        // contentViewer.style.width = '86.4%';
+        sidebarShade.style= " min-width: 100px";
     })
   }
 
