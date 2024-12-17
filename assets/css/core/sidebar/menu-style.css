@@ -174,13 +174,14 @@ hr{
 }
 
 .sidebar li:active{
-    transform: scale(0.96) rotateZ(1deg);
+    transform: translateY(0);
+    opacity: .7;
 
-    transition: .3s;
+    transition: .05s;
 }
 
 .sidebar li{
-    transition: .3s;
+    transition: .5s;
 }
 
 
@@ -315,17 +316,86 @@ body.dark .switch::before{
 
 
 
-/* .drag{
-    opacity: 0;
-} */
-
-#drag{
-    cursor: move!important;
-}
 
 
-/* 
-#principal-page-viwer{
-    overflow-y: hidden !;
-} */
 
+
+
+
+
+
+.custom-menu-section {
+    border-bottom: 1px solid #ccc;
+  }
+
+  .custom-menu-title {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .custom-menu-title:hover {
+    background: #e0e0e0;
+  }
+
+  .custom-menu-title ion-icon {
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .custom-menu-title.open ion-icon {
+    transform: rotate(90deg); /* Girar flecha */
+  }
+
+  .custom-submenu {
+    display: none;
+  }
+
+  .custom-submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .custom-submenu-item ion-icon {
+    margin-right: 10px;
+  }
+
+  .custom-submenu-item:hover {
+    background: #ececec;
+  }
+
+  .custom-button {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+  }
+
+  .custom-button:hover {
+    background: #e0e0e0;
+  }
+
+  /* Colores por niveles */
+  .level-1 { background-color: #f9f9f9; }
+  .level-2 { background-color: #11fb00; }
+  .level-3 { background-color: #0026ff; }
+  .level-4 { background-color: #c60000; }
+
+
+
+
+
+  

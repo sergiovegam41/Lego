@@ -2,12 +2,11 @@
 namespace Core\Components\CoreComponent;
 
 use Core\Dtos\ScriptCoreDTO;
-use MatthiasMullie\Minify;
 
 abstract class CoreComponent {
+
     protected $config;
     protected $JS_PATHS = [];
-
 
     /**  @var ScriptCoreDTO[] */
     protected $JS_PATHS_WITH_ARG = [];
@@ -32,7 +31,6 @@ abstract class CoreComponent {
     }
   
     protected function js_imports_with_arg() {
-
         return $this->generate_modulesJsWithArg();
     }
 
@@ -48,6 +46,9 @@ abstract class CoreComponent {
             "data"=>$this->JS_PATHS_WITH_ARG
         ]);
 
+        if( $this->JS_PATHS_WITH_ARG == [] ){
+            return "";
+        }
    
         return <<<HTML
          <script>window.addEventListener('load',()=>window.lego.loadModulesWithArguments({$modules}));</script>
@@ -63,6 +64,10 @@ abstract class CoreComponent {
         global $url_servidor;
 
         $modules = json_encode($dependencies);
+
+        if( $dependencies == [] ){
+            return "";
+        }
         return <<<HTML
             <script>window.addEventListener('load',()=>window.lego.loadModules({$modules}));</script>
         HTML;
@@ -118,23 +123,23 @@ HTML;
     public function render(): string
     {
   
-      $component   = $this->component();
+      $component = $this->component();
       $css_imports = $this->css_imports();
       $js_imports  = $this->js_imports();
       $js_imports_with_arg  = $this->js_imports_with_arg();
   
       return <<<HTML
   
-        <!-- dependencias css -->
+  
         {$css_imports}
   
-        <!-- cuerpo del componente -->
+
         {$component}
   
-        <!-- dependencias js -->
+
         {$js_imports}
         
-        <!-- dependencias with arg js -->
+
         {$js_imports_with_arg}
   
       HTML;

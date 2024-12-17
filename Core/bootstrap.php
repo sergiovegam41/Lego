@@ -68,36 +68,38 @@ function has($array):bool
 }
 
     
-    function p() {
-        $args = func_get_args();
-        $i = 1;
-        foreach ($args as $arg) {
-
-
-            // if(is_object($arg)){
-            //     dd($arg);
-            // }else{
-            // }
-            echo is_string($arg) ? $arg : json_encode($arg);
-            $i++;
-
-            if (isCommandLineInterface()) {
-                
-                if( $i <= count($args) ){
-                    echo "\n\n\n\n";
-                }
-
-            } else {
-
-                if( $i <= count($args)  ){
-                    echo "<br<br><br><br>";
-                }        
-            
-            }
-        
-        }
-        die;
+function p() {
+    // Limpiar cualquier salida previa
+    while (ob_get_level()) {
+        ob_end_clean();
     }
+
+    $args = func_get_args();
+    $i = 1;
+    echo '<code>';
+    foreach ($args as $arg) {
+        // Mostrar el argumento, como texto o JSON
+        echo is_string($arg) ? $arg : json_encode($arg);
+        $i++;
+
+        if (isCommandLineInterface()) {
+            // Espaciado en CLI
+            if ($i <= count($args)) {
+                echo "\n\n\n\n";
+            }
+        } else {
+            // Espaciado en navegador
+            if ($i <= count($args)) {
+                echo "<br><br><br><br>";
+            }
+        }
+    }
+    echo '</code>';
+    // Detener el script después de mostrar el mensaje
+    die;
+}
+
+
 
     function plog($data, $file_path = null) {
     

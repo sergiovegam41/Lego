@@ -15,9 +15,7 @@ class MainComponent extends CoreComponent
 
   ];
 
-  protected $JS_PATHS_WITH_ARG = [
-
-  ];
+  protected $JS_PATHS_WITH_ARG = [ ];
 
   protected $CSS_PATHS = [
 
@@ -60,7 +58,7 @@ class MainComponent extends CoreComponent
       </head>
       <body>
           
-          
+
           {$MenuComponent}
       
           <div id="parent-content" >

@@ -1,10 +1,28 @@
-// import 'https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js';
 
   export function activeMenu() {
 
       document.addEventListener('DOMContentLoaded', () => {
 
         addEventForToggle();
+
+        // const parentItems = document.querySelectorAll('.nav-link:has(.childs)');
+    
+        // parentItems.forEach(item => {
+        //     item.addEventListener('click', function(e) {
+        //         // Prevenir que el click se propague si hay un botón de cierre
+        //         if (!e.target.closest('.close-btn')) {
+        //             // Toggle de la clase active en el elemento padre
+        //             this.classList.toggle('active');
+                    
+        //             // Encontrar el elemento .childs dentro de este item
+        //             const childContainer = this.querySelector('.childs');
+        //             if (childContainer) {
+        //                 childContainer.classList.toggle('active');
+        //             }
+        //         }
+        //     });
+        // });
+
 
         const toggleButton = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
@@ -80,3 +98,15 @@
 
 
 
+ export function toggleSubMenu(element) {
+    const submenu = element.nextElementSibling;
+    const icon = element.querySelector("ion-icon");
+
+    if (submenu.style.display === "block") {
+        submenu.style.display = "none";
+        icon.setAttribute("name", "chevron-forward-outline");
+    } else {
+        submenu.style.display = "block";
+        icon.setAttribute("name", "chevron-down-outline");
+    }
+}

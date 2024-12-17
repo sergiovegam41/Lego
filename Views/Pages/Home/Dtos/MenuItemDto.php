@@ -2,7 +2,7 @@
 
 namespace Views\Pages\Home\Dtos;
 
-readonly class MenuItemDto
+class MenuItemDto
 {
     /**
      * @param MenuItemDto[] $childs
@@ -13,6 +13,7 @@ readonly class MenuItemDto
         public string|null $url,
         public string $iconName,
         public array $childs = [],
+        public int $level = 0,
     ) {
     }
 }

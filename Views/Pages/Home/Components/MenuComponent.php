@@ -31,50 +31,117 @@ class MenuComponent extends CoreComponent
      * @param MenuItemDto[] $MENU_LIST
      */
 
-
-    $MENU_LIST = [
+     $MENU_LIST = [
         new MenuItemDto(
             id: "1", 
-            name: "Departamentos", 
-            url:$HOST_NAME . '/resourses/home',  
-            iconName:"map-outline" 
+            name: "Inicio", 
+            url: $HOST_NAME . '/inicio',  
+            iconName: "home-outline"
         ),
         new MenuItemDto(
             id: "2", 
-            name: "Usuarios", 
-            url:$HOST_NAME . '/resourses/home',  
-            iconName:"person-circle-outline" 
+            name: "Tablero", 
+            url: $HOST_NAME . '/tablero',  
+            iconName: "grid-outline"
         ),
         new MenuItemDto(
             id: "3", 
-            name: "Home", 
-            url:$HOST_NAME . '/resourses/home',  
-            iconName:"home-outline" 
+            name: "Actividades recientes", 
+            url: $HOST_NAME . '/actividades',  
+            iconName: "time-outline"
         ),
         new MenuItemDto(
-            id: "5", 
-            name: "Configuracion", 
-            url:$HOST_NAME . '/resourses/home',  
-            iconName:"cog-outline",
+            id: "4", 
+            name: "Submenú Profundo", 
+            url: "#",  
+            iconName: "chevron-forward-outline",
             childs: [
                 new MenuItemDto(
-                    id: "6", 
-                    name: "Usuarios", 
-                    url:$HOST_NAME . '/resourses/home',  
-                    iconName:"person-circle-outline" 
+                    id: "5", 
+                    name: "Opción 1", 
+                    url: $HOST_NAME . '/opcion1',  
+                    iconName: "document-text-outline"
                 ),
                 new MenuItemDto(
-                    id: "7", 
-                    name: "Home", 
-                    url:$HOST_NAME . '/resourses/home',  
-                    iconName:"home-outline" 
-                ),
+                    id: "6", 
+                    name: "Mas", 
+                    url: $HOST_NAME . '/opcion2',  
+                    iconName: "document-text-outline",
+                    childs: [
+                        new MenuItemDto(
+                            id: "4", 
+                            name: "Submenú Profundo", 
+                            url: "#",  
+                            iconName: "chevron-forward-outline",
+                            childs: [
+                                new MenuItemDto(
+                                    id: "5", 
+                                    name: "Opción 1", 
+                                    url: $HOST_NAME . '/opcion1',  
+                                    iconName: "document-text-outline"
+                                ),
+                                new MenuItemDto(
+                                    id: "6", 
+                                    name: "Opción 2", 
+                                    url: $HOST_NAME . '/opcion2',  
+                                    iconName: "document-text-outline"
+                                )
+                            ]
+                        ),
+                    ]
+                )
             ]
         ),
- 
-
-
+        new MenuItemDto(
+            id: "7", 
+            name: "Submenú Nivel 3", 
+            url: "#",  
+            iconName: "chevron-forward-outline",
+            childs: [
+                new MenuItemDto(
+                    id: "8", 
+                    name: "Opción A", 
+                    url: $HOST_NAME . '/opcionA',  
+                    iconName: "list-outline"
+                ),
+                new MenuItemDto(
+                    id: "9", 
+                    name: "Opción B", 
+                    url: $HOST_NAME . '/opcionB',  
+                    iconName: "list-outline"
+                )
+            ]
+        ),
+        new MenuItemDto(
+            id: "10", 
+            name: "Submenú Nivel 4", 
+            url: "#",  
+            iconName: "chevron-forward-outline",
+            childs: [
+                new MenuItemDto(
+                    id: "11", 
+                    name: "Gestión de Usuarios", 
+                    url: $HOST_NAME . '/gestion-usuarios',  
+                    iconName: "people-outline"
+                )
+            ]
+        ),
+        new MenuItemDto(
+            id: "12", 
+            name: "Configuración", 
+            url: "#",  
+            iconName: "settings-outline",
+            childs: [
+                new MenuItemDto(
+                    id: "13", 
+                    name: "Reportes", 
+                    url: $HOST_NAME . '/reportes',  
+                    iconName: "stats-chart-outline"
+                )
+            ]
+        )
     ];
+    
 
 
 
@@ -91,17 +158,15 @@ class MenuComponent extends CoreComponent
     
     foreach ($MENU_LIST as $key => $MenuItem) {
         # code...
+        
         $FINAL_MENU_LIST .= (new MenuItemComponent( $MenuItem ))->render();
-        
-        
+
     }
-    
 
 
-    // p($HOST_NAME);
     return <<<HTML
 
-        <nav class="sidebar">
+        <nav class="sidebar ">
             <header>
                 <div class="image-text">
                     <span class="image">
@@ -131,13 +196,13 @@ class MenuComponent extends CoreComponent
                         <input type="text" placeholder="Search" id="search-menu">
                     </li>
 
-                    <ul class="menu-links" id="menu-links">
+                    <div class="custom-menu" id="">
                         
 
                         {$FINAL_MENU_LIST}
 
 
-                    </ul>
+                    </div>
                 </div>
 
                 <div class="bottom-content">
