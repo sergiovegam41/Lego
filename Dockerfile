@@ -50,7 +50,6 @@ WORKDIR /var/www/html
 # Exponer el puerto que usará PHP-FPM
 EXPOSE 9000
 
-
 # Instalar las dependencias de composer
 CMD ["composer", "install" ]
 

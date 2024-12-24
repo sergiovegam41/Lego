@@ -32,10 +32,10 @@ class MenuItemComponent extends CoreComponent
         // Si no tiene hijos, es un elemento final
         if ($this->config->childs == []) {
             return <<<HTML
-            <div class="custom-menu-section">
-                <button class="custom-button">
-                    <ion-icon name="{$iconName}"></ion-icon> 
-                    {$name}
+            <div class="custom-menu-section menu_item_openable">
+                <button class="custom-button level-{$level}">
+                    <ion-icon name="{$iconName}" class="icon_menu"></ion-icon> 
+                    <p class="text_menu_option" >{$name}</p>
                 </button>
             </div>
             HTML;
@@ -51,11 +51,11 @@ class MenuItemComponent extends CoreComponent
 
             return <<<HTML
             <div class="custom-menu-section">
-                <div class="custom-menu-title" onclick="toggleSubMenu(this)">
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                    {$name}
+                <div class="custom-menu-title level-{$level}" onclick="toggleSubMenu(this)">
+                    <ion-icon name="chevron-forward-outline" class="icon_menu"></ion-icon>
+                    <p class="text_menu_option" >{$name}</p>
                 </div>
-                <div class="custom-submenu level-{$level}">
+                <div class="custom-submenu">
                     {$FINAL_LIST}
                 </div>
             </div>
