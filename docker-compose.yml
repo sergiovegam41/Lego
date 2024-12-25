@@ -78,4 +78,4 @@ networks:
 
 volumes:
   lego-postgres-db-data:
-  lego-mongo-data:
+  lego-mongo-data: 

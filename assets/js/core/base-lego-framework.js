@@ -8,9 +8,6 @@ lego.loadModulesWithArguments = _loadModulesWithArguments;
 lego.loadModules = _loadModules;
 window.toggleSubMenu = toggleSubMenu;
 
-// lego.openModule = _openModule;
-// lego.closeModule = _closeModule;
-// lego.activeMenus = _activeMenus;
 
 activeMenu()
 // _activeMenus()
