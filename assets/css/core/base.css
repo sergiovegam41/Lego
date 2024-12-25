@@ -140,3 +140,6 @@ body.dark .module-container{
     padding:10px;
 }
 
+.spinner {
+    animation: spin 1s linear infinite;
+}
