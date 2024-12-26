@@ -95,15 +95,15 @@ function updateMenu() {
 
 
 
-export function _activeMenus(){
+export function generateMenuLinks(){
 
-    console.log("activeMenus")
+    console.log("generateMenuLinks")
     
-    document.querySelectorAll('.lego-module').forEach(item => {
+    document.querySelectorAll('.menu_item_openable').forEach(item => {
 
         item.addEventListener('click', () => {
 
-            const id = item.dataset.moduleId;
+            const id = item.dataset.moduleId  || item.getAttribute("moduleId");
             if (moduleStore.getActiveModule() !== id) {
                 _openModule(id);
             }

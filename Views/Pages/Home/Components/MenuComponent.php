@@ -69,19 +69,19 @@ class MenuComponent extends CoreComponent
                     iconName: "document-text-outline",
                     childs: [
                         new MenuItemDto(
-                            id: "4", 
+                            id: "7", 
                             name: "Submenú Profundo", 
                             url: "#",  
                             iconName: "chevron-forward-outline",
                             childs: [
                                 new MenuItemDto(
-                                    id: "5", 
+                                    id: "8", 
                                     name: "Opción 1", 
                                     url: $HOST_NAME . '/opcion1',  
                                     iconName: "document-text-outline"
                                 ),
                                 new MenuItemDto(
-                                    id: "6", 
+                                    id: "9", 
                                     name: "Opción 2", 
                                     url: $HOST_NAME . '/opcion2',  
                                     iconName: "document-text-outline"
@@ -93,19 +93,19 @@ class MenuComponent extends CoreComponent
             ]
         ),
         new MenuItemDto(
-            id: "7", 
+            id: "10", 
             name: "Submenú Nivel 3", 
             url: "#",  
             iconName: "chevron-forward-outline",
             childs: [
                 new MenuItemDto(
-                    id: "8", 
+                    id: "11", 
                     name: "Opción A", 
                     url: $HOST_NAME . '/opcionA',  
                     iconName: "list-outline"
                 ),
                 new MenuItemDto(
-                    id: "9", 
+                    id: "12", 
                     name: "Opción B", 
                     url: $HOST_NAME . '/opcionB',  
                     iconName: "list-outline"
@@ -113,13 +113,13 @@ class MenuComponent extends CoreComponent
             ]
         ),
         new MenuItemDto(
-            id: "10", 
+            id: "13", 
             name: "Submenú Nivel 4", 
             url: "#",  
             iconName: "chevron-forward-outline",
             childs: [
                 new MenuItemDto(
-                    id: "11", 
+                    id: "14", 
                     name: "Gestión de Usuarios", 
                     url: $HOST_NAME . '/gestion-usuarios',  
                     iconName: "people-outline"
@@ -127,13 +127,13 @@ class MenuComponent extends CoreComponent
             ]
         ),
         new MenuItemDto(
-            id: "12", 
+            id: "15", 
             name: "Configuración", 
             url: "#",  
             iconName: "settings-outline",
             childs: [
                 new MenuItemDto(
-                    id: "13", 
+                    id: "16", 
                     name: "Reportes", 
                     url: $HOST_NAME . '/reportes',  
                     iconName: "stats-chart-outline"

@@ -82,7 +82,7 @@
         } else {
             // Cuando el sidebar está abierto
             // contentViewer.style.width = '86.4%';
-            sidebarShade.style= " min-width: 260px";
+            sidebarShade.style= " min-width: 300px";
         }
     })
 
@@ -91,7 +91,7 @@
         
         // Al abrir el sidebar con el botón de búsqueda
         // contentViewer.style.width = '86.4%';
-        sidebarShade.style= " min-width: 260px";
+        sidebarShade.style= " min-width: 300px";
     })
   }
 

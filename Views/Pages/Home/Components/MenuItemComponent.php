@@ -28,12 +28,13 @@ class MenuItemComponent extends CoreComponent
         $iconName = $this->config->iconName ?? 'document-text-outline'; // Icono por defecto
         $this->config->level = $this->config->level + 1;
         $level = $this->config->level;
+        $levelAux = $level - 1;
 
         // Si no tiene hijos, es un elemento final
         if ($this->config->childs == []) {
             return <<<HTML
-            <div class="custom-menu-section menu_item_openable">
-                <button class="custom-button level-{$level}">
+            <div class="custom-menu-section menu_item_openable" moduleId="{$id}">
+                <button class="custom-button level-{$levelAux}">
                     <ion-icon name="{$iconName}" class="icon_menu"></ion-icon> 
                     <p class="text_menu_option" >{$name}</p>
                 </button>
@@ -49,13 +50,15 @@ class MenuItemComponent extends CoreComponent
                 $FINAL_LIST .= (new MenuItemComponent($MenuItem))->render();
             }
 
+            
+
             return <<<HTML
-            <div class="custom-menu-section">
-                <div class="custom-menu-title level-{$level}" onclick="toggleSubMenu(this)">
+            <div class="custom-menu-section ">
+                <div class="custom-menu-title level-{$levelAux}" onclick="toggleSubMenu(this)">
                     <ion-icon name="chevron-forward-outline" class="icon_menu"></ion-icon>
                     <p class="text_menu_option" >{$name}</p>
                 </div>
-                <div class="custom-submenu">
+                <div class="custom-submenu section-level-{$level}">
                     {$FINAL_LIST}
                 </div>
             </div>

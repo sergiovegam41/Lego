@@ -52,6 +52,8 @@ class MainComponent extends CoreComponent
           <title>Home</title> 
           <link rel="stylesheet" href="./assets/css/core/teailwind.css">
           <link rel="stylesheet" href="./assets/css/core/base.css">
+          <link rel="stylesheet" href="./assets/css/core/teailwind.css">
+          <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
           <!-- Solo necesitamos una versión de Babel -->
 
@@ -73,14 +75,7 @@ class MainComponent extends CoreComponent
             <div id="principal-content-viwer"> 
           
               <div id="home-page">
-            
-              <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">¡Tailwind está funcionando!</h1>
-                <p class="text-gray-600">Si ves este diseño con colores, fuentes y espaciado estilizados, Tailwind está funcionando correctamente.</p>
-                <button class="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
-                  Botón de prueba
-                </button>
-              </div>
+       
 
               </div>
 

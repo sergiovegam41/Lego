@@ -1,7 +1,7 @@
 import { _loadModulesWithArguments, _loadModules } from "./modules/windows-manager/loads-scripts.js";
 import { activeMenu, toggleSubMenu } from './modules/sidebar/SidebarScrtipt.js';
 import { loading } from './modules/loading/loadingsScript.js';
-// import {_activeMenus, _openModule, _closeModule} from './modules/windows-manager/windows-manager.js'
+import {generateMenuLinks, _openModule, _closeModule} from './modules/windows-manager/windows-manager.js'
 
 window.lego = window.lego || {};
 
@@ -11,7 +11,7 @@ window.toggleSubMenu = toggleSubMenu;
 
 
 activeMenu()
-
+generateMenuLinks()
 
 
 
