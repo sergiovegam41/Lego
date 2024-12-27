@@ -1,7 +1,7 @@
 #content-sidebar-shade{
     /* background-color: blue; */
     /* width: 13.6%; */
-    min-width: 300px;
+    min-width: 310px;
     height: 100%;
     transition: 0.25s;
 
@@ -537,9 +537,18 @@ body.dark .switch::before{
     z-index: 10000;
     transition: 0.25s;
     border-radius: 10px;
-    /* transform: translateX(6px); */
+    transform: translateX(6px);
 
-  }
+}
+
+.sidebar.close  .menu_item_openable:hover {
+    background: rgba(0, 0, 0, 0.185);
+    z-index: 10000;
+    transition: 0.25s;
+    border-radius: 10px;
+    transform: translateX(0px);
+
+}
 
   .menu_item_openable:hover ~ .menu_item_openable {
   

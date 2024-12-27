@@ -1,6 +1,6 @@
 <?php
 
-namespace Views\Pages\Home\Components;
+namespace Views\Core\Home\Components;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;

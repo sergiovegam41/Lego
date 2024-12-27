@@ -1,6 +1,6 @@
 <?php
 
-namespace Views\Pages\Home\Dtos;
+namespace Views\Core\Home\Dtos;
 
 class MenuItemDto
 {

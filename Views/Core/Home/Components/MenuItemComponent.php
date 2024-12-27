@@ -1,10 +1,10 @@
 <?php
 
-namespace Views\Pages\Home\Components;
+namespace Views\Core\Home\Components;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\providers\StringMethods;
-use Views\Pages\Home\Dtos\MenuItemDto;
+use Views\Core\Home\Dtos\MenuItemDto;
 
 class MenuItemComponent extends CoreComponent 
 {
