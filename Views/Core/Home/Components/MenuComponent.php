@@ -188,13 +188,13 @@ class MenuComponent extends CoreComponent
 
 
                 <hr>
-        
+                
+                <li class="search-box">
+                    <ion-icon class ='icon' name="search-outline"></ion-icon>
+                    <input type="text" placeholder="Search" id="search-menu">
+                </li>
                 <div class="menu" id="sidebar_menu">
 
-                    <li class="search-box">
-                        <ion-icon class ='icon' name="search-outline"></ion-icon>
-                        <input type="text" placeholder="Search" id="search-menu">
-                    </li>
 
                     <div class="custom-menu" id="">
                         
