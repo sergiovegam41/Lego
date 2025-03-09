@@ -28,7 +28,6 @@ class MainComponent extends CoreComponent
   }
 
 
-
   protected function component(): string
   {
     $this->JS_PATHS_WITH_ARG[] = [
