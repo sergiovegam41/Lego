@@ -451,14 +451,14 @@ body.dark .switch::before{
   /* Colores por niveles */
 
     .section-level-1 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .2); margin-left: 26px;}
-    .section-level-2 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .3);  margin-left: -1px;} 
-    .section-level-3 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .6);   margin-left: -1px;}
-    .section-level-4 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0,  1);   margin-left: -1px;}
+    .section-level-2 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .3);  margin-left: -2px;} 
+    .section-level-3 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .6);   margin-left: -2px;}
+    .section-level-4 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0,  1);   margin-left: -2px;}
 
     body.dark .section-level-1 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .2); margin-left: 26px;}
-    body.dark .section-level-2 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .3);  margin-left: -1px;} 
-    body.dark .section-level-3 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .6);   margin-left: -1px;}
-    body.dark .section-level-4 { transition: 0.25s; border-left: 2px solid rgba(255,255,255,  1);  margin-left: -1px;}
+    body.dark .section-level-2 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .3);  margin-left: -2px;} 
+    body.dark .section-level-3 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .6);   margin-left: -2px;}
+    body.dark .section-level-4 { transition: 0.25s; border-left: 2px solid rgba(255,255,255,  1);  margin-left: -2px;}
 
 
 

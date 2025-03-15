@@ -1,9 +1,11 @@
 <?php
 
-namespace Views\Core\Home\Components;
+namespace Views\Core\Home\Components\MenuComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
+use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
+use Views\Core\Home\Components\MenuComponent\features\MenuItemComponent\MenuItemComponent;
 use Views\Core\Home\Dtos\MenuItemDto;
 
 class MenuComponent extends CoreComponent 
@@ -25,6 +27,15 @@ class MenuComponent extends CoreComponent
 
   protected function component(): string
   {
+
+    $this->JS_PATHS_WITH_ARG[] = [
+
+        new ScriptCoreDTO("components/core/Home/Components/MenuComponent/menu-component.js?v=1", [
+          "message" => "Hola pepe luis new desde JS_PATHS_WITH_ARG en menu component"
+        ])
+  
+      ];
+
     $HOST_NAME = env('HOST_NAME');
 
        /**

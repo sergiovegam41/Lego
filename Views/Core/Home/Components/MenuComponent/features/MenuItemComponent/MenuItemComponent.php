@@ -1,6 +1,6 @@
 <?php
 
-namespace Views\Core\Home\Components;
+namespace Views\Core\Home\Components\MenuComponent\features\MenuItemComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\providers\StringMethods;

@@ -1,10 +1,11 @@
 <?php
 
-namespace Views\Core\Home\Components;
+namespace Views\Core\Home\Components\MainComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
+use Views\Core\Home\Components\MenuComponent\MenuComponent;
 
 class MainComponent extends CoreComponent 
 {
@@ -62,7 +63,7 @@ class MainComponent extends CoreComponent
           
 
           {$MenuComponent}
-      
+
           <div id="parent-content" >
 
             <div id="content-sidebar-shade"> 

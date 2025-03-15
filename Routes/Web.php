@@ -3,7 +3,7 @@ namespace Routes;
 
 use Core\Response;
 use Flight;
-use Views\Core\Home\Components\MainComponent;
+use Views\Core\Home\Components\MainComponent\MainComponent;
 
 class Web {
 
@@ -14,6 +14,7 @@ class Web {
 
             $componet = new MainComponent([ ]);
             Response::uri( $componet->render() );
+            
         } );
 
         Flight::route('GET /admin', function () {

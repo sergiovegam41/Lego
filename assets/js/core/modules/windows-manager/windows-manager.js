@@ -97,7 +97,7 @@ function updateMenu() {
 
 export function generateMenuLinks(){
 
-    console.log("generateMenuLinks")
+    // console.log("generateMenuLinks")
     
     document.querySelectorAll('.menu_item_openable').forEach(item => {
 
