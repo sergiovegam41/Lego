@@ -1,5 +1,5 @@
 <?php
-namespace Core\Model;
+namespace Core\Models;
 
 class StatusCodes
 {

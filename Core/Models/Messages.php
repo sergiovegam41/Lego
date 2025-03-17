@@ -1,6 +1,5 @@
 <?php
-namespace Core\Model;
-
+namespace Core\Models;
 class Messages
 {
   const Ok = "Ok";

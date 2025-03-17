@@ -9,12 +9,9 @@ class Web {
 
    static public function handle() {
 
-
         Flight::route('GET /',function (){
-
             $componet = new MainComponent([ ]);
             Response::uri( $componet->render() );
-            
         } );
 
         Flight::route('GET /admin', function () {

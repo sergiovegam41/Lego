@@ -31,7 +31,7 @@ class MenuComponent extends CoreComponent
     $this->JS_PATHS_WITH_ARG[] = [
 
         new ScriptCoreDTO("components/core/Home/Components/MenuComponent/menu-component.js?v=1", [
-          "message" => "Hola pepe luis new desde JS_PATHS_WITH_ARG en menu component"
+          "message" => "hello word desde menu component "
         ])
   
       ];

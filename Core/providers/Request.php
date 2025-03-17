@@ -21,6 +21,7 @@ class Request
     {
         $phpInput = file_get_contents('php://input');
         $request = array_merge($_REQUEST, is_array(json_decode($phpInput, true)) ? json_decode($phpInput, true) : []);
+       
         return $request;
     }
 
