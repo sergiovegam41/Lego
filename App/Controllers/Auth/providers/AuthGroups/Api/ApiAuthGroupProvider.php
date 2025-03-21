@@ -1,45 +1,45 @@
 <?php
-namespace App\Controllers\Auth\Providers\AuthGroups\Admin;
+namespace App\Controllers\Auth\Providers\AuthGroups\Api;
 
 use App\Controllers\Auth\Contracts\AbstractAuthCoreContract;
 use App\Controllers\Auth\DTOs\AuthRequestDTO;
 use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGruopsIDs;
 use App\Controllers\Auth\Providers\AuthGroupsProvider;
 use Core\Models\ResponseDTO;
-use Flight;
-class AdminAuthGroupProvider extends AbstractAuthCoreContract 
+
+class ApiAuthGroupProvider extends AbstractAuthCoreContract 
 {
 
     public const AUTH_GROUP_NAME = [
-        "id"=> AuthGruopsIDs::ADMINS, // una vez definido no debe cambiar nunca el identificador
-        "route"=>"admin", // este sera el nombre de la ruta en la url
-        "description"=>"destinado a usuarios de administración y backoffice" 
+        "id"=>AuthGruopsIDs::APIS, // una vez definido no debe cambiar nunca el identificador
+        "route"=>"api", // este sera el nombre de la ruta en la url
+        "description"=>"destinado a usuarios externos y aplicaciones web o moviles" 
     ];
+
     public function login(AuthRequestDTO $authRequestDTO): ResponseDTO
     {
-   
         $email = $authRequestDTO->request->request['username'];
         $password = $authRequestDTO->request->request['password'];
-        $device_id = $authRequestDTO->request->request['device_id']??1;
-        $firebase_token = $authRequestDTO->request->request['firebase_token']??null;
 
-        return (new AuthGroupsProvider())->coreLogin( $email, $password, AdminAuthGroupProvider::AUTH_GROUP_NAME["id"], $device_id,  $firebase_token);
+        return (new AuthGroupsProvider())->coreLogin( $email, $password, ApiAuthGroupProvider::AUTH_GROUP_NAME["id"], 2);
 
+        return new ResponseDTO(false, "error", null);
     }
+    
 
     public function loginByCode(AuthRequestDTO $request): ResponseDTO
     {
-        p($request,"AdminAuthGroupProvider loginByCode" );
+        p($request,"ApiAuthGroupProvider loginByCode" );
         
         return new ResponseDTO(false, "error", null);
     }
     
-    public function refresh_token(AuthRequestDTO $authRequestDTO): ResponseDTO
+    public function refresh_token(AuthRequestDTO $request): ResponseDTO
     {
-        $refresh_token = $authRequestDTO->request->request['refresh_token'];
-        $device_id = $authRequestDTO->request->request['device_id']??1;
-        return (new AuthGroupsProvider())->coreRefreshToken(  $refresh_token, $device_id );
 
+        p($request);
+
+        return new ResponseDTO(false, "error", null);
     }
     
     public function logout(AuthRequestDTO $request): ResponseDTO
@@ -57,11 +57,10 @@ class AdminAuthGroupProvider extends AbstractAuthCoreContract
 
         return new ResponseDTO(false, "error", null);
     }
-
     public function getProfile(AuthRequestDTO $request): ResponseDTO
     {
 
-        return (new AuthGroupsProvider())->coreGetCurrentUser();
+        p($request);
 
         return new ResponseDTO(false, "error", null);
     }

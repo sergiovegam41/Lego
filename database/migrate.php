@@ -2,7 +2,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../Core/bootstrap.php';
 
-echo Migrations::execute();
+return Migrations::execute();
  
 class Migrations {
 
@@ -46,18 +46,17 @@ static $SQLPathMigrations = 'database/sql/';
 
 static $BaseSQLs = [
     'migrations'=> 'database/sql/base/migrations.sql',
-    'admin_users'=> 'database/sql/base/inital_structure.sql'
+    'auth_users'=> 'database/sql/base/inital_structure.sql'
 ];
 
 static function verifyBaseMigrations( $check = false ){
 
 
     $executedMmigrationsBase = [];
-    $table = self::getTablesAllTables();    
-
+    $table = self::getTablesAllTables();
 
     foreach( self::$BaseSQLs as $key => $value ) {
-     
+    
         
         if(!in_array($key,  $table)) {
             if( true == $check) {
@@ -79,12 +78,12 @@ static function verifyBaseMigrations( $check = false ){
                     
                     if($statement != "\r\n\r\n\r\n\r\n"){
                         $result = consultarSinErrorRetornaEstado( str_replace("\ufeff", "", $statement ) );
+
+                        
                         array_push($respuestas, $result);
                     }
 
                 }
-
-               
 
 
                 array_push($executedMmigrationsBase, [
@@ -93,6 +92,10 @@ static function verifyBaseMigrations( $check = false ){
                 ] );
             } catch (\Throwable $th) {
 
+                array_push($executedMmigrationsBase, [
+                    "archivo"=>$value,
+                    "comandos" => $respuestas
+                ] );
                 //throw $th;
             }
 

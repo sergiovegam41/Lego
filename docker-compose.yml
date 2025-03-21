@@ -65,6 +65,20 @@ services:
     networks:
       - lego-network
 
+  redis:
+    image: redis:alpine
+    container_name: lego-redis
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-1224}"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-1224}
+      REDIS_USER: ${REDIS_USER:-lego}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - lego-network
+    volumes:
+      - lego-redis-data:/data
+
   init-permissions:
     image: alpine
     volumes:
@@ -78,4 +92,5 @@ networks:
 
 volumes:
   lego-postgres-db-data:
-  lego-mongo-data: 
+  lego-mongo-data:
+  lego-redis-data:

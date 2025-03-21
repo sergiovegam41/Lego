@@ -5,7 +5,7 @@ namespace App\Controllers\Auth\Contracts;
 use App\Controllers\Auth\DTOs\AuthRequestDTO;
 use Core\Models\ResponseDTO;
 
-abstract class AbstractAuthCoreContract implements AuthCoreContract {
+abstract class AbstractAuthCoreContract  {
 
 
     public function __construct() { 
@@ -15,12 +15,18 @@ abstract class AbstractAuthCoreContract implements AuthCoreContract {
         }
      
     }
+
    
     abstract public function login(AuthRequestDTO $request): ResponseDTO;
+
     abstract public function refresh_token(AuthRequestDTO $request): ResponseDTO;
+
     abstract public function logout(AuthRequestDTO $request): ResponseDTO;
+
     abstract public function register(AuthRequestDTO $request): ResponseDTO;
 
+    abstract public function loginByCode(AuthRequestDTO $request): ResponseDTO;
 
+    abstract public function getProfile(AuthRequestDTO $request): ResponseDTO;
 
 }

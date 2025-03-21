@@ -14,7 +14,7 @@ use Core\Response;
 
 class AuthGroupsController extends CoreController
 {
-  protected $arrayMethods = [ AuthActions::LOGIN, AuthActions::REFRESH_TOKEN, AuthActions::LOGOUT, AuthActions::REGISTER ];
+  protected $arrayMethods = [ AuthActions::LOGIN, AuthActions::LOGIN_BY_CODE,AuthActions::REFRESH_TOKEN, AuthActions::LOGOUT, AuthActions::REGISTER, AuthActions::PROFILE ];
   public function __construct($group, $accion)
   {
 
@@ -28,6 +28,22 @@ class AuthGroupsController extends CoreController
               
         'username' => 'required|email',
         'password' => 'required'
+
+      ])->validateMake();
+      
+      $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
+      
+      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+
+  }
+
+  public function login_by_code( AuthRequestDTO $AuthRequestDTO ){
+
+      $AuthRequestDTO->request->setRules([
+              
+        'email' => 'email',
+        'number_phone' => 'required',
+        'code' => ''
 
       ])->validateMake();
       
@@ -54,6 +70,14 @@ class AuthGroupsController extends CoreController
   }
   
   public function register( AuthRequestDTO $AuthRequestDTO ){
+
+      $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
+
+      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+
+  }
+
+  public function profile( AuthRequestDTO $AuthRequestDTO ){
 
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
 

@@ -3,7 +3,10 @@
 namespace Routes;
 
 use App\Controllers\Auth\AuthGroupsController;
+
 use Flight;
+
+
 
 class Api {
 
@@ -16,7 +19,20 @@ class Api {
         });
 
         Flight::route('GET /test', function () {
-            echo 'test desde api';
+
+            // $redis = RedisClient::getInstance();
+
+            // Guardar un valor en cache con expiración de 15 minutos
+            // $tag = 'verify_codes';
+            // $id = '3043707188';
+            // $num_ale = rand(1, 1000);
+            // $redis->setex("$tag:$id", 900, $num_ale);
+
+            // Obtener el valor
+            // $valor = $redis->get("$tag:$id");
+            
+            p("hi");
+
         });
 
 

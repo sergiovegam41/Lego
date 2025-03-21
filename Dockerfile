@@ -1,4 +1,4 @@
-# Utiliza la imagen oficial de PHP 7.4 con FPM
+# Utiliza la imagen oficial de PHP con FPM
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql zip pdo_pgsql
+
+# Instalar la extensión de Redis
+RUN pecl install redis \
+    && docker-php-ext-enable redis
 
 # Descargar e instalar MongoDB con soporte para SSL
 RUN pecl install mongodb \
