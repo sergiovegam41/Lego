@@ -5,20 +5,11 @@ use Core\Response;
 use Flight;
 use Views\Core\Home\Components\MainComponent\MainComponent;
 
-class Web {
+Flight::route('GET /',function (){
+    $componet = new MainComponent([ ]);
+    Response::uri( $componet->render() );
+} );
 
-   static public function handle() {
-
-        Flight::route('GET /',function (){
-            $componet = new MainComponent([ ]);
-            Response::uri( $componet->render() );
-        } );
-
-        Flight::route('GET /admin', function () {
-            
-        });
-        
-
-    }
-
-}
+Flight::route('GET /admin', function () {
+    
+});

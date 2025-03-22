@@ -1,6 +1,6 @@
 <?php
-
 use Illuminate\Database\Capsule\Manager as Capsule;
+session_start();
 
 $capsule = new Capsule;
 

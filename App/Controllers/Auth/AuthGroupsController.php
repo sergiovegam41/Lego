@@ -17,9 +17,8 @@ class AuthGroupsController extends CoreController
   protected $arrayMethods = [ AuthActions::LOGIN, AuthActions::LOGIN_BY_CODE,AuthActions::REFRESH_TOKEN, AuthActions::LOGOUT, AuthActions::REGISTER, AuthActions::PROFILE ];
   public function __construct($group, $accion)
   {
-
-      $request = new Request();
-      $this->getMethod(new AuthRequestDTO(auth_grup_name: $group, request: $request, auth_accion: $accion ), $accion);
+    $request = new Request();
+    $this->getMethod(new AuthRequestDTO(auth_grup_name: $group, request: $request, auth_accion: $accion ), $accion);
   }
 
   public function login( AuthRequestDTO $AuthRequestDTO ){

@@ -6,6 +6,7 @@ use App\Controllers\Auth\DTOs\AuthRequestDTO;
 use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGruopsIDs;
 use App\Controllers\Auth\Providers\AuthGroupsProvider;
 use Core\Models\ResponseDTO;
+use Core\Services\AuthServices;
 use Flight;
 class AdminAuthGroupProvider extends AbstractAuthCoreContract 
 {
@@ -23,7 +24,7 @@ class AdminAuthGroupProvider extends AbstractAuthCoreContract
         $device_id = $authRequestDTO->request->request['device_id']??1;
         $firebase_token = $authRequestDTO->request->request['firebase_token']??null;
 
-        return (new AuthGroupsProvider())->coreLogin( $email, $password, AdminAuthGroupProvider::AUTH_GROUP_NAME["id"], $device_id,  $firebase_token);
+        return (new AuthServices())->coreLogin( $email, $password, AdminAuthGroupProvider::AUTH_GROUP_NAME["id"], $device_id,  $firebase_token);
 
     }
 
@@ -38,7 +39,7 @@ class AdminAuthGroupProvider extends AbstractAuthCoreContract
     {
         $refresh_token = $authRequestDTO->request->request['refresh_token'];
         $device_id = $authRequestDTO->request->request['device_id']??1;
-        return (new AuthGroupsProvider())->coreRefreshToken(  $refresh_token, $device_id );
+        return (new AuthServices())->coreRefreshToken(  $refresh_token, $device_id );
 
     }
     
@@ -61,9 +62,7 @@ class AdminAuthGroupProvider extends AbstractAuthCoreContract
     public function getProfile(AuthRequestDTO $request): ResponseDTO
     {
 
-        return (new AuthGroupsProvider())->coreGetCurrentUser();
-
-        return new ResponseDTO(false, "error", null);
+        return AuthServices::isAutenticated();
     }
 
 }
