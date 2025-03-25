@@ -9,15 +9,22 @@ use Dotenv\Dotenv;
  $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
  $dotenv->load();
  
+$DB_USERNAME = env('DB_USERNAME');
+$DB_DATABASE = env('DB_DATABASE');
+$DB_PASSWORD = env('DB_PASSWORD');
+$DB_PORT = env('DB_PORT');
+$DB_HOST = env('DB_HOST');
+$APP_URL = env('APP_URL');
+
 
 // Configurar la conexión a PostgreSQL usando variables del .env
 $capsule->addConnection([
     'driver'    => 'pgsql', // Cambiado a PostgreSQL
-    'host'      => $_ENV['DB_HOST'] ?? '127.0.0.1',
-    'port'      => $_ENV['DB_PORT'] ?? 5432,
-    'database'  => $_ENV['DB_DATABASE'] ?? 'test',
-    'username'  => $_ENV['DB_USERNAME'] ?? 'postgres',
-    'password'  => $_ENV['DB_PASSWORD'] ?? '',
+    'host'      => $DB_HOST ?? '127.0.0.1',
+    'port'      => $DB_PORT?? 5432,
+    'database'  => $DB_DATABASE ?? 'test',
+    'username'  => $DB_USERNAME?? 'postgres',
+    'password'  => $DB_PASSWORD?? '',
     'charset'   => 'utf8',
     'prefix'    => '',
     'schema'    => 'public', // Puedes cambiarlo si usas un esquema diferente
@@ -27,13 +34,6 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-
-$usuario_db_web_PDO = env('DB_USERNAME');
-$bd_proyecto = env('DB_DATABASE');
-$clave_usuario_PDO = env('DB_PASSWORD');
-$puerto_db = env('DB_PORT');
-$host_db = env('DB_HOST');
-$url_servidor = env('APP_URL');
 
 function isCommandLineInterface() {
     return (php_sapi_name() === 'cli');
@@ -154,16 +154,16 @@ function p() {
 function consultar($transaccion)
 {
     // echo $transaccion.'<br/>'.'<br/>';
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-    $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+    $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -190,16 +190,16 @@ function consultarSinError($transaccion)
 
     // echo $transaccion.'<br/>'.'<br/>';
 
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-    $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+    $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         //echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -261,9 +261,9 @@ SQL;
 function consultarSinErrorRetornaEstado($transaccion)
 {
     // echo $transaccion.'<br/>'.'<br/>';
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
 
     $opciones = [
      
@@ -272,7 +272,7 @@ function consultarSinErrorRetornaEstado($transaccion)
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         return [
             "success"=>false,
@@ -317,9 +317,9 @@ function consultarSinErrorRetornaEstado($transaccion)
 
 function consultarError($transaccion)
 {
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -327,7 +327,7 @@ function consultarError($transaccion)
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -347,37 +347,6 @@ function consultarError($transaccion)
     }
 }
 
-function consultar_geolocation($transaccion)
-{
-    global $usuario_db_web_PDO, $bd_geolocation, $clave_usuario_PDO, $puerto_db, $host_db;
-
-    $dsn = "pgsql:$host_db;$puerto_db;$bd_geolocation";
-    $opciones = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ];
-
-    try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-    } catch (PDOException $e) {
-        echo "No se pudo conectar a la BD: " . $e->getMessage();
-        return false;
-    }
-
-    try {
-        $resultado = $conexion->query($transaccion);
-
-        if (!$resultado) {
-            return false;
-        }
-
-        $vec_resul = $resultado->fetchAll(PDO::FETCH_ASSOC);
-        return $vec_resul;
-    } catch (PDOException $e) {
-        echo "Error en la consulta: " . $e->getMessage();
-        return false;
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Funcion: insertar($transaccion)
@@ -390,9 +359,9 @@ function consultar_geolocation($transaccion)
 ////////////////////////////////////////////////////////////////////////////////
 function insertar($transaccion)
 {
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -400,7 +369,7 @@ function insertar($transaccion)
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -425,9 +394,9 @@ function insertar($transaccion)
 
 function insertarSinError($transaccion)
 {
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -435,7 +404,7 @@ function insertarSinError($transaccion)
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -470,9 +439,9 @@ function insertarSinError($transaccion)
 ////////////////////////////////////////////////////////////////////////////////
 function insertar_traer_id($transaccion, $secuencia, $registrar = true)
 {
-    global $usuario_db_web_PDO, $bd_proyecto, $clave_usuario_PDO, $puerto_db, $host_db;
+    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -480,7 +449,7 @@ function insertar_traer_id($transaccion, $secuencia, $registrar = true)
     ];
 
     try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
+        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -502,276 +471,4 @@ function insertar_traer_id($transaccion, $secuencia, $registrar = true)
         echo "Error en la consulta: " . $e->getMessage();
         return false;
     }
-}
-
-/**
- * Función: actualizar($transaccion)
- * Objetivo: Establece una conexión a la base de datos y actualiza datos
- * Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
- * Autor: AAM
- * Fecha: 2006/01/23
- * Modificación: 2006/01/23
- * Retorna: Arreglo si la expresión es ejecutada con éxito o FALSE
- */
-function actualizar($transaccion, $registrar = true)
-{
-    global $dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones, $host_db, $puerto_db, $bd_proyecto;
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
-
-
-    try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-    } catch (PDOException $e) {
-        echo "No se pudo conectar a la BD: " . $e->getMessage();
-        return false;
-    }
-
-    try {
-        $resultado = $conexion->query($transaccion);
-        $resError = $conexion->errorInfo();
-        $conexion = null;
-
-        if ($registrar) {
-            // actualizar_visita($transaccion, "Actualizacion");
-        }
-
-        return $resultado;
-    } catch (PDOException $e) {
-        echo "Error en la consulta: " . $e->getMessage();
-        return false;
-    }
-}
-
-/**
- * Función: coneccion($transaccion)
- * Objetivo: Establece una conexión a la base de datos y actualiza datos
- * Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
- * Autor: AAM
- * Fecha: 2006/01/23
- * Modificación: 2006/01/23
- */
-function coneccion()
-{
-    global $dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones, $host_db, $puerto_db, $bd_proyecto;
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
-
-
-    try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-    } catch (PDOException $e) {
-        echo "No se pudo conectar a la BD: " . $e->getMessage();
-        return false;
-    }
-
-    $conexion = null;
-    return true;
-}
-
-/**
- * Función: consultar_tabla($transaccion)
- * Objetivo: Establece una conexión a la base de datos y retorna resultados en arreglo
- * Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
- * Autor: AAM
- * Fecha: 2004/08/18
- * Modificación: 2004/08/18
- * Retorna: Arreglo si la expresión es ejecutada con éxito o FALSE
- */
-function consultar_tabla($transaccion)
-{
-    global $dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones, $host_db, $puerto_db, $bd_proyecto;
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
-
-
-    try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-    } catch (PDOException $e) {
-        echo "No se pudo conectar a la BD: " . $e->getMessage();
-        return false;
-    }
-
-    try {
-        $resultado = $conexion->query($transaccion);
-        if ($resultado === false) {
-            $conexion = null;
-            return false;
-        } else {
-            $vec_resul = array();
-            $registros = $resultado->columnCount();
-            for ($reg = 0; $reg < $registros; $reg++) {
-                $fieldInfo = $resultado->getColumnMeta($reg);
-                $vec_resul[] = array("nombre" => $fieldInfo['name'], "tipo" => $fieldInfo['native_type']);
-            }
-            $conexion = null;
-            return $vec_resul;
-        }
-    } catch (PDOException $e) {
-        echo "Error en la consulta: " . $e->getMessage();
-        return false;
-    }
-}
-
-/**
- * Función: consultar_tabla_tipo($transaccion)
- * Objetivo: Establece una conexión a la base de datos y retorna resultados en arreglo
- * Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
- * Autor: AAM
- * Fecha: 2004/08/18
- * Modificación: 2004/08/18
- * Retorna: Arreglo si la expresión es ejecutada con éxito o FALSE
- */
-function consultar_tabla_tipo($transaccion)
-{
-    global $dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones, $host_db, $puerto_db, $bd_proyecto;
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
-
-
-    try {
-        $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-    } catch (PDOException $e) {
-        echo "No se pudo conectar a la BD: " . $e->getMessage();
-        return false;
-    }
-
-    try {
-        $resultado = $conexion->query($transaccion);
-        if ($resultado === false) {
-            $conexion = null;
-            return false;
-        } else {
-            $vec_resul = array();
-            $registros = $resultado->columnCount();
-            for ($reg = 0; $reg < $registros; $reg++) {
-                $fieldInfo = $resultado->getColumnMeta($reg);
-                if ($fieldInfo['native_type'] === 'date' || $fieldInfo['native_type'] === 'timestamp') {
-                    $vec_resul[] = $fieldInfo['native_type'];
-                }
-            }
-            $conexion = null;
-            return $vec_resul;
-        }
-    } catch (PDOException $e) {
-        echo "Error en la consulta: " . $e->getMessage();
-        return false;
-    }
-}
-
-/**
- * Función: traer_oid($archivo_tmp_name, $archivo_size, $band)
- * Objetivo: Establece una conexión a la base de datos y actualiza datos
- * Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
- * Autor: AAM
- * Fecha: 2006/01/23
- * Modificación: 2006/01/23
- * Retorna: Arreglo si la expresión es ejecutada con éxito o FALSE
- */
-function traer_oid($archivo_tmp_name, $archivo_size, $band)
-{
-    global $dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones, $host_db, $puerto_db, $bd_proyecto;
-       $dsn = "pgsql:host=$host_db;port=$puerto_db;dbname=$bd_proyecto";
-
-
-    if (file_exists($archivo_tmp_name) && ($archivo_size > 0) && $band == true) {
-        try {
-            $conexion = new PDO($dsn, $usuario_db_web_PDO, $clave_usuario_PDO, $opciones);
-        } catch (PDOException $e) {
-            echo "No se pudo conectar a la BD: " . $e->getMessage();
-            return 1;
-        }
-
-      try {
-            $conexion->beginTransaction();
-        try {
-            $oid = $conexion->pgsqlLOBCreate();
-            $lob = $conexion->pgsqlLOBOpen($oid, 'w');
-
-            $file_contents = file_get_contents($archivo_tmp_name);
-
-            fwrite($lob, $file_contents);
-            fclose($lob);
-
-            $conexion->commit();
-            return $oid;
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            echo "Error al importar el archivo: " . $e->getMessage();
-            exit;
-        }
-
-           /* $stmt = @$conexion->prepare('SELECT lo_import(:archivo_tmp_name) AS imagen');
-            $stmt->bindParam(':archivo_tmp_name', $archivo_tmp_name);
-            @$stmt->execute();
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            $imagen = $resultado['imagen'];
-            $conexion->commit();
-            $conexion = null;
-            //unlink($archivo_tmp_name);
-            return $imagen;*/
-        } catch (PDOException $e) {
-            $conexion->rollBack();
-            // echo "Error en la transacción: " . $e->getMessage();
-            return 0;
-        }
-    } else {
-        return 2;
-    }
-}
-
-/**
- * Archivo: getThumbnail($size, $nombre_archivo, $tmp_name, $type, $anchura, $hmax)
- * Fecha: 2007/07/16
- * Autor: Yeison Pomares (yeison@smartinfo.com.co)
- * Descripción: Retorna una miniatura de un archivo de imagen
- */
-function getThumbnail($size, $nombre_archivo, $tmp_name, $type, $anchura, $hmax)
-{
-    switch ($type) {
-        case "image/jpeg":
-        case "image/pjpeg":
-        case "image/jpeg":
-            $img = imagecreatefromjpeg($tmp_name);
-            break;
-        case "image/gif":
-            $img = imagecreatefromgif($tmp_name);
-            break;
-        case "image/png":
-            $img = imagecreatefrompng($tmp_name);
-            break;
-    }
-    $datos = getimagesize($tmp_name);
-
-    if ($datos[0] > $anchura || $datos[1] > $hmax) {
-        $ratio = ($datos[0] / $anchura);
-        $altura = ($datos[1] / $ratio);
-        if ($altura > $hmax) {
-            $anchura2 = $hmax * $anchura / $altura;
-            $altura = $hmax;
-            $anchura = $anchura2;
-        }
-    } else {
-        $anchura = $datos[0];
-        $altura = $datos[1];
-    }
-    $thumb = imagecreatetruecolor($anchura, $altura);
-    imagecopyresampled($thumb, $img, 0, 0, 0, 0, $anchura, $altura, $datos[0], $datos[1]);
-
-    switch ($type) {
-        case "image/jpeg":
-        case "image/pjpeg":
-        case "image/jpeg":
-            imagejpeg($thumb, $nombre_archivo, 100);
-            break;
-        case "image/gif":
-            imagegif($thumb, $nombre_archivo);
-            break;
-        case "image/png":
-            imagepng($thumb, $nombre_archivo, 9);
-            break;
-    }
-
-    $tthumb = file_get_contents($nombre_archivo);
-    $tthumb = addslashes($tthumb);
-
-    //@unlink($nombre_archivo);
-    //return $tthumb;
-    return $nombre_archivo;
 }

@@ -38,7 +38,7 @@ class MenuComponent extends CoreComponent
 
     $HOST_NAME = env('HOST_NAME');
 
-       /**
+    /**
      * @param MenuItemDto[] $MENU_LIST
      */
 

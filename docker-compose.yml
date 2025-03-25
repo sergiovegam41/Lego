@@ -21,7 +21,6 @@ services:
     container_name: lego-nginx 
     networks:
       - lego-network
-
   db:
     image: postgres:latest
     container_name: lego-postgres-db

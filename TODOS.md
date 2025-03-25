@@ -1,3 +1,3 @@
 # login
  - implementar rechapcha 
- - implementar fingerprinting hibrido 
+ - implementar fingerprinting hibrido gi

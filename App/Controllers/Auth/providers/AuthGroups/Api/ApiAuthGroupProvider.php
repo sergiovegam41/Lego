@@ -6,7 +6,7 @@ use App\Controllers\Auth\DTOs\AuthRequestDTO;
 use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGruopsIDs;
 use App\Controllers\Auth\Providers\AuthGroupsProvider;
 use Core\Models\ResponseDTO;
-use Core\Services\AuthServices;
+use Core\Services\AuthServicesCore;
 
 class ApiAuthGroupProvider extends AbstractAuthCoreContract 
 {
@@ -22,7 +22,7 @@ class ApiAuthGroupProvider extends AbstractAuthCoreContract
         $email = $authRequestDTO->request->request['username'];
         $password = $authRequestDTO->request->request['password'];
 
-        return (new AuthServices())->coreLogin( $email, $password, ApiAuthGroupProvider::AUTH_GROUP_NAME["id"], 2);
+        return (new AuthServicesCore())->coreLogin( $email, $password, ApiAuthGroupProvider::AUTH_GROUP_NAME["id"], 2);
 
         return new ResponseDTO(false, "error", null);
     }

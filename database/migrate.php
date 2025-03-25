@@ -30,17 +30,17 @@ static function check(){
 
 }
 
-    static function execute(){
-        $executedMmigrationsBase = Migrations::verifyBaseMigrations();
-     
-        $executedMmigrationsJson = Migrations::getMigrationsUnSend();
+static function execute(){
+    $executedMmigrationsBase = Migrations::verifyBaseMigrations();
     
-        
-        return json_encode([
-            "base_execute_migrations" => $executedMmigrationsBase,
-            "execute_migrations" => $executedMmigrationsJson    
-        ]);
-    }
+    $executedMmigrationsJson = Migrations::getMigrationsUnSend();
+
+    
+    return json_encode([
+        "base_execute_migrations" => $executedMmigrationsBase,
+        "execute_migrations" => $executedMmigrationsJson    
+    ]);
+}
 static $jsonFile = __DIR__.'/migrations.json'; 
 static $SQLPathMigrations = 'database/sql/';
 

@@ -11,8 +11,11 @@ class MenuItemComponent extends CoreComponent
     use StringMethods;
 
     protected $config;
+    
     protected $JS_PATHS = [];
+    
     protected $JS_PATHS_WITH_ARG = [];
+
     protected $CSS_PATHS = [];
 
     public function __construct(MenuItemDto $config)
@@ -41,16 +44,16 @@ class MenuItemComponent extends CoreComponent
             </div>
             HTML;
         } 
+
         // Si tiene hijos, es un menú desplegable
         else {
+
             $FINAL_LIST = "";
 
             foreach ($this->config->childs as $key => $MenuItem) {
                 $MenuItem->level = $level;
                 $FINAL_LIST .= (new MenuItemComponent($MenuItem))->render();
             }
-
-            
 
             return <<<HTML
             <div class="custom-menu-section ">
@@ -63,6 +66,8 @@ class MenuItemComponent extends CoreComponent
                 </div>
             </div>
             HTML;
+
+
         }
     }
 }

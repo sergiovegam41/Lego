@@ -7,8 +7,6 @@ use Flight;
 
 Flight::route('GET /', function () {
  
-             
-    echo "desde views";
  
  });
  
