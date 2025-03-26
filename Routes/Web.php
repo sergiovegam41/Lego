@@ -8,16 +8,14 @@ use Flight;
 use Views\Core\Home\Components\MainComponent\MainComponent;
 use Views\Core\Login\LoginComponent;
 
-Flight::route('/admin/*', function () {
-    if (!AdminMiddlewares::isAutenticated()) {
-        exit();
-    }
-});
 
 
 Flight::route('GET /admin/',function (){
-    $componet = new MainComponent([ ]);
-    Response::uri( $componet->render() );
+
+    if( AdminMiddlewares::isAutenticated()){
+        $componet = new MainComponent([ ]);
+        return Response::uri( $componet->render() );
+    }
 } );
 
 Flight::route('GET /login',function (){

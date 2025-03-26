@@ -228,7 +228,7 @@ class MenuComponent extends CoreComponent
                     <hr>
 
                     <li class="">
-                        <a href="{$HOST_NAME}">
+                        <a href="{$HOST_NAME}/login">
                             <ion-icon class ='icon'  name="log-out-outline"></ion-icon>
                             <span class="text nav-text">Logout</span>
                         </a>

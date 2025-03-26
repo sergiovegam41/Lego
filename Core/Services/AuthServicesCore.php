@@ -60,7 +60,6 @@ class AuthServicesCore
         $authService = new self();
         $sessionData = $authService->getSessionFromRedis($access_token);
 
-        p($sessionData);
         if (!$sessionData) {
             return new ResponseDTO(false, "No autenticado", null, StatusCodes::HTTP_UNAUTHORIZED);
         }
@@ -79,16 +78,10 @@ class AuthServicesCore
      */
     private static function getAuthorizationToken()
     {
-       
         if (isset($_SERVER['Authorization'])) {
             return trim($_SERVER["Authorization"]);
         } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             return trim($_SERVER["HTTP_AUTHORIZATION"]);
-        } elseif (function_exists('apache_request_headers')) {
-            $requestHeaders = apache_request_headers();
-            if (isset($requestHeaders['Authorization'])) {
-                return trim($requestHeaders['Authorization']);
-            }
         }elseif(isset($_COOKIE['access_token'])){
             return 'Bearer ' . $_COOKIE['access_token'];
         }

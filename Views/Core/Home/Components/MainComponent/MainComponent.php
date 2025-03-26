@@ -50,9 +50,7 @@ class MainComponent extends CoreComponent
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Home</title> 
-          <link rel="stylesheet" href="./assets/css/core/teailwind.css">
           <link rel="stylesheet" href="./assets/css/core/base.css">
-          <link rel="stylesheet" href="./assets/css/core/teailwind.css">
           <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
           <!-- Solo necesitamos una versión de Babel -->

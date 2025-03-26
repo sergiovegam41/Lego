@@ -14,7 +14,10 @@ $DB_DATABASE = env('DB_DATABASE');
 $DB_PASSWORD = env('DB_PASSWORD');
 $DB_PORT = env('DB_PORT');
 $DB_HOST = env('DB_HOST');
-$APP_URL = env('APP_URL');
+$APP_URL = env('HOST_NAME');
+
+$url_servidor = $APP_URL;
+
 
 
 // Configurar la conexión a PostgreSQL usando variables del .env
