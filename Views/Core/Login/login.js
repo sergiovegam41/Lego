@@ -1,8 +1,5 @@
 let context = {CONTEXT};
 
-
-
-
 console.log(context);
 
 document.getElementById('submit-button').addEventListener('click', async (event) => {
@@ -28,14 +25,14 @@ document.getElementById('submit-button').addEventListener('click', async (event)
     redirect: "follow"
   };
 
-  lego.loading(true,{
+  window.lego.loading(true,{
     withMenu:true
   });
 
   fetch("/api/auth/admin/login", requestOptions)
     .then(async (result) => {
 
-      lego.loading(false,{
+      window.lego.loading(false,{
           success:true,
           message:"ok"
       });

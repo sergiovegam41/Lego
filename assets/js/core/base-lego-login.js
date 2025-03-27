@@ -7,11 +7,3 @@ window.lego = window.lego || {};
 lego.loadModulesWithArguments = _loadModulesWithArguments;
 lego.loadModules = _loadModules;
 lego.loading = loading;
-
-
-
-
-// loading(false,{
-//     success:true,
-//     message:"ok"
-// });

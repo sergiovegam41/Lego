@@ -8,7 +8,7 @@ window.lego = window.lego || {};
 lego.loadModulesWithArguments = _loadModulesWithArguments;
 lego.loadModules = _loadModules;
 window.toggleSubMenu = toggleSubMenu;
-
+window.lego.loading = loading;
 
 activeMenu()
 generateMenuLinks()
