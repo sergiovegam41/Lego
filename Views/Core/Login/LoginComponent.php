@@ -8,7 +8,6 @@ use Core\Dtos\ScriptCoreDTO;
 class LoginComponent extends CoreComponent
 {
 
-
     protected $config;
 
     protected $JS_PATHS = [];
@@ -27,7 +26,7 @@ class LoginComponent extends CoreComponent
 
         $this->JS_PATHS_WITH_ARG[] = [
 
-            new ScriptCoreDTO("components/Core/Login/services.js", [ ])
+            new ScriptCoreDTO("components/Core/Login/login.js", [ ])
     
         ];
       
