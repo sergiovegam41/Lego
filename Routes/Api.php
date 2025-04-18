@@ -2,20 +2,16 @@
 
 namespace Routes;
 
-use App\Controllers\Auth\AuthGroupsController;
-use Core\Services\AuthServicesCore;
+use App\Controllers\Auth\Controllers\AuthGroupsController;
+use Core\Controller\CoreController;
 use Flight;
 
- Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
+Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
 
+$dynamicRoutes= CoreController::getMymapControllers();
 
-Flight::route('GET /', function () {
-    echo 'hello world! desde api';
-});
+foreach ($dynamicRoutes as $keyRoutes => $valRoutes){
 
-Flight::route('GET /test', function () {
+    Flight::route("POST|GET /$keyRoutes/@accion", fn ($accion) => new $valRoutes($accion));
 
-
-
-});
-
+}

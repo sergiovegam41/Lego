@@ -12,7 +12,7 @@ use Views\Core\Login\LoginComponent;
 
 Flight::route('GET /admin/',function (){
 
-    if( AdminMiddlewares::isAutenticated()){
+    if( AdminMiddlewares::isAutenticated() ){
         $componet = new MainComponent([ ]);
         return Response::uri( $componet->render() );
     }
