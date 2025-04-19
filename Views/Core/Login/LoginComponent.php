@@ -173,9 +173,7 @@ class LoginComponent extends CoreComponent
                             
                             <button
                             id="submit-button"
-                 
-                            class="w-full flex justify-center items-center gap-2 py-2.5 px-4 bg-blue-400 hover:bg-blue-500 text-white font-medium rounded-md transition-colors"
-                            >
+                            class="w-full flex justify-center items-center gap-2 py-2.5 px-4 bg-blue-400 hover:bg-blue-500 text-white font-medium rounded-md transition-colors" >
                             Sign in
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>

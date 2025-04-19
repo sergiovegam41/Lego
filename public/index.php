@@ -8,14 +8,14 @@ $uri = rtrim($uri, '/') . '/';
 
 if (strpos($uri, 'api/') === 0) {
     $_SERVER['REQUEST_URI'] = '/' . substr($uri, 4); 
-    require __DIR__ . '/../Routes/api.php';
+    require __DIR__ . '/../Routes/Api.php';
 
 } elseif (strpos($uri, 'view/') === 0) {
     $_SERVER['REQUEST_URI'] = '/' . substr($uri, 5);
-    require __DIR__ . '/../Routes/views.php';
+    require __DIR__ . '/../Routes/Views.php';
 
 } else {
-    require __DIR__ . '/../Routes/web.php';
+    require __DIR__ . '/../Routes/Web.php';
 }
 
 Flight::start();

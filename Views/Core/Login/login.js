@@ -3,6 +3,8 @@ let context = {CONTEXT};
 console.log(context);
 
 document.getElementById('submit-button').addEventListener('click', async (event) => {
+
+
   // Evitar que el formulario envíe y recargue la página
   event.preventDefault();
 
@@ -29,8 +31,12 @@ document.getElementById('submit-button').addEventListener('click', async (event)
     withMenu:true
   });
 
+
+
   fetch("/api/auth/admin/login", requestOptions)
     .then(async (result) => {
+
+    console.log(result);
 
       window.lego.loading(false,{
           success:true,
