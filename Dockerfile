@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     openssl \
     libpq-dev \
+    unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql zip pdo_pgsql
 
@@ -26,38 +27,37 @@ RUN pecl install mongodb \
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establecer el directorio de trabajo
-WORKDIR /var/www
-
-# Copiar el código del proyecto al contenedor
-COPY . /var/www
-
-# Crear directorios necesarios primero
-RUN mkdir -p /var/www/html \
-    && mkdir -p /var/www/html/storage/logs \
-    && mkdir -p /var/www/html/storage/framework/sessions \
-    && mkdir -p /var/www/html/storage/framework/views \
-    && mkdir -p /var/www/html/storage/framework/cache \
-    && mkdir -p /var/www/html/bootstrap/cache
-
-# Luego establecer permisos
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
-
-# Cambiar al usuario www-data
-USER www-data
+# Crear usuario y grupo con ID 1000
+RUN addgroup --gid 1000 appuser && \
+    adduser --uid 1000 --gid 1000 --disabled-password --gecos "" appuser
 
 # Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
+# Crear directorios necesarios
+RUN mkdir -p /var/www/html/storage/logs \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/framework/cache \
+    /var/www/html/bootstrap/cache \
+    /var/www/html/public \
+    /home/appuser/.composer
+
+# Copiar el código del proyecto al contenedor
+COPY --chown=appuser:appuser . .
+
+# Establecer permisos
+RUN chown -R appuser:appuser /var/www/html /home/appuser/.composer \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/public
+
+# Cambiar al usuario appuser
+USER appuser
+
 # Exponer el puerto que usará PHP-FPM
 EXPOSE 9000
 
-# Instalar las dependencias de composer
-CMD ["composer", "install" ]
-
-CMD ["composer", "dump-autoload" ]
-
-# Iniciar PHP-FPM
-CMD ["php-fpm"]
+# Instalar dependencias y ejecutar PHP-FPM
+CMD composer install --no-cache && composer dump-autoload && find "$PWD" -type f -exec chmod 644 {} \; && find "$PWD" -type d -exec chmod 755 {} \; && php-fpm

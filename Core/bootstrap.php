@@ -1,41 +1,45 @@
 <?php
 use Illuminate\Database\Capsule\Manager as Capsule;
-session_start();
 
 $capsule = new Capsule;
 
 use Dotenv\Dotenv;
- // Cargar las variables de entorno desde .env
- $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
- $dotenv->load();
- 
-$DB_USERNAME = env('DB_USERNAME');
-$DB_DATABASE = env('DB_DATABASE');
-$DB_PASSWORD = env('DB_PASSWORD');
-$DB_PORT = env('DB_PORT');
-$DB_HOST = env('DB_HOST');
-$APP_URL = env('HOST_NAME');
+// Cargar las variables de entorno desde .env
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
-$url_servidor = $APP_URL;
-
-
+// Iniciar sesión después de cargar el entorno
+if (!headers_sent()) {
+    session_start();
+}
 
 // Configurar la conexión a PostgreSQL usando variables del .env
 $capsule->addConnection([
-    'driver'    => 'pgsql', // Cambiado a PostgreSQL
-    'host'      => $DB_HOST ?? '127.0.0.1',
-    'port'      => $DB_PORT?? 5432,
-    'database'  => $DB_DATABASE ?? 'test',
-    'username'  => $DB_USERNAME?? 'postgres',
-    'password'  => $DB_PASSWORD?? '',
+    'driver'    => 'pgsql',
+    'host'      => $_ENV['DB_HOST'] ?? '127.0.0.1',
+    'port'      => $_ENV['DB_PORT'] ?? 5432,
+    'database'  => $_ENV['DB_DATABASE'] ?? 'test',
+    'username'  => $_ENV['DB_USERNAME'] ?? 'postgres',
+    'password'  => $_ENV['DB_PASSWORD'] ?? '',
     'charset'   => 'utf8',
     'prefix'    => '',
-    'schema'    => 'public', // Puedes cambiarlo si usas un esquema diferente
+    'schema'    => 'public',
 ]);
 
 // Hace que el ORM esté disponible globalmente
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+// Definir variables globales para compatibilidad
+$DB_USERNAME = $_ENV['DB_USERNAME'];
+$DB_DATABASE = $_ENV['DB_DATABASE'];
+$DB_PASSWORD = $_ENV['DB_PASSWORD'];
+$DB_PORT = $_ENV['DB_PORT'];
+$DB_HOST = $_ENV['DB_HOST'];
+$APP_URL = $_ENV['HOST_NAME'];
+
+$url_servidor = $APP_URL;
+
 
 
 function isCommandLineInterface() {
@@ -156,17 +160,20 @@ function p() {
 
 function consultar($transaccion)
 {
-    // echo $transaccion.'<br/>'.'<br/>';
-    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $dbname = $_ENV['DB_DATABASE'];
+    $username = $_ENV['DB_USERNAME'];
+    $password = $_ENV['DB_PASSWORD'];
 
-    $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
+        $conexion = new PDO($dsn, $username, $password, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -174,14 +181,12 @@ function consultar($transaccion)
 
     try {
         $resultado = $conexion->prepare($transaccion);
-        
         $resultado->execute();
         if (!$resultado) {
             return false;
         }
 
-        $vec_resul = $resultado->fetchAll(PDO::FETCH_ASSOC);
-        return $vec_resul;
+        return $resultado->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         echo "Error en la consulta: " . $e->getMessage();
         return false;
@@ -190,37 +195,33 @@ function consultar($transaccion)
 
 function consultarSinError($transaccion)
 {
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $dbname = $_ENV['DB_DATABASE'];
+    $username = $_ENV['DB_USERNAME'];
+    $password = $_ENV['DB_PASSWORD'];
 
-    // echo $transaccion.'<br/>'.'<br/>';
-
-    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
-
-    $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
+        $conexion = new PDO($dsn, $username, $password, $opciones);
     } catch (PDOException $e) {
-        //echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
     }
 
     try {
         $resultado = $conexion->prepare($transaccion);
-        
         $resultado->execute();
         if (!$resultado) {
             return false;
         }
 
-        $vec_resul = $resultado->fetchAll(PDO::FETCH_ASSOC);
-
-        return $vec_resul;
+        return $resultado->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // echo "Error en la consulta: " . $e->getMessage();
         return false;
     }
 }
@@ -263,74 +264,73 @@ SQL;
 
 function consultarSinErrorRetornaEstado($transaccion)
 {
-    // echo $transaccion.'<br/>'.'<br/>';
-    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $dbname = $_ENV['DB_DATABASE'];
+    $username = $_ENV['DB_USERNAME'];
+    $password = $_ENV['DB_PASSWORD'];
 
-       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
-
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
     $opciones = [
-     
-        PDO::ATTR_ERRMODE, 
-        PDO::ERRMODE_EXCEPTION
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_EMULATE_PREPARES => false
     ];
 
     try {
-        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
+        $conexion = new PDO($dsn, $username, $password, $opciones);
     } catch (PDOException $e) {
         return [
-            "success"=>false,
-            "message"=>"No se pudo conectar a la BD: " . $e->getMessage(),
-            "date"=>date("d-m-Y H:i:s"),
-            "comando"=> $transaccion,
-            "output"=>null
+            "success" => false,
+            "message" => "No se pudo conectar a la BD: " . $e->getMessage(),
+            "date" => date("d-m-Y H:i:s"),
+            "comando" => $transaccion,
+            "output" => null
         ];
     }
 
     try {
-
         $resultado = $conexion->prepare($transaccion);
-        
         $resultado->execute();
+        
         if (!$resultado) {
             return false;
         }
 
         $vec_resul = $resultado->fetchAll(PDO::FETCH_ASSOC);
         return [
-            "success"=>true,
-            "message"=>"Ok",
-            "comando"=> $transaccion,
-            "date"=>date("d-m-Y H:i:s"),
-            "output"=>$vec_resul
+            "success" => true,
+            "message" => "Ok",
+            "comando" => $transaccion,
+            "date" => date("d-m-Y H:i:s"),
+            "output" => $vec_resul
         ];
-
     } catch (PDOException $e) {
-
-        
         return [
-            "success"=>false,
-            "message"=>"Error en la consulta: " . $e->getMessage(),
-            "comando"=> $transaccion,
-            "date"=>date("d-m-Y H:i:s"),
-            "output"=>null,
-            
+            "success" => false,
+            "message" => "Error en la consulta: " . $e->getMessage(),
+            "comando" => $transaccion,
+            "date" => date("d-m-Y H:i:s"),
+            "output" => null
         ];
     }
 }
 
 function consultarError($transaccion)
 {
-    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $dbname = $_ENV['DB_DATABASE'];
+    $username = $_ENV['DB_USERNAME'];
+    $password = $_ENV['DB_PASSWORD'];
 
-       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
-
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
+        $conexion = new PDO($dsn, $username, $password, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -442,17 +442,20 @@ function insertarSinError($transaccion)
 ////////////////////////////////////////////////////////////////////////////////
 function insertar_traer_id($transaccion, $secuencia, $registrar = true)
 {
-    global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
+    $host = $_ENV['DB_HOST'];
+    $port = $_ENV['DB_PORT'];
+    $dbname = $_ENV['DB_DATABASE'];
+    $username = $_ENV['DB_USERNAME'];
+    $password = $_ENV['DB_PASSWORD'];
 
-       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
-
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
-        $conexion = new PDO($dsn, $DB_USERNAME, $DB_PASSWORD, $opciones);
+        $conexion = new PDO($dsn, $username, $password, $opciones);
     } catch (PDOException $e) {
         echo "No se pudo conectar a la BD: " . $e->getMessage();
         return false;
@@ -466,9 +469,6 @@ function insertar_traer_id($transaccion, $secuencia, $registrar = true)
         }
 
         $id = $conexion->lastInsertId($secuencia);
-        if ($registrar) {
-            // actualizar_visita($transaccion, "Inserccion");
-        }
         return $id;
     } catch (PDOException $e) {
         echo "Error en la consulta: " . $e->getMessage();

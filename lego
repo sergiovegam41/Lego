@@ -9,11 +9,7 @@ if (php_sapi_name() !== 'cli') {
     exit("Este script solo puede ejecutarse desde la línea de comandos.\n");
 }
 
-// Obtener los argumentos desde la línea de comandos
-$args = $argv;
-
-// Comprobar si el argumento "migrate" está presente
-if (in_array('migrate', $args)) {
+function executeMigrations() {
     echo "Ejecutando migraciones...\n\n";
 
     // Ruta del archivo a ejecutar
@@ -27,82 +23,113 @@ if (in_array('migrate', $args)) {
         
         // Intentar decodificar la salida JSON
         $result = $output;
-
-        
-
         $data = json_decode($result, true);
   
-            echo "## SHEMA BASE ##\n\n";
+        echo "## SHEMA BASE ##\n\n";
              
-            if(count($data['base_execute_migrations']) == 0){
-             echo "\033[32mNada pendiente por migrar...\033[0m ";
-            }
+        if(count($data['base_execute_migrations']) == 0){
+            echo "\033[32mNada pendiente por migrar...\033[0m ";
+        }
 
-            foreach ($data['base_execute_migrations'] as $migration) {
-
-                echo "Archivo: \033[32m" . $migration['archivo'] . "\033[0m\n";
-                echo str_repeat("-", 50) . "\n";
+        foreach ($data['base_execute_migrations'] as $migration) {
+            echo "Archivo: \033[32m" . $migration['archivo'] . "\033[0m\n";
+            echo str_repeat("-", 50) . "\n";
+            
+            foreach ($migration['comandos'] as $comando) {
+                echo "Comando: " . $comando['comando'] . "\n";
+                echo "Fecha: " . $comando['date'] . "\n";
+                echo "Estado: " . ($comando['success'] ? "\033[32mÉxito\033[0m" : "\033[31mError\033[0m") . "\n";
                 
-                foreach ($migration['comandos'] as $comando) {
-
-                    echo "Comando: " . $comando['comando'] . "\n";
-                    echo "Fecha: " . $comando['date'] . "\n";
-                    echo "Estado: " . ($comando['success'] ? "\033[32mÉxito\033[0m" : "\033[31mError\033[0m") . "\n";
-                    
-                    if (!$comando['success']) {
-                        echo "Mensaje de error: " . $comando['message'] . "\n";
-                    }
-                    echo str_repeat("-", 50) . "\n";
-
+                if (!$comando['success']) {
+                    echo "Mensaje de error: " . $comando['message'] . "\n";
                 }
-
-            }
-
-            echo "\n\n## MIGRATIONS ##\n\n";
-
-
-             if(count($data['execute_migrations']) == 0){
-                echo "\033[32mNada pendiente por migrar...\033[0m ";
-            }
-            foreach ($data['execute_migrations'] as $migration) {
-
-                echo "Archivo: \033[32m" . $migration['archivo'] . "\033[0m\n";
                 echo str_repeat("-", 50) . "\n";
-                
-                foreach ($migration['comandos'] as $comando) {
-
-                    echo "Comando: " . $comando['comando'] . "\n";
-                    echo "Fecha: " . $comando['date'] . "\n";
-                    echo "Estado: " . ($comando['success'] ? "\033[32mÉxito\033[0m" : "\033[31mError\033[0m") . "\n";
-                    
-                    if (!$comando['success']) {
-                        echo "Mensaje de error: " . $comando['message'] . "\n";
-                    }
-                    echo str_repeat("-", 50) . "\n";
-
-                }
-
             }
+        }
 
-      
+        echo "\n\n## MIGRATIONS ##\n\n";
+
+        if(count($data['execute_migrations']) == 0){
+            echo "\033[32mNada pendiente por migrar...\033[0m ";
+        }
+        foreach ($data['execute_migrations'] as $migration) {
+            echo "Archivo: \033[32m" . $migration['archivo'] . "\033[0m\n";
+            echo str_repeat("-", 50) . "\n";
+            
+            foreach ($migration['comandos'] as $comando) {
+                echo "Comando: " . $comando['comando'] . "\n";
+                echo "Fecha: " . $comando['date'] . "\n";
+                echo "Estado: " . ($comando['success'] ? "\033[32mÉxito\033[0m" : "\033[31mError\033[0m") . "\n";
+                
+                if (!$comando['success']) {
+                    echo "Mensaje de error: " . $comando['message'] . "\n";
+                }
+                echo str_repeat("-", 50) . "\n";
+            }
+        }
         
         echo "\n\nMigración completada.\n";
+        return true;
     } else {
         echo "Error: No se encontró el archivo en la ruta $filePath.\n";
+        return false;
     }
-} else {
-    echo "Uso: php script.php migrate\n";
 }
 
-
-if (in_array('map:routes', $args)) {
+function mapRoutes() {
     echo "Mapeando rutas...\n\n";
-
     $routes = CoreController::mapControllers();
-
     $outputFile = __DIR__ . '/routeMap.json';
-
     file_put_contents($outputFile, json_encode($routes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
     echo "Rutas mapeadas correctamente en: $outputFile\n";
+    return true;
+}
+
+// Obtener los argumentos desde la línea de comandos
+$args = $argv;
+
+// Comprobar si el argumento "init" está presente
+if (in_array('init', $args)) {
+    echo "🚀 Iniciando Lego...\n";
+    echo "==================\n\n";
+
+    $success = true;
+
+    // Ejecutar migraciones
+    echo "📦 Ejecutando migraciones...\n";
+    if (!executeMigrations()) {
+        $success = false;
+    }
+
+    echo "\n🗺️  Mapeando rutas...\n";
+    if (!mapRoutes()) {
+        $success = false;
+    }
+
+    if ($success) {
+        echo "\n✅ Lego se ha inicializado correctamente!\n";
+        exit(0);
+    } else {
+        echo "\n❌ Hubo errores durante la inicialización.\n";
+        exit(1);
+    }
+}
+
+// Comprobar si el argumento "migrate" está presente
+if (in_array('migrate', $args)) {
+    executeMigrations();
+}
+
+// Comprobar si el argumento "map:routes" está presente
+if (in_array('map:routes', $args)) {
+    mapRoutes();
+}
+
+// Si no se proporciona ningún argumento válido, mostrar ayuda
+if (!in_array('migrate', $args) && !in_array('map:routes', $args) && !in_array('init', $args)) {
+    echo "Uso: php lego <comando>\n\n";
+    echo "Comandos disponibles:\n";
+    echo "  init        - Inicializa Lego (ejecuta migraciones y mapea rutas)\n";
+    echo "  migrate     - Ejecuta las migraciones pendientes\n";
+    echo "  map:routes  - Mapea las rutas de los controladores\n";
 }

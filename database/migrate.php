@@ -130,10 +130,14 @@ static function getMigrationsUnSend(){
     $migrations = self::getMigrations();
     $LocalMigrations = self::getLocalMigrations();
 
-    // p($LocalMigrations);
+    if (!$LocalMigrations) {
+        return [];
+    }
 
-    $diferencias = array_diff(array_column($LocalMigrations, 'sql'), array_column($migrations, 'migration'));
-
+    $diferencias = array_diff(
+        array_column($LocalMigrations, 'sql'), 
+        array_column($migrations ?: [], 'migration')
+    );
 
     foreach ($diferencias as $value) {
 
@@ -227,13 +231,13 @@ static function getOneMigrationsByName($name){
 
 }
 static function getMigrations(){
-    $query=<<<QUERY
-      SELECT x.* FROM public.migrations x
-    QUERY;
-    
-    $result=consultar($query);
-
-    return  $result;
+    try {
+        $query = "SELECT x.* FROM public.migrations x";
+        $result = consultar($query);
+        return $result ?: [];
+    } catch (Exception $e) {
+        return [];
+    }
 }
 
 
