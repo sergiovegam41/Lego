@@ -30,7 +30,7 @@ class MenuComponent extends CoreComponent
 
     $this->JS_PATHS_WITH_ARG[] = [
 
-        new ScriptCoreDTO("components/core/Home/Components/MenuComponent/menu-component.js?v=1", [
+        new ScriptCoreDTO("components/Core/Home/Components/MenuComponent/menu-component.js?v=1", [
           "message" => "hello word desde menu component "
         ])
   
@@ -150,7 +150,13 @@ class MenuComponent extends CoreComponent
                     iconName: "stats-chart-outline"
                 )
             ]
-        )
+                ),
+        new MenuItemDto(
+            id: "17", 
+            name: "Automatizacion", 
+            url: $HOST_NAME . '/view/automation',  
+            iconName: "flash-outline"
+        ),
     ];
     
 

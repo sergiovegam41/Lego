@@ -10,7 +10,6 @@ services:
     networks:
       - lego-network
     user: "${UID:-1000}:${GID:-1000}"
-    
 
   webserver:
     image: nginx:alpine
@@ -22,6 +21,7 @@ services:
     container_name: lego-nginx 
     networks:
       - lego-network
+
   db:
     image: postgres:latest
     container_name: lego-postgres-db
@@ -30,8 +30,10 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-lego-postgresql-db}
       POSTGRES_USER: ${DB_USERNAME:-lego}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-1224}
+      POSTGRES_MULTIPLE_DATABASES: "${N8N_DB_DATABASE:-n8n}"
     volumes:
       - lego-postgres-db-data:/var/lib/postgresql/data
+      - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:
@@ -79,6 +81,34 @@ services:
     volumes:
       - lego-redis-data:/data
 
+  n8n:
+    profiles: ["n8n"]
+    image: n8nio/n8n:latest
+    container_name: lego-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_HOST=${DOMAIN_NAME:-domain.example.com}
+      - N8N_PORT=${N8N_PORT:-5678}
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-https}
+      - NODE_ENV=${NODE_ENV:-production}
+      - WEBHOOK_URL=https://${DOMAIN_NAME:-domain.example.com}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_DISABLE_X_FRAME_OPTIONS=true
+    labels:
+      - traefik.http.middlewares.n8n-gzip.compress=true
+      - traefik.http.middlewares.n8n-gzip.compress.excludedcontenttypes=text/event-stream
+      - traefik.http.routers.n8n-https.rule=Host(`${N8N_HOST}`)
+      - traefik.http.routers.n8n-https.middlewares=n8n-gzip@docker
+    volumes:
+      - n8n-data:/home/node/.n8n
+    networks:
+      - lego-network
+    depends_on:
+      db:
+        condition: service_healthy
+
   init-permissions:
     image: alpine
     volumes:
@@ -94,3 +124,4 @@ volumes:
   lego-postgres-db-data:
   lego-mongo-data:
   lego-redis-data:
+  n8n-data:

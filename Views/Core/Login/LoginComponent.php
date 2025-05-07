@@ -122,7 +122,7 @@ class LoginComponent extends CoreComponent
                             <input
                                 id="email"
                                 type="email"
-                                placeholder="pedro@example.com"
+                                placeholder="user@example.com"
                                 class="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                             </div>

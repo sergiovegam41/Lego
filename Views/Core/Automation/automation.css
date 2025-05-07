@@ -1,0 +1,44 @@
+body {
+    font-size: 105%; /* Aumentar todo un 5% */
+  }
+  
+  .blue-gradient {
+    background: linear-gradient(to left,#0057B4, #007DFB);
+  }
+  
+  .blue-button {
+    background-color: #007DFB;
+  }
+  
+  .blue-button:hover {
+    background-color: #0069d9;
+  }
+  
+  .grid-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px), 
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+    background-size: 52px 52px; /* Ajusta el tamaño de los cuadros aquí */
+  }
+
+
+
+  .input-field {
+    background-color: #f0f4f8;
+  }
+  
+  .copyright {
+    position: absolute;
+    bottom: 20px;
+    left: 40px;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+
+  .main-container{
+    transform: scale(1.15 );
+  }
+
+

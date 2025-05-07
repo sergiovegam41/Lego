@@ -23,4 +23,9 @@ CREATE TABLE auth_user_sessions (
     UNIQUE (auth_user_id, device_id)
 );
 
+INSERT INTO auth_users (name, email,password, status, auth_group_id, role_id) 
+VALUES 
+('admin', 'admin@lego.com', '$2a$12$4QQvg9HzVZN5eZRY8kpMyuAVFqO7B5gMkGPqNFLcsKtPPA5KjXwRq','active', 'ADMINS', 'SUPERADMIN')
+RETURNING *;
+
 

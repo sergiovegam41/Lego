@@ -1,6 +1,6 @@
 
 // export activeMenus;
-
+console.log("aAaAaaa")
 class ModuleStore {
         
     constructor() {
@@ -41,14 +41,19 @@ class ModuleStore {
 
 const moduleStore = new ModuleStore();
 
-function renderModule(id, content) {
+async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
+    console.log(id,url,content)
     if (!container) {
-    container = document.createElement('div');
-    container.id = `module-${id}`;
-    container.className = 'module-container';
-    container.innerHTML = `<h2>Módulo ${id}</h2><p>${content}</p>`;
-    document.getElementById('home-page').appendChild(container);
+        let dataResp = await fetch(url).then(res => res.text());
+        
+        console.log(dataResp)
+        container = document.createElement('div');
+        container.id = `module-${id}`;
+        container.className = 'module-container';
+        // hacer un fetch a url y remplazar el contenido de la respuesta aqui abajo (no es necesario parsear la respuesta ya viene en html)
+        container.innerHTML = dataResp;
+        document.getElementById('home-page').appendChild(container);
     }
     document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
     container.classList.add('active');
@@ -68,9 +73,11 @@ export function _closeModule(id) {
     renderModule(nextActiveModule, `Contenido dinámico del módulo ${nextActiveModule}`);
     }
 }
-export function _openModule(id) {
+export function _openModule(id, url) {
+
+    console.log("OPEN MODULE")
     moduleStore._openModule(id, {});
-    renderModule(id, `Contenido dinámico del módulo ${id}`);
+    renderModule(id, url, `Contenido dinámico del módulo ${id}`);
     updateMenu();
 }
 
@@ -97,15 +104,17 @@ function updateMenu() {
 
 export function generateMenuLinks(){
 
-    // console.log("generateMenuLinks")
+    console.log("generateMenuLinks")
     
     document.querySelectorAll('.menu_item_openable').forEach(item => {
 
         item.addEventListener('click', () => {
 
             const id = item.dataset.moduleId  || item.getAttribute("moduleId");
+            const url = item.dataset.moduleUrl  || item.getAttribute("moduleUrl");
+            console.log(url,"url")
             if (moduleStore.getActiveModule() !== id) {
-                _openModule(id);
+                _openModule(id, url);
             }
 
         });
