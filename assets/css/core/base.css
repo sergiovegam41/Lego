@@ -1,6 +1,11 @@
 /* Google Font Import - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* ===== Base HTML rem setup ===== */
+html {
+    font-size: 16px; /* 1rem = 16px base */
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,43 +14,120 @@
 }
 
 hr {
-    background-color: #707070;
-    opacity: .1;
+    background-color: var(--border-light);
+    opacity: 1;
 }
 
 :root {
-    /* ===== Colors ===== */
-    --body-color: white;
-    --sidebar-color: #FFF;
-    --primary-color: black;
-    --primary-color-light: #F6F5FF;
-    --toggle-color: #DDD;
-    --text-color: black;
-
-    /* ====== Transition ====== */
-    --tran-03: all 0.2s ease;
-    --tran-03: all 0.3s ease;
-    --tran-04: all 0.3s ease;
-    --tran-05: all 0.3s ease;
+    /* ===== Paleta Base de Colores ===== */
+    --color-white: #ffffff;
+    --color-neutral-50: #f9f9f9;
+    --color-neutral-100: #f6f5ff;
+    --color-neutral-200: #e5e5e5;
+    --color-neutral-300: #dddddd;
+    --color-neutral-400: #a0a0a0;
+    --color-neutral-500: #707070;
+    --color-neutral-600: #5a5a5a;
+    --color-neutral-700: #404040;
+    --color-neutral-800: #3a3b3c;
+    --color-neutral-850: #242526;
+    --color-neutral-900: #18191a;
+    --color-black: #000000;
+    
+    /* ===== Color de Focus/Accent ===== */
+    --color-focus: #3ba1ff;
+    --color-focus-hover: #2b91ef;
+    --color-focus-light: rgba(59, 161, 255, 0.1);
+    
+    /* ===== Tokens Semánticos - Light Mode ===== */
+    --bg-body: var(--color-white);
+    --bg-sidebar: var(--color-white);
+    --bg-surface: var(--color-neutral-100);
+    --bg-surface-hover: var(--color-neutral-200);
+    --bg-toggle: var(--color-neutral-300);
+    
+    --text-primary: var(--color-black);
+    --text-secondary: var(--color-neutral-500);
+    --text-on-focus: var(--color-white);
+    
+    --border-light: var(--color-neutral-300);
+    --border-medium: var(--color-neutral-400);
+    --border-focus: var(--color-focus);
+    
+    --accent-primary: var(--color-focus);
+    --accent-hover: var(--color-focus-hover);
+    --accent-light: var(--color-focus-light);
+    
+    /* ===== Sombras ===== */
+    --shadow-light: 3px 0px 7px rgba(0, 0, 0, 0.1);
+    --shadow-sidebar: 7px 0px 7px rgba(0, 0, 0, 0.03);
+    
+    /* ===== Transiciones ===== */
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+    
+    /* ===== Tamaños Base en REM (20% más pequeño que original) ===== */
+    --sidebar-width: 15rem;          /* 240px (300px - 20%) */
+    --sidebar-width-collapsed: 4.4rem; /* 70px (88px - 20%) */
+    --sidebar-padding: 0.5rem 0.75rem;  /* 8px 12px (más compacto) */
+    --menu-item-height: 2.5rem;        /* 40px (50px - 20%) */
+    --toggle-size: 1.25rem;             /* 20px (25px - 20%) */
+    --toggle-offset: -1.25rem;          /* -20px (-25px - 20%) */
+    --search-height: 3.5rem;           /* 56px (70px - 20%) */
+    --search-box-collapsed-size: 3rem; /* 48px - cabe dentro del sidebar colapsado */
+    
+    /* ===== Espaciados (más compactos) ===== */
+    --space-xs: 0.25rem;   /* 4px */
+    --space-sm: 0.5rem;    /* 8px */
+    --space-md: 0.75rem;   /* 12px */
+    --space-lg: 1rem;      /* 16px */
+    --space-xl: 1.5rem;    /* 24px */
+    
+    /* ===== Espaciado uniforme para menú ===== */
+    --menu-item-spacing: 0.375rem; /* 6px - término medio entre actual grande y pequeño */
+    
+    /* ===== Tipografía (más pequeña) ===== */
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.8125rem; /* 13px */
+    --font-size-base: 0.875rem; /* 14px */
+    --font-size-lg: 1rem;      /* 16px */
+    --font-size-xl: 1.125rem;  /* 18px */
+    
+    /* ===== Iconos ===== */
+    --icon-size-sm: 1rem;      /* 16px */
+    --icon-size-base: 1.125rem; /* 18px */
+    --icon-size-lg: 1.25rem;   /* 20px */
 }
 
 body {
-
     min-height: 100vh;
-    background-color: var(--body-color);
-    transition: var(--tran-05);
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    transition: var(--transition-slow);
 }
 
 
 
 body.dark {
-
-    --body-color: #18191a;
-    --sidebar-color: #242526;
-    --primary-color: #3a3b3c;
-    --primary-color-light: #3a3b3c;
-    --toggle-color: #fff;
-    --text-color: black;
+    /* ===== Tokens Semánticos - Dark Mode ===== */
+    --bg-body: var(--color-neutral-900);
+    --bg-sidebar: var(--color-neutral-850);
+    --bg-surface: var(--color-neutral-800);
+    --bg-surface-hover: var(--color-neutral-700);
+    --bg-toggle: var(--color-white);
+    
+    --text-primary: var(--color-white);
+    --text-secondary: var(--color-neutral-300);
+    --text-on-focus: var(--color-white);
+    
+    --border-light: var(--color-neutral-700);
+    --border-medium: var(--color-neutral-600);
+    --border-focus: var(--color-focus);
+    
+    --accent-primary: var(--color-focus);
+    --accent-hover: var(--color-focus-hover);
+    --accent-light: var(--color-focus-light);
 }
 
 body.dark ion-icon, body.dark .name {
@@ -97,40 +179,24 @@ body.dark ion-icon, body.dark .name {
 
 
 
-/* Variables por defecto (light mode) */
-body.root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --primary-color: white;
-}
-  
-/* Dark mode variables */
-body.dark {
-    --background-color: #121212;
-    --text-color: white;
-    --primary-color: #121212;
-}
-  
-/* Usa las variables en tu diseño */
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
+a {
+    color: var(--accent-primary);
+    transition: var(--transition-fast);
 }
 
-a {
-    color: var(--primary-color);
+a:hover {
+    color: var(--accent-hover);
 }
 
 
 
 body.dark .module-container{
-    background-color: #242526;
+    background-color: var(--bg-surface);
 }
 
 
 #home-page{
-    padding:10px;
+    padding: var(--space-sm);
 }
 
 .spinner {
@@ -149,7 +215,7 @@ body.dark .module-container{
   
   /* Works on Chrome, Edge, and Safari */
   *::-webkit-scrollbar {
-    width: 12px;
+    width: 0.5rem; /* 8px - un poquito más grueso */
   }
   
   /* *::-webkit-scrollbar-track {
@@ -158,20 +224,8 @@ body.dark .module-container{
    */
   *::-webkit-scrollbar-thumb {
     background-color: transparent;
-    border-radius: 20px;
-    border: 3px solid var(--primary-color-light);
-    transition: 0.25s;
-  }
-
-
-  body.dark{
-    
-    *::-webkit-scrollbar-thumb {
-        background-color: transparent;
-        border-radius: 20px;
-        border: 3px solid  var(--primary-color-light);
-        transition: 0.25s;
-    }
-
+    border-radius: 0.1875rem; /* 3px - más proporcionado */
+    border: 0.125rem solid var(--border-light); /* 2px - más delgado */
+    transition: var(--transition-normal);
   }
 
