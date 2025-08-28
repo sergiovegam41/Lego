@@ -96,10 +96,11 @@ services:
       - WEBHOOK_URL=https://${DOMAIN_NAME:-domain.example.com}/
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
       - N8N_DISABLE_X_FRAME_OPTIONS=true
+      
     labels:
       - traefik.http.middlewares.n8n-gzip.compress=true
       - traefik.http.middlewares.n8n-gzip.compress.excludedcontenttypes=text/event-stream
-      - traefik.http.routers.n8n-https.rule=Host(`${N8N_HOST}`)
+      - traefik.http.routers.n8n-https.rule=Host(`${N8N_HOST:-domain.example.com}`)
       - traefik.http.routers.n8n-https.middlewares=n8n-gzip@docker
     volumes:
       - n8n-data:/home/node/.n8n
