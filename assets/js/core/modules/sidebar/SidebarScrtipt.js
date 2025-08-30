@@ -77,21 +77,28 @@
 
         if(sidebar.classList.contains("close")){
             // Cuando el sidebar está cerrado
-            // contentViewer.style.width = '95%';
-            sidebarShade.style= " min-width: 100px";
+            sidebarShade.style.minWidth = "var(--sidebar-width-collapsed)";
         } else {
-            // Cuando el sidebar está abierto
-            // contentViewer.style.width = '86.4%';
-            sidebarShade.style= " min-width: 310px";
+            // Cuando el sidebar está abierto - usar el ancho actual o por defecto
+            const currentWidth = localStorage.getItem('sidebarWidth');
+            if (currentWidth && currentWidth >= 200 && currentWidth <= 400) {
+                sidebarShade.style.minWidth = currentWidth + "px";
+            } else {
+                sidebarShade.style.minWidth = "var(--sidebar-width)";
+            }
         }
     })
 
     searchBtn.addEventListener("click" , () => {
         sidebar.classList.remove("close");
         
-        // Al abrir el sidebar con el botón de búsqueda
-        // contentViewer.style.width = '86.4%';
-        sidebarShade.style= " min-width: 310px";
+        // Al abrir el sidebar con el botón de búsqueda - usar el ancho guardado o por defecto
+        const currentWidth = localStorage.getItem('sidebarWidth');
+        if (currentWidth && currentWidth >= 200 && currentWidth <= 400) {
+            sidebarShade.style.minWidth = currentWidth + "px";
+        } else {
+            sidebarShade.style.minWidth = "var(--sidebar-width)";
+        }
     })
   }
 

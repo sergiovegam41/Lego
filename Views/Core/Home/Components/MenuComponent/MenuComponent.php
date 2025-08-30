@@ -8,182 +8,181 @@ use Core\providers\StringMethods;
 use Views\Core\Home\Components\MenuComponent\features\MenuItemComponent\MenuItemComponent;
 use Views\Core\Home\Dtos\MenuItemDto;
 
-class MenuComponent extends CoreComponent 
+class MenuComponent extends CoreComponent
 {
 
-  use StringMethods;
-  protected $config;
-  protected $JS_PATHS = [ ];
-  protected $JS_PATHS_WITH_ARG = [ ];
-  protected $CSS_PATHS = [
-    '/assets/css/core/sidebar/menu-style.css',
-    'https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'
-  ];
-
-  public function __construct($config)
-  {
-    $this->config = $config;
-  }
-
-  protected function component(): string
-  {
-
-    $this->JS_PATHS_WITH_ARG[] = [
-
-        new ScriptCoreDTO("components/Core/Home/Components/MenuComponent/menu-component.js?v=1", [
-          "message" => "hello word desde menu component "
-        ])
-  
-      ];
-
-    $HOST_NAME = env('HOST_NAME');
-
-    /**
-     * @param MenuItemDto[] $MENU_LIST
-     */
-
-     $MENU_LIST = [
-        new MenuItemDto(
-            id: "1", 
-            name: "Inicio", 
-            url: $HOST_NAME . '/inicio',  
-            iconName: "home-outline"
-        ),
-        new MenuItemDto(
-            id: "2", 
-            name: "Tablero", 
-            url: $HOST_NAME . '/tablero',  
-            iconName: "grid-outline"
-        ),
-        new MenuItemDto(
-            id: "3", 
-            name: "Actividades recientes", 
-            url: $HOST_NAME . '/actividades',  
-            iconName: "time-outline"
-        ),
-        new MenuItemDto(
-            id: "4", 
-            name: "Submenú Profundo", 
-            url: "#",  
-            iconName: "chevron-forward-outline",
-            childs: [
-                new MenuItemDto(
-                    id: "5", 
-                    name: "Opción 1", 
-                    url: $HOST_NAME . '/opcion1',  
-                    iconName: "document-text-outline"
-                ),
-                new MenuItemDto(
-                    id: "6", 
-                    name: "Mas", 
-                    url: $HOST_NAME . '/opcion2',  
-                    iconName: "document-text-outline",
-                    childs: [
-                        new MenuItemDto(
-                            id: "7", 
-                            name: "Submenú Profundo", 
-                            url: "#",  
-                            iconName: "chevron-forward-outline",
-                            childs: [
-                                new MenuItemDto(
-                                    id: "8", 
-                                    name: "Opción 1", 
-                                    url: $HOST_NAME . '/opcion1',  
-                                    iconName: "document-text-outline"
-                                ),
-                                new MenuItemDto(
-                                    id: "9", 
-                                    name: "Opción 2", 
-                                    url: $HOST_NAME . '/opcion2',  
-                                    iconName: "document-text-outline"
-                                )
-                            ]
-                        ),
-                    ]
-                )
-            ]
-        ),
-        new MenuItemDto(
-            id: "10", 
-            name: "Submenú Nivel 3", 
-            url: "#",  
-            iconName: "chevron-forward-outline",
-            childs: [
-                new MenuItemDto(
-                    id: "11", 
-                    name: "Opción A", 
-                    url: $HOST_NAME . '/opcionA',  
-                    iconName: "list-outline"
-                ),
-                new MenuItemDto(
-                    id: "12", 
-                    name: "Opción B", 
-                    url: $HOST_NAME . '/opcionB',  
-                    iconName: "list-outline"
-                )
-            ]
-        ),
-        new MenuItemDto(
-            id: "13", 
-            name: "Submenú Nivel 4", 
-            url: "#",  
-            iconName: "chevron-forward-outline",
-            childs: [
-                new MenuItemDto(
-                    id: "14", 
-                    name: "Gestión de Usuarios", 
-                    url: $HOST_NAME . '/gestion-usuarios',  
-                    iconName: "people-outline"
-                )
-            ]
-        ),
-        new MenuItemDto(
-            id: "15", 
-            name: "Configuración", 
-            url: "#",  
-            iconName: "settings-outline",
-            childs: [
-                new MenuItemDto(
-                    id: "16", 
-                    name: "Reportes", 
-                    url: $HOST_NAME . '/reportes',  
-                    iconName: "stats-chart-outline"
-                )
-            ]
-                ),
-        new MenuItemDto(
-            id: "17", 
-            name: "Automatizacion", 
-            url: $HOST_NAME . '/view/automation',  
-            iconName: "flash-outline"
-        ),
+    use StringMethods;
+    protected $config;
+    protected $JS_PATHS = [];
+    protected $JS_PATHS_WITH_ARG = [];
+    protected $CSS_PATHS = [
+        '/assets/css/core/sidebar/menu-style.css',
+        'https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'
     ];
-    
 
-
-
-    /**
-    * @param string $FINAL_MENU_LIST
-    */
-
-    
-    $FINAL_MENU_LIST = "";
-    
-    /**
-     * @param MenuItemDto $MenuItem
-     */
-    
-    foreach ($MENU_LIST as $key => $MenuItem) {
-        # code...
-        
-        $FINAL_MENU_LIST .= (new MenuItemComponent( $MenuItem ))->render();
-
+    public function __construct($config)
+    {
+        $this->config = $config;
     }
 
+    protected function component(): string
+    {
 
-    return <<<HTML
+        $this->JS_PATHS_WITH_ARG[] = [
 
-        <nav class="sidebar ">
+            new ScriptCoreDTO("components/Core/Home/Components/MenuComponent/menu-component.js?v=1", [
+                "message" => "hello word desde menu component "
+            ])
+
+        ];
+
+        $HOST_NAME = env('HOST_NAME');
+
+        /**
+         * @param MenuItemDto[] $MENU_LIST
+         */
+
+        $MENU_LIST = [
+            new MenuItemDto(
+                id: "1",
+                name: "Inicio",
+                url: $HOST_NAME . '/inicio',
+                iconName: "home-outline"
+            ),
+            new MenuItemDto(
+                id: "2",
+                name: "Tablero",
+                url: $HOST_NAME . '/tablero',
+                iconName: "grid-outline"
+            ),
+            new MenuItemDto(
+                id: "3",
+                name: "Actividades recientes",
+                url: $HOST_NAME . '/actividades',
+                iconName: "time-outline"
+            ),
+            new MenuItemDto(
+                id: "4",
+                name: "Submenú Profundo",
+                url: "#",
+                iconName: "chevron-forward-outline",
+                childs: [
+                    new MenuItemDto(
+                        id: "5",
+                        name: "Opción 1",
+                        url: $HOST_NAME . '/opcion1',
+                        iconName: "document-text-outline"
+                    ),
+                    new MenuItemDto(
+                        id: "6",
+                        name: "Mas",
+                        url: $HOST_NAME . '/opcion2',
+                        iconName: "document-text-outline",
+                        childs: [
+                            new MenuItemDto(
+                                id: "7",
+                                name: "Submenú Profundo",
+                                url: "#",
+                                iconName: "chevron-forward-outline",
+                                childs: [
+                                    new MenuItemDto(
+                                        id: "8",
+                                        name: "Opción 1",
+                                        url: $HOST_NAME . '/opcion1',
+                                        iconName: "document-text-outline"
+                                    ),
+                                    new MenuItemDto(
+                                        id: "9",
+                                        name: "Opción 2",
+                                        url: $HOST_NAME . '/opcion2',
+                                        iconName: "document-text-outline"
+                                    )
+                                ]
+                            ),
+                        ]
+                    )
+                ]
+            ),
+            new MenuItemDto(
+                id: "10",
+                name: "Submenú Nivel 3",
+                url: "#",
+                iconName: "chevron-forward-outline",
+                childs: [
+                    new MenuItemDto(
+                        id: "11",
+                        name: "Opción A",
+                        url: $HOST_NAME . '/opcionA',
+                        iconName: "list-outline"
+                    ),
+                    new MenuItemDto(
+                        id: "12",
+                        name: "Opción B",
+                        url: $HOST_NAME . '/opcionB',
+                        iconName: "list-outline"
+                    )
+                ]
+            ),
+            new MenuItemDto(
+                id: "13",
+                name: "Submenú Nivel 4",
+                url: "#",
+                iconName: "chevron-forward-outline",
+                childs: [
+                    new MenuItemDto(
+                        id: "14",
+                        name: "Gestión de Usuarios",
+                        url: $HOST_NAME . '/gestion-usuarios',
+                        iconName: "people-outline"
+                    )
+                ]
+            ),
+            new MenuItemDto(
+                id: "15",
+                name: "Configuración",
+                url: "#",
+                iconName: "settings-outline",
+                childs: [
+                    new MenuItemDto(
+                        id: "16",
+                        name: "Reportes",
+                        url: $HOST_NAME . '/reportes',
+                        iconName: "stats-chart-outline"
+                    )
+                ]
+            ),
+            new MenuItemDto(
+                id: "17",
+                name: "Automatizacion",
+                url: $HOST_NAME . '/view/automation',
+                iconName: "flash-outline"
+            ),
+        ];
+
+
+
+
+        /**
+         * @param string $FINAL_MENU_LIST
+         */
+
+
+        $FINAL_MENU_LIST = "";
+
+        /**
+         * @param MenuItemDto $MenuItem
+         */
+
+        foreach ($MENU_LIST as $key => $MenuItem) {
+            # code...
+
+            $FINAL_MENU_LIST .= (new MenuItemComponent($MenuItem))->render();
+        }
+
+
+        return <<<HTML
+
+        <nav class="sidebar " id="sidebar">
             <header>
                 <div class="image-text">
                     <span class="image">
@@ -243,10 +242,139 @@ class MenuComponent extends CoreComponent
                 </div>
             </div>
 
+            <!-- Resize handle inside sidebar -->
+            <div class="sidebar-resize-handle" 
+                 onmousedown="startSidebarResize(event)"
+                 onmouseenter="this.style.background='rgba(120, 120, 120, 0.4) !important'"
+                 onmouseleave="this.style.background='transparent !important'"
+                 style="position: absolute !important; top: 25% !important; right: -3px !important; width: 6px !important; height: 50% !important; background: transparent !important; cursor: col-resize !important; z-index: 9999 !important; border-radius: 0 3px 3px 0 !important; transition: all 0.2s ease !important;">
+            </div>
         </nav>
+        
+        <script>
+        let sidebarResizing = false;
+        let resizeStartX = 0;
+        let resizeStartWidth = 0;
+        
+        function startSidebarResize(e) {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar || sidebar.classList.contains('close')) return;
+            
+            sidebarResizing = true;
+            resizeStartX = e.clientX;
+            resizeStartWidth = sidebar.offsetWidth;
+            
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            
+            // Add visual feedback
+            const handle = e.target;
+            handle.style.background = 'rgba(120, 120, 120, 0.6) !important';
+            handle.style.width = '8px !important';
+            
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!sidebarResizing) return;
+            
+            const sidebar = document.querySelector('.sidebar');
+            const contentShade = document.getElementById('content-sidebar-shade');
+            if (!sidebar) return;
+            
+            const newWidth = resizeStartWidth + (e.clientX - resizeStartX);
+            
+            // Constrain between 200px and 400px
+            if (newWidth >= 200 && newWidth <= 400) {
+                sidebar.style.width = newWidth + 'px';
+                
+                // Update CSS variable for other elements
+                const widthRem = newWidth / 16;
+                document.documentElement.style.setProperty('--sidebar-width', widthRem + 'rem');
+                
+                // Update content shade if it exists
+                if (contentShade) {
+                    contentShade.style.minWidth = newWidth + 'px';
+                }
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            if (sidebarResizing) {
+                sidebarResizing = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                
+                // Reset handle appearance
+                const handle = document.querySelector('.sidebar-resize-handle');
+                if (handle) {
+                    handle.style.background = 'transparent !important';
+                    handle.style.width = '6px !important';
+                }
+                
+                // Save the new width to localStorage
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+                }
+            }
+        });
+        
+        // Load saved width on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedWidth = localStorage.getItem('sidebarWidth');
+            if (savedWidth && savedWidth >= 200 && savedWidth <= 400) {
+                const sidebar = document.querySelector('.sidebar');
+                const contentShade = document.getElementById('content-sidebar-shade');
+                
+                if (sidebar) {
+                    const widthRem = savedWidth / 16;
+                    document.documentElement.style.setProperty('--sidebar-width', widthRem + 'rem');
+                    sidebar.style.width = savedWidth + 'px';
+                    
+                    if (contentShade) {
+                        contentShade.style.minWidth = savedWidth + 'px';
+                    }
+                }
+            }
+        });
+        
+        // Hide handle when sidebar is collapsed
+        function updateResizeHandleVisibility() {
+            const sidebar = document.querySelector('.sidebar');
+            const handle = document.querySelector('.sidebar-resize-handle');
+            
+            if (sidebar && handle) {
+                if (sidebar.classList.contains('close')) {
+                    handle.style.display = 'none';
+                } else {
+                    handle.style.display = 'block';
+                }
+            }
+        }
+        
+        // Watch for sidebar toggle
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateResizeHandleVisibility();
+                }
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                observer.observe(sidebar, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+            }
+        });
+        </script>
   
      
     HTML;
-
-  }
+    }
 }
