@@ -1,6 +1,11 @@
 /* Google Font Import - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* Responsive System Imports */
+@import url('breakpoints.css');
+@import url('mixins.css');
+@import url('responsive-variables.css');
+
 /* ===== Base HTML rem setup ===== */
 html {
     font-size: 16px; /* 1rem = 16px base */
@@ -38,6 +43,7 @@ hr {
     --color-focus: #3ba1ff;
     --color-focus-hover: #2b91ef;
     --color-focus-light: rgba(59, 161, 255, 0.1);
+    
     
     /* ===== Tokens Semánticos - Light Mode ===== */
     --bg-body: var(--color-white);

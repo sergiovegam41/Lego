@@ -1,0 +1,184 @@
+/* ===== Responsive Variables System ===== */
+/* Variables que cambian automáticamente según breakpoints */
+
+:root {
+    /* ===== Mobile First Variables ===== */
+    --sidebar-width-responsive: 100vw;
+    --sidebar-z-index: 999;
+    --menu-item-height-responsive: 3rem;
+    --font-size-responsive: 1rem;
+    --spacing-responsive: 1rem;
+    --touch-target: 44px;
+    
+    /* Mobile overlay behavior */
+    --sidebar-transform: translateX(-100%);
+    --sidebar-position: fixed;
+    --sidebar-overlay: block;
+}
+
+/* ===== SM (480px+) ===== */
+@media (min-width: 480px) {
+    :root {
+        --font-size-responsive: 0.95rem;
+        --spacing-responsive: 1.25rem;
+    }
+}
+
+/* ===== MD (768px+) - Tablet ===== */
+@media (min-width: 768px) {
+    :root {
+        --sidebar-width-responsive: var(--sidebar-width);
+        --sidebar-z-index: 100;
+        --menu-item-height-responsive: var(--menu-item-height);
+        --font-size-responsive: var(--font-size-base);
+        --spacing-responsive: var(--space-lg);
+        --touch-target: 38px;
+        
+        /* Desktop sidebar behavior */
+        --sidebar-transform: translateX(0);
+        --sidebar-overlay: none;
+    }
+}
+
+/* ===== LG (1024px+) - Desktop ===== */
+@media (min-width: 1024px) {
+    :root {
+        --font-size-responsive: var(--font-size-lg);
+        --spacing-responsive: var(--space-xl);
+    }
+}
+
+/* ===== Component Responsive Mixins ===== */
+
+/* Sidebar Mixin */
+.lego-sidebar {
+    position: var(--sidebar-position);
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width-responsive);
+    height: 100vh;
+    background: var(--bg-sidebar);
+    transform: var(--sidebar-transform);
+    z-index: var(--sidebar-z-index);
+    transition: var(--transition-normal);
+}
+
+.lego-sidebar.show {
+    transform: translateX(0);
+}
+
+/* Menu Item Mixin */
+.lego-menu-item {
+    min-height: var(--touch-target);
+    padding: var(--spacing-responsive);
+    font-size: var(--font-size-responsive);
+    
+    @media (min-width: 768px) {
+        min-height: var(--menu-item-height-responsive);
+    }
+}
+
+/* Responsive Container Mixin */
+.lego-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-responsive);
+    
+    @media (min-width: 480px) {
+        max-width: var(--container-sm);
+    }
+    
+    @media (min-width: 768px) {
+        max-width: var(--container-md);
+    }
+    
+    @media (min-width: 1024px) {
+        max-width: var(--container-lg);
+    }
+    
+    @media (min-width: 1200px) {
+        max-width: var(--container-xl);
+    }
+}
+
+/* Button Mixin */
+.lego-button {
+    min-height: var(--touch-target);
+    padding: calc(var(--spacing-responsive) * 0.5) var(--spacing-responsive);
+    font-size: var(--font-size-responsive);
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    
+    /* Mobile: full width */
+    width: 100%;
+    
+    @media (min-width: 768px) {
+        width: auto;
+        min-height: auto;
+    }
+}
+
+/* Card Mixin */
+.lego-card {
+    padding: var(--spacing-responsive);
+    border-radius: 0.5rem;
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-light);
+    
+    /* Mobile: stack */
+    margin-bottom: var(--spacing-responsive);
+    
+    @media (min-width: 768px) {
+        margin-bottom: calc(var(--spacing-responsive) * 1.5);
+    }
+}
+
+/* Text Responsive */
+.lego-text {
+    font-size: var(--font-size-responsive);
+    line-height: 1.5;
+    
+    @media (min-width: 768px) {
+        line-height: 1.4;
+    }
+}
+
+/* ===== Utility Classes ===== */
+.mobile-only {
+    display: block;
+}
+
+.desktop-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+    
+    .desktop-only {
+        display: block;
+    }
+}
+
+/* Responsive spacing utilities */
+.space-responsive {
+    padding: var(--spacing-responsive);
+}
+
+.space-responsive-x {
+    padding-left: var(--spacing-responsive);
+    padding-right: var(--spacing-responsive);
+}
+
+.space-responsive-y {
+    padding-top: var(--spacing-responsive);
+    padding-bottom: var(--spacing-responsive);
+}
+
+.gap-responsive {
+    gap: var(--spacing-responsive);
+}

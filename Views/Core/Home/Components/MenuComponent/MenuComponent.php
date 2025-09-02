@@ -17,6 +17,7 @@ class MenuComponent extends CoreComponent
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [
         '/assets/css/core/sidebar/menu-style.css',
+        '/assets/css/core/sidebar/mobile-menu.css',
         'https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'
     ];
 
@@ -182,81 +183,132 @@ class MenuComponent extends CoreComponent
 
         return <<<HTML
 
-        <nav class="sidebar " id="sidebar">
-            <header>
+        <!-- Mobile Menu Toggle Button -->
+        <button class="mobile-menu-toggle mobile-only" id="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <ion-icon name="menu-outline"></ion-icon>
+            <span class="sr-only">Open menu</span>
+        </button>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar lego-sidebar" id="sidebar">
+            <header class="sidebar-header">
                 <div class="image-text">
                     <span class="image">
-                        <img class="user-image" src="/assets/images/logo.png" alt="">
-                        <!-- <p>Sergio Vega</p> -->
+                        <img class="user-image" src="/assets/images/logo.png" alt="Lego Logo">
                     </span>
 
                     <div class="text logo-text">
                         <span class="name">Lego</span>
-                        <span class="profession">Freamework</span>
+                        <span class="profession">Framework</span>
                     </div>
-                    
                 </div>
 
-                <i class='bx bx-chevron-right toggle'></i>
+                <!-- Desktop toggle (hidden on mobile) -->
+                <i class='bx bx-chevron-right toggle desktop-only' id="desktop-toggle"></i>
+                
+                <!-- Mobile close button -->
+                <button class="mobile-close mobile-only" onclick="closeMobileMenu()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
             </header>
 
-            <div class="menu-bar">
+            <div class="menu-bar lego-container">
 
-
-                <hr>
+                <hr class="menu-divider">
                 
-                <li class="search-box">
-                    <ion-icon class ='icon' name="search-outline"></ion-icon>
-                    <input type="text" placeholder="Search" id="search-menu">
-                </li>
+                <!-- Search Box -->
+                <div class="search-box lego-menu-item">
+                    <ion-icon class="icon" name="search-outline"></ion-icon>
+                    <input type="text" placeholder="Search" id="search-menu" class="search-input">
+                </div>
+                
+                <!-- Main Menu -->
                 <div class="menu" id="sidebar_menu">
-
-
-                    <div class="custom-menu" id="">
-                        
-
+                    <div class="custom-menu" id="main-menu">
                         {$FINAL_MENU_LIST}
-
-
                     </div>
                 </div>
 
-                <div class="bottom-content">
-
-                    <li class="" id="theme-toggle">
-                        <a >
-                            <ion-icon class ='icon'  name="moon-outline"></ion-icon>
+                <!-- Bottom Actions -->
+                <div class="bottom-content space-responsive-y">
+                    
+                    <div class="theme-toggle lego-menu-item" id="theme-toggle">
+                        <a href="#" class="menu-link">
+                            <ion-icon class="icon" name="moon-outline"></ion-icon>
                             <span class="text nav-text">Theme</span>
                         </a>
-                    </li>
+                    </div>
                     
-                    <hr>
+                    <hr class="menu-divider">
 
-                    <li class="">
-                        <a href="{$HOST_NAME}/login">
-                            <ion-icon class ='icon'  name="log-out-outline"></ion-icon>
+                    <div class="logout-item lego-menu-item">
+                        <a href="{$HOST_NAME}/login" class="menu-link">
+                            <ion-icon class="icon" name="log-out-outline"></ion-icon>
                             <span class="text nav-text">Logout</span>
                         </a>
-                    </li>
-                    
+                    </div>
                 </div>
             </div>
 
-            <!-- Resize handle inside sidebar -->
-            <div class="sidebar-resize-handle" 
+            <!-- Desktop Resize Handle (hidden on mobile) -->
+            <div class="sidebar-resize-handle desktop-only" 
                  onmousedown="startSidebarResize(event)"
-                 onmouseenter="this.style.background='rgba(120, 120, 120, 0.4) !important'"
-                 onmouseleave="this.style.background='transparent !important'"
-                 style="position: absolute !important; top: 25% !important; right: -3px !important; width: 6px !important; height: 50% !important; background: transparent !important; cursor: col-resize !important; z-index: 9999 !important; border-radius: 0 3px 3px 0 !important; transition: all 0.2s ease !important;">
+                 id="resize-handle">
             </div>
         </nav>
         
         <script>
+        // ===== Mobile Menu Functions =====
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            
+            // Prevent body scroll when menu is open
+            if (sidebar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close menu when clicking menu items (mobile only)
+        function handleMenuItemClick() {
+            if (window.innerWidth < 768) {
+                closeMobileMenu();
+            }
+        }
+        
+        // ===== Desktop Resize Functions =====
         let sidebarResizing = false;
         let resizeStartX = 0;
         let resizeStartWidth = 0;
         
         function startSidebarResize(e) {
+            // Only enable resize on desktop
+            if (window.innerWidth < 768) return;
+            
             const sidebar = document.querySelector('.sidebar');
             if (!sidebar || sidebar.classList.contains('close')) return;
             
@@ -267,20 +319,14 @@ class MenuComponent extends CoreComponent
             document.body.style.cursor = 'col-resize';
             document.body.style.userSelect = 'none';
             
-            // Add visual feedback
-            const handle = e.target;
-            handle.style.background = 'rgba(120, 120, 120, 0.6) !important';
-            handle.style.width = '8px !important';
-            
             e.preventDefault();
             e.stopPropagation();
         }
         
         document.addEventListener('mousemove', function(e) {
-            if (!sidebarResizing) return;
+            if (!sidebarResizing || window.innerWidth < 768) return;
             
             const sidebar = document.querySelector('.sidebar');
-            const contentShade = document.getElementById('content-sidebar-shade');
             if (!sidebar) return;
             
             const newWidth = resizeStartWidth + (e.clientX - resizeStartX);
@@ -289,14 +335,9 @@ class MenuComponent extends CoreComponent
             if (newWidth >= 200 && newWidth <= 400) {
                 sidebar.style.width = newWidth + 'px';
                 
-                // Update CSS variable for other elements
+                // Update CSS variable
                 const widthRem = newWidth / 16;
                 document.documentElement.style.setProperty('--sidebar-width', widthRem + 'rem');
-                
-                // Update content shade if it exists
-                if (contentShade) {
-                    contentShade.style.minWidth = newWidth + 'px';
-                }
             }
         });
         
@@ -306,71 +347,50 @@ class MenuComponent extends CoreComponent
                 document.body.style.cursor = '';
                 document.body.style.userSelect = '';
                 
-                // Reset handle appearance
-                const handle = document.querySelector('.sidebar-resize-handle');
-                if (handle) {
-                    handle.style.background = 'transparent !important';
-                    handle.style.width = '6px !important';
-                }
-                
-                // Save the new width to localStorage
+                // Save width to localStorage (desktop only)
                 const sidebar = document.querySelector('.sidebar');
-                if (sidebar) {
+                if (sidebar && window.innerWidth >= 768) {
                     localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
                 }
             }
         });
         
-        // Load saved width on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedWidth = localStorage.getItem('sidebarWidth');
-            if (savedWidth && savedWidth >= 200 && savedWidth <= 400) {
-                const sidebar = document.querySelector('.sidebar');
-                const contentShade = document.getElementById('content-sidebar-shade');
+        // ===== Responsive Handler =====
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (window.innerWidth >= 768) {
+                // Desktop: close mobile menu, restore desktop behavior
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
                 
-                if (sidebar) {
+                // Restore saved width
+                const savedWidth = localStorage.getItem('sidebarWidth');
+                if (savedWidth && savedWidth >= 200 && savedWidth <= 400) {
                     const widthRem = savedWidth / 16;
                     document.documentElement.style.setProperty('--sidebar-width', widthRem + 'rem');
                     sidebar.style.width = savedWidth + 'px';
-                    
-                    if (contentShade) {
-                        contentShade.style.minWidth = savedWidth + 'px';
-                    }
                 }
-            }
-        });
-        
-        // Hide handle when sidebar is collapsed
-        function updateResizeHandleVisibility() {
-            const sidebar = document.querySelector('.sidebar');
-            const handle = document.querySelector('.sidebar-resize-handle');
-            
-            if (sidebar && handle) {
-                if (sidebar.classList.contains('close')) {
-                    handle.style.display = 'none';
-                } else {
-                    handle.style.display = 'block';
-                }
+            } else {
+                // Mobile: reset inline styles
+                sidebar.style.width = '';
             }
         }
         
-        // Watch for sidebar toggle
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    updateResizeHandleVisibility();
-                }
-            });
-        });
+        // Listen for resize events
+        window.addEventListener('resize', handleResize);
         
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                observer.observe(sidebar, {
-                    attributes: true,
-                    attributeFilter: ['class']
-                });
-            }
+            handleResize();
+            
+            // Add click handlers to menu items
+            const menuItems = document.querySelectorAll('.menu_item_openable');
+            menuItems.forEach(item => {
+                item.addEventListener('click', handleMenuItemClick);
+            });
         });
         </script>
   

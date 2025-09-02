@@ -1,0 +1,19 @@
+/* ===== Login Component Variables ===== */
+:root {
+    /* ===== Login Colors ===== */
+    --login-blue-primary: #007DFB;
+    --login-blue-secondary: #0057B4;
+    --login-blue-hover: #0069d9;
+    --login-input-bg: #f0f4f8;
+    
+    /* ===== Login Layout ===== */
+    --login-scale: 1.15;
+    --login-copyright-bottom: 20px;
+    --login-copyright-left: 40px;
+    --login-copyright-font-size: 14px;
+    --login-copyright-opacity: 0.7;
+    
+    /* ===== Login Grid Pattern ===== */
+    --login-grid-opacity: 0.25;
+    --login-grid-size: 52px;
+}

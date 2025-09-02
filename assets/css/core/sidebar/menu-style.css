@@ -612,8 +612,8 @@ body.dark .switch::before{
     left: var(--sidebar-width-collapsed);
     display: none; /* Hide resize handle when collapsed */
 }
-/
-* ===== RESIZE HANDLE - FORCED STYLES ===== */
+
+/* ===== RESIZE HANDLE - FORCED STYLES ===== */
 .sidebar-resize-handle {
     position: absolute !important;
     top: 0 !important;
