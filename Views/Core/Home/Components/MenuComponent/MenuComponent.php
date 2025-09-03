@@ -46,7 +46,7 @@ class MenuComponent extends CoreComponent
             new MenuItemDto(
                 id: "1",
                 name: "Inicio",
-                url: $HOST_NAME . '/inicio',
+                url: $HOST_NAME . '/view/inicio',
                 iconName: "home-outline"
             ),
             new MenuItemDto(

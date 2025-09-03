@@ -1,5 +1,7 @@
 #content-sidebar-shade{
+    flex-shrink: 0;
     min-width: var(--sidebar-width);
+    width: var(--sidebar-width);
     height: 100%;
     transition: var(--transition-normal);
 }
@@ -439,7 +441,7 @@ body.dark .switch::before{
     .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black-60);   margin-left: -0.125rem;}
     .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black);   margin-left: -0.125rem;}
 
-    body.dark .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-20); margin-left: 1.325rem;}
+    body.dark .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-20); margin-left: 1.45rem;}
     body.dark .section-level-2 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-30);  margin-left: -0.125rem;} 
     body.dark .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-60);   margin-left: -0.125rem;}
     body.dark .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white);  margin-left: -0.125rem;}

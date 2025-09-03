@@ -74,7 +74,7 @@ class LoginComponent extends CoreComponent
                 </script>
              
                 </head>
-                <body class="min-h-screen flex items-center justify-center relative transition-colors duration-300" style="background-color: var(--bg-body);">
+                <body class="min-h-screen flex items-center justify-center relative transition-colors duration-300">
                 <!-- Background pattern with crosses -->
 
                 <svg class="absolute inset-0" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
