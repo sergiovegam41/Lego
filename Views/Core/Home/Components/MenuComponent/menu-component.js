@@ -43,7 +43,6 @@ function setupResize() {
     // Test if element is actually clickable
     handle.onclick = function(e) {
         console.log('ONCLICK TRIGGERED!');
-        alert('Handle clicked via onclick!');
         e.stopPropagation();
         return false;
     };

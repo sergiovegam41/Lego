@@ -85,10 +85,16 @@ document.getElementById('toggle-password').addEventListener('click', function() 
 
 // Theme toggle functionality
 function initTheme() {
-    // Check for saved theme or default to light
-    const savedTheme = localStorage.getItem('theme');
+    // Check for saved theme using storage manager or fallback to localStorage
+    let savedTheme;
+    if (window.storageManager) {
+        savedTheme = window.storageManager.getTheme();
+    } else {
+        savedTheme = localStorage.getItem('lego_theme');
+    }
+    
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+    const theme = savedTheme || (prefersDark ? 'dark' : 'dark'); // Default to dark
     
     // Apply theme
     if (theme === 'dark') {
@@ -103,10 +109,18 @@ function toggleTheme() {
     
     if (isDark) {
         document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
+        if (window.storageManager) {
+            window.storageManager.setTheme('light');
+        } else {
+            localStorage.setItem('lego_theme', 'light');
+        }
     } else {
         document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
+        if (window.storageManager) {
+            window.storageManager.setTheme('dark');
+        } else {
+            localStorage.setItem('lego_theme', 'dark');
+        }
     }
 }
 

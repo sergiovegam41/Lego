@@ -200,7 +200,7 @@ class StorageManager {
 
   // Theme
   getTheme() {
-    return this.get(STORAGE_KEYS.THEME, 'light');
+    return this.get(STORAGE_KEYS.THEME, 'dark'); // Default to dark mode
   }
 
   setTheme(theme) {

@@ -54,7 +54,9 @@ class MainComponent extends CoreComponent
           <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
           <!-- Solo necesitamos una versión de Babel -->
-
+          
+          <!-- Universal Theme Initialization -->
+          <script src="./assets/js/core/universal-theme-init.js"></script>
 
       </head>
       <body>

@@ -562,14 +562,14 @@ body.dark .switch::before{
     right: 0;
     width: 6px;
     height: 100%;
-    background: var(--color-focus-30);
+    background: transparent;
     cursor: col-resize;
     z-index: 102;
     border-radius: 0 3px 3px 0;
 }
 
 .sidebar-resize-handle:hover {
-    background: var(--color-focus-60);
+    background: transparent;
     width: 8px;
 }
 
@@ -585,7 +585,7 @@ body.dark .switch::before{
     transform: translate(-50%, -50%);
     width: 2px;
     height: 2rem;
-    background: var(--border-light);
+    background: transparent;
     border-radius: 1px;
     opacity: 0.3; /* Make it slightly visible by default */
     transition: var(--transition-fast);
@@ -596,42 +596,80 @@ body.dark .switch::before{
 }
 
 .sidebar-resize-handle:hover {
-    background: var(--accent-light);
+    background: transparent;
 }
 
 .sidebar-resize-handle.resizing {
-    background: var(--accent-light);
+    background: transparent;
 }
 
 .sidebar-resize-handle.resizing::before {
     opacity: 1;
-    background: var(--accent-primary);
+    background: transparent;
 }
 
 .sidebar.close + .sidebar-resize-handle {
     left: var(--sidebar-width-collapsed);
     display: none; /* Hide resize handle when collapsed */
 }
-/
-* ===== RESIZE HANDLE - FORCED STYLES ===== */
+/* ===== RESIZE HANDLE - TRANSPARENT STYLES ===== */
 .sidebar-resize-handle {
     position: absolute !important;
     top: 0 !important;
     right: -3px !important;
     width: 8px !important;
     height: 100% !important;
-    background: var(--color-red-700) !important; /* Red for maximum visibility */
+    background: transparent !important;
     cursor: col-resize !important;
     z-index: 9999 !important;
     border-radius: 0 !important;
     opacity: 1 !important;
     pointer-events: auto !important;
     display: block !important;
+    transition: none !important;
 }
 
-.sidebar-resize-handle:hover {
-    background: var(--color-red-600) !important;
-    width: 12px !important;
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle:focus,
+.sidebar-resize-handle:active {
+    background: transparent !important;
+    background-color: transparent !important;
+    width: 8px !important;
+    opacity: 1 !important;
+    transition: none !important;
+}
+
+.sidebar-resize-handle::before,
+.sidebar-resize-handle::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    opacity: 0 !important;
+}
+
+.sidebar-resize-handle:hover::before,
+.sidebar-resize-handle:hover::after,
+.sidebar-resize-handle:focus::before,
+.sidebar-resize-handle:focus::after,
+.sidebar-resize-handle:active::before,
+.sidebar-resize-handle:active::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    opacity: 0 !important;
+}
+
+.sidebar-resize-handle.resizing {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+.sidebar-resize-handle.resizing::before,
+.sidebar-resize-handle.resizing::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    opacity: 0 !important;
 }
 
 .sidebar.close .sidebar-resize-handle {

@@ -48,6 +48,30 @@ class LoginComponent extends CoreComponent
                 <title>Login</title> 
                 <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
                 <link rel="stylesheet" href="./assets/css/core/base.css">
+                
+                <!-- Inline script to prevent flash of wrong theme -->
+                <script>
+                (function() {
+                    // Get theme immediately from localStorage
+                    const STORAGE_KEY = 'lego_theme';
+                    let savedTheme = localStorage.getItem(STORAGE_KEY);
+                    
+                    // If no saved theme, check system preference and default to dark
+                    if (!savedTheme) {
+                        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        savedTheme = prefersDark ? 'dark' : 'dark'; // Default to dark always
+                    }
+                    
+                    // Apply theme immediately to prevent flash
+                    if (savedTheme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.style.colorScheme = 'dark';
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.style.colorScheme = 'light';
+                    }
+                })();
+                </script>
              
                 </head>
                 <body class="min-h-screen flex items-center justify-center relative transition-colors duration-300" style="background-color: var(--bg-body);">

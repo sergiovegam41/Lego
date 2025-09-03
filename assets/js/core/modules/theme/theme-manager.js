@@ -14,6 +14,7 @@ class ThemeManager {
 
     /**
      * Obtiene el tema inicial basado en localStorage o preferencia del sistema
+     * Por defecto usa modo oscuro
      */
     getInitialTheme() {
         const savedTheme = this.storageManager.getTheme();
@@ -21,8 +22,9 @@ class ThemeManager {
             return savedTheme;
         }
         
+        // Defaultea a dark mode siempre
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        return prefersDark ? 'dark' : 'light';
+        return prefersDark ? 'dark' : 'dark'; // Default to dark always
     }
 
     /**
@@ -37,15 +39,28 @@ class ThemeManager {
      * Aplica el tema especificado
      */
     applyTheme(theme) {
-        const elements = [document.documentElement, document.body];
+        // Aplicar en html para variables CSS
+        if (theme === 'dark') {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+        }
         
-        elements.forEach(element => {
+        // Aplicar en body para estilos específicos
+        if (document.body) {
             if (theme === 'dark') {
-                element.classList.add('dark');
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
             } else {
-                element.classList.remove('dark');
+                document.body.classList.remove('dark');
+                document.body.classList.add('light');
             }
-        });
+        }
+
+        // Set color-scheme for better browser support
+        document.documentElement.style.colorScheme = theme;
 
         this.currentTheme = theme;
         this.storageManager.setTheme(theme);

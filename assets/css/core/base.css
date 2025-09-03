@@ -18,6 +18,63 @@ hr {
     opacity: 1;
 }
 
+/* ===== UNIVERSAL THEME INITIALIZATION ===== */
+/* Default to dark mode naturally - this is the framework's nature */
+html {
+    color-scheme: dark;
+}
+
+html, html.dark {
+    /* Dark mode as default state */
+    --bg-body: #18191a;
+    --bg-sidebar: #242526;
+    --bg-surface: #3a3b3c;
+    --bg-surface-hover: #404040;
+    --bg-toggle: #ffffff;
+    
+    --text-primary: #ffffff;
+    --text-secondary: #dddddd;
+    --text-on-focus: #ffffff;
+    
+    --border-light: #404040;
+    --border-medium: #5a5a5a;
+    --border-focus: #3ba1ff;
+    
+    --accent-primary: #3ba1ff;
+    --accent-hover: #2b91ef;
+    --accent-light: rgba(59, 161, 255, 0.1);
+}
+
+/* Light mode is the override, not the default */
+html.light {
+    color-scheme: light;
+    
+    --bg-body: #ffffff;
+    --bg-sidebar: #ffffff;
+    --bg-surface: #f6f5ff;
+    --bg-surface-hover: #e5e5e5;
+    --bg-toggle: #dddddd;
+    
+    --text-primary: #000000;
+    --text-secondary: #707070;
+    --text-on-focus: #ffffff;
+    
+    --border-light: #dddddd;
+    --border-medium: #a0a0a0;
+    --border-focus: #3ba1ff;
+    
+    --accent-primary: #3ba1ff;
+    --accent-hover: #2b91ef;
+    --accent-light: rgba(59, 161, 255, 0.1);
+}
+
+/* Light mode for body when no class is present - compatibility */
+body:not(.dark), body.light {
+    /* Apply light theme variables to ensure consistency */
+    background-color: #ffffff;
+    color: #000000;
+}
+
 :root {
     /* ===== Paleta Base de Colores ===== */
     --color-white: #ffffff;
@@ -38,25 +95,6 @@ hr {
     --color-focus: #3ba1ff;
     --color-focus-hover: #2b91ef;
     --color-focus-light: rgba(59, 161, 255, 0.1);
-    
-    /* ===== Tokens Semánticos - Light Mode ===== */
-    --bg-body: var(--color-white);
-    --bg-sidebar: var(--color-white);
-    --bg-surface: var(--color-neutral-100);
-    --bg-surface-hover: var(--color-neutral-200);
-    --bg-toggle: var(--color-neutral-300);
-    
-    --text-primary: var(--color-black);
-    --text-secondary: var(--color-neutral-500);
-    --text-on-focus: var(--color-white);
-    
-    --border-light: var(--color-neutral-300);
-    --border-medium: var(--color-neutral-400);
-    --border-focus: var(--color-focus);
-    
-    --accent-primary: var(--color-focus);
-    --accent-hover: var(--color-focus-hover);
-    --accent-light: var(--color-focus-light);
     
     /* ===== Colores adicionales ===== */
     --color-blue-600: #007DFB;
@@ -141,26 +179,6 @@ body {
 
 
 
-body.dark {
-    /* ===== Tokens Semánticos - Dark Mode ===== */
-    --bg-body: var(--color-neutral-900);
-    --bg-sidebar: var(--color-neutral-850);
-    --bg-surface: var(--color-neutral-800);
-    --bg-surface-hover: var(--color-neutral-700);
-    --bg-toggle: var(--color-white);
-    
-    --text-primary: var(--color-white);
-    --text-secondary: var(--color-neutral-300);
-    --text-on-focus: var(--color-white);
-    
-    --border-light: var(--color-neutral-700);
-    --border-medium: var(--color-neutral-600);
-    --border-focus: var(--color-focus);
-    
-    --accent-primary: var(--color-focus);
-    --accent-hover: var(--color-focus-hover);
-    --accent-light: var(--color-focus-light);
-}
 
 body.dark ion-icon, body.dark .name {
      

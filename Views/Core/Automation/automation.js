@@ -45,11 +45,16 @@ document.getElementById('submit-button').addEventListener('click', async (event)
       let data = await result.json();
 
       if (data.success) {
-        // Guardar en localStorage
-        localStorage.setItem('access_token', data.data.access_token);
-        localStorage.setItem('expires_at', data.data.expires_at);
-        localStorage.setItem('refresh_token', data.data.refresh_token);
-        localStorage.setItem('refresh_expires_at', data.data.refresh_expires_at);
+        // Guardar tokens usando storage manager unificado si está disponible
+        if (window.storageManager) {
+          window.storageManager.setSession(data.data);
+        } else {
+          // Fallback a localStorage
+          localStorage.setItem('access_token', data.data.access_token);
+          localStorage.setItem('expires_at', data.data.expires_at);
+          localStorage.setItem('refresh_token', data.data.refresh_token);
+          localStorage.setItem('refresh_expires_at', data.data.refresh_expires_at);
+        }
 
         // Redirigir a la página de inicio
         window.location.href = "/admin";
