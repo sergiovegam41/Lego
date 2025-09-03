@@ -245,7 +245,7 @@ class MenuComponent extends CoreComponent
             <!-- Resize handle inside sidebar -->
             <div class="sidebar-resize-handle" 
                  onmousedown="startSidebarResize(event)"
-                 onmouseenter="this.style.background='rgba(120, 120, 120, 0.4) !important'"
+                 onmouseenter="this.style.background='var(--color-gray-hover) !important'"
                  onmouseleave="this.style.background='transparent !important'"
                  style="position: absolute !important; top: 25% !important; right: -3px !important; width: 6px !important; height: 50% !important; background: transparent !important; cursor: col-resize !important; z-index: 9999 !important; border-radius: 0 3px 3px 0 !important; transition: all 0.2s ease !important;">
             </div>
@@ -269,7 +269,7 @@ class MenuComponent extends CoreComponent
             
             // Add visual feedback
             const handle = e.target;
-            handle.style.background = 'rgba(120, 120, 120, 0.6) !important';
+            handle.style.background = 'var(--color-gray-active) !important';
             handle.style.width = '8px !important';
             
             e.preventDefault();
@@ -313,9 +313,12 @@ class MenuComponent extends CoreComponent
                     handle.style.width = '6px !important';
                 }
                 
-                // Save the new width to localStorage
+                // Save the new width using unified storage manager
                 const sidebar = document.querySelector('.sidebar');
-                if (sidebar) {
+                if (sidebar && window.storageManager) {
+                    window.storageManager.setSidebarWidth(sidebar.offsetWidth);
+                } else if (sidebar) {
+                    // Fallback to localStorage if storage manager not available
                     localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
                 }
             }
@@ -323,7 +326,16 @@ class MenuComponent extends CoreComponent
         
         // Load saved width on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const savedWidth = localStorage.getItem('sidebarWidth');
+            let savedWidth;
+            
+            // Try to get width from unified storage manager first
+            if (window.storageManager) {
+                savedWidth = window.storageManager.getSidebarWidth();
+            } else {
+                // Fallback to localStorage
+                savedWidth = localStorage.getItem('sidebarWidth');
+            }
+            
             if (savedWidth && savedWidth >= 200 && savedWidth <= 400) {
                 const sidebar = document.querySelector('.sidebar');
                 const contentShade = document.getElementById('content-sidebar-shade');

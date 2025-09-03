@@ -47,21 +47,22 @@ class LoginComponent extends CoreComponent
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Login</title> 
                 <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
+                <link rel="stylesheet" href="./assets/css/core/base.css">
              
                 </head>
-                <body class="min-h-screen flex items-center justify-center bg-gray-50 relative">
+                <body class="min-h-screen flex items-center justify-center relative transition-colors duration-300" style="background-color: var(--bg-body);">
                 <!-- Background pattern with crosses -->
 
                 <svg class="absolute inset-0" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                     <pattern id="smallCross" width="35" height="35" patternUnits="userSpaceOnUse">
-                        <path d="M13,9.5 L13,16.5 M9.5,13 L16.5,13" stroke="#60A5FA" stroke-width="2" opacity=".15"></path>
+                        <path d="M13,9.5 L13,16.5 M9.5,13 L16.5,13" stroke="var(--color-gray-500)" stroke-width="2" opacity=".15"></path>
                     </pattern>
                     </defs>
                     <rect width="100%" height="100%" fill="url(#smallCross)"></rect>
                 </svg>
                 <!-- Main container -->
-                <div class="flex w-full max-w-5xl overflow-hidden rounded-xl shadow-lg relative z-10 main-container">
+                <div class="flex w-full max-w-4xl overflow-hidden rounded-xl shadow-lg relative z-10 main-container">
                     <!-- Left side - Blue panel -->
                     <div class="relative hidden w-1/2 blue-gradient bg-blue-500 p-10 text-white md:block">
                     <div class="grid-pattern"></div>
@@ -102,37 +103,55 @@ class LoginComponent extends CoreComponent
                         </div>
                         
                     </div>
-                    <div class="absolute bottom-10 left-10 text-sm opacity-70">
-                    © 2025s LEGO Framework. All rights reserved.
-                    </div>
+
                     </div>
                     
                     <!-- Right side - Login form -->
-                    <div class="w-full p-8 bg-white md:w-1/2 md:p-10 lg:p-12">
-                    <div class="max-w-md mx-auto">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome back</h2>
-                        <p class="text-gray-600 mb-8">Please enter your credentials to sign in</p>
+                    <div class="w-full p-6 md:w-1/2 md:p-8 lg:p-10 relative transition-colors duration-300" style="background-color: var(--bg-sidebar);">
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-transparent hover:bg-opacity-10 transition-colors duration-200">
+                            <!-- Sun icon (visible in dark mode) -->
+                            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 hidden dark:block text-gray-300">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                            <!-- Moon icon (visible in light mode) -->
+                            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 block dark:hidden text-gray-700">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                        </button>
+                        
+                    <div class="max-w-sm mx-auto">
+                        <h2 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Welcome back</h2>
+                        <p class="text-sm mb-6" style="color: var(--text-secondary);">Please enter your credentials to sign in</p>
                         
                         <form>
-                        <div class="space-y-6">
+                        <div class="space-y-4">
                             <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                            <label for="email" class="block text-sm font-medium mb-1" style="color: var(--text-primary);">
                                 Email address
                             </label>
                             <input
                                 id="email"
                                 type="email"
                                 placeholder="user@example.com"
-                                class="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-200" style="border-color: var(--border-light); background-color: var(--bg-surface); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
                             />
                             </div>
                             
                             <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label for="password" class="block text-sm font-medium text-gray-700">
+                                <label for="password" class="block text-sm font-medium" style="color: var(--text-primary);">
                                 Password
                                 </label>
-                                <a href="#" class="text-sm text-blue-500 hover:text-blue-600">
+                                <a href="#" class="text-sm hover:opacity-80" style="color: var(--accent-primary);">
                                 Forgot password?
                                 </a>
                             </div>
@@ -141,18 +160,18 @@ class LoginComponent extends CoreComponent
                                 id="password"
                                 type="password"
                                 placeholder="••••••"
-                                class="w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-200" style="border-color: var(--border-light); background-color: var(--bg-surface); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
                                 />
                                 <button
                                 type="button"
                                 id="toggle-password"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center"
                                 >
-                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-400">
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" style="color: var(--text-secondary);">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-400 hidden">
+                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 hidden" style="color: var(--text-secondary);">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                     <line x1="1" y1="1" x2="23" y2="23"></line>
                                 </svg>
@@ -166,7 +185,7 @@ class LoginComponent extends CoreComponent
                                 type="checkbox"
                                 class="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                             />
-                            <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                            <label for="remember-me" class="ml-2 block text-sm" style="color: var(--text-primary);">
                                 Remember me
                             </label>
                             </div>
@@ -183,9 +202,9 @@ class LoginComponent extends CoreComponent
                         </div>
                         </form>
                         
-                        <div class="mt-6 text-center text-sm text-gray-600">
+                        <div class="mt-6 text-center text-sm" style="color: var(--text-secondary);">
                         Don't have an account?
-                        <a href="#" class="text-blue-500 hover:text-blue-600">
+                        <a href="#" class="hover:opacity-80" style="color: var(--accent-primary);">
                             Contact administrator
                         </a>
                         </div>
@@ -196,6 +215,38 @@ class LoginComponent extends CoreComponent
              
 
                 <script type="module" src="./assets/js/core/base-lego-login.js" defer></script>
+                <script type="module" src="./assets/js/core/modules/theme/theme-manager.js"></script>
+                
+                <script>
+                    // Initialize theme system when DOM is ready
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Use unified theme manager
+                        if (window.themeManager) {
+                            // Replace existing button with theme manager button
+                            const existingButton = document.getElementById('theme-toggle');
+                            if (existingButton) {
+                                existingButton.addEventListener('click', () => {
+                                    existingButton.style.transform = 'scale(0.9)';
+                                    setTimeout(() => {
+                                        window.themeManager.toggle();
+                                        existingButton.style.transform = '';
+                                    }, 100);
+                                });
+                            }
+                            
+                            console.log('Theme system initialized with unified manager');
+                        }
+                        
+                        // Add smooth transitions after page load
+                        setTimeout(() => {
+                            document.body.style.transition = 'all 0.3s ease';
+                            const container = document.querySelector('.main-container');
+                            if (container) {
+                                container.style.transition = 'all 0.3s ease, transform 0.3s ease';
+                            }
+                        }, 100);
+                    });
+                </script>
 
 
                 </body>

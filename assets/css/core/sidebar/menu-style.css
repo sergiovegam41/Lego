@@ -434,15 +434,15 @@ body.dark .switch::before{
 
   /* Colores por niveles */
 
-    .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(0, 0, 0, .2); margin-left: 1.45rem;}
-    .section-level-2 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(0, 0, 0, .3);  margin-left: -0.125rem;} 
-    .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(0, 0, 0, .6);   margin-left: -0.125rem;}
-    .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(0, 0, 0,  1);   margin-left: -0.125rem;}
+    .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black-20); margin-left: 1.45rem;}
+    .section-level-2 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black-30);  margin-left: -0.125rem;} 
+    .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black-60);   margin-left: -0.125rem;}
+    .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-black);   margin-left: -0.125rem;}
 
-    body.dark .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(255,255,255, .2); margin-left: 1.325rem;}
-    body.dark .section-level-2 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(255,255,255, .3);  margin-left: -0.125rem;} 
-    body.dark .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(255,255,255, .6);   margin-left: -0.125rem;}
-    body.dark .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid rgba(255,255,255,  1);  margin-left: -0.125rem;}
+    body.dark .section-level-1 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-20); margin-left: 1.325rem;}
+    body.dark .section-level-2 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-30);  margin-left: -0.125rem;} 
+    body.dark .section-level-3 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white-60);   margin-left: -0.125rem;}
+    body.dark .section-level-4 { transition: var(--transition-normal); border-left: 0.125rem solid var(--color-white);  margin-left: -0.125rem;}
 
 
 
@@ -458,37 +458,37 @@ body.dark .switch::before{
   .sidebar.close .section-level-4 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .2);   margin-left: 0px;} */
     .sidebar.close .section-level-1{
         margin-left: 0;
-        border-left: 0px solid rgba(0, 0, 0, 0);
+        border-left: 0px solid transparent;
 
     }
     .sidebar.close .section-level-2{
       margin-left: 0;
-      border-left: 0px solid rgba(0, 0, 0, 0);
+      border-left: 0px solid transparent;
 
       
     }
     .sidebar.close .section-level-3{
       margin-left: 0;
-      border-left: 0px solid rgba(0, 0, 0, 0);
+      border-left: 0px solid transparent;
       
     }
     .sidebar.close .section-level-4{
         margin-left: 0;
-        border-left: 0px solid rgba(0, 0, 0, 0);
+        border-left: 0px solid transparent;
 
         
     }
 
  
-  .sidebar.close .level-1 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .2);}
-  .sidebar.close .level-2 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .3);}
-  .sidebar.close .level-3 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0, .6);}
-  .sidebar.close .level-4 { transition: 0.25s; border-left: 2px solid rgba(0, 0, 0,  1);}
+  .sidebar.close .level-1 { transition: 0.25s; border-left: 2px solid var(--color-black-20);}
+  .sidebar.close .level-2 { transition: 0.25s; border-left: 2px solid var(--color-black-30);}
+  .sidebar.close .level-3 { transition: 0.25s; border-left: 2px solid var(--color-black-60);}
+  .sidebar.close .level-4 { transition: 0.25s; border-left: 2px solid var(--color-black);}
   
-  body.dark .sidebar.close .level-1 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .2);}
-  body.dark .sidebar.close .level-2 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .3);}
-  body.dark .sidebar.close .level-3 { transition: 0.25s; border-left: 2px solid rgba(255,255,255, .6);}
-  body.dark .sidebar.close .level-4 { transition: 0.25s; border-left: 2px solid rgba(255,255,255,  1);}
+  body.dark .sidebar.close .level-1 { transition: 0.25s; border-left: 2px solid var(--color-white-20);}
+  body.dark .sidebar.close .level-2 { transition: 0.25s; border-left: 2px solid var(--color-white-30);}
+  body.dark .sidebar.close .level-3 { transition: 0.25s; border-left: 2px solid var(--color-white-60);}
+  body.dark .sidebar.close .level-4 { transition: 0.25s; border-left: 2px solid var(--color-white);}
 
   .sidebar .icon_menu{
     font-size: var(--icon-size-lg); /* 20px */
@@ -562,14 +562,14 @@ body.dark .switch::before{
     right: 0;
     width: 6px;
     height: 100%;
-    background: rgba(59, 161, 255, 0.3);
+    background: var(--color-focus-30);
     cursor: col-resize;
     z-index: 102;
     border-radius: 0 3px 3px 0;
 }
 
 .sidebar-resize-handle:hover {
-    background: rgba(59, 161, 255, 0.6);
+    background: var(--color-focus-60);
     width: 8px;
 }
 
@@ -620,7 +620,7 @@ body.dark .switch::before{
     right: -3px !important;
     width: 8px !important;
     height: 100% !important;
-    background: #ff0000 !important; /* Red for maximum visibility */
+    background: var(--color-red-700) !important; /* Red for maximum visibility */
     cursor: col-resize !important;
     z-index: 9999 !important;
     border-radius: 0 !important;
@@ -630,7 +630,7 @@ body.dark .switch::before{
 }
 
 .sidebar-resize-handle:hover {
-    background: #ff4444 !important;
+    background: var(--color-red-600) !important;
     width: 12px !important;
 }
 

@@ -24,19 +24,43 @@
         // });
 
 
-        const toggleButton = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-      
-        // Aplica el tema guardado al cargar la página
-        if (currentTheme === 'dark') {
-          document.querySelector('body').classList.add('dark');
-        }
-      
-        toggleButton.addEventListener('click', () => {
-
-          const isDarkMode = document.querySelector('body').classList.toggle('dark');
-          localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-          document.querySelector('#theme-toggle ion-icon').name= isDarkMode ? 'sunny-outline':'moon-outline'
+        // Use unified theme manager if available
+        if (window.themeManager) {
+          const toggleButton = document.getElementById('theme-toggle');
+          
+          toggleButton?.addEventListener('click', () => {
+            const newTheme = window.themeManager.toggle();
+            // Update ion-icon if exists
+            const ionIcon = document.querySelector('#theme-toggle ion-icon');
+            if (ionIcon) {
+              ionIcon.name = newTheme === 'dark' ? 'sunny-outline' : 'moon-outline';
+            }
+          });
+          
+          // Subscribe to theme changes to update icon
+          window.themeManager.subscribe((theme) => {
+            const ionIcon = document.querySelector('#theme-toggle ion-icon');
+            if (ionIcon) {
+              ionIcon.name = theme === 'dark' ? 'sunny-outline' : 'moon-outline';
+            }
+          });
+        } else {
+          // Fallback for legacy theme handling
+          const toggleButton = document.getElementById('theme-toggle');
+          const currentTheme = localStorage.getItem('theme');
+        
+          // Aplica el tema guardado al cargar la página
+          if (currentTheme === 'dark') {
+            document.querySelector('body').classList.add('dark');
+          }
+        
+          toggleButton?.addEventListener('click', () => {
+            const isDarkMode = document.querySelector('body').classList.toggle('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            const ionIcon = document.querySelector('#theme-toggle ion-icon');
+            if (ionIcon) {
+              ionIcon.name = isDarkMode ? 'sunny-outline' : 'moon-outline';
+            }
           // moon-outline
           // sunny-outline
 

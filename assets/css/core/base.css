@@ -58,8 +58,40 @@ hr {
     --accent-hover: var(--color-focus-hover);
     --accent-light: var(--color-focus-light);
     
+    /* ===== Colores adicionales ===== */
+    --color-blue-600: #007DFB;
+    --color-blue-700: #0069d9;
+    --color-blue-800: #0057B4;
+    --color-gray-100: #f0f4f8;
+    --color-gray-500: #60A5FA;
+    --color-gray-600: #4caf50;
+    --color-gray-700: #ff9800;
+    --color-red-500: #ff6b6b;
+    --color-red-600: #ff4444;
+    --color-red-700: #ff0000;
+    --color-green-500: #76cb84;
+    --color-gray-200: #f4f4f4;
+    --color-gray-300: #ccc;
+    --color-gray-400: #e0e0e0;
+    --color-gray-800: #120120120;
+    
+    /* ===== Colores con transparencia ===== */
+    --color-black-10: rgba(0, 0, 0, 0.1);
+    --color-black-20: rgba(0, 0, 0, 0.2);
+    --color-black-30: rgba(0, 0, 0, 0.3);
+    --color-black-60: rgba(0, 0, 0, 0.6);
+    --color-white-20: rgba(255, 255, 255, 0.2);
+    --color-white-30: rgba(255, 255, 255, 0.3);
+    --color-white-50: rgba(255, 255, 255, 0.5);
+    --color-white-60: rgba(255, 255, 255, 0.6);
+    --color-white-17: rgba(255, 255, 255, 0.17);
+    --color-focus-30: rgba(59, 161, 255, 0.3);
+    --color-focus-60: rgba(59, 161, 255, 0.6);
+    --color-gray-hover: rgba(120, 120, 120, 0.4);
+    --color-gray-active: rgba(120, 120, 120, 0.6);
+    
     /* ===== Sombras ===== */
-    --shadow-light: 3px 0px 7px rgba(0, 0, 0, 0.1);
+    --shadow-light: 3px 0px 7px var(--color-black-10);
     --shadow-sidebar: 7px 0px 7px rgba(0, 0, 0, 0.03);
     
     /* ===== Transiciones ===== */

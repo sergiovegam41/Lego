@@ -3,7 +3,7 @@ const createElementLoading = ( feedbackObject = {} ) => {
     overlay.style.position = 'absolute';
     overlay.style.height = '100%';
     overlay.style.width = '100%';
-    overlay.style.background = 'rgb(255 255 255 / 17%)';
+    overlay.style.background = 'var(--color-white-17)';
     overlay.style.top = '0';
     overlay.style['backdrop-filter'] = 'blur(1.5px)';
     overlay.style['display'] = 'flex';
