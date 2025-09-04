@@ -5,6 +5,12 @@
     height: 100%;
     transition: var(--transition-normal);
 }
+
+/* Ajuste dinámico del shade cuando el sidebar se colapsa */
+.sidebar-collapsed #content-sidebar-shade {
+    min-width: var(--sidebar-width-collapsed);
+    width: var(--sidebar-width-collapsed);
+}
 /* ===== Sidebar ===== */
 .sidebar{
     position: fixed;
