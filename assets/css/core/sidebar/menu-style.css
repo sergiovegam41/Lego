@@ -139,8 +139,8 @@ header .image-text .profession{
     transform: translateY(-50%) rotate(180deg);
     height: var(--toggle-size);
     width: var(--toggle-size);
-    background: var(--color-neutral-800); /* #3a3b3c */
-    color: var(--color-white);
+    background: var(--bg-toggle-button);
+    color: var(--text-toggle-button);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -156,6 +156,10 @@ header .image-text .profession{
 }
 hr{
     margin: var(--menu-item-spacing); /* Mismo espaciado que los elementos del menú */
+    margin-top: 12px;
+    border: none;
+    border-bottom: 1px solid var(--border-light);
+    height: 0;
 }
 
 .sidebar .menu{
@@ -267,67 +271,6 @@ hr{
 .menu-bar::-webkit-scrollbar{
     display: none;
 }
-.sidebar .menu-bar .mode{
-    border-radius: 6px;
-    background-color: var(--bg-surface);
-    position: relative;
-    transition: var(--transition-slow);
-}
-
-.menu-bar .mode .sun-moon{
-    height: 50px;
-    width: 60px;
-}
-
-.mode .sun-moon i{
-    position: absolute;
-}
-.mode .sun-moon i.sun{
-    opacity: 0;
-}
-body.dark .mode .sun-moon i.sun{
-    opacity: 1;
-}
-body.dark .mode .sun-moon i.moon{
-    opacity: 0;
-}
-
-.menu-bar .bottom-content .toggle-switch{
-    position: absolute;
-    right: 0;
-    height: 100%;
-    min-width: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    cursor: pointer;
-}
-.toggle-switch .switch{
-    position: relative;
-    height: 22px;
-    width: 40px;
-    border-radius: 25px;
-    background-color: var(--bg-toggle);
-    transition: var(--transition-slow);
-}
-
-.switch::before{
-    content: '';
-    position: absolute;
-    height: 15px;
-    width: 15px;
-    border-radius: 50%;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    background-color: var(--bg-sidebar);
-    transition: var(--transition-normal);
-}
-
-body.dark .switch::before{
-    left: 20px;
-}
 
 
 
@@ -357,6 +300,7 @@ body.dark .switch::before{
     cursor: pointer;
     font-size: var(--font-size-base);
     font-weight: bold;
+    min-height: var(--menu-item-height);
   }
 
   .menu_item_openable {

@@ -223,15 +223,6 @@ class MenuComponent extends CoreComponent
 
                 <div class="bottom-content">
 
-                    <li class="" id="theme-toggle">
-                        <a >
-                            <ion-icon class ='icon'  name="moon-outline"></ion-icon>
-                            <span class="text nav-text">Theme</span>
-                        </a>
-                    </li>
-                    
-                    <hr>
-
                     <li class="">
                         <a href="{$HOST_NAME}/login">
                             <ion-icon class ='icon'  name="log-out-outline"></ion-icon>

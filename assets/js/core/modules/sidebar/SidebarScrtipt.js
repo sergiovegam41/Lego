@@ -2,101 +2,25 @@ export function activeMenu() {
     document.addEventListener('DOMContentLoaded', () => {
         addEventForToggle();
         
-        if (window.themeManager) {
-            const toggleButton = document.getElementById('theme-toggle');
-            toggleButton?.addEventListener('click', () => {
-                const newTheme = window.themeManager.toggle();
-                // Update ion-icon if exists
-                const ionIcon = document.querySelector('#theme-toggle ion-icon');
-                if (ionIcon) {
-                    ionIcon.name = newTheme === 'dark' ? 'sunny-outline' : 'moon-outline';
-                }
-            });
+        // Theme toggle functionality is now handled by header.js
+        
+        // Add click handlers for parent menu items
+        document.querySelectorAll('.menu-parent').forEach(parent => {
+            parent.querySelector('a').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
 
-            // Subscribe to theme changes to update icon
-            window.themeManager.subscribe((theme) => {
-                const ionIcon = document.querySelector('#theme-toggle ion-icon');
-                if (ionIcon) {
-                    ionIcon.name = theme === 'dark' ? 'sunny-outline' : 'moon-outline';
-                }
-            });
-        } else {
-            // Fallback for legacy theme handling
-            const toggleButton = document.getElementById('theme-toggle');
-            let currentTheme = window.storageManager ? window.storageManager.getTheme() : localStorage.getItem('lego_theme') || 'dark';
+                // Toggle active class
+                parent.classList.toggle('active');
 
-            // Apply saved theme when loading the page
-            if (currentTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
-                if (document.body) {
-                    document.body.classList.add('dark');
-                    document.body.classList.remove('light');
-                }
-                document.documentElement.style.colorScheme = 'dark';
-            } else {
-                document.documentElement.classList.add('light');
-                document.documentElement.classList.remove('dark');
-                if (document.body) {
-                    document.body.classList.add('light');
-                    document.body.classList.remove('dark');
-                }
-                document.documentElement.style.colorScheme = 'light';
-            }
-
-            toggleButton?.addEventListener('click', () => {
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                const newTheme = isDarkMode ? 'light' : 'dark';
-                
-                // Apply theme to html and body
-                if (newTheme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.classList.remove('light');
-                    if (document.body) {
-                        document.body.classList.add('dark');
-                        document.body.classList.remove('light');
+                // Close other open menus
+                document.querySelectorAll('.menu-parent.active').forEach(item => {
+                    if (item !== parent) {
+                        item.classList.remove('active');
                     }
-                    document.documentElement.style.colorScheme = 'dark';
-                } else {
-                    document.documentElement.classList.add('light');
-                    document.documentElement.classList.remove('dark');
-                    if (document.body) {
-                        document.body.classList.add('light');
-                        document.body.classList.remove('dark');
-                    }
-                    document.documentElement.style.colorScheme = 'light';
-                }
-                
-                if (window.storageManager) {
-                    window.storageManager.setTheme(newTheme);
-                } else {
-                    localStorage.setItem('lego_theme', newTheme);
-                }
-                
-                const ionIcon = document.querySelector('#theme-toggle ion-icon');
-                if (ionIcon) {
-                    ionIcon.name = newTheme === 'dark' ? 'sunny-outline' : 'moon-outline';
-                }
-            });
-
-            // Add click handlers for parent menu items
-            document.querySelectorAll('.menu-parent').forEach(parent => {
-                parent.querySelector('a').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Toggle active class
-                    parent.classList.toggle('active');
-
-                    // Close other open menus
-                    document.querySelectorAll('.menu-parent.active').forEach(item => {
-                        if (item !== parent) {
-                            item.classList.remove('active');
-                        }
-                    });
                 });
             });
-        }
+        });
     });
 }
 

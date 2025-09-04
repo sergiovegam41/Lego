@@ -6,6 +6,7 @@ use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
 use Views\Core\Home\Components\MenuComponent\MenuComponent;
+use Views\Core\Home\Components\HeaderComponent\HeaderComponent;
 
 class MainComponent extends CoreComponent 
 {
@@ -40,6 +41,7 @@ class MainComponent extends CoreComponent
     ];
 
     $MenuComponent = (new MenuComponent([]))->render();
+    $HeaderComponent = (new HeaderComponent([]))->render();
 
     return <<<HTML
 
@@ -64,6 +66,8 @@ class MainComponent extends CoreComponent
 
           {$MenuComponent}
 
+          {$HeaderComponent}
+
           <div id="parent-content" >
 
             <div id="content-sidebar-shade"> 
@@ -73,7 +77,7 @@ class MainComponent extends CoreComponent
             </div>
 
             <div id="principal-content-viwer"> 
-          
+              
               <div id="home-page">
        
 
