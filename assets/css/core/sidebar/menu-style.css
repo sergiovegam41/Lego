@@ -11,8 +11,10 @@
     min-width: var(--sidebar-width-collapsed);
     width: var(--sidebar-width-collapsed);
 }
+    
 /* ===== Sidebar ===== */
-.sidebar{
+.sidebar {
+    
     position: fixed;
     top: 0;
     left: 0;
@@ -22,11 +24,20 @@
     max-width: 25rem;   /* 400px maximum */
     padding: var(--sidebar-padding);
     padding-right: 9px;
-    background: var(--bg-sidebar);
+    
     transition: var(--transition-slow);
     z-index: 100;
-    box-shadow: var(--shadow-sidebar);
+    /* box-shadow: var(--shadow-sidebar); */
     resize: none; /* Disable default resize */
+    /* border-right: 1px solid rgba(0, 0, 0, .1); */
+}
+.sidebar{
+    background: var(--color-neutral-150);
+    background-color: var(--color-neutral-150);
+}
+
+body.dark .sidebar{
+    background: var(--bg-sidebar);
 }
 
 
@@ -42,7 +53,7 @@
     list-style: none;
     display: flex;
     align-items: center;
-    margin-block: var(--menu-item-spacing); /* Espaciado uniforme para todos */
+   
 }
 
 
@@ -132,9 +143,15 @@ header .image-text .profession{
     /* border-radius: 0.375rem; /* 6px */
 }
 
+body.dark .sidebar header .toggle{
+    background:var(--color-white) !important;
+    color: var(--color-neutral-850)  !important;
+}
 .sidebar header .toggle{
     position: absolute;
     top: 50%;
+    background: var(--color-neutral-850) !important;
+    color: var(--color-white) !important;
     right: var(--toggle-offset);
     transform: translateY(-50%) rotate(180deg);
     height: var(--toggle-size);
@@ -199,9 +216,10 @@ hr{
 .sidebar .search-box{
     height: var(--search-height);
     border-radius: 0.375rem; /* 6px */
-    background-color: var(--bg-surface);
+    background-color: transparent;
     cursor: pointer;
     transition: var(--transition-slow);
+    margin-top: .3rem;
 }
 
 .sidebar.close .search-box{
@@ -212,12 +230,13 @@ hr{
     /* Sin cambios de margin, position o z-index - mantiene posición original */
 }
 
+
 .sidebar .search-box input{
     height: 100%;
     width: 100%;
     outline: none;
     border: none;
-    background-color: var(--bg-surface);
+    background-color:  transparent;
     color: var(--text-primary);
     border-radius: 0.375rem; /* 6px */
     font-size: var(--font-size-base); /* 14px */
@@ -225,6 +244,7 @@ hr{
     transition: var(--transition-slow);
     padding: var(--space-xs); /* Padding controlado */
     box-sizing: border-box; /* Incluye padding en el tamaño total */
+        padding-left: 0 !important;
 }
 
 .sidebar.close .search-box input{
@@ -627,3 +647,4 @@ hr{
 .sidebar.close .sidebar-resize-handle {
     display: none !important;
 }
+

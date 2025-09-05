@@ -74,13 +74,13 @@ class LoginComponent extends CoreComponent
                 </script>
              
                 </head>
-                <body class="min-h-screen flex items-center justify-center relative transition-colors duration-300">
+                <body class="min-h-screen flex items-center justify-center relative transition-colors durationtheme-toggle-300">
                 <!-- Background pattern with crosses -->
 
                 <svg class="absolute inset-0" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                     <pattern id="smallCross" width="35" height="35" patternUnits="userSpaceOnUse">
-                        <path d="M13,9.5 L13,16.5 M9.5,13 L16.5,13" stroke="var(--color-gray-500)" stroke-width="2" opacity=".15"></path>
+                        <path d="M13,9.5 L13,16.5 M9.5,13 L16.5,13" stroke="var(--color-gray-500)" stroke-width="2" class="opacity-[.15] "></path>
                     </pattern>
                     </defs>
                     <rect width="100%" height="100%" fill="url(#smallCross)"></rect>
@@ -133,7 +133,7 @@ class LoginComponent extends CoreComponent
                     <!-- Right side - Login form -->
                     <div class="w-full p-6 md:w-1/2 md:p-8 lg:p-10 relative transition-colors duration-300" style="background-color: var(--bg-sidebar);">
                         <!-- Theme Toggle Button -->
-                        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-transparent hover:bg-opacity-10 transition-colors duration-200">
+                        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-transparent hover:bg-opacity-10 transition-colors duration-200" style="z-index: 9999; pointer-events: auto; cursor: pointer;">
                             <!-- Sun icon (visible in dark mode) -->
                             <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 hidden dark:block text-gray-300">
                                 <circle cx="12" cy="12" r="5"/>
@@ -244,22 +244,11 @@ class LoginComponent extends CoreComponent
                 <script>
                     // Initialize theme system when DOM is ready
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Use unified theme manager
-                        if (window.themeManager) {
-                            // Replace existing button with theme manager button
-                            const existingButton = document.getElementById('theme-toggle');
-                            if (existingButton) {
-                                existingButton.addEventListener('click', () => {
-                                    existingButton.style.transform = 'scale(0.9)';
-                                    setTimeout(() => {
-                                        window.themeManager.toggle();
-                                        existingButton.style.transform = '';
-                                    }, 100);
-                                });
-                            }
-                            
-                            console.log('Theme system initialized with unified manager');
-                        }
+                        console.log('HTML script: DOM loaded');
+                        
+                        // Debug: Check if button exists
+                        const button = document.getElementById('theme-toggle');
+                        console.log('HTML script: Theme button found:', button);
                         
                         // Add smooth transitions after page load
                         setTimeout(() => {

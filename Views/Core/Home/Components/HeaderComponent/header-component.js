@@ -1,7 +1,6 @@
 // Header Component JavaScript
 let context = {CONTEXT};
 
-document.addEventListener('DOMContentLoaded', function() {
     console.log('Header component loaded');
     
     // Initialize header functionality
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateUserInfo(context.arg.user);
         updateNotificationBadge(context.arg.notifications);
     }
-});
 
 /**
  * Initialize theme toggle functionality

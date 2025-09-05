@@ -43,11 +43,9 @@ const moduleStore = new ModuleStore();
 
 async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
-    console.log(id,url,content)
     if (!container) {
         let dataResp = await fetch(url).then(res => res.text());
         
-        console.log(dataResp)
         container = document.createElement('div');
         container.id = `module-${id}`;
         container.className = 'module-container';
@@ -75,7 +73,6 @@ export function _closeModule(id) {
 }
 export function _openModule(id, url) {
 
-    console.log("OPEN MODULE")
     moduleStore._openModule(id, {});
     renderModule(id, url, `Contenido dinámico del módulo ${id}`);
     updateMenu();
@@ -104,7 +101,6 @@ function updateMenu() {
 
 export function generateMenuLinks(){
 
-    console.log("generateMenuLinks")
     
     document.querySelectorAll('.menu_item_openable').forEach(item => {
 
@@ -112,7 +108,6 @@ export function generateMenuLinks(){
 
             const id = item.dataset.moduleId  || item.getAttribute("moduleId");
             const url = item.dataset.moduleUrl  || item.getAttribute("moduleUrl");
-            console.log(url,"url")
             if (moduleStore.getActiveModule() !== id) {
                 _openModule(id, url);
             }

@@ -1,6 +1,5 @@
 let context = {CONTEXT};
 
-console.log(context);
 
 document.getElementById('submit-button').addEventListener('click', async (event) => {
 

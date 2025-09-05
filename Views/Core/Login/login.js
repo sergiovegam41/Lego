@@ -105,21 +105,29 @@ function initTheme() {
 }
 
 function toggleTheme() {
+    console.log('toggleTheme function called');
     const isDark = document.documentElement.classList.contains('dark');
+    console.log('Current theme is dark:', isDark);
     
     if (isDark) {
+        console.log('Switching to light theme');
         document.documentElement.classList.remove('dark');
         if (window.storageManager) {
             window.storageManager.setTheme('light');
+            console.log('Theme saved to storageManager: light');
         } else {
             localStorage.setItem('lego_theme', 'light');
+            console.log('Theme saved to localStorage: light');
         }
     } else {
+        console.log('Switching to dark theme');
         document.documentElement.classList.add('dark');
         if (window.storageManager) {
             window.storageManager.setTheme('dark');
+            console.log('Theme saved to storageManager: dark');
         } else {
             localStorage.setItem('lego_theme', 'dark');
+            console.log('Theme saved to localStorage: dark');
         }
     }
 }
@@ -128,14 +136,54 @@ function toggleTheme() {
 initTheme();
 
 // Add event listener to theme toggle button when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+
+console.log('DOM loaded, searching for theme toggle button');
+
+// Wait a bit for all elements to be ready
+setTimeout(() => {
     const themeToggle = document.getElementById('theme-toggle');
+    console.log('Theme toggle button found:', themeToggle);
+    console.log('Button properties:', {
+        style: themeToggle?.style?.cssText,
+        classes: themeToggle?.className,
+        offsetParent: themeToggle?.offsetParent,
+        clientWidth: themeToggle?.clientWidth,
+        clientHeight: themeToggle?.clientHeight
+    });
+    
     if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-        console.log('Theme toggle button initialized');
+        // Multiple event listeners for debugging
+        themeToggle.addEventListener('click', function(event) {
+            console.log('CLICK EVENT TRIGGERED!', event);
+            event.preventDefault();
+            event.stopPropagation();
+            toggleTheme();
+        });
+        
+        themeToggle.addEventListener('mousedown', function(event) {
+            console.log('MOUSEDOWN EVENT TRIGGERED!', event);
+        });
+        
+        themeToggle.addEventListener('mouseup', function(event) {
+            console.log('MOUSEUP EVENT TRIGGERED!', event);
+        });
+        
+        themeToggle.addEventListener('pointerdown', function(event) {
+            console.log('POINTERDOWN EVENT TRIGGERED!', event);
+        });
+        
+        // Force click handler as backup
+        themeToggle.onclick = function(event) {
+            console.log('ONCLICK HANDLER TRIGGERED!', event);
+            event.preventDefault();
+            toggleTheme();
+        };
+        
+        console.log('All event listeners added to theme toggle button');
     } else {
         console.error('Theme toggle button not found');
     }
-});
+}, 100);
+
 
 console.log("Login component loaded")

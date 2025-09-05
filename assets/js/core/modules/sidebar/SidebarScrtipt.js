@@ -2,8 +2,6 @@ export function activeMenu() {
     document.addEventListener('DOMContentLoaded', () => {
         addEventForToggle();
         
-        // Theme toggle functionality is now handled by header.js
-        
         // Add click handlers for parent menu items
         document.querySelectorAll('.menu-parent').forEach(parent => {
             parent.querySelector('a').addEventListener('click', (e) => {

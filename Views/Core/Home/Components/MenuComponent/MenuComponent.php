@@ -296,10 +296,7 @@ class MenuComponent extends CoreComponent
                 
                 // Reset handle appearance
                 const handle = document.querySelector('.sidebar-resize-handle');
-                if (handle) {
-                    handle.style.background = 'transparent !important';
-                    handle.style.width = '6px !important';
-                }
+           
                 
                 // Save the new width using unified storage manager
                 const sidebar = document.querySelector('.sidebar');
