@@ -2,18 +2,16 @@
 
 namespace Views\Core\Home;
 
+use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 
+#[ApiComponent('/inicio', methods: ['GET'])]
 class HomeComponent extends CoreComponent
 {
     protected $config;
 
-    protected $JS_PATHS = [];
-
-    protected $JS_PATHS_WITH_ARG = [];
-
-    protected $CSS_PATHS = ["components/Core/Home/home.css"];
+    protected $CSS_PATHS = ["./home.css"];
 
     public function __construct($config)
     {
@@ -23,7 +21,7 @@ class HomeComponent extends CoreComponent
     protected function component(): string
     {
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("components/Core/Home/home.js", [])
+            new ScriptCoreDTO("./home.js", [])
         ];
        
         return <<<HTML
@@ -77,4 +75,13 @@ class HomeComponent extends CoreComponent
         </div>
         HTML;
     }
+
+   
+    // public function apiGet($request = null): array
+    // {
+     
+    //     return Response::uri( $this->render() );
+    // }
+
+ 
 }

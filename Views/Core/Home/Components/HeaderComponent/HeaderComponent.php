@@ -13,7 +13,7 @@ class HeaderComponent extends CoreComponent
     protected $JS_PATHS = [];
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [
-        'components/Core/Home/Components/HeaderComponent/header-component.css'
+        './header-component.css'
     ];
 
     public function __construct($config)

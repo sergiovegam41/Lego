@@ -16,17 +16,53 @@ abstract class CoreComponent {
         $this->config = $config;
     }
 
+    /**
+     * Resuelve rutas relativas basadas en la ubicación del componente
+     * ./file.css -> components/Core/Home/file.css
+     * ../shared/utils.js -> components/Core/shared/utils.js
+     */
+    private function resolveRelativePath($path) {
+        // Si no es ruta relativa, devolver tal como está
+        if (!str_starts_with($path, './') && !str_starts_with($path, '../')) {
+            return $path;
+        }
+
+        // Obtener la clase del componente actual
+        $reflection = new \ReflectionClass(static::class);
+        $classPath = $reflection->getFileName();
+        
+        // Extraer la ruta del componente relativa a Views/
+        // Ejemplo: /path/to/Views/Core/Home/HomeComponent.php -> Core/Home
+        if (preg_match('/Views[\/\\\\](.+)[\/\\\\][^\/\\\\]+Component\.php$/', $classPath, $matches)) {
+            $componentDir = str_replace(['/', '\\'], '/', $matches[1]);
+            $basePath = "components/" . $componentDir . "/";
+            
+            // Resolver la ruta relativa
+            if (str_starts_with($path, './')) {
+                return $basePath . substr($path, 2);
+            } elseif (str_starts_with($path, '../')) {
+                $parentDir = dirname($componentDir);
+                if ($parentDir === '.') $parentDir = '';
+                else $parentDir = $parentDir . '/';
+                return "components/" . $parentDir . substr($path, 3);
+            }
+        }
+        
+        return $path;
+    }
+
     abstract protected function component(): string;
 
     
     protected function css_imports(): string {
-
-        $cssDependencies = $this->CSS_PATHS;
+        // Resolver rutas relativas en CSS_PATHS
+        $cssDependencies = array_map([$this, 'resolveRelativePath'], $this->CSS_PATHS);
         return $this->generate_imports($cssDependencies, 'css');
     }
     
     protected function js_imports(): string {
-        $jsDependencies = $this->JS_PATHS;
+        // Resolver rutas relativas en JS_PATHS
+        $jsDependencies = array_map([$this, 'resolveRelativePath'], $this->JS_PATHS);
         return $this->generate_modulesJs($jsDependencies);
     }
   
@@ -38,12 +74,20 @@ abstract class CoreComponent {
         
         global $url_servidor, $id_usuario_actual;
 
+        // Resolver rutas relativas en JS_PATHS_WITH_ARG
+        $resolvedJsPaths = array_map(function($scriptDto) {
+            if ($scriptDto instanceof ScriptCoreDTO) {
+                $scriptDto->path = $this->resolveRelativePath($scriptDto->path);
+            }
+            return $scriptDto;
+        }, $this->JS_PATHS_WITH_ARG);
+
         $modules = json_encode([
             "context"=>[
                 "url_servidor" => $url_servidor,
                 "id_usuario_actual" => $id_usuario_actual
             ],
-            "data"=>$this->JS_PATHS_WITH_ARG
+            "data"=> $resolvedJsPaths
         ]);
 
         if( $this->JS_PATHS_WITH_ARG == [] ){

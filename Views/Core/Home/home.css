@@ -84,10 +84,7 @@
     .dashboard-container {
         padding: var(--space-lg);
     }
-    
-    .welcome-header h1 {
-        font-size: var(--font-size-lg);
-    }
+
     
     .dashboard-grid {
         grid-template-columns: 1fr;

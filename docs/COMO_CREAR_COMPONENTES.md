@@ -39,7 +39,8 @@ use Core\Dtos\ScriptCoreDTO;
 
 class MiComponenteComponent extends CoreComponent
 {
-    protected $CSS_PATHS = ["components/Core/MiComponente/mi-componente.css"];
+    // ✅ NUEVO: Importaciones relativas (como Angular)
+    protected $CSS_PATHS = ["./mi-componente.css"];
 
     public function __construct($config) {
         $this->config = $config;
@@ -49,7 +50,7 @@ class MiComponenteComponent extends CoreComponent
     {
         // Si quieres enviar datos a JavaScript:
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("components/Core/MiComponente/mi-componente.js", [
+            new ScriptCoreDTO("./mi-componente.js", [
                 'mensaje' => 'Hola desde PHP!'
             ])
         ];
@@ -138,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 **En PHP:** Usa `$JS_PATHS_WITH_ARG` con cualquier array
 ```php
 $this->JS_PATHS_WITH_ARG[] = [
-    new ScriptCoreDTO("components/Core/MiComponente/mi-componente.js", [
+    new ScriptCoreDTO("./mi-componente.js", [
         'usuario' => 'Juan',
         'config' => ['theme' => 'dark'],
         'datos' => $datosDeBD
@@ -157,6 +158,55 @@ if (context && context.arg) {
 ```
 
 **Envía cualquier cosa:** arrays, objetos, datos de BD, etc. Se convierte a JSON automáticamente.
+
+## 🧱 Sistema de Importaciones Relativas
+
+**¡Como en Angular!** Ahora puedes usar rutas relativas que se resuelven automáticamente:
+
+### ✅ **Importaciones simples**
+```php
+class MiComponenteComponent extends CoreComponent {
+    // ✅ Archivo en la misma carpeta del componente
+    protected $CSS_PATHS = ["./mi-componente.css"];
+    
+    // ✅ Con ScriptCoreDTO
+    $this->JS_PATHS_WITH_ARG[] = [
+        new ScriptCoreDTO("./mi-componente.js", ['data' => $datos])
+    ];
+}
+```
+
+### 📁 **Subcarpetas y rutas complejas**
+```php
+// Para esta estructura:
+// Views/App/Dashboard/DashboardComponent.php
+// Views/App/Dashboard/styles/main.css
+// Views/App/Dashboard/components/card.css
+// Views/App/shared/utils.js
+
+class DashboardComponent extends CoreComponent {
+    protected $CSS_PATHS = [
+        "./styles/main.css",      // → components/App/Dashboard/styles/main.css
+        "./components/card.css",  // → components/App/Dashboard/components/card.css
+        "../shared/utils.css"     // → components/App/shared/utils.css
+    ];
+}
+```
+
+### 🔄 **Compatibilidad total**
+```php
+// ✅ Rutas relativas (RECOMENDADO)
+protected $CSS_PATHS = ["./mi-componente.css"];
+
+// ✅ Rutas absolutas (sigue funcionando)
+protected $CSS_PATHS = ["components/Core/MiComponente/mi-componente.css"];
+```
+
+### ⚡ **Cero configuración**
+- **Detección automática** de la ubicación del componente
+- **Resolución inteligente** de rutas relativas
+- **Funciona en cualquier nivel** de carpetas
+- **Sin archivos** adicionales que mantener
 
 ## 🎨 Variables CSS (siempre úsalas!)
 
@@ -186,16 +236,17 @@ if (context && context.arg) {
 ## ✅ Reglas importantes
 
 1. **Core/App/Shared:** Pon componentes en la carpeta correcta
-2. **Variables CSS:** SIEMPRE usa `var(--...)` - nunca hardcodees
-3. **JavaScript:** Siempre `let context = {CONTEXT}` y `DOMContentLoaded`  
-4. **Nombres:** `MiComponenteComponent.php`, `mi-componente.css`
-5. **Rutas:** Menú con `/view/`, Routes sin `/view/`
+2. **Importaciones:** Usa rutas relativas `"./archivo.css"` (RECOMENDADO)
+3. **Variables CSS:** SIEMPRE usa `var(--...)` - nunca hardcodees
+4. **JavaScript:** Siempre `let context = {CONTEXT}` y `DOMContentLoaded`  
+5. **Nombres:** `MiComponenteComponent.php`, `mi-componente.css`
+6. **Rutas:** Menú con `/view/`, Routes sin `/view/`
 
 ## 🚨 ¿No funciona?
 
 **404 Error:** Revisa que Routes use `/mi-ruta` (sin `view/`)
 
-**CSS/JS no cargan:** Verifica los paths en el componente PHP
+**CSS/JS no cargan:** Usa `"./archivo.css"` en lugar de rutas absolutas
 
 **No abre:** Mira la consola del navegador para errores
 

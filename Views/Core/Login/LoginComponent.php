@@ -241,25 +241,6 @@ class LoginComponent extends CoreComponent
                 <script type="module" src="./assets/js/core/base-lego-login.js" defer></script>
                 <script type="module" src="./assets/js/core/modules/theme/theme-manager.js"></script>
                 
-                <script>
-                    // Initialize theme system when DOM is ready
-                    document.addEventListener('DOMContentLoaded', function() {
-                        console.log('HTML script: DOM loaded');
-                        
-                        // Debug: Check if button exists
-                        const button = document.getElementById('theme-toggle');
-                        console.log('HTML script: Theme button found:', button);
-                        
-                        // Add smooth transitions after page load
-                        setTimeout(() => {
-                            document.body.style.transition = 'all 0.3s ease';
-                            const container = document.querySelector('.main-container');
-                            if (container) {
-                                container.style.transition = 'all 0.3s ease, transform 0.3s ease';
-                            }
-                        }, 100);
-                    });
-                </script>
 
 
                 </body>
