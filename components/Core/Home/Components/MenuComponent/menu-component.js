@@ -1,4 +1,4 @@
-console.log("se se ejecuta")
+
 let sidebarResizing = false;
         let resizeStartX = 0;
         let resizeStartWidth = 0;
@@ -128,7 +128,6 @@ let sidebarResizing = false;
         const resizeHandle = document.querySelector('.sidebar-resize-handle');
         if (resizeHandle) {
             resizeHandle.addEventListener('mousedown', startSidebarResize);
-            console.log('Event listener agregado al resize handle');
         } else {
             console.warn('No se encontró el resize handle');
         }
