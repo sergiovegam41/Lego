@@ -14,7 +14,7 @@ export async function _loadModules(scripts) {
             const code = await response.text();
             return executeCode(code);
         } catch (error) {
-            console.error(`Error loading module at ${scriptUrl}:`, error);
+            console.error(`Error loading js component at ${scriptUrl}:`, error);
             throw error;
         }
     };
@@ -66,6 +66,35 @@ function executeCode(code) {
 }
 
 /**
+ * Ejecuta código de forma segura, aislado en su propio contexto
+ * @param {string} code - Código JavaScript a ejecutar
+ * @param {string} moduleName - Nombre del módulo para logging
+ */
+function executeCodeSafely(code, moduleName) {
+    try {
+        // Crear un contexto aislado para el módulo
+        const moduleFunction = new Function(`
+            try {
+                // Scope aislado del módulo
+                (function() {
+                    ${code}
+                })();
+            } catch (moduleError) {
+                console.error('🚨 Error in module ${moduleName}:', moduleError);
+                console.warn('⚠️  Module ${moduleName} failed but other modules will continue');
+                // No re-lanzar el error para no romper otros módulos
+            }
+        `);
+        
+        moduleFunction();
+        
+    } catch (criticalError) {
+        console.error(`💥 Critical error loading module ${moduleName}:`, criticalError);
+        console.warn('⚠️  Module failed at execution level, skipping...');
+    }
+}
+
+/**
  * Carga y ejecuta scripts con argumentos y contexto
  * @param {Object} scripts - Objeto con data (scripts y argumentos) y contexto
  * @returns {Promise<void[]>} Promise que resuelve cuando todos los scripts están cargados
@@ -74,9 +103,16 @@ export async function _loadModulesWithArguments(scripts) {
     if (!scripts?.data?.length) return;
 
     const loadScriptWithContext = async (scriptData) => {
+        const { path, arg } = scriptData[0];
+        
         try {
-            const { path, arg } = scriptData[0];
+            // console.log(`🧱 Loading module: ${path}`);
             const response = await fetch(path);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${path}: ${response.status} ${response.statusText}`);
+            }
+            
             const code = await response.text();
             
             // Si es JSX, transformarlo primero
@@ -92,13 +128,27 @@ export async function _loadModulesWithArguments(scripts) {
             
             processedCode = processedCode.replace('{CONTEXT}', contextData);
             
-            // Ejecutar el código
-            return executeCode(processedCode);
+            // Ejecutar código en un contexto aislado
+            executeCodeSafely(processedCode, path);
+            // console.log(`✅ Module loaded successfully: ${path}`);
+            
+            return { success: true, path };
+            
         } catch (error) {
-            console.error('Error loading module with arguments:', error);
-            throw error;
+            console.error(`❌ Error loading module ${path}:`, error);
+            // No propagamos el error - continuamos con otros módulos
+            return { error: error.message, path };
         }
     };
 
-    return Promise.all(scripts.data.map(loadScriptWithContext));
+    // Usar Promise.allSettled para que si un módulo falla, otros continúen
+    const results = await Promise.allSettled(scripts.data.map(loadScriptWithContext));
+    
+    // Log resumen de carga
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value?.success).length;
+    const failed = results.filter(r => r.status === 'rejected' || r.value?.error).length;
+    
+    // console.log(`📊 Module loading summary: ${successful} successful, ${failed} failed`);
+    
+    return results;
 }
