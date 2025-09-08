@@ -5,8 +5,8 @@ use App\Controllers\Auth\Providers\AuthGroups\Admin\Middlewares\AdminMiddlewares
 use Core\Helpers\LegoHelpers;
 use Core\Response;
 use Flight;
-use Views\Core\Home\Components\MainComponent\MainComponent;
-use Views\Core\Login\LoginComponent;
+use Components\Core\Home\Components\MainComponent\MainComponent;
+use Components\Core\Login\LoginComponent;
 
 
 

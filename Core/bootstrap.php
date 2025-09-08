@@ -351,15 +351,7 @@ function consultarError($transaccion)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Funcion: insertar($transaccion)
-// Objetivo: Establece una conexion a la base de datos e inserta datos
-// Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
-// Autor: AAM
-// Fecha: 2006/01/23
-// Modificacion: 2006/01/23
-// Retorna: Arreglo si la expresion es ejecutada con exito o FALSE
-////////////////////////////////////////////////////////////////////////////////
+
 function insertar($transaccion)
 {
     global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
@@ -430,16 +422,6 @@ function insertarSinError($transaccion)
 
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Funcion: insertar_traer_id($transaccion, $secuencia)
-// Objetivo: Establece una conexion a la base de datos e inserta datos
-// Desarrollo: SmartInfo Ltda. (www.smartinfobusiness.com)
-// Autor: AAM
-// Fecha: 2006/01/23
-// Modificacion: 2006/01/23
-// Retorna: Arreglo si la expresion es ejecutada con exito o FALSE
-////////////////////////////////////////////////////////////////////////////////
 function insertar_traer_id($transaccion, $secuencia, $registrar = true)
 {
     $host = $_ENV['DB_HOST'];

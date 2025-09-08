@@ -24,7 +24,7 @@ class ApiRouteDiscovery
             return;
         }
 
-        $componentsPath = __DIR__ . '/../../Views';
+        $componentsPath = __DIR__ . '/../../components';
         $componentFiles = self::findComponentFiles($componentsPath);
 
         foreach ($componentFiles as $file) {

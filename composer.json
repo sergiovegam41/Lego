@@ -14,7 +14,7 @@
           "App\\": "App/",
           "Core\\": "Core/",
           "public\\":"public/",
-          "Views\\":"Views/"
+          "Components\\":"components/"
         }
       }
 }

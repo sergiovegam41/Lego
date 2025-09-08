@@ -1,5 +1,4 @@
 export function activeMenu() {
-    document.addEventListener('DOMContentLoaded', () => {
         addEventForToggle();
         
         // Add click handlers for parent menu items
@@ -19,7 +18,6 @@ export function activeMenu() {
                 });
             });
         });
-    });
 }
 
 function addEventForToggle() {

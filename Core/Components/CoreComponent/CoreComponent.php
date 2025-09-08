@@ -31,9 +31,9 @@ abstract class CoreComponent {
         $reflection = new \ReflectionClass(static::class);
         $classPath = $reflection->getFileName();
         
-        // Extraer la ruta del componente relativa a Views/
-        // Ejemplo: /path/to/Views/Core/Home/HomeComponent.php -> Core/Home
-        if (preg_match('/Views[\/\\\\](.+)[\/\\\\][^\/\\\\]+Component\.php$/', $classPath, $matches)) {
+        // Extraer la ruta del componente relativa a components/
+        // Ejemplo: /path/to/components/Core/Home/HomeComponent.php -> Core/Home
+        if (preg_match('/components[\/\\\\](.+)[\/\\\\][^\/\\\\]+Component\.php$/', $classPath, $matches)) {
             $componentDir = str_replace(['/', '\\'], '/', $matches[1]);
             $basePath = "components/" . $componentDir . "/";
             
@@ -75,12 +75,23 @@ abstract class CoreComponent {
         global $url_servidor, $id_usuario_actual;
 
         // Resolver rutas relativas en JS_PATHS_WITH_ARG
-        $resolvedJsPaths = array_map(function($scriptDto) {
-            if ($scriptDto instanceof ScriptCoreDTO) {
-                $scriptDto->path = $this->resolveRelativePath($scriptDto->path);
+        $resolvedJsPaths = [];
+        foreach ($this->JS_PATHS_WITH_ARG as $scriptArray) {
+            $resolvedArray = [];
+            foreach ($scriptArray as $scriptDto) {
+                if ($scriptDto instanceof ScriptCoreDTO) {
+                    // Crear una copia para no modificar el original
+                    $resolvedDto = new ScriptCoreDTO(
+                        $this->resolveRelativePath($scriptDto->path),
+                        $scriptDto->arg
+                    );
+                    $resolvedArray[] = $resolvedDto;
+                } else {
+                    $resolvedArray[] = $scriptDto;
+                }
             }
-            return $scriptDto;
-        }, $this->JS_PATHS_WITH_ARG);
+            $resolvedJsPaths[] = $resolvedArray;
+        }
 
         $modules = json_encode([
             "context"=>[
