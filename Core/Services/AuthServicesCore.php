@@ -133,7 +133,7 @@ class AuthServicesCore
                 'expires' => $expires_at->timestamp,
                 'path' => '/',
                 'domain' => '', // Define el dominio según corresponda
-                'secure' => true,   // true si usas HTTPS
+                'secure' => false,   // false para HTTP, true para HTTPS
                 'httponly' => true, // Evita acceso desde JavaScript
                 'samesite' => 'Lax', // o 'Strict', según necesidad
             ]

@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Servir archivos estáticos de assets
+RewriteRule ^assets/(.*)$ ../assets/$1 [L]
+
+# Servir archivos .js y .css de components
+RewriteRule ^components/(.+\.(js|css))$ ../components/$1 [L]
+
+# Ruta principal para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

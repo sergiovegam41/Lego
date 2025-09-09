@@ -1,4 +1,7 @@
 <?php
+// Configure error reporting - Hide deprecation warnings in production
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 $capsule = new Capsule;
