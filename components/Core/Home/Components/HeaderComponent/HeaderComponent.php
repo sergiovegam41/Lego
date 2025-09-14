@@ -24,7 +24,7 @@ class HeaderComponent extends CoreComponent
     protected function component(): string
     {
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("components/Core/Home/Components/HeaderComponent/header-component.js", [
+            new ScriptCoreDTO("./header-component.js", [
                 "user" => [
                     "name" => "Admin User",
                     "role" => "Administrator",
