@@ -227,33 +227,38 @@ body.dark ion-icon, body.dark .name {
 
 
 
+/* Principal content viewer - base styles */
 #principal-content-viwer{
-    flex: 1;
-    width: 0;
-    min-width: 0;
-    height: 100vh;
     overflow-x: auto;
     overflow-y: auto;
     transition: var(--transition-normal);
     background: var(--bg-body);
 }
 
-/* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
-    #parent-content {
-        flex-direction: column;
-    }
-    
-    #content-sidebar-shade {
-        width: 100%;
-        height: auto;
-        min-width: unset;
-    }
-    
-    #principal-content-viwer {
-        width: 100%;
-        height: calc(100vh - 60px); /* Ajustar según altura del sidebar mobile */
-    }
+/* Mobile-first responsive design - siguiendo contrato */
+/* Mobile: Base styles (0-767px) - sidebar como spacer */
+#parent-content {
+    flex-direction: row; /* Mantener row para que shade funcione */
+}
+
+#content-sidebar-shade {
+    flex-shrink: 0;
+    width: var(--sidebar-width); /* Usar ancho del sidebar para reservar espacio */
+    min-width: var(--sidebar-width);
+    height: 100%;
+}
+
+#principal-content-viwer {
+    flex: 1; /* Ocupar espacio restante */
+    width: 0; /* Para flexbox correcto */
+    min-width: 0;
+    height: 100vh;
+}
+
+/* Tablet and up: 768px+ - estilos ya están definidos en base */
+@media (min-width: 48rem) {
+    /* Los estilos base ya son correctos para tablet+ */
+    /* Solo agregamos optimizaciones específicas si es necesario */
 }
 
 
@@ -261,6 +266,7 @@ body.dark ion-icon, body.dark .name {
 
 
 
+/* Parent content - base styles */
 #parent-content{
     width: 100vw;
     min-height: 100vh;

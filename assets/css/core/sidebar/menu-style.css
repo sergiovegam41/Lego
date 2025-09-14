@@ -1,10 +1,9 @@
+/* Content sidebar shade - base styles */
 #content-sidebar-shade{
-    flex-shrink: 0;
-    min-width: var(--sidebar-width);
-    width: var(--sidebar-width);
-    height: 100%;
     transition: var(--transition-normal);
 }
+
+/* Desktop styles ya definidos en base.css - evitar duplicación */
 
 /* Ajuste dinámico del shade cuando el sidebar se colapsa */
 .sidebar-collapsed #content-sidebar-shade {

@@ -249,3 +249,8 @@ Tu entorno viene con **todas las piezas esenciales**:
 > **"La creatividad es la moneda del futuro"** 🧱
 > 
 > Con LEGO Framework, cada componente es una inversión que se reutiliza infinitamente. **Construye una vez, úsalo siempre.**
+
+
+
+### ⚠️ **OBLIGATORIO**
+Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia. 
