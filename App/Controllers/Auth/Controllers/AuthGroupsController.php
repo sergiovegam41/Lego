@@ -15,7 +15,7 @@ use Core\Response;
 class AuthGroupsController extends CoreController
 {
 
-  const ROUTE = NULL;
+  const ROUTE = 'auth';
   
   protected $arrayMethods = [ AuthActions::LOGIN, AuthActions::LOGIN_BY_CODE,AuthActions::REFRESH_TOKEN, AuthActions::LOGOUT, AuthActions::REGISTER, AuthActions::PROFILE ];
 

@@ -1,1 +1,3 @@
-[]
+{
+    "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController"
+}

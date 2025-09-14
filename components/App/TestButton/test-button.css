@@ -1,0 +1,20 @@
+/* test-button Component Styles */
+
+.test-button {
+    /* Component-specific styles */
+    padding: var(--spacing-md, 1rem);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--border-radius, 0.5rem);
+    background-color: var(--bg-surface, #ffffff);
+}
+
+.test-button h2 {
+    margin-top: 0;
+    color: var(--text-primary, #1a202c);
+    font-size: var(--font-size-lg, 1.125rem);
+}
+
+.test-button p {
+    color: var(--text-secondary, #718096);
+    margin-bottom: 0;
+}
