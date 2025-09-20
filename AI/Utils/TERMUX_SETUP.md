@@ -11,22 +11,73 @@ El proyecto Lego está corriendo exitosamente en Termux usando PHP nativo.
 
 ## Comandos Principales
 
-### Iniciar la aplicación
-```bash
-# Opción 1: Servidor PHP básico
-php -S localhost:8080 -t public/
+### Cómo correr el proyecto correctamente
 
-# Opción 2: Con PM2 (recomendado)
-pm2 start "php -S localhost:8080 -t public/" --name lego
+#### 1. Preparación inicial
+```bash
+# Navegar al directorio del proyecto
+cd /data/data/com.termux/files/home/Lego
+
+# Verificar que las dependencias estén instaladas
+composer install
+npm install
 ```
 
-### Gestionar con PM2
+#### 2. Cambiar de rama (si es necesario)
 ```bash
-pm2 list            # Ver procesos
-pm2 logs lego       # Ver logs
-pm2 stop lego       # Detener
-pm2 restart lego    # Reiniciar
-pm2 delete lego     # Eliminar proceso
+# Ver ramas disponibles
+git branch -a
+
+# Cambiar a una rama específica (ej: test)
+git checkout test
+
+# O mantener la rama actual (main)
+git checkout main
+```
+
+#### 3. Iniciar la aplicación
+
+**Opción A: Servidor PHP básico (para pruebas rápidas)**
+```bash
+php -S localhost:8080 -t public/
+```
+
+**Opción B: Con PM2 (recomendado para desarrollo)**
+```bash
+# Iniciar con PM2
+pm2 start "php -S localhost:8080 -t public/" --name lego
+
+# Verificar que esté corriendo
+pm2 list
+```
+
+#### 4. Gestión completa del proceso con PM2
+
+**Comandos básicos:**
+```bash
+pm2 list            # Ver todos los procesos
+pm2 logs lego       # Ver logs en tiempo real
+pm2 stop lego       # Detener el proceso
+pm2 restart lego    # Reiniciar el proceso
+pm2 delete lego     # Eliminar el proceso completamente
+```
+
+**Workflow completo para cambiar de rama:**
+```bash
+# 1. Detener el proceso actual
+pm2 stop lego
+
+# 2. Cambiar de rama
+git checkout nombre-de-rama
+
+# 3. Reinstalar dependencias (si hay cambios)
+composer install
+
+# 4. Reiniciar el proceso
+pm2 start "php -S localhost:8080 -t public/" --name lego
+
+# 5. Verificar que esté funcionando
+curl -I http://localhost:8080
 ```
 
 ### Comandos de Lego Framework
@@ -69,9 +120,16 @@ docker-compose up -d
 ## Troubleshooting
 
 ### Si la aplicación no inicia
-1. Verificar que el puerto 8080 esté libre: `netstat -tulpn | grep 8080`
-2. Revisar logs de PM2: `pm2 logs lego`
-3. Probar sin PM2: `php -S localhost:8080 -t public/`
+1. Verificar que el proceso PM2 no esté ya corriendo: `pm2 list`
+2. Si hay un proceso parado, eliminarlo: `pm2 delete lego`
+3. Revisar logs de PM2: `pm2 logs lego`
+4. Probar sin PM2: `php -S localhost:8080 -t public/`
+5. Verificar respuesta del servidor: `curl -I http://localhost:8080`
+
+### Errores comunes
+- **Puerto ocupado**: Si el puerto 8080 está ocupado, detén todos los procesos PM2 con `pm2 stop all`
+- **Proceso duplicado**: Si aparecen múltiples procesos "lego", elimínalos todos: `pm2 delete all`
+- **Cambios no reflejados**: Después de cambiar de rama, siempre ejecuta `pm2 restart lego`
 
 ### Si necesitas reinstalar dependencias
 ```bash
