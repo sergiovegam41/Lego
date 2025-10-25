@@ -8,7 +8,6 @@ use Core\Dtos\ScriptCoreDTO;
 class AutomationComponent extends CoreComponent
 {
 
-    protected $config;
 
     protected $JS_PATHS = [];
 
@@ -16,10 +15,7 @@ class AutomationComponent extends CoreComponent
 
     protected $CSS_PATHS = ["components/Core/Automation/automation.css"];
 
-    public function __construct( $config)
-    {
-        $this->config = $config;
-    }
+    public function __construct() {}
 
     protected function component(): string
     {

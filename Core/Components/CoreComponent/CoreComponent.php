@@ -3,18 +3,44 @@ namespace Core\Components\CoreComponent;
 
 use Core\Dtos\ScriptCoreDTO;
 
+/**
+ * CoreComponent - Clase base para todos los componentes Lego
+ *
+ * FILOSOFÍA LEGO:
+ * Los componentes son bloques reutilizables que se ensamblan de forma declarativa.
+ * Cada componente define sus propios parámetros con tipos específicos usando named arguments.
+ *
+ * CARACTERÍSTICAS:
+ * - Named arguments: Parámetros claros y type-safe
+ * - Auto-loading de CSS/JS: Define $CSS_PATHS y $JS_PATHS
+ * - Rutas relativas: Usa "./file.css" y se resuelve automáticamente
+ * - Composición: Los componentes pueden contener otros componentes
+ *
+ * EJEMPLO:
+ * class MenuComponent extends CoreComponent {
+ *     protected $CSS_PATHS = ["./menu.css"];
+ *
+ *     public function __construct(
+ *         public MenuItemCollection $options,
+ *         public string $title,
+ *         public bool $searchable = false
+ *     ) {}
+ *
+ *     protected function component(): string {
+ *         return "<div>...</div>";
+ *     }
+ * }
+ */
 abstract class CoreComponent {
 
-    protected $config;
     protected $JS_PATHS = [];
 
     /**  @var ScriptCoreDTO[] */
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [];
 
-    public function __construct($config) {
-        $this->config = $config;
-    }
+    // Los componentes hijos definen su propio constructor con named arguments
+    // No hay constructor obligatorio aquí
 
     /**
      * Resuelve rutas relativas basadas en la ubicación del componente

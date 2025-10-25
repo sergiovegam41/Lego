@@ -7,13 +7,9 @@ use Core\Dtos\ScriptCoreDTO;
 
 class TestButtonComponent extends CoreComponent
 {
-    protected $config;
     protected $CSS_PATHS = ["./test-button.css"];
 
-    public function __construct($config = [])
-    {
-        $this->config = $config;
-    }
+    public function __construct() {}
 
     protected function component(): string
     {

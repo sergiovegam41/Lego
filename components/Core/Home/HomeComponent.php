@@ -9,14 +9,10 @@ use Core\Dtos\ScriptCoreDTO;
 #[ApiComponent('/inicio', methods: ['GET'])]
 class HomeComponent extends CoreComponent
 {
-    protected $config;
 
     protected $CSS_PATHS = ["./home.css"];
 
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
+    public function __construct() {}
 
     protected function component(): string
     {

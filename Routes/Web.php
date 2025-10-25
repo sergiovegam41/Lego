@@ -37,7 +37,7 @@ use Components\Core\Login\LoginComponent;
  */
 Flight::route('GET /admin/', function () {
     if (AdminMiddlewares::isAutenticated()) {
-        $component = new MainComponent([]);
+        $component = new MainComponent();
         return Response::uri($component->render());
     }
 });
@@ -47,7 +47,7 @@ Flight::route('GET /admin/', function () {
  * Renderiza el formulario de login
  */
 Flight::route('GET /login', function () {
-    $component = new LoginComponent([]);
+    $component = new LoginComponent();
     Response::uri($component->render());
 });
 
