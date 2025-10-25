@@ -18,7 +18,7 @@ Guía para usar contratos y mantener calidad en el desarrollo.
 
 ### 🧩 **Componentes** → `components-structure-contract.md`
 **Cuándo usar:** Creando/modificando componentes
-**Regla clave:** Estructura `Views/[Feature]/Components/[Name]/`
+**Regla clave:** Estructura `components/[Core|App]/[ComponentName]/`
 
 ### 📱 **Responsive** → `responsive-design-contract.md`
 **Cuándo usar:** Interfaces multi-dispositivo

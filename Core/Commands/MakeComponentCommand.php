@@ -46,6 +46,7 @@ class MakeComponentCommand extends CoreCommand
      */
     private function createComponent(string $name, string $type, string $path): void
     {
+
         $componentPath = __DIR__ . "/../../components/{$path}/{$name}";
 
         // Create directory
@@ -61,6 +62,7 @@ class MakeComponentCommand extends CoreCommand
 
         // Create JS file
         $this->createJsFile($componentPath, $name);
+        
     }
 
     /**

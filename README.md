@@ -40,8 +40,8 @@ Sistema unificado de variables CSS que garantiza que todos tus componentes mante
 ```php
 // ✅ Así de simple es crear un componente
 class DashboardCard extends CoreComponent {
-    protected $CSS_PATHS = ["components/App/DashboardCard/card.css"];
-    
+    protected $CSS_PATHS = ["./card.css"]; // Ruta relativa al componente
+
     public function component(): string {
         return <<<HTML
         <div class="dashboard-card">
@@ -99,10 +99,10 @@ angular-app/
 ```
 
 ```
-lego/Views/App/
+lego/components/App/
 └── UserCard/
     ├── UserCardComponent.php  ← Lógica + HTML
-    ├── user-card.css         ← Estilos  
+    ├── user-card.css         ← Estilos
     └── user-card.js          ← Comportamiento
 ```
 
@@ -162,26 +162,93 @@ Como los sets de LEGO reales, todo está **perfectamente organizado**:
 
 ```
 lego/
-├── Views/
+├── components/
 │   ├── Core/        🧱 Piezas base del framework
-│   │   ├── Login/   
-│   │   ├── Home/    
-│   │   └── Menu/
-│   ├── App/         🎨 Tus componentes específicos
-│   │   ├── Users/
-│   │   └── Products/
-│   └── Shared/      🔗 Piezas reutilizables
-├── Routes/          🛤️ Conexiones entre componentes  
+│   │   ├── Login/
+│   │   ├── Home/
+│   │   └── Automation/
+│   └── App/         🎨 Tus componentes específicos
+│       ├── TestButton/
+│       └── [TusComponentes]/
+├── Routes/          🛤️ Conexiones entre componentes
+│   ├── Web.php      → Rutas web principales
+│   ├── Api.php      → Rutas API REST
+│   └── Views.php    → Auto-discovery de componentes
 ├── Core/            ⚙️ Motor del framework
-└── docs/            📚 Guías para construir
+│   ├── Commands/    → CLI (make:component, migrate, etc)
+│   ├── Components/  → CoreComponent base
+│   └── Services/    → Servicios del framework
+├── App/             💼 Lógica de negocio
+│   ├── Controllers/ → Controladores
+│   └── Models/      → Modelos Eloquent
+├── assets/          🎨 Assets globales
+│   ├── css/core/    → Variables CSS y estilos base
+│   ├── js/          → JavaScript global
+│   └── images/      → Imágenes
+└── database/        🗄️ Migraciones
 ```
 
 ### **Cada componente = 1 carpeta completa:**
 ```
-Views/App/MiComponente/
+components/App/MiComponente/
 ├── MiComponenteComponent.php  ← Lógica y HTML
-├── mi-componente.css          ← Estilos únicos  
+├── mi-componente.css          ← Estilos únicos
 └── mi-componente.js           ← Comportamiento
+```
+
+### **Sistema de rutas relativas:**
+Los componentes usan rutas relativas para sus assets:
+```php
+protected $CSS_PATHS = ["./mi-componente.css"];  // ✅ Se resuelve automáticamente
+protected $JS_PATHS_WITH_ARG = [
+    new ScriptCoreDTO("./mi-componente.js", [])
+];
+```
+
+### 🔗 **Sistema de Enlaces Simbólicos (Symlinks)**
+
+**¿Por qué existen `public/components/` y `public/assets/`?**
+
+El framework usa **enlaces simbólicos** para servir archivos estáticos manteniendo la organización del código:
+
+```
+Estructura real:
+├── components/          ← Código fuente de componentes (PHP, CSS, JS)
+├── assets/              ← Assets globales compartidos
+└── public/              ← DocumentRoot de Nginx/Apache
+    ├── index.php        ← Entry point
+    ├── components ->    ← SYMLINK → ../components/
+    └── assets ->        ← SYMLINK → ../assets/
+```
+
+**¿Cómo funciona?**
+1. **Nginx/Apache** sirve archivos desde `public/` (seguridad)
+2. **Los symlinks** permiten acceso HTTP a CSS/JS de componentes
+3. **Sin duplicación**: Los symlinks ocupan ~0 bytes
+
+**Flujo de acceso:**
+```
+Browser: http://localhost/components/Core/Home/home.css
+           ↓
+Nginx:   /public/components/Core/Home/home.css
+           ↓
+Symlink: ../components/Core/Home/home.css
+           ↓
+Real:    /components/Core/Home/home.css ✅
+```
+
+**Ventajas:**
+- ✅ Código organizado fuera del DocumentRoot público
+- ✅ Assets accesibles vía HTTP sin duplicación
+- ✅ Seguridad: solo `public/` expuesto al web server
+- ✅ Performance: sin copias, referencias directas
+
+**Los symlinks ya están incluidos en el repositorio.** Si por alguna razón necesitas recrearlos:
+
+```bash
+cd public/
+ln -s ../components components
+ln -s ../assets assets
 ```
 
 ---

@@ -17,30 +17,32 @@ Este contrato define cómo organizar y estructurar componentes en el framework L
 
 - **Ubicación obligatoria:**
   ```
-  Views/[Feature]/Components/[ComponentName]/
-  ├── ComponentName.php
-  ├── component.css
-  └── component.js
+  components/[Core|App]/[ComponentName]/
+  ├── ComponentNameComponent.php
+  ├── component-name.css
+  └── component-name.js
   ```
 
 ### 🏷️ Nomenclatura
-- **Componentes:** PascalCase (`MenuSidebar`, `UserProfile`)
+- **Componentes:** PascalCase + sufijo `Component` (`MenuSidebarComponent`, `UserProfileComponent`)
 - **Carpetas:** PascalCase para componentes
-- **Archivos CSS/JS:** Siempre `component.css` y `component.js`
+- **Archivos CSS/JS:** kebab-case con nombre del componente (`menu-sidebar.css`, `user-profile.js`)
 
 ### 🔧 Organización por Características
 ```
-Views/
-├── Dashboard/
-│   └── Components/
-│       ├── StatsCard/
-│       └── ChartWidget/
-├── Users/
-│   └── Components/
-│       ├── UserList/
-│       └── UserForm/
-└── Settings/
-    └── Components/
+components/
+├── Core/                    → Componentes del framework
+│   ├── Login/
+│   ├── Home/
+│   └── Automation/
+└── App/                     → Componentes de tu aplicación
+    ├── Dashboard/
+    │   ├── StatsCard/
+    │   └── ChartWidget/
+    ├── Users/
+    │   ├── UserList/
+    │   └── UserForm/
+    └── Settings/
         ├── SettingsPanel/
         └── ConfigForm/
 ```
@@ -52,7 +54,7 @@ Views/
 ### 🚫 Estructura Incorrecta
 ```
 /* ❌ INCORRECTO */
-Components/MenuSidebar.php
+components/MenuSidebar.php
 css/menu-sidebar.css
 js/sidebar.js
 ```
@@ -60,15 +62,15 @@ js/sidebar.js
 ### 🚫 Nomenclatura Inconsistente
 ```
 /* ❌ INCORRECTO */
-menu_sidebar.php
-MenuSidebar.css
-menu-sidebar.js
+menu_sidebar_component.php  // Sin PascalCase ni sufijo correcto
+MenuSidebar.css            // Debería ser kebab-case
+menu-sidebar.js            // Correcto pero sin consistencia
 ```
 
 ### 🚫 Archivos Dispersos
 ```
 /* ❌ INCORRECTO - CSS y JS fuera del componente */
-Views/Components/MenuSidebar/MenuSidebar.php
+components/MenuSidebar/MenuSidebarComponent.php
 assets/css/menu-sidebar.css
 assets/js/sidebar.js
 ```
@@ -78,11 +80,11 @@ assets/js/sidebar.js
 ## 📋 CHECKLIST ANTES DEL COMMIT
 
 ### ✅ Verificación de Estructura
-- [ ] ¿El componente sigue la estructura de carpetas correcta?
+- [ ] ¿El componente está en `components/Core/` o `components/App/`?
 - [ ] ¿Los archivos CSS/JS están en la carpeta del componente?
-- [ ] ¿La nomenclatura es consistente (PascalCase)?
-- [ ] ¿El componente está en la característica correcta?
-- [ ] ¿Los nombres de archivo son `component.css` y `component.js`?
+- [ ] ¿La clase tiene sufijo `Component` en PascalCase?
+- [ ] ¿Los archivos CSS/JS usan kebab-case?
+- [ ] ¿Usa rutas relativas (`./archivo.css`) para imports?
 
 ### ✅ Verificación de Contenido
 - [ ] ¿El CSS del componente usa variables globales?
@@ -96,10 +98,10 @@ assets/js/sidebar.js
 
 ### Estructura de Archivos:
 ```
-Components/Core/Home/
+components/Core/Home/
 ├── HomeComponent.php
-├── component.css
-└── component.js
+├── home.css
+└── home.js
 ```
 
 ### Código del Componente PHP:
@@ -116,7 +118,7 @@ use Core\Dtos\ScriptCoreDTO;
 class HomeComponent extends CoreComponent
 {
     protected $config;
-    protected $CSS_PATHS = ["./component.css"];
+    protected $CSS_PATHS = ["./home.css"];
 
     public function __construct($config)
     {
@@ -126,7 +128,7 @@ class HomeComponent extends CoreComponent
     protected function component(): string
     {
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("./component.js", [])
+            new ScriptCoreDTO("./home.js", [])
         ];
 
         return <<<HTML
@@ -155,45 +157,48 @@ class HomeComponent extends CoreComponent
 
 ### ✅ Elementos Clave del Ejemplo:
 - **Namespace correcto:** `Components\Core\Home`
-- **Nomenclatura:** PascalCase (`HomeComponent`)
-- **CSS Path:** Referencia a `./component.css`
-- **JS Path:** Referencia a `./component.js`
+- **Nomenclatura:** PascalCase + sufijo `Component` (`HomeComponent`)
+- **CSS Path:** Ruta relativa `"./home.css"` (kebab-case)
+- **JS Path:** Ruta relativa `"./home.js"` (kebab-case)
 - **HTML limpio:** Estructura clara con clases CSS semánticas
-- **Documentación:** Atributos claros para routing
+- **Documentación:** Atributos claros para routing (`#[ApiComponent]`)
 
 ---
 
 ## 🆕 CREAR NUEVOS COMPONENTES
 
 ### Proceso paso a paso:
-1. **Identificar la característica** donde pertenece
-2. **Crear la carpeta** en `Views/[Feature]/Components/[ComponentName]/`
-3. **Crear los tres archivos** básicos
-4. **Seguir el contrato de CSS** para estilos
-5. **Implementar funcionalidad** manteniendo cohesión
-6. **Probar** en diferentes contextos
+1. **Decidir ubicación:** `components/Core/` (framework) o `components/App/` (tu app)
+2. **Usar CLI:** `php lego make:component NombreComponente --path=App`
+3. **O crear manualmente** la carpeta en `components/[Core|App]/[ComponentName]/`
+4. **Crear los tres archivos** básicos siguiendo nomenclatura
+5. **Seguir el contrato de CSS** para estilos (variables CSS)
+6. **Implementar funcionalidad** manteniendo cohesión
+7. **Probar** en diferentes contextos
 
 ### Plantilla base:
 ```
-Views/[Feature]/Components/[ComponentName]/
-├── ComponentName.php      # Lógica y renderizado
-├── component.css          # Estilos específicos
-└── component.js          # Comportamiento específico
+components/[Core|App]/[ComponentName]/
+├── ComponentNameComponent.php  # Lógica y renderizado
+├── component-name.css          # Estilos específicos
+└── component-name.js           # Comportamiento específico
 ```
 
 ---
 
 ## 🔄 REUTILIZACIÓN DE COMPONENTES
 
-### Componentes Globales
-- Para componentes usados en múltiples características
-- Ubicar en `Views/Shared/Components/`
+### Componentes del Framework (Core)
+- Para componentes base del framework (Login, Home, etc.)
+- Ubicar en `components/Core/`
 - Mantener la misma estructura
+- No modificar sin entender impacto
 
-### Componentes Específicos
-- Para funcionalidad particular de una característica
-- Mantener en la carpeta de la característica
-- No reutilizar fuera de contexto sin refactorizar
+### Componentes de Aplicación (App)
+- Para funcionalidad específica de tu aplicación
+- Ubicar en `components/App/`
+- Organizar por feature si es necesario
+- Libre para modificar según necesidades
 
 ---
 
@@ -201,17 +206,21 @@ Views/[Feature]/Components/[ComponentName]/
 
 ### Comandos útiles:
 ```bash
-# Crear estructura básica de componente
-mkdir -p "Views/[Feature]/Components/[ComponentName]"
-touch "Views/[Feature]/Components/[ComponentName]/ComponentName.php"
-touch "Views/[Feature]/Components/[ComponentName]/component.css"
-touch "Views/[Feature]/Components/[ComponentName]/component.js"
+# Crear componente con CLI (RECOMENDADO)
+php lego make:component UserCard --path=App
+
+# O crear manualmente
+mkdir -p "components/App/UserCard"
+touch "components/App/UserCard/UserCardComponent.php"
+touch "components/App/UserCard/user-card.css"
+touch "components/App/UserCard/user-card.js"
 ```
 
 ### Archivos clave:
-- `Views/` - Raíz de todas las vistas
-- `Views/Shared/Components/` - Componentes globales
-- `assets/css/core/base.css` - Variables para CSS de componentes
+- `components/Core/` - Componentes del framework
+- `components/App/` - Tus componentes
+- `assets/css/core/base.css` - Variables CSS globales
+- `Core/Components/CoreComponent/CoreComponent.php` - Clase base
 
 ---
 

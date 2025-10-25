@@ -11,8 +11,8 @@ Resumen rápido de todos los contratos disponibles para navegación eficiente.
 ## 🧩 Componentes
 **Archivo:** `components-structure-contract.md`
 **Propósito:** Organización y estructura de componentes
-**Regla principal:** Estructura `Views/[Feature]/Components/[Name]/`
-**Archivos:** `ComponentName.php`, `component.css`, `component.js`
+**Regla principal:** Estructura `components/[Core|App]/[ComponentName]/`
+**Archivos:** `ComponentNameComponent.php`, `component-name.css`, `component-name.js`
 
 ## 📱 Responsive Design
 **Archivo:** `responsive-design-contract.md`

@@ -5,15 +5,14 @@ Guía práctica y directa para crear componentes en el framework Lego.
 ## 📁 ¿Dónde van los componentes?
 
 ```
-Views/
+components/
 ├── Core/     → Framework Lego (Login, Home, Menu)
-├── App/      → Tu aplicación específica 
-└── Shared/   → Reutilizable por ambos
+└── App/      → Tu aplicación específica
 ```
 
 **Cada componente = 1 carpeta con 3 archivos:**
 ```
-Views/Core/MiComponente/
+components/Core/MiComponente/
 ├── MiComponenteComponent.php  ← Lógica PHP
 ├── mi-componente.css          ← Estilos
 └── mi-componente.js           ← JavaScript
@@ -37,17 +36,17 @@ Views/Core/MiComponente/
 ## 🛠️ Crear tu componente en 5 pasos
 
 ### 1️⃣ Componente PHP
-**Archivo:** `Views/Core/MiComponente/MiComponenteComponent.php`
+**Archivo:** `components/Core/MiComponente/MiComponenteComponent.php`
 
 ```php
 <?php
-namespace Views\Core\MiComponente;
+namespace Components\Core\MiComponente;
 use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 
 // ✅ OPCIONAL: Decorador para refrescar el módulo dinámicamente
-#[ApiComponent('/view/mi-ruta', methods: ['GET'])]
+#[ApiComponent('/mi-ruta', methods: ['GET'])]
 class MiComponenteComponent extends CoreComponent
 {
     // ✅ Importaciones relativas (como Angular)
@@ -75,11 +74,14 @@ class MiComponenteComponent extends CoreComponent
 }
 ```
 
-### 2️⃣ Ruta
-**Archivo:** `Routes/Views.php`
+### 2️⃣ Ruta (OPCIONAL - Solo si NO usas #[ApiComponent])
+
+Si tu componente NO tiene el decorador `#[ApiComponent]`, regístralo manualmente:
+
+**Archivo:** `Routes/Web.php` o `Routes/Views.php`
 
 ```php
-use Views\Core\MiComponente\MiComponenteComponent;
+use Components\Core\MiComponente\MiComponenteComponent;
 
 Flight::route('GET /mi-ruta', function () {
     if(AdminMiddlewares::isAutenticated()) {
@@ -89,8 +91,10 @@ Flight::route('GET /mi-ruta', function () {
 });
 ```
 
-### 3️⃣ Menú  
-**Archivo:** `Views/Core/Home/Components/MenuComponent/MenuComponent.php`
+**NOTA:** Si usas `#[ApiComponent('/mi-ruta')]` en el paso 1, NO necesitas este paso.
+
+### 3️⃣ Menú
+**Archivo:** `components/Core/Home/Components/MenuComponent/MenuComponent.php`
 
 ```php
 new MenuItemDto(
@@ -101,8 +105,8 @@ new MenuItemDto(
 ),
 ```
 
-### 4️⃣ CSS 
-**Archivo:** `Views/Core/MiComponente/mi-componente.css`
+### 4️⃣ CSS
+**Archivo:** `components/Core/MiComponente/mi-componente.css`
 
 ```css
 .mi-componente-container {
@@ -123,7 +127,7 @@ new MenuItemDto(
 ```
 
 ### 5️⃣ JavaScript
-**Archivo:** `Views/Core/MiComponente/mi-componente.js`
+**Archivo:** `components/Core/MiComponente/mi-componente.js`
 
 ```javascript
 // 📥 Recibir datos desde PHP
@@ -243,10 +247,10 @@ class MiComponenteComponent extends CoreComponent {
 ### 📁 **Subcarpetas y rutas complejas**
 ```php
 // Para esta estructura:
-// Views/App/Dashboard/DashboardComponent.php
-// Views/App/Dashboard/styles/main.css
-// Views/App/Dashboard/components/card.css
-// Views/App/shared/utils.js
+// components/App/Dashboard/DashboardComponent.php
+// components/App/Dashboard/styles/main.css
+// components/App/Dashboard/components/card.css
+// components/App/shared/utils.js
 
 class DashboardComponent extends CoreComponent {
     protected $CSS_PATHS = [
@@ -299,13 +303,13 @@ protected $CSS_PATHS = ["components/Core/MiComponente/mi-componente.css"];
 
 ## ✅ Reglas importantes
 
-1. **Core/App/Shared:** Pon componentes en la carpeta correcta
-2. **API opcional:** Usa `#[ApiComponent('/ruta')]` para hacerlo actualizable
+1. **Core/App:** Pon componentes en `components/Core/` o `components/App/`
+2. **API opcional:** Usa `#[ApiComponent('/ruta')]` para auto-discovery
 3. **Importaciones:** Usa rutas relativas `"./archivo.css"` (RECOMENDADO)
 4. **Variables CSS:** SIEMPRE usa `var(--...)` - nunca hardcodees
-5. **JavaScript:** Siempre `let context = {CONTEXT}` 
+5. **JavaScript:** Siempre `let context = {CONTEXT}`
 6. **Nombres:** `MiComponenteComponent.php`, `mi-componente.css`
-7. **Rutas:** Menú con `/view/`, Routes sin `/view/`
+7. **Rutas:** Menú con `/view/`, decorador ApiComponent sin `/view/`
 
 ## 🚨 ¿No funciona?
 
@@ -319,4 +323,4 @@ protected $CSS_PATHS = ["components/Core/MiComponente/mi-componente.css"];
 
 Ahora solo sigue los 5 pasos y tendrás tu componente funcionando. 
 
-**Ejemplo completo:** Mira `Views/Core/Home/HomeComponent.php` - usa importaciones relativas y decorador API.
+**Ejemplo completo:** Mira `components/Core/Home/HomeComponent.php` - usa importaciones relativas y decorador API.
