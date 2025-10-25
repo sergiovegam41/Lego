@@ -23,15 +23,25 @@ components/Core/MiComponente/
 **Lego es una SPA (Single Page Application):**
 
 1. **`/` o `/admin/`** → Carga el `MainComponent` (layout completo)
+   - Manejado por `Routes/Web.php`
+   - Retorna HTML completo (DOCTYPE, HEAD, BODY)
+
 2. **`MainComponent`** contiene:
-   - 📋 `MenuComponent` (sidebar con links)  
+   - 📋 `MenuComponent` (sidebar con links)
    - 📦 `HeaderComponent` (barra superior)
    - 🖼️ `<div id="home-page">` (contenedor de módulos)
 
 3. **Los componentes se cargan dinámicamente:**
-   - Menú usa: `/view/inicio`, `/view/automation`, etc.
-   - Window Manager fetch estos endpoints via Ajax
+   - Manejados por `Routes/Component.php`
+   - Menú usa: `/component/inicio`, `/component/automation`, etc.
+   - Window Manager hace fetch a estos endpoints via Ajax
    - Se renderizan dentro de `#home-page` como módulos
+   - Retornan solo HTML parcial (sin DOCTYPE/HEAD/BODY)
+   - Assets se sirven desde `/component/nombre/file.css|js`
+
+**Filosofía "Sin Estado en Frontend":**
+Los componentes siempre se refrescan desde el servidor, eliminando desfases
+y manteniendo el backend como única fuente de verdad.
 
 ## 🛠️ Crear tu componente en 5 pasos
 
@@ -74,24 +84,23 @@ class MiComponenteComponent extends CoreComponent
 }
 ```
 
-### 2️⃣ Ruta (OPCIONAL - Solo si NO usas #[ApiComponent])
+### 2️⃣ Ruta (AUTO-DISCOVERY)
 
-Si tu componente NO tiene el decorador `#[ApiComponent]`, regístralo manualmente:
+**¡El decorador es suficiente!** El sistema de auto-discovery se encarga automáticamente.
 
-**Archivo:** `Routes/Web.php` o `Routes/Views.php`
+**¿Cómo funciona?**
+1. `Routes/Component.php` se carga
+2. Escanea todos los componentes en `/components`
+3. Encuentra tu decorador `#[ApiComponent('/mi-ruta')]`
+4. Registra la ruta automáticamente
+5. ¡Listo! Tu componente es accesible en `/component/mi-ruta`
 
-```php
-use Components\Core\MiComponente\MiComponenteComponent;
+**SOLO necesitas registro manual si:**
+- Es una página completa (MainComponent, LoginComponent)
+- Va en `Routes/Web.php` (entry points)
+- Retorna HTML completo (con DOCTYPE/HEAD/BODY)
 
-Flight::route('GET /mi-ruta', function () {
-    if(AdminMiddlewares::isAutenticated()) {
-        $component = new MiComponenteComponent([]);
-        return Response::uri($component->render());
-    }
-});
-```
-
-**NOTA:** Si usas `#[ApiComponent('/mi-ruta')]` en el paso 1, NO necesitas este paso.
+**Para componentes SPA:** El decorador es TODO lo que necesitas ✅
 
 ### 3️⃣ Menú
 **Archivo:** `components/Core/Home/Components/MenuComponent/MenuComponent.php`
@@ -100,7 +109,7 @@ Flight::route('GET /mi-ruta', function () {
 new MenuItemDto(
     id: "18",
     name: "Mi Componente",
-    url: $HOST_NAME . '/view/mi-ruta',
+    url: $HOST_NAME . '/component/mi-ruta',
     iconName: "cube-outline"
 ),
 ```
@@ -183,11 +192,11 @@ if (context && context.arg) {
 <?php
 use Core\Attributes\ApiComponent;
 
-// 🚀 Solo esto hace el módulo refrescable dinámicamente  
-#[ApiComponent('/view/inicio', methods: ['GET'])]
+// 🚀 Solo esto hace el módulo refrescable dinámicamente
+#[ApiComponent('/inicio', methods: ['GET'])]
 class HomeComponent extends CoreComponent {
     protected $CSS_PATHS = ["./home.css"];
-    
+
     // Tu componente normal como siempre
     protected function component(): string {
         return <<<HTML
@@ -200,9 +209,10 @@ class HomeComponent extends CoreComponent {
 ```
 
 ### 🎯 **Funciona en el Window Manager**
-- **Carga inicial**: Window Manager hace `fetch('/view/inicio')` → Renderiza en `#home-page`
-- **Actualización**: Mismo `fetch('/view/inicio')` → Actualiza el contenido del módulo
-- **Una sola ruta `/view/inicio`** para carga y refresh - cero duplicación
+- **Carga inicial**: Window Manager hace `fetch('/component/inicio')` → Renderiza en `#home-page`
+- **Actualización**: Mismo `fetch('/component/inicio')` → Actualiza el contenido del módulo
+- **Una sola ruta `/component/inicio`** para carga y refresh - cero duplicación
+- **Assets**: Se sirven desde `/component/inicio/HomeComponent.css|js`
 
 ### ⚙️ **Casos de uso perfectos**
 - **Refrescar módulos** sin recargar página
@@ -213,14 +223,18 @@ class HomeComponent extends CoreComponent {
 ### 🔧 **Configuración para módulos**
 ```php
 // ✅ Módulo que se puede refrescar dinámicamente
-#[ApiComponent('/view/mi-modulo', methods: ['GET'])]
+#[ApiComponent('/mi-modulo', methods: ['GET'])]
 
 // ✅ Módulo con múltiples acciones
-#[ApiComponent('/view/dashboard', methods: ['GET', 'POST'])]
+#[ApiComponent('/dashboard', methods: ['GET', 'POST'])]
 
 // ✅ Módulo público sin autenticación
-#[ApiComponent('/view/publico', methods: ['GET'], requiresAuth: false)]
+#[ApiComponent('/publico', methods: ['GET'], requiresAuth: false)]
 ```
+
+**NOTA:** El decorador NO incluye `/component/` - el sistema lo agrega automáticamente.
+- Decorador: `#[ApiComponent('/inicio')]`
+- Ruta final: `/component/inicio`
 
 ### ⚡ **Auto-descubrimiento**
 - **Cero configuración** en Routes
@@ -309,11 +323,13 @@ protected $CSS_PATHS = ["components/Core/MiComponente/mi-componente.css"];
 4. **Variables CSS:** SIEMPRE usa `var(--...)` - nunca hardcodees
 5. **JavaScript:** Siempre `let context = {CONTEXT}`
 6. **Nombres:** `MiComponenteComponent.php`, `mi-componente.css`
-7. **Rutas:** Menú con `/view/`, decorador ApiComponent sin `/view/`
+7. **Rutas:**
+   - Menú: `$HOST_NAME . '/component/mi-ruta'`
+   - Decorador: `#[ApiComponent('/mi-ruta')]` (sin `/component/`)
 
 ## 🚨 ¿No funciona?
 
-**404 Error:** Revisa que Routes use `/mi-ruta` (sin `view/`)
+**404 Error:** Revisa que el decorador use `/mi-ruta` (sin `component/`)
 
 **CSS/JS no cargan:** Usa `"./archivo.css"` en lugar de rutas absolutas
 

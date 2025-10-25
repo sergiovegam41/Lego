@@ -46,7 +46,7 @@ class MenuComponent extends CoreComponent
             new MenuItemDto(
                 id: "1",
                 name: "Inicio",
-                url: $HOST_NAME . '/view/inicio',
+                url: $HOST_NAME . '/component/inicio',
                 iconName: "home-outline"
             ),
             new MenuItemDto(
@@ -154,7 +154,7 @@ class MenuComponent extends CoreComponent
             new MenuItemDto(
                 id: "17",
                 name: "Automatizacion",
-                url: $HOST_NAME . '/view/automation',
+                url: $HOST_NAME . '/component/automation',
                 iconName: "flash-outline"
             ),
         ];

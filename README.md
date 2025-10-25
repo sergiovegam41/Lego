@@ -253,6 +253,192 @@ ln -s ../assets assets
 
 ---
 
+## 🛤️ Sistema de Routing en 3 Capas
+
+Lego Framework implementa un sistema de routing innovador que separa claramente las responsabilidades en **3 capas independientes**.
+
+### 📐 Arquitectura del Router
+
+```
+Usuario → Nginx → public/index.php → Core/Router.php
+                                            ↓
+                        ┌───────────────────┴───────────────────┐
+                        │   Analiza primer segmento de la URI   │
+                        └───────────────────┬───────────────────┘
+                                            ↓
+            ┌──────────────┬────────────────┴────────────┬──────────────┐
+            │              │                             │              │
+         /api/*      /component/*                     otros            /
+            │              │                             │              │
+            ↓              ↓                             ↓              ↓
+         Api.php      Component.php                 Web.php        Web.php
+         (JSON)     (HTML parcial + Assets)       (HTML completo)
+```
+
+---
+
+### 🔴 **Capa 1: API Backend** (`/api/*`)
+
+**Propósito:** Endpoints REST para lógica de negocio
+
+**Características:**
+- ✅ Retorna JSON
+- ✅ Autenticación modular (Admin, Api, extensible)
+- ✅ Validación de requests
+- ✅ Rutas dinámicas auto-mapeadas
+
+**Ejemplos:**
+```
+POST /api/auth/admin/login
+POST /api/auth/api/refresh_token
+GET  /api/users/list
+POST /api/products/create
+```
+
+**Archivo:** `Routes/Api.php`
+
+---
+
+### 🟢 **Capa 2: Component Routes** (`/component/*`)
+
+**Propósito:** Componentes SPA + Assets estáticos
+
+**Características:**
+- ✅ Retorna HTML parcial (sin DOCTYPE/HEAD/BODY) para componentes
+- ✅ Sirve assets estáticos (.css, .js) de componentes
+- ✅ Auto-discovery con decorador `#[ApiComponent]`
+- ✅ Se insertan en `#home-page` del layout SPA
+- ✅ **Filosofía "Sin estado en frontend"**
+- ✅ Consistencia total: `/component/` para todo lo relacionado a componentes
+
+**¿Por qué sin estado?**
+En lugar de mantener estado complejo en el frontend (Redux, Vuex, etc.),
+los componentes siempre se refrescan desde el servidor. Esto elimina:
+- ❌ Desfases de información
+- ❌ Sincronización compleja
+- ❌ Bugs de estado inconsistente
+
+Y garantiza:
+- ✅ Información siempre actualizada
+- ✅ Backend como única fuente de verdad
+- ✅ Desarrollo más simple
+
+**Ejemplo de uso:**
+
+1. **Crear componente con decorador:**
+```php
+#[ApiComponent('/inicio', methods: ['GET'])]
+class HomeComponent extends CoreComponent {
+    protected function component(): string {
+        return '<div>Dashboard actualizado</div>';
+    }
+}
+```
+
+2. **JavaScript lo refresca:**
+```javascript
+// Window Manager hace fetch automáticamente
+fetch('/component/inicio')
+    .then(html => {
+        document.getElementById('home-page').innerHTML = html;
+    });
+```
+
+3. **Assets se cargan automáticamente:**
+```html
+<link rel="stylesheet" href="/component/inicio/HomeComponent.css">
+<script src="/component/inicio/HomeComponent.js"></script>
+```
+
+4. **Usuario ve información actualizada** sin recargar la página
+
+**Ejemplos de rutas:**
+```
+GET /component/inicio              → HomeComponent (HTML)
+GET /component/automation          → AutomationComponent (HTML)
+GET /component/inicio/HomeComponent.css  → CSS del componente
+GET /component/inicio/HomeComponent.js   → JS del componente
+```
+
+**Archivo:** `Routes/Component.php`
+
+---
+
+### 🔵 **Capa 3: Web Routes** (`/*`)
+
+**Propósito:** Páginas completas (puntos de entrada)
+
+**Características:**
+- ✅ Retorna HTML completo (DOCTYPE, HEAD, BODY)
+- ✅ MainComponent (layout SPA), LoginComponent
+- ✅ Registro manual de rutas
+- ✅ Entry points de la aplicación
+
+**Ejemplos:**
+```
+GET /admin  → MainComponent (Layout con sidebar/header)
+GET /login  → LoginComponent (Página de autenticación)
+GET /       → Redirect a /admin
+```
+
+**Archivo:** `Routes/Web.php`
+
+---
+
+### 🎯 Flujo Completo en Acción
+
+**Escenario:** Usuario navega en el dashboard
+
+```
+1. Usuario accede → /admin
+   └→ Web.php → MainComponent
+   └→ Renderiza HTML completo con sidebar, header, #home-page
+
+2. Usuario hace click en "Inicio" del menú
+   └→ JavaScript fetch → /component/inicio
+   └→ Core/Router.php → Component.php → HomeComponent
+   └→ Retorna HTML parcial
+
+3. JavaScript inserta contenido en #home-page
+   └→ Usuario ve dashboard actualizado
+   └→ Sin recargar página, sin mantener estado
+
+4. Assets del componente se cargan automáticamente
+   └→ /component/inicio/HomeComponent.css
+   └→ /component/inicio/HomeComponent.js
+   └→ Servidos con caché eficiente desde PHP
+
+5. Usuario hace click en "Automatización"
+   └→ JavaScript fetch → /component/automation
+   └→ Component.php → AutomationComponent
+   └→ Información fresca del servidor
+   └→ Siempre actualizada, sin desfases
+```
+
+---
+
+### 💡 Ventajas del Sistema
+
+**1. Separación clara de responsabilidades**
+- Cada capa con propósito específico
+- Código organizado y mantenible
+
+**2. Desarrollo simple**
+- Sin estado complejo en frontend
+- Sin sincronización de datos
+- Backend como única fuente de verdad
+
+**3. Información siempre actualizada**
+- Cada refresco trae datos frescos
+- Elimina bugs de estado desincronizado
+
+**4. Escalabilidad**
+- Auto-discovery de componentes
+- Fácil agregar nuevas funcionalidades
+- Sistema modular extensible
+
+---
+
 ## ⚡ Herramientas de construcción
 
 ### 🏗️ **Crear nuevas piezas**
