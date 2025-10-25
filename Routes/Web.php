@@ -12,7 +12,7 @@
  * - Registro manual de rutas
  * - Se acceden directamente desde el navegador
  *
- * DIFERENCIA CON ComponentRoutes:
+ * DIFERENCIA CON Component.php:
  * - Web: Páginas completas → Layout inicial con menu/header
  * - Component: Módulos SPA → Solo contenido para #home-page
  *
