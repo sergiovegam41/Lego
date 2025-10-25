@@ -5,6 +5,47 @@
 ## 🎯 Propósito
 Este contrato define cómo organizar y estructurar componentes en el framework LegoPHP para mantener consistencia y facilitar el mantenimiento.
 
+## 🚀 Filosofía Lego: Componentes Declarativos
+
+**Lego se inspira en Flutter:** Los componentes son bloques tipo-safe que se ensamblan de forma declarativa.
+
+### Principios Fundamentales:
+
+1. **Named Arguments con Tipos Específicos**
+   - Cada parámetro tiene un tipo definido
+   - Parámetros obligatorios y opcionales claramente marcados
+   - IDE autocomplete y validación
+
+2. **No más `$config` genérico**
+   - ❌ Antes: `new Component(['option' => 'value'])`
+   - ✅ Ahora: `new Component(option: 'value', title: 'Mi Título')`
+
+3. **Collections Tipadas para Validación**
+   - Colecciones específicas validan tipos en runtime
+   - Ejemplo: `MenuItemCollection` solo acepta `MenuItemDto`
+   - Type-safety sin sacrificar flexibilidad
+
+4. **Composición Declarativa**
+   - Los componentes pueden contener otros componentes
+   - Construcción de UI clara y predecible
+   - Similar a Flutter: `Column(children: [Text(), Button()])`
+
+### Ejemplo de Uso:
+```php
+// ✅ NUEVA API - Type-safe y declarativa
+new MenuComponent(
+    options: new MenuItemCollection(
+        new MenuItemDto(id: "1", name: "Home", url: "/", iconName: "home"),
+        new MenuItemDto(id: "2", name: "Settings", url: "/settings", iconName: "cog")
+    ),
+    title: "Mi App",              // Obligatorio
+    subtitle: "v1.0",              // Obligatorio
+    icon: "menu-outline",          // Obligatorio
+    searchable: true,              // Opcional
+    resizable: true                // Opcional
+)
+```
+
 ---
 
 ## ✅ QUE SÍ HACER
@@ -86,11 +127,21 @@ assets/js/sidebar.js
 - [ ] ¿Los archivos CSS/JS usan kebab-case?
 - [ ] ¿Usa rutas relativas (`./archivo.css`) para imports?
 
+### ✅ Verificación de API Declarativa (NUEVA)
+- [ ] ¿El constructor usa named arguments con tipos específicos?
+- [ ] ¿Los parámetros son public properties (`public string $title`)?
+- [ ] ¿Los parámetros obligatorios están claramente definidos?
+- [ ] ¿Los parámetros opcionales tienen valores por defecto?
+- [ ] ¿NO usa `$config` genérico?
+- [ ] ¿Las colecciones usan clases tipo-safe (ej: `MenuItemCollection`)?
+- [ ] ¿La documentación PHPDoc describe los parámetros?
+
 ### ✅ Verificación de Contenido
 - [ ] ¿El CSS del componente usa variables globales?
 - [ ] ¿El JavaScript es modular y específico del componente?
 - [ ] ¿El componente es reutilizable?
 - [ ] ¿La documentación interna es clara?
+- [ ] ¿Los métodos condicionales son privados y descriptivos?
 
 ---
 
@@ -114,39 +165,62 @@ use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 
+/**
+ * HomeComponent - Página de inicio del dashboard
+ *
+ * PARÁMETROS:
+ * @param string $welcomeTitle - Título de bienvenida (OBLIGATORIO)
+ * @param string $subtitle - Subtítulo descriptivo (OBLIGATORIO)
+ * @param bool $showStats - Mostrar tarjeta de estadísticas (OPCIONAL, default: true)
+ */
 #[ApiComponent('/inicio', methods: ['GET'])]
 class HomeComponent extends CoreComponent
 {
-    protected $config;
     protected $CSS_PATHS = ["./home.css"];
+    protected $JS_PATHS = [];
+    protected $JS_PATHS_WITH_ARG = [];
 
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
+    // Constructor con named arguments y tipos específicos
+    public function __construct(
+        public string $welcomeTitle,
+        public string $subtitle,
+        public bool $showStats = true
+    ) {}
 
     protected function component(): string
     {
+        // Enviar datos a JavaScript si es necesario
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("./home.js", [])
+            new ScriptCoreDTO("./home.js", [
+                'showStats' => $this->showStats
+            ])
         ];
 
         return <<<HTML
         <div class="home-container">
             <div class="welcome-header">
-                <h1>¡Bienvenido a Lego!</h1>
-                <p>Dashboard de administración</p>
+                <h1>{$this->welcomeTitle}</h1>
+                <p>{$this->subtitle}</p>
             </div>
 
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <div class="card-icon">
-                        <ion-icon name="stats-chart-outline"></ion-icon>
-                    </div>
-                    <div class="card-content">
-                        <h3>Estadísticas</h3>
-                        <p>Vista general del sistema</p>
-                    </div>
+            {$this->renderStatsCard()}
+        </div>
+        HTML;
+    }
+
+    private function renderStatsCard(): string
+    {
+        if (!$this->showStats) return '';
+
+        return <<<HTML
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <ion-icon name="stats-chart-outline"></ion-icon>
+                </div>
+                <div class="card-content">
+                    <h3>Estadísticas</h3>
+                    <p>Vista general del sistema</p>
                 </div>
             </div>
         </div>
@@ -155,13 +229,132 @@ class HomeComponent extends CoreComponent
 }
 ```
 
+**Uso del componente:**
+```php
+// Instanciar con named arguments
+$component = new HomeComponent(
+    welcomeTitle: "¡Bienvenido a Lego!",
+    subtitle: "Dashboard de administración",
+    showStats: true  // Parámetro opcional
+);
+
+echo $component->render();
+```
+
 ### ✅ Elementos Clave del Ejemplo:
+- **Named Arguments:** Constructor con parámetros tipados y nombres claros
+- **Public Properties:** `public string $welcomeTitle` permite acceso directo
+- **Parámetros Opcionales:** `public bool $showStats = true` con valor por defecto
+- **Type Safety:** IDE detecta tipos incorrectos antes de ejecutar
 - **Namespace correcto:** `Components\Core\Home`
 - **Nomenclatura:** PascalCase + sufijo `Component` (`HomeComponent`)
 - **CSS Path:** Ruta relativa `"./home.css"` (kebab-case)
 - **JS Path:** Ruta relativa `"./home.js"` (kebab-case)
 - **HTML limpio:** Estructura clara con clases CSS semánticas
 - **Documentación:** Atributos claros para routing (`#[ApiComponent]`)
+- **Métodos privados:** `renderStatsCard()` para lógica condicional clara
+
+---
+
+## 🧱 COLLECTIONS TIPADAS (Patrón Recomendado)
+
+Si tu componente recibe **listas de items**, crea una Collection tipo-safe:
+
+### Estructura de una Collection:
+```
+components/Core/MiComponente/
+├── MiComponenteComponent.php
+├── Collections/
+│   └── ItemCollection.php
+├── Dtos/
+│   └── ItemDto.php
+├── mi-componente.css
+└── mi-componente.js
+```
+
+### Ejemplo de Collection:
+```php
+<?php
+namespace Components\Core\MiComponente\Collections;
+
+use Components\Core\MiComponente\Dtos\ItemDto;
+
+/**
+ * ItemCollection - Colección tipo-safe de ItemDto
+ * Solo acepta objetos de tipo ItemDto
+ */
+class ItemCollection implements \IteratorAggregate, \Countable
+{
+    /** @var ItemDto[] */
+    private array $items;
+
+    public function __construct(ItemDto ...$items)
+    {
+        $this->items = $items;
+    }
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->items);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
+    }
+
+    public function toArray(): array
+    {
+        return $this->items;
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->items);
+    }
+}
+```
+
+### Uso en el componente:
+```php
+use Components\Core\MiComponente\Collections\ItemCollection;
+use Components\Core\MiComponente\Dtos\ItemDto;
+
+class MiComponenteComponent extends CoreComponent
+{
+    public function __construct(
+        public ItemCollection $items,  // Type-safe!
+        public string $title
+    ) {}
+
+    protected function component(): string
+    {
+        $itemsHtml = "";
+        foreach ($this->items as $item) {  // IDE sabe que $item es ItemDto
+            $itemsHtml .= "<li>{$item->name}</li>";
+        }
+
+        return <<<HTML
+        <ul>{$itemsHtml}</ul>
+        HTML;
+    }
+}
+
+// Instanciar:
+new MiComponenteComponent(
+    items: new ItemCollection(
+        new ItemDto(name: "Item 1"),
+        new ItemDto(name: "Item 2")
+    ),
+    title: "Mi Lista"
+);
+```
+
+### Beneficios:
+- ✅ IDE detecta si pasas un tipo incorrecto
+- ✅ Validación en runtime automática
+- ✅ Métodos útiles: count(), isEmpty(), filter()
+- ✅ Type-safe al iterar: IDE autocompleta propiedades de ItemDto
 
 ---
 
@@ -226,4 +419,4 @@ touch "components/App/UserCard/user-card.js"
 
 > **💡 Recuerda:** Una estructura consistente hace que cualquier desarrollador pueda encontrar y modificar componentes rápidamente.
 
-**Última actualización:** 13 de Septiembre 2025
+**Última actualización:** 25 de Octubre 2025

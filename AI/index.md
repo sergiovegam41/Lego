@@ -13,6 +13,7 @@ Resumen rápido de todos los contratos disponibles para navegación eficiente.
 **Propósito:** Organización y estructura de componentes
 **Regla principal:** Estructura `components/[Core|App]/[ComponentName]/`
 **Archivos:** `ComponentNameComponent.php`, `component-name.css`, `component-name.js`
+**Filosofía:** Named arguments, tipado fuerte, composición declarativa estilo Flutter
 
 ## 📱 Responsive Design
 **Archivo:** `responsive-design-contract.md`
@@ -28,9 +29,10 @@ Resumen rápido de todos los contratos disponibles para navegación eficiente.
 
 ## 🏗️ Creación de Componentes
 **Archivo:** `components-creation-guide.md`
-**Propósito:** Guía práctica paso a paso
-**Regla principal:** Flujo estructurado de desarrollo
-**Incluye:** Plantillas, ejemplos, comandos
+**Propósito:** Guía práctica paso a paso para crear componentes Lego
+**Regla principal:** Named arguments con tipos específicos
+**Filosofía:** Componentes declarativos tipo-safe estilo Flutter
+**Incluye:** Plantillas, ejemplos, validación tipada con Collections
 
 ---
 

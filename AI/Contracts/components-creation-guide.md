@@ -2,6 +2,56 @@
 
 Guía práctica y directa para crear componentes en el framework Lego.
 
+## 🎯 Filosofía Lego: Componentes Declarativos
+
+**Lego se inspira en Flutter:** Los componentes son bloques tipo-safe que se ensamblan de forma declarativa.
+
+### Principios Fundamentales:
+
+1. **Named Arguments con Tipos Específicos**
+   - Cada parámetro tiene un tipo definido
+   - Parámetros obligatorios y opcionales claramente marcados
+   - IDE autocomplete y validación
+
+2. **No más `$config` genérico**
+   - ❌ Antes: `new Component(['option' => 'value'])`
+   - ✅ Ahora: `new Component(option: 'value', title: 'Mi Título')`
+
+3. **Collections Tipadas para Validación**
+   - Colecciones específicas validan tipos en runtime
+   - Ejemplo: `MenuItemCollection` solo acepta `MenuItemDto`
+   - Type-safety sin sacrificar flexibilidad
+
+4. **Composición Declarativa**
+   - Los componentes pueden contener otros componentes
+   - Construcción de UI clara y predecible
+   - Similar a Flutter: `Column(children: [Text(), Button()])`
+
+### Ejemplo Completo:
+
+```php
+// ✅ NUEVA API - Type-safe y declarativa
+new MenuComponent(
+    options: new MenuItemCollection(
+        new MenuItemDto(id: "1", name: "Home", url: "/", iconName: "home"),
+        new MenuItemDto(id: "2", name: "Settings", url: "/settings", iconName: "cog")
+    ),
+    title: "Mi App",              // Obligatorio
+    subtitle: "v1.0",              // Obligatorio
+    icon: "menu-outline",          // Obligatorio
+    searchable: true,              // Opcional
+    resizable: true                // Opcional
+)
+```
+
+**Beneficios:**
+- ✅ IDE sabe qué parámetros son válidos
+- ✅ Type hints muestran tipos esperados
+- ✅ Errores detectados antes de ejecutar
+- ✅ Código autodocumentado y claro
+
+---
+
 ## 📁 ¿Dónde van los componentes?
 
 ```
@@ -55,34 +105,156 @@ use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 
-// ✅ OPCIONAL: Decorador para refrescar el módulo dinámicamente
+/**
+ * MiComponenteComponent - Descripción del componente
+ *
+ * PARÁMETROS:
+ * @param string $title - Título del componente (OBLIGATORIO)
+ * @param string $description - Descripción (OBLIGATORIO)
+ * @param bool $showIcon - Mostrar icono (OPCIONAL, default: false)
+ */
 #[ApiComponent('/mi-ruta', methods: ['GET'])]
 class MiComponenteComponent extends CoreComponent
 {
-    // ✅ Importaciones relativas (como Angular)
+    // Assets del componente (rutas relativas)
     protected $CSS_PATHS = ["./mi-componente.css"];
+    protected $JS_PATHS = [];
+    protected $JS_PATHS_WITH_ARG = [];
 
-    public function __construct($config) {
-        $this->config = $config;
-    }
+    // Constructor con named arguments y tipos específicos
+    public function __construct(
+        public string $title,
+        public string $description,
+        public bool $showIcon = false
+    ) {}
 
     protected function component(): string
     {
         // Si quieres enviar datos a JavaScript:
         $this->JS_PATHS_WITH_ARG[] = [
             new ScriptCoreDTO("./mi-componente.js", [
-                'mensaje' => 'Hola desde PHP!'
+                'title' => $this->title,
+                'showIcon' => $this->showIcon
             ])
         ];
-       
+
         return <<<HTML
         <div class="mi-componente-container">
-            <h1>¡Mi nuevo componente!</h1>
+            <h1>{$this->title}</h1>
+            <p>{$this->description}</p>
+            {$this->renderIcon()}
         </div>
         HTML;
     }
+
+    private function renderIcon(): string
+    {
+        if (!$this->showIcon) return '';
+        return '<ion-icon name="checkmark-circle"></ion-icon>';
+    }
 }
 ```
+
+**Uso del componente:**
+```php
+// Instanciar con named arguments
+$component = new MiComponenteComponent(
+    title: "Mi Título",
+    description: "Descripción del componente",
+    showIcon: true  // Parámetro opcional
+);
+
+echo $component->render();
+```
+
+### 1.5️⃣ Collections Tipadas (Opcional pero Recomendado)
+
+Si tu componente recibe una **lista de items**, crea una Collection tipada para validación:
+
+**Ejemplo: ItemCollection**
+```php
+<?php
+namespace Components\Core\MiComponente\Collections;
+
+use Components\Core\MiComponente\Dtos\ItemDto;
+
+/**
+ * ItemCollection - Colección tipo-safe de ItemDto
+ */
+class ItemCollection implements \IteratorAggregate, \Countable
+{
+    /** @var ItemDto[] */
+    private array $items;
+
+    public function __construct(ItemDto ...$items)
+    {
+        $this->items = $items;
+    }
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->items);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
+    }
+
+    public function toArray(): array
+    {
+        return $this->items;
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->items);
+    }
+}
+```
+
+**Uso en el componente:**
+```php
+use Components\Core\MiComponente\Collections\ItemCollection;
+use Components\Core\MiComponente\Dtos\ItemDto;
+
+class MiComponenteComponent extends CoreComponent
+{
+    public function __construct(
+        public ItemCollection $items,  // Type-safe!
+        public string $title
+    ) {}
+
+    protected function component(): string
+    {
+        $itemsHtml = "";
+        foreach ($this->items as $item) {
+            $itemsHtml .= "<li>{$item->name}</li>";
+        }
+
+        return <<<HTML
+        <ul>{$itemsHtml}</ul>
+        HTML;
+    }
+}
+
+// Instanciar:
+new MiComponenteComponent(
+    items: new ItemCollection(
+        new ItemDto(name: "Item 1"),
+        new ItemDto(name: "Item 2")
+    ),
+    title: "Mi Lista"
+);
+```
+
+**Ventajas:**
+- ✅ IDE detecta si pasas un tipo incorrecto
+- ✅ Validación en runtime automática
+- ✅ Métodos útiles: count(), isEmpty(), filter()
+- ✅ Type-safe al iterar: `foreach ($items as $item)`
+
+---
 
 ### 2️⃣ Ruta (AUTO-DISCOVERY)
 
