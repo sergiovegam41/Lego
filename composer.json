@@ -18,7 +18,9 @@
         },
         "files": [
           "components/shared/Forms/Forms.php",
-          "components/shared/Essentials/Essentials.php"
+          "components/shared/Essentials/Essentials.php",
+          "components/shared/Buttons/Buttons.php",
+          "components/shared/Navigation/Navigation.php"
         ]
       },
     "scripts": {

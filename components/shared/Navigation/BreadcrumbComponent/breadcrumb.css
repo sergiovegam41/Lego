@@ -1,0 +1,58 @@
+/* Breadcrumb Component Styles */
+
+.lego-breadcrumb {
+    display: flex;
+    align-items: center;
+}
+
+.lego-breadcrumb__list {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.lego-breadcrumb__item {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.lego-breadcrumb__item--link {
+    text-decoration: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.lego-breadcrumb__item--link:hover {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+
+.lego-breadcrumb__item--active {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.lego-breadcrumb__separator {
+    color: var(--border-medium);
+    font-size: 0.875rem;
+    user-select: none;
+    margin: 0 0.25rem;
+}
+
+/* Responsive - Stack on very small screens */
+@media (max-width: 480px) {
+    .lego-breadcrumb__item {
+        font-size: 0.8125rem;
+    }
+
+    .lego-breadcrumb__separator {
+        margin: 0 0.125rem;
+    }
+}

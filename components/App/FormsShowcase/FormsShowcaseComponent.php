@@ -4,7 +4,6 @@ namespace Components\App\FormsShowcase;
 use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 
-// ✨ Barrel Imports - Componentes de formulario
 use Components\Shared\Forms\Forms\{
     Form,
     FormGroup,
@@ -17,7 +16,6 @@ use Components\Shared\Forms\Forms\{
     Button
 };
 
-// ✨ Barrel Imports - Componentes esenciales
 use Components\Shared\Essentials\Essentials\{
     Column,
     Row,

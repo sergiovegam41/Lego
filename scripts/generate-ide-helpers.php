@@ -29,6 +29,16 @@ $barrels = [
         'namespace' => 'Components\Shared\Essentials\Essentials',
         'output' => __DIR__ . '/../components/shared/Essentials/Essentials/_ide_helper.php',
     ],
+    'Buttons' => [
+        'file' => __DIR__ . '/../components/shared/Buttons/Buttons.php',
+        'namespace' => 'Components\Shared\Buttons\Buttons',
+        'output' => __DIR__ . '/../components/shared/Buttons/Buttons/_ide_helper.php',
+    ],
+    'Navigation' => [
+        'file' => __DIR__ . '/../components/shared/Navigation/Navigation.php',
+        'namespace' => 'Components\Shared\Navigation\Navigation',
+        'output' => __DIR__ . '/../components/shared/Navigation/Navigation/_ide_helper.php',
+    ],
 ];
 
 foreach ($barrels as $name => $config) {

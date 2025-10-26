@@ -15,6 +15,16 @@ class ModuleStore {
         this.modules[moduleId].isActive = moduleId === id;
     });
     this.activeModule = id;
+
+    // Sync with menu state manager
+    if (window.menuStateManager) {
+        window.menuStateManager.syncWithModuleStore();
+    }
+
+    // Update breadcrumb
+    if (window.legoWindowManager) {
+        window.legoWindowManager.updateBreadcrumbFromActiveModule();
+    }
     }
 
     closeModule(id) {
@@ -26,7 +36,24 @@ class ModuleStore {
         this.activeModule = remainingModules.length > 0 ? remainingModules[0] : null;
         if (this.activeModule) {
         this.modules[this.activeModule].isActive = true;
+
+        // Mostrar el nuevo módulo activo
+        document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+        const newActiveContainer = document.getElementById(`module-${this.activeModule}`);
+        if (newActiveContainer) {
+            newActiveContainer.classList.add('active');
         }
+        }
+    }
+
+    // Sync with menu state manager
+    if (window.menuStateManager) {
+        window.menuStateManager.syncWithModuleStore();
+    }
+
+    // Update breadcrumb
+    if (window.legoWindowManager) {
+        window.legoWindowManager.updateBreadcrumbFromActiveModule();
     }
     }
 
@@ -40,6 +67,9 @@ class ModuleStore {
 }
 
 const moduleStore = new ModuleStore();
+
+// Expose moduleStore globally for menu state manager and other components
+window.moduleStore = moduleStore;
 
 async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
@@ -122,19 +152,175 @@ function updateMenu() {
 
 export function generateMenuLinks(){
 
-    
+
     document.querySelectorAll('.menu_item_openable').forEach(item => {
 
         item.addEventListener('click', () => {
 
             const id = item.dataset.moduleId  || item.getAttribute("moduleId");
             const url = item.dataset.moduleUrl  || item.getAttribute("moduleUrl");
+            const name = item.querySelector('.text_menu_option')?.textContent || 'Sin nombre';
+
             if (moduleStore.getActiveModule() !== id) {
-                _openModule(id, url);
+                openModule(id, url, name, { url, name });
+            } else {
+                // Already active - just make sure it's visible
+                const container = document.getElementById(`module-${id}`);
+                if (container) {
+                    document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+                    container.classList.add('active');
+                }
             }
 
         });
 
     });
-   
+
+}
+
+// Unified openModule function with proper component info
+function openModule(id, url, name, component) {
+    moduleStore._openModule(id, component);
+    renderModule(id, url, `Contenido dinámico del módulo ${id}`);
+    updateMenu();
+}
+
+
+/**
+ * LegoWindowManager - Global API for window management
+ * 
+ * Provides methods for interacting with the module system:
+ * - reloadActive(): Reload the currently active module
+ * - closeModule(id): Close a specific module
+ * - updateBreadcrumb(items): Update breadcrumb navigation
+ */
+if (typeof window.legoWindowManager === 'undefined') {
+    window.legoWindowManager = {
+        /**
+         * Reload the currently active module
+         */
+        reloadActive: function() {
+            if (!window.moduleStore || !window.moduleStore.activeModule) {
+                console.warn('No active module to reload');
+                return;
+            }
+
+            const activeId = window.moduleStore.activeModule;
+            const activeModule = window.moduleStore.modules[activeId];
+
+            if (!activeModule) {
+                console.warn('Active module not found in store');
+                return;
+            }
+
+            // Remove the module container from DOM
+            const container = document.getElementById(`module-${activeId}`);
+            if (container) {
+                container.remove();
+            }
+
+            // Remove from store
+            delete window.moduleStore.modules[activeId];
+
+            // Re-open the module (will fetch fresh content)
+            const url = activeModule.component.url;
+            const name = activeModule.component.name;
+
+            openModule(activeId, url, name, activeModule.component);
+
+            console.log('Module reloaded:', activeId);
+        },
+
+        /**
+         * Close a specific module
+         * @param {string} id - Module ID to close
+         */
+        closeModule: function(id) {
+            if (!window.moduleStore) {
+                console.warn('ModuleStore not available');
+                return;
+            }
+
+            // Remove container from DOM
+            const container = document.getElementById(`module-${id}`);
+            if (container) {
+                container.remove();
+            }
+
+            // Close via ModuleStore
+            window.moduleStore.closeModule(id);
+
+            // Sync menu state
+            if (window.menuStateManager) {
+                window.menuStateManager.syncWithModuleStore();
+            }
+
+            // Update breadcrumb
+            this.updateBreadcrumbFromActiveModule();
+
+            console.log('Module closed:', id);
+        },
+
+        /**
+         * Update breadcrumb navigation
+         * @param {Array} items - Array of {label, href} objects
+         */
+        updateBreadcrumb: function(items) {
+            if (window.legoBreadcrumb) {
+                window.legoBreadcrumb.update(items);
+            }
+        },
+
+        /**
+         * Update breadcrumb based on currently active module
+         */
+        updateBreadcrumbFromActiveModule: function() {
+            if (!window.moduleStore || !window.moduleStore.activeModule) {
+                // No active module - clear breadcrumb
+                this.updateBreadcrumb([]);
+                return;
+            }
+
+            const activeId = window.moduleStore.activeModule;
+
+            // Find the menu item in the DOM
+            const menuItem = document.querySelector(`[data-menu-item-id="${activeId}"]`);
+
+            if (!menuItem) {
+                this.updateBreadcrumb([]);
+                return;
+            }
+
+            // Build breadcrumb by traversing up the menu hierarchy
+            const breadcrumbItems = [];
+            let currentElement = menuItem;
+
+            while (currentElement) {
+                // Check if this is a menu item
+                const textElement = currentElement.querySelector('.text_menu_option');
+                if (textElement) {
+                    const label = textElement.textContent.trim();
+                    breadcrumbItems.unshift({ label, href: '#' });
+                }
+
+                // Move up to parent menu section
+                currentElement = currentElement.parentElement?.closest('.custom-submenu')?.previousElementSibling;
+
+                // If we found a parent menu title
+                if (currentElement && currentElement.classList.contains('custom-menu-title')) {
+                    const parentText = currentElement.querySelector('.text_menu_option');
+                    if (parentText) {
+                        const label = parentText.textContent.trim();
+                        breadcrumbItems.unshift({ label, href: '#' });
+                    }
+                    // Continue up the tree
+                    currentElement = currentElement.parentElement;
+                } else {
+                    break;
+                }
+            }
+
+            this.updateBreadcrumb(breadcrumbItems);
+        }
+    };
 }

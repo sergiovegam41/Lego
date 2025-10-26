@@ -33,18 +33,34 @@
     padding: var(--space-lg);
 }
 
-/* Header Left Section */
+/* Header Left Section - Breadcrumb */
 .header-left {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+    flex: 1;
+    min-width: 0; /* Allow flexbox to shrink */
+    padding-left: 1.5rem; /* More spacing from left edge */
 }
 
-/* Header Right Section */
+/* Header Center Section - Reload Button */
+.header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.header-reload-btn {
+    color: var(--text-secondary);
+}
+
+/* Header Right Section - User Info & Controls */
 .header-right {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+    flex-shrink: 0; /* Don't shrink */
 }
 
 .user-info {

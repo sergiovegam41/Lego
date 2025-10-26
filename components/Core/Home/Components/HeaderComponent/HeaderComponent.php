@@ -5,6 +5,8 @@ namespace Components\Core\Home\Components\HeaderComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
+use Components\Shared\Navigation\BreadcrumbComponent\BreadcrumbComponent;
+use Components\Shared\Buttons\IconButtonComponent\IconButtonComponent;
 
 /**
  * HeaderComponent - Barra superior de la aplicación
@@ -43,9 +45,32 @@ class HeaderComponent extends CoreComponent
             ])
         ];
 
+        // Render breadcrumb
+        $breadcrumb = (new BreadcrumbComponent(
+            items: [
+                ['label' => 'Inicio', 'href' => '#']
+            ]
+        ))->render();
+
+        // Render reload button
+        $reloadButton = (new IconButtonComponent(
+            icon: "reload-outline",
+            size: "medium",
+            variant: "ghost",
+            onClick: "window.legoWindowManager?.reloadActive()",
+            title: "Recargar página actual",
+            className: "header-reload-btn"
+        ))->render();
+
         return <<<HTML
         <header id="top-header" class="main-header">
             <div class="header-left">
+                {$breadcrumb}
+            </div>
+            <div class="header-center">
+                {$reloadButton}
+            </div>
+            <div class="header-right">
                 <div class="notification-btn" id="notification-btn">
                     <ion-icon name="notifications-outline"></ion-icon>
                     <span class="notification-badge">3</span>
@@ -54,8 +79,6 @@ class HeaderComponent extends CoreComponent
                     <ion-icon name="sunny" class="sun"></ion-icon>
                     <ion-icon name="moon" class="moon"></ion-icon>
                 </div>
-            </div>
-            <div class="header-right">
                 <div class="user-info" id="user-info">
                     <div class="user-details">
                         <span class="user-name">Admin User</span>

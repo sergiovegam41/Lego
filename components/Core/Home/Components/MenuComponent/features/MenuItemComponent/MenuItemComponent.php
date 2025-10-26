@@ -54,10 +54,14 @@ class MenuItemComponent extends CoreComponent
         // Si no tiene hijos, es un elemento final
         if (empty($this->item->childs)) {
             return <<<HTML
-            <div class="custom-menu-section menu_item_openable" moduleId="{$id}" moduleUrl="{$url}">
+            <div class="custom-menu-section menu_item_openable" moduleId="{$id}" moduleUrl="{$url}" data-menu-item-id="{$id}">
+                <button class="menu-close-button" title="Cerrar">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
                 <button class="custom-button level-{$levelAux}">
-                    <ion-icon name="{$iconName}" class="icon_menu"></ion-icon> 
-                    <p class="text_menu_option" >{$name}</p>
+                    <ion-icon name="{$iconName}" class="icon_menu"></ion-icon>
+                    <p class="text_menu_option">{$name}</p>
+                    <div class="menu-state-indicator"></div>
                 </button>
             </div>
             HTML;

@@ -131,3 +131,90 @@ let sidebarResizing = false;
         } else {
             console.warn('No se encontró el resize handle');
         }
+
+/**
+ * MenuStateManager
+ * 
+ * Manages visual state of menu items based on window state
+ * States: closed, open (with dot), active (blue background)
+ */
+class MenuStateManager {
+    constructor() {
+        this.setupEventListeners();
+    }
+
+    /**
+     * Update menu item visual state
+     * @param {string} moduleId - Module ID
+     * @param {string} state - 'active', 'open', or 'closed'
+     */
+    setState(moduleId, state) {
+        const menuItem = document.querySelector(`[data-menu-item-id="${moduleId}"]`);
+        if (!menuItem) return;
+
+        // Remove all states
+        menuItem.classList.remove('menu-state--active', 'menu-state--open');
+
+        // Add new state
+        if (state === 'active') {
+            menuItem.classList.add('menu-state--active');
+        } else if (state === 'open') {
+            menuItem.classList.add('menu-state--open');
+        }
+        // 'closed' state means no classes
+    }
+
+    /**
+     * Sync menu states with ModuleStore
+     */
+    syncWithModuleStore() {
+        if (!window.moduleStore) return;
+
+        const modules = window.moduleStore.modules;
+        const activeModuleId = window.moduleStore.activeModule;
+
+        // Get all menu items
+        const allMenuItems = document.querySelectorAll('[data-menu-item-id]');
+
+        allMenuItems.forEach(menuItem => {
+            const moduleId = menuItem.getAttribute('data-menu-item-id');
+
+            if (moduleId === activeModuleId) {
+                this.setState(moduleId, 'active');
+            } else if (modules[moduleId]) {
+                this.setState(moduleId, 'open');
+            } else {
+                this.setState(moduleId, 'closed');
+            }
+        });
+    }
+
+    /**
+     * Setup event listeners for close buttons
+     */
+    setupEventListeners() {
+        // Delegate event listener for close buttons
+        document.addEventListener('click', (e) => {
+            const closeButton = e.target.closest('.menu-close-button');
+            if (!closeButton) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const menuItem = closeButton.closest('[data-menu-item-id]');
+            if (!menuItem) return;
+
+            const moduleId = menuItem.getAttribute('data-menu-item-id');
+
+            // Close the module via legoWindowManager
+            if (window.legoWindowManager) {
+                window.legoWindowManager.closeModule(moduleId);
+            }
+        });
+    }
+}
+
+// Initialize MenuStateManager
+if (typeof window.menuStateManager === 'undefined') {
+    window.menuStateManager = new MenuStateManager();
+}
