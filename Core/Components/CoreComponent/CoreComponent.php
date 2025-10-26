@@ -89,6 +89,11 @@ abstract class CoreComponent {
     protected function js_imports(): string {
         // Resolver rutas relativas en JS_PATHS
         $jsDependencies = array_map([$this, 'resolveRelativePath'], $this->JS_PATHS);
+        // Agregar cache buster a cada ruta
+        $cacheBuster = time();
+        $jsDependencies = array_map(function($path) use ($cacheBuster) {
+            return $path . (strpos($path, '?') !== false ? '&' : '?') . 'v=' . $cacheBuster;
+        }, $jsDependencies);
         return $this->generate_modulesJs($jsDependencies);
     }
   
@@ -102,13 +107,17 @@ abstract class CoreComponent {
 
         // Resolver rutas relativas en JS_PATHS_WITH_ARG
         $resolvedJsPaths = [];
+        $cacheBuster = time(); // Usar timestamp para forzar recarga
         foreach ($this->JS_PATHS_WITH_ARG as $scriptArray) {
             $resolvedArray = [];
             foreach ($scriptArray as $scriptDto) {
                 if ($scriptDto instanceof ScriptCoreDTO) {
                     // Crear una copia para no modificar el original
+                    $resolvedPath = $this->resolveRelativePath($scriptDto->path);
+                    // Agregar cache buster a la ruta
+                    $resolvedPath .= (strpos($resolvedPath, '?') !== false ? '&' : '?') . 'v=' . $cacheBuster;
                     $resolvedDto = new ScriptCoreDTO(
-                        $this->resolveRelativePath($scriptDto->path),
+                        $resolvedPath,
                         $scriptDto->arg
                     );
                     $resolvedArray[] = $resolvedDto;
@@ -158,7 +167,19 @@ abstract class CoreComponent {
         }
 
         return <<<HTML
-            <script>window.addEventListener('load',()=>window.lego.loadModules({$modules}));</script>
+            <script>
+
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+
+                   window.lego.loadModules({$modules})
+                
+                }else{
+                
+                    window.addEventListener('load',()=>window.lego.loadModules({$modules}));
+                
+                }
+            
+            </script>
         HTML;
     }
 

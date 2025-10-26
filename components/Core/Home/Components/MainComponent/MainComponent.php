@@ -81,6 +81,12 @@ class MainComponent extends CoreComponent
                     name: "Automatización",
                     url: $HOST_NAME . '/component/automation',
                     iconName: "flash-outline"
+                ),
+                new MenuItemDto(
+                    id: "8",
+                    name: "Forms Showcase",
+                    url: $HOST_NAME . '/component/forms-showcase',
+                    iconName: "create-outline"
                 )
             ),
             title: "Lego",

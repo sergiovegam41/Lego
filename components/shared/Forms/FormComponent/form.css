@@ -1,0 +1,227 @@
+/* FormComponent - Estilos con variables CSS de Lego */
+
+.lego-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.lego-form__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.lego-form__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.lego-form__description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.lego-form__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Layout vertical (default) */
+.lego-form--vertical .lego-form__body {
+    flex-direction: column;
+}
+
+/* Layout horizontal */
+.lego-form--horizontal .lego-form__body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.lego-form--horizontal .lego-form__body > * {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 200px;
+}
+
+/* Layout inline */
+.lego-form--inline .lego-form__body {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.lego-form--inline .lego-form__body > * {
+    flex: 1;
+}
+
+/* Mensajes */
+.lego-form__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.lego-form__success {
+    padding: 0.875rem 1rem;
+    background-color: var(--color-green-50);
+    border: 1px solid var(--color-green-200);
+    border-radius: 0.375rem;
+    color: var(--color-green-800);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.lego-form__error {
+    padding: 0.875rem 1rem;
+    background-color: var(--color-red-50);
+    border: 1px solid var(--color-red-200);
+    border-radius: 0.375rem;
+    color: var(--color-red-800);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Estado de carga */
+.lego-form--loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Animación de envío */
+@keyframes formSubmit {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.98);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.lego-form.submitting {
+    animation: formSubmit 0.3s ease;
+}
+
+/* Grupos de campos */
+.lego-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    background-color: var(--bg-surface-secondary);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-light);
+}
+
+.lego-form__group-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.lego-form__group-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+}
+
+/* Filas de campos */
+.lego-form__row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.lego-form__row > * {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Columnas */
+.lego-form__col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Acciones del formulario */
+.lego-form__actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.lego-form__actions--end {
+    justify-content: flex-end;
+}
+
+.lego-form__actions--start {
+    justify-content: flex-start;
+}
+
+.lego-form__actions--center {
+    justify-content: center;
+}
+
+.lego-form__actions--between {
+    justify-content: space-between;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .lego-form--horizontal .lego-form__body > * {
+        flex: 1 1 100%;
+    }
+
+    .lego-form--inline .lego-form__body {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lego-form__row {
+        flex-direction: column;
+    }
+
+    .lego-form__row > * {
+        flex: 1 1 100%;
+    }
+
+    .lego-form__actions {
+        flex-direction: column;
+    }
+
+    .lego-form__actions > * {
+        width: 100%;
+    }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .lego-form__success {
+        background-color: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        color: var(--color-green-400);
+    }
+
+    .lego-form__error {
+        background-color: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: var(--color-red-400);
+    }
+
+    .lego-form__group {
+        background-color: var(--bg-surface-secondary);
+        border-color: var(--border-dark);
+    }
+}

@@ -1,0 +1,134 @@
+/* TextAreaComponent - Estilos con variables CSS de Lego */
+
+.lego-textarea {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.lego-textarea__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.lego-textarea__wrapper {
+    position: relative;
+    display: flex;
+}
+
+.lego-textarea__field {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-family: inherit;
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    outline: none;
+    resize: vertical;
+}
+
+.lego-textarea__field:hover:not(:disabled) {
+    border-color: var(--border-dark);
+}
+
+.lego-textarea__field:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-alpha);
+}
+
+.lego-textarea__field::placeholder {
+    color: var(--text-tertiary);
+    opacity: 0.5;
+}
+
+.lego-textarea__field:focus::placeholder {
+    opacity: 0.3;
+}
+
+/* Ocultar placeholder cuando hay valor (fallback) */
+.lego-textarea__field:not(:placeholder-shown)::placeholder {
+    opacity: 0;
+}
+
+.lego-textarea__field:disabled {
+    background-color: var(--bg-disabled);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.lego-textarea__field:read-only {
+    background-color: var(--bg-surface-secondary);
+    cursor: default;
+}
+
+/* Auto-resize */
+.lego-textarea--auto-resize .lego-textarea__field {
+    resize: none;
+    overflow: hidden;
+}
+
+.lego-textarea__counter {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-top: -0.25rem;
+}
+
+.lego-textarea__help {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.lego-textarea__error {
+    font-size: 0.75rem;
+    color: var(--color-red-600);
+    line-height: 1.4;
+}
+
+/* Estado de error */
+.lego-textarea--error .lego-textarea__field {
+    border-color: var(--color-red-600);
+}
+
+.lego-textarea--error .lego-textarea__field:focus {
+    border-color: var(--color-red-600);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Estado disabled del contenedor */
+.lego-textarea--disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Animación de validación */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.lego-textarea--error .lego-textarea__field.shake {
+    animation: shake 0.3s ease;
+}
+
+/* Dark mode ajustes */
+@media (prefers-color-scheme: dark) {
+    .lego-textarea__field {
+        background-color: var(--bg-surface);
+        border-color: var(--border-dark);
+    }
+
+    .lego-textarea__field:hover:not(:disabled) {
+        border-color: var(--border-light);
+    }
+}

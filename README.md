@@ -506,4 +506,20 @@ Tu entorno viene con **todas las piezas esenciales**:
 
 
 ### ⚠️ **OBLIGATORIO**
-Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia. 
+Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia.
+
+---
+
+## 📖 Documentación
+
+### 📚 Para Desarrolladores
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitectura del framework
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Resolución de problemas comunes
+- **[QUICK_FIX.md](docs/QUICK_FIX.md)** - Guía de soluciones rápidas
+- **[TODOS.md](docs/TODOS.md)** - Lista de tareas pendientes del proyecto
+
+### 🤖 Para IA/Análisis
+- **[LEGO_ARCHITECTURE_ANALYSIS.md](AI/LEGO_ARCHITECTURE_ANALYSIS.md)** - Análisis completo de arquitectura
+- **[LEGO_VISUAL_DIAGRAMS.md](AI/LEGO_VISUAL_DIAGRAMS.md)** - Diagramas visuales del framework
+- **[implementation-guide.md](AI/implementation-guide.md)** - Guía de implementación para IA
+- **[README.md](AI/README.md)** - Contratos y reglas para desarrollo asistido por IA 
