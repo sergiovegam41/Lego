@@ -117,13 +117,17 @@ function initializeSidebarShade() {
 
 export function toggleSubMenu(element) {
     const submenu = element.nextElementSibling;
-    const icon = element.querySelector("ion-icon");
+    const chevronIcon = element.querySelector(".icon_menu_chevron");
 
     if (submenu.style.display === "block") {
         submenu.style.display = "none";
-        icon.setAttribute("name", "chevron-forward-outline");
+        if (chevronIcon) {
+            chevronIcon.setAttribute("name", "chevron-forward-outline");
+        }
     } else {
         submenu.style.display = "block";
-        icon.setAttribute("name", "chevron-down-outline");
+        if (chevronIcon) {
+            chevronIcon.setAttribute("name", "chevron-down-outline");
+        }
     }
 }

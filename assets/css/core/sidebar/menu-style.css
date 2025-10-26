@@ -13,7 +13,7 @@
     
 /* ===== Sidebar ===== */
 .sidebar {
-    
+
     position: fixed;
     top: 0;
     left: 0;
@@ -23,8 +23,8 @@
     max-width: 25rem;   /* 400px maximum */
     padding: var(--sidebar-padding);
     padding-right: 9px;
-    
-    transition: var(--transition-slow);
+
+    transition: var(--transition-normal);
     z-index: 100;
     /* box-shadow: var(--shadow-sidebar); */
     resize: none; /* Disable default resize */
@@ -318,10 +318,12 @@ hr{
     display: flex;
     align-items: center;
     padding: var(--menu-item-spacing);
+    padding-left: 0;
     cursor: pointer;
     font-size: var(--font-size-base);
     font-weight: bold;
     min-height: var(--menu-item-height);
+    position: relative;
   }
 
   .menu_item_openable {
@@ -355,11 +357,16 @@ hr{
     font-weight: 500;
     transition: var(--transition-slow);
 
-    white-space: nowrap;       
-    overflow: hidden;          
-    text-overflow: ellipsis;   
-    width: 12.5rem; /* 200px reducido a rem */   
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 12.5rem; /* 200px reducido a rem */
 
+  }
+
+  /* Text in parent menu titles - add padding to avoid overlap with chevron */
+  .custom-menu-title .text_menu_option {
+    padding-right: 2rem; /* Space for chevron on the right */
   }
 
   .custom-submenu {
@@ -481,6 +488,37 @@ hr{
     min-width: 2.25rem; /* 36px reducido */
     max-width: 2.25rem;
     margin: 0;
+}
+
+/* Icon for parent menu items */
+.custom-menu-title .icon_menu_parent {
+    padding-left: .5rem;
+}
+
+/* Chevron icon for parent menu items - positioned to the right */
+.custom-menu-title .icon_menu_chevron {
+    position: absolute;
+    right: var(--space-sm);
+    font-size: var(--icon-size-base) !important; /* Slightly smaller */
+    min-width: auto;
+    max-width: auto;
+    margin: 0;
+    transition: transform 0.3s ease;
+}
+
+/* Hide chevron when sidebar is collapsed */
+.sidebar.close .custom-menu-title .icon_menu_chevron {
+    opacity: 0;
+}
+
+/* Hover effect for parent menu items - same as children */
+.custom-menu-title:hover {
+    color: var(--accent-primary);
+}
+
+.custom-menu-title:hover p,
+.custom-menu-title:hover ion-icon {
+    color: var(--accent-primary);
 }
 
 

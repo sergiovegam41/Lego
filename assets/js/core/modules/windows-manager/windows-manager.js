@@ -293,28 +293,26 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             // Build breadcrumb by traversing up the menu hierarchy
             const breadcrumbItems = [];
-            let currentElement = menuItem;
+
+            // Add the current menu item (final level)
+            const currentText = menuItem.querySelector('.text_menu_option');
+            if (currentText) {
+                breadcrumbItems.push({ label: currentText.textContent.trim(), href: '#' });
+            }
+
+            // Traverse up to find parent sections
+            let currentElement = menuItem.parentElement?.closest('.custom-submenu')?.previousElementSibling;
 
             while (currentElement) {
-                // Check if this is a menu item
-                const textElement = currentElement.querySelector('.text_menu_option');
-                if (textElement) {
-                    const label = textElement.textContent.trim();
-                    breadcrumbItems.unshift({ label, href: '#' });
-                }
-
-                // Move up to parent menu section
-                currentElement = currentElement.parentElement?.closest('.custom-submenu')?.previousElementSibling;
-
                 // If we found a parent menu title
-                if (currentElement && currentElement.classList.contains('custom-menu-title')) {
+                if (currentElement.classList.contains('custom-menu-title')) {
                     const parentText = currentElement.querySelector('.text_menu_option');
                     if (parentText) {
                         const label = parentText.textContent.trim();
                         breadcrumbItems.unshift({ label, href: '#' });
                     }
-                    // Continue up the tree
-                    currentElement = currentElement.parentElement;
+                    // Continue up the tree - move to parent submenu's parent title
+                    currentElement = currentElement.parentElement?.parentElement?.closest('.custom-submenu')?.previousElementSibling;
                 } else {
                     break;
                 }
