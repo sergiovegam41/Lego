@@ -130,9 +130,17 @@ abstract class CoreComponent {
         if( $this->JS_PATHS_WITH_ARG == [] ){
             return "";
         }
-   
+
         return <<<HTML
-         <script>window.addEventListener('load',()=>window.lego.loadModulesWithArguments({$modules}));</script>
+         <script>
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                window.lego.loadModulesWithArguments({$modules});
+            } else {
+                window.addEventListener('load', ()=>{
+                    window.lego.loadModulesWithArguments({$modules});
+                });
+            }
+        </script>
         HTML;
     }
 
@@ -142,20 +150,19 @@ abstract class CoreComponent {
 
     /**  @var $dependencies ScriptCoreDTO[] */
     private function generate_modulesJs(array $dependencies){
-        global $url_servidor;
 
         $modules = json_encode($dependencies);
 
         if( $dependencies == [] ){
             return "";
         }
+
         return <<<HTML
             <script>window.addEventListener('load',()=>window.lego.loadModules({$modules}));</script>
         HTML;
     }
 
     private function generate_imports(array $dependencies, string $type): string {
-        global $url_servidor;
 
         $html_result = "";
         $r = uniqid();
@@ -163,7 +170,6 @@ abstract class CoreComponent {
             if ($type == 'css') {
 
 
-// HTML;
             $html_result .= <<<HTML
             
             <link rel="stylesheet" href="{$path}?v={$r}" />
@@ -172,6 +178,8 @@ HTML;
 
 
             } else if ($type == 'js') {
+
+
                 $html_result  .= <<<HTML
                     
                 <script src="{$path}?v={$r}"></script>
@@ -202,13 +210,13 @@ HTML;
     }
 
     public function render(): string
-    {
-  
+    {    
+
       $component = $this->component();
       $css_imports = $this->css_imports();
       $js_imports  = $this->js_imports();
       $js_imports_with_arg  = $this->js_imports_with_arg();
-  
+    
       return <<<HTML
   
   

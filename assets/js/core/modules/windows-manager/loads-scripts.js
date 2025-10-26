@@ -100,6 +100,8 @@ function executeCodeSafely(code, moduleName) {
  * @returns {Promise<void[]>} Promise que resuelve cuando todos los scripts están cargados
  */
 export async function _loadModulesWithArguments(scripts) {
+
+    console.log("🚀 _loadModulesWithArguments", scripts);
     if (!scripts?.data?.length) return;
 
     const loadScriptWithContext = async (scriptData) => {
