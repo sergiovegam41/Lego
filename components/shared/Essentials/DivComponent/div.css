@@ -1,0 +1,5 @@
+/* DivComponent - Contenedor genérico */
+
+.lego-div {
+    box-sizing: border-box;
+}

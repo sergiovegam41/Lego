@@ -30,6 +30,7 @@ use Core\Response;
 use Flight;
 use Components\Core\Home\Components\MainComponent\MainComponent;
 use Components\Core\Login\LoginComponent;
+use Components\App\FormsShowcase\FormsShowcaseComponent;
 
 /**
  * Ruta principal de la aplicación
@@ -48,6 +49,15 @@ Flight::route('GET /admin/', function () {
  */
 Flight::route('GET /login', function () {
     $component = new LoginComponent();
+    Response::uri($component->render());
+});
+
+/**
+ * Página de showcase de formularios
+ * Renderiza la demostración de componentes de formulario
+ */
+Flight::route('GET /forms-showcase', function () {
+    $component = new FormsShowcaseComponent();
     Response::uri($component->render());
 });
 

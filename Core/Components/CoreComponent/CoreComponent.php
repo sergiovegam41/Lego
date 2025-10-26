@@ -242,21 +242,94 @@ HTML;
      * - CoreComponent instances (llama a ->render())
      * - Strings (HTML directo)
      * - Arrays de children (recursivo)
+     * - null/false (se ignoran - útil para condicionales)
      *
      * @return string HTML renderizado de todos los children
      */
     protected function renderChildren(): string
     {
+        // Filtrar null y false para condicionales limpios
+        $validChildren = array_filter(
+            $this->children,
+            fn($child) => $child !== null && $child !== false
+        );
+
         return implode('', array_map(
             fn($child) => match(true) {
                 $child instanceof CoreComponent => $child->render(),
-                is_array($child) => implode('', array_map(
-                    fn($c) => $c instanceof CoreComponent ? $c->render() : (string)$c,
-                    $child
-                )),
+                is_array($child) => $this->renderChildrenArray($child),
                 default => (string)$child
             },
-            $this->children
+            $validChildren
+        ));
+    }
+
+    /**
+     * Helper privado para renderizar arrays de children
+     * Filtra null/false en arrays anidados también
+     */
+    private function renderChildrenArray(array $children): string
+    {
+        $validChildren = array_filter(
+            $children,
+            fn($child) => $child !== null && $child !== false
+        );
+
+        return implode('', array_map(
+            fn($c) => match(true) {
+                $c instanceof CoreComponent => $c->render(),
+                is_array($c) => $this->renderChildrenArray($c),
+                default => (string)$c
+            },
+            $validChildren
+        ));
+    }
+
+    /**
+     * Renderiza un slot específico de children (para componentes con múltiples slots)
+     *
+     * PROPÓSITO:
+     * Permite componentes con slots nombrados tipo Card, Modal, Layout, etc.
+     *
+     * EJEMPLO:
+     * class CardComponent extends CoreComponent {
+     *     public function __construct(
+     *         public array $headerSlot = [],
+     *         public array $bodySlot = [],
+     *         public array $footerSlot = []
+     *     ) {}
+     *
+     *     protected function component(): string {
+     *         $header = $this->renderSlot($this->headerSlot);
+     *         $body = $this->renderSlot($this->bodySlot);
+     *         $footer = $this->renderSlot($this->footerSlot);
+     *
+     *         return "<div class='card'>
+     *             <header>{$header}</header>
+     *             <div class='body'>{$body}</div>
+     *             <footer>{$footer}</footer>
+     *         </div>";
+     *     }
+     * }
+     *
+     * @param array $slotChildren Array de componentes para el slot
+     * @return string HTML renderizado del slot
+     */
+    protected function renderSlot(array $slotChildren): string
+    {
+        // Filtrar null y false
+        $validChildren = array_filter(
+            $slotChildren,
+            fn($child) => $child !== null && $child !== false
+        );
+
+        return implode('', array_map(
+            fn($child) => match(true) {
+                $child instanceof CoreComponent => $child->render(),
+                is_array($child) => $this->renderChildrenArray($child),
+                default => (string)$child
+            },
+            $validChildren
         ));
     }
 

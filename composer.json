@@ -15,6 +15,13 @@
           "Core\\": "Core/",
           "public\\":"public/",
           "Components\\":"components/"
-        }
-      }
+        },
+        "files": [
+          "components/shared/Forms/Forms.php",
+          "components/shared/Essentials/Essentials.php"
+        ]
+      },
+    "scripts": {
+        "post-autoload-dump": "php scripts/generate-ide-helpers.php"
+    }
 }

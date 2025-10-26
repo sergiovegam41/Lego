@@ -1,0 +1,44 @@
+/* RowComponent - Layout horizontal (Flexbox row) */
+
+.lego-row {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+}
+
+/* Wrap variant */
+.lego-row--wrap {
+    flex-wrap: wrap;
+}
+
+/* Scroll variants */
+.lego-row--scroll-auto {
+    overflow-x: auto;
+}
+
+.lego-row--scroll-scroll {
+    overflow-x: scroll;
+}
+
+/* Scrollbar styling para mejor experiencia en dark mode */
+.lego-row--scroll-auto::-webkit-scrollbar,
+.lego-row--scroll-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.lego-row--scroll-auto::-webkit-scrollbar-track,
+.lego-row--scroll-scroll::-webkit-scrollbar-track {
+    background: var(--bg-surface);
+    border-radius: 4px;
+}
+
+.lego-row--scroll-auto::-webkit-scrollbar-thumb,
+.lego-row--scroll-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+}
+
+.lego-row--scroll-auto::-webkit-scrollbar-thumb:hover,
+.lego-row--scroll-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--border-dark);
+}

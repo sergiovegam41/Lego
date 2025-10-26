@@ -1,0 +1,11 @@
+/* GridComponent - Layout de cuadrícula (CSS Grid) */
+
+.lego-grid {
+    display: grid;
+    box-sizing: border-box;
+}
+
+/* Helper para items que usan grid-area */
+.lego-grid > [style*="grid-area"] {
+    box-sizing: border-box;
+}

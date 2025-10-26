@@ -3,16 +3,28 @@ namespace Components\App\FormsShowcase;
 
 use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
-use Components\Shared\Forms\InputTextComponent\InputTextComponent;
-use Components\Shared\Forms\SelectComponent\SelectComponent;
-use Components\Shared\Forms\ButtonComponent\ButtonComponent;
-use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
-use Components\Shared\Forms\CheckboxComponent\CheckboxComponent;
-use Components\Shared\Forms\RadioComponent\RadioComponent;
-use Components\Shared\Forms\FormComponent\FormComponent;
-use Components\Shared\Forms\FormGroupComponent\FormGroupComponent;
-use Components\Shared\Forms\FormActionsComponent\FormActionsComponent;
-use Components\Shared\Forms\FormRowComponent\FormRowComponent;
+
+// ✨ Barrel Imports - Componentes de formulario
+use Components\Shared\Forms\Forms\{
+    Form,
+    FormGroup,
+    FormActions,
+    InputText,
+    TextArea,
+    Select,
+    Checkbox,
+    Radio,
+    Button
+};
+
+// ✨ Barrel Imports - Componentes esenciales
+use Components\Shared\Essentials\Essentials\{
+    Column,
+    Row,
+    Div,
+    Grid,
+    Fragment
+};
 
 /**
  * FormsShowcaseComponent - Página de demostración de componentes de formulario
@@ -79,29 +91,35 @@ class FormsShowcaseComponent extends CoreComponent {
     }
 
     private function renderContactForm(): string {
-        return (new FormComponent(
+        return (new Form(
             id: "contact-form",
             title: "Contáctanos",
             description: "Completa este formulario y te responderemos pronto.",
             children: [
-                new InputTextComponent(
-                    id: "contact-name",
-                    label: "Nombre completo",
-                    placeholder: "Juan Pérez",
-                    required: true,
-                    icon: "person-outline"
+                // ✨ Layout: Row con gap para nombre y email lado a lado
+                new Row(
+                    gap: "1rem",
+                    children: [
+                        new InputText(
+                            id: "contact-name",
+                            label: "Nombre completo",
+                            placeholder: "Juan Pérez",
+                            required: true,
+                            icon: "person-outline"
+                        ),
+
+                        new InputText(
+                            id: "contact-email",
+                            label: "Correo electrónico",
+                            placeholder: "juan@ejemplo.com",
+                            type: "email",
+                            required: true,
+                            icon: "mail-outline"
+                        )
+                    ]
                 ),
 
-                new InputTextComponent(
-                    id: "contact-email",
-                    label: "Correo electrónico",
-                    placeholder: "juan@ejemplo.com",
-                    type: "email",
-                    required: true,
-                    icon: "mail-outline"
-                ),
-
-                new SelectComponent(
+                new Select(
                     id: "contact-subject",
                     label: "Asunto",
                     placeholder: "Selecciona un asunto",
@@ -114,7 +132,7 @@ class FormsShowcaseComponent extends CoreComponent {
                     ]
                 ),
 
-                new TextAreaComponent(
+                new TextArea(
                     id: "contact-message",
                     label: "Mensaje",
                     placeholder: "Escribe tu mensaje aquí...",
@@ -125,16 +143,16 @@ class FormsShowcaseComponent extends CoreComponent {
                     rows: 4
                 ),
 
-                new CheckboxComponent(
+                new Checkbox(
                     id: "contact-subscribe",
                     label: "Suscribirme al newsletter",
                     description: "Recibe noticias y actualizaciones por correo"
                 ),
 
-                new FormActionsComponent(
+                new FormActions(
                     layout: "end",
                     children: [
-                        new ButtonComponent(
+                        new Button(
                             text: "Enviar mensaje",
                             type: "submit",
                             variant: "primary",
@@ -148,85 +166,126 @@ class FormsShowcaseComponent extends CoreComponent {
     }
 
     private function renderRegisterForm(): string {
-        return (new FormComponent(
+        return (new Form(
             id: "register-form",
             title: "Registro de Usuario",
             description: "Crea tu cuenta para acceder a todas las funcionalidades.",
             children: [
-                new InputTextComponent(
-                    id: "reg-username",
-                    label: "Nombre de usuario",
-                    placeholder: "usuario123",
-                    required: true,
-                    minLength: 3,
-                    maxLength: 20,
-                    showCounter: true,
-                    helpText: "Entre 3 y 20 caracteres"
-                ),
-
-                new InputTextComponent(
-                    id: "reg-password",
-                    label: "Contraseña",
-                    type: "password",
-                    required: true,
-                    minLength: 8,
-                    helpText: "Mínimo 8 caracteres"
-                ),
-
-                new SelectComponent(
-                    id: "reg-country",
-                    label: "País",
-                    required: true,
-                    searchable: true,
-                    options: [
-                        ["value" => "mx", "label" => "México"],
-                        ["value" => "us", "label" => "Estados Unidos"],
-                        ["value" => "es", "label" => "España"],
-                        ["value" => "ar", "label" => "Argentina"],
-                        ["value" => "co", "label" => "Colombia"]
-                    ]
-                ),
-
-                new FormGroupComponent(
-                    title: "Género",
+                // ✨ Layout: Column con gap para organizar secciones verticalmente
+                new Column(
+                    gap: "1.5rem",
                     children: [
-                        new RadioComponent(
-                            id: "gender-male",
-                            name: "gender",
-                            label: "Masculino",
-                            value: "male"
+                        // ✨ Layout: Row para credenciales lado a lado
+                        new Row(
+                            gap: "1rem",
+                            children: [
+                                new InputText(
+                                    id: "reg-username",
+                                    label: "Nombre de usuario",
+                                    placeholder: "usuario123",
+                                    required: true,
+                                    minLength: 3,
+                                    maxLength: 20,
+                                    showCounter: true,
+                                    helpText: "Entre 3 y 20 caracteres"
+                                ),
+
+                                new InputText(
+                                    id: "reg-password",
+                                    label: "Contraseña",
+                                    type: "password",
+                                    required: true,
+                                    minLength: 8,
+                                    helpText: "Mínimo 8 caracteres"
+                                )
+                            ]
                         ),
-                        new RadioComponent(
-                            id: "gender-female",
-                            name: "gender",
-                            label: "Femenino",
-                            value: "female"
+
+                        new Select(
+                            id: "reg-country",
+                            label: "País",
+                            required: true,
+                            searchable: true,
+                            options: [
+                                ["value" => "mx", "label" => "México"],
+                                ["value" => "us", "label" => "Estados Unidos"],
+                                ["value" => "es", "label" => "España"],
+                                ["value" => "ar", "label" => "Argentina"],
+                                ["value" => "co", "label" => "Colombia"]
+                            ]
                         ),
-                        new RadioComponent(
-                            id: "gender-other",
-                            name: "gender",
-                            label: "Otro",
-                            value: "other"
-                        )
+
+                        new Div(
+                            padding: "1rem",
+                            borderRadius: "0.5rem",
+                            border: "1px solid var(--border-light)",
+                            
+                            children: [
+                                new FormGroup(
+                                    title: "Género",
+                                    children: [
+                                        new Row(
+                                            gap: "1.5rem",
+                                            wrap: "wrap",
+                                            children: [
+                                                new Radio(
+                                                    id: "gender-male",
+                                                    name: "gender",
+                                                    label: "Masculino",
+                                                    value: "male"
+                                                ),
+                                                new Radio(
+                                                    id: "gender-female",
+                                                    name: "gender",
+                                                    label: "Femenino",
+                                                    value: "female"
+                                                ),
+                                                new Radio(
+                                                    id: "gender-other",
+                                                    name: "gender",
+                                                    label: "Otro",
+                                                    value: "other"
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                )
+                            ]
+                        ),
+
+                        // ✨ DEMO: Componentes condicionales con null/false (se filtran automáticamente)
+                        // Si esta condición es false, estos componentes NO se renderizan
+                        false ? new InputText(
+                            id: "hidden-field",
+                            label: "Este campo no se muestra"
+                        ) : null,
+
+                        // ✨ DEMO: Fragment para agrupar múltiples elementos sin wrapper
+                        // Los checkboxes se renderizan directamente, sin div adicional
+                        new Fragment(children: [
+                            new Checkbox(
+                                id: "reg-terms",
+                                label: "Acepto los términos y condiciones",
+                                required: true
+                            ),
+                            new Checkbox(
+                                id: "reg-newsletter",
+                                label: "Quiero recibir el newsletter"
+                            )
+                        ])
                     ]
                 ),
 
-                new CheckboxComponent(
-                    id: "reg-terms",
-                    label: "Acepto los términos y condiciones",
-                    required: true
-                ),
-
-                new FormActionsComponent(
+                new FormActions(
                     layout: "between",
                     children: [
-                        new ButtonComponent(
+                        new Button(
                             text: "Cancelar",
                             type: "button",
                             variant: "ghost",
                             fullWidth: true
                         ),
-                        new ButtonComponent(
+                        new Button(
                             text: "Crear cuenta",
                             type: "submit",
                             variant: "success",
@@ -240,148 +299,209 @@ class FormsShowcaseComponent extends CoreComponent {
     }
 
     private function renderComponentsShowcase(): string {
-        // Inputs
-        $input1 = new InputTextComponent(
-            id: "showcase-input-1",
-            label: "Input básico",
-            placeholder: "Escribe algo..."
-        );
+        // ✨ Layout: Grid responsivo con auto-fill para cards de componentes
+        return (new Grid(
+            columns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "2rem",
+            children: [
+                // Card 1: Input Text
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: [
+                                        "<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>Input Text</h3>"
+                                    ]
+                                ),
+                                new InputText(
+                                    id: "showcase-input-1",
+                                    label: "Input básico",
+                                    placeholder: "Escribe algo..."
+                                ),
+                                new InputText(
+                                    id: "showcase-input-2",
+                                    label: "Input con icono y contador",
+                                    placeholder: "usuario",
+                                    icon: "person-outline",
+                                    maxLength: 20,
+                                    showCounter: true
+                                ),
+                                new InputText(
+                                    id: "showcase-input-3",
+                                    label: "Input con error",
+                                    value: "valor inválido",
+                                    errorMessage: "Este campo contiene errores"
+                                )
+                            ]
+                        )
+                    ]
+                ),
 
-        $input2 = new InputTextComponent(
-            id: "showcase-input-2",
-            label: "Input con icono y contador",
-            placeholder: "usuario",
-            icon: "person-outline",
-            maxLength: 20,
-            showCounter: true
-        );
+                // Card 2: TextArea
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+        
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: ["<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>TextArea</h3>"]
+                                ),
+                                new TextArea(
+                                    id: "showcase-textarea-1",
+                                    label: "TextArea básico",
+                                    placeholder: "Escribe un texto largo..."
+                                ),
+                                new TextArea(
+                                    id: "showcase-textarea-2",
+                                    label: "TextArea con auto-resize y contador",
+                                    placeholder: "Se expande automáticamente...",
+                                    maxLength: 200,
+                                    showCounter: true,
+                                    autoResize: true
+                                )
+                            ]
+                        )
+                    ]
+                ),
 
-        $input3 = new InputTextComponent(
-            id: "showcase-input-3",
-            label: "Input con error",
-            value: "valor inválido",
-            errorMessage: "Este campo contiene errores"
-        );
+                // Card 3: Select
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: ["<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>Select</h3>"]
+                                ),
+                                new Select(
+                                    id: "showcase-select-1",
+                                    label: "Select básico",
+                                    options: [
+                                        ["value" => "1", "label" => "Opción 1"],
+                                        ["value" => "2", "label" => "Opción 2"],
+                                        ["value" => "3", "label" => "Opción 3"]
+                                    ]
+                                ),
+                                new Select(
+                                    id: "showcase-select-2",
+                                    label: "Select con búsqueda",
+                                    searchable: true,
+                                    options: [
+                                        ["value" => "apple", "label" => "Manzana"],
+                                        ["value" => "banana", "label" => "Plátano"],
+                                        ["value" => "orange", "label" => "Naranja"],
+                                        ["value" => "grape", "label" => "Uva"]
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
+                ),
 
-        // TextAreas
-        $textarea1 = new TextAreaComponent(
-            id: "showcase-textarea-1",
-            label: "TextArea básico",
-            placeholder: "Escribe un texto largo..."
-        );
+                // Card 4: Checkbox
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: ["<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>Checkbox</h3>"]
+                                ),
+                                new Checkbox(
+                                    id: "showcase-checkbox-1",
+                                    label: "Checkbox simple"
+                                ),
+                                new Checkbox(
+                                    id: "showcase-checkbox-2",
+                                    label: "Checkbox con descripción",
+                                    description: "Esta es una descripción detallada del checkbox",
+                                    checked: true
+                                )
+                            ]
+                        )
+                    ]
+                ),
 
-        $textarea2 = new TextAreaComponent(
-            id: "showcase-textarea-2",
-            label: "TextArea con auto-resize y contador",
-            placeholder: "Se expande automáticamente...",
-            maxLength: 200,
-            showCounter: true,
-            autoResize: true
-        );
+                // Card 5: Radio
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: ["<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>Radio</h3>"]
+                                ),
+                                new Radio(
+                                    id: "showcase-radio-1",
+                                    name: "showcase-radio-group",
+                                    label: "Opción A",
+                                    value: "a",
+                                    checked: true
+                                ),
+                                new Radio(
+                                    id: "showcase-radio-2",
+                                    name: "showcase-radio-group",
+                                    label: "Opción B",
+                                    value: "b"
+                                )
+                            ]
+                        )
+                    ]
+                ),
 
-        // Selects
-        $select1 = new SelectComponent(
-            id: "showcase-select-1",
-            label: "Select básico",
-            options: [
-                ["value" => "1", "label" => "Opción 1"],
-                ["value" => "2", "label" => "Opción 2"],
-                ["value" => "3", "label" => "Opción 3"]
+                // Card 6: Buttons
+                new Div(
+                    className: "component-card",
+                    padding: "1.5rem",
+                    borderRadius: "0.75rem",
+                    border: "0.5px solid var(--border-light)",
+                    children: [
+                        new Column(
+                            gap: "1rem",
+                            children: [
+                                new Div(
+                                    children: ["<h3 style='margin: 0; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light);'>Buttons</h3>"]
+                                ),
+                                // ✨ Layout: Row con wrap para botones
+                                new Row(
+                                    gap: "0.5rem",
+                                    wrap: "wrap",
+                                    children: [
+                                        new Button(text: "Primary", variant: "primary"),
+                                        new Button(text: "Secondary", variant: "secondary"),
+                                        new Button(text: "Success", variant: "success", icon: "checkmark-outline"),
+                                        new Button(text: "Danger", variant: "danger", icon: "trash-outline"),
+                                        new Button(text: "Ghost", variant: "ghost")
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
+                )
             ]
-        );
-
-        $select2 = new SelectComponent(
-            id: "showcase-select-2",
-            label: "Select con búsqueda",
-            searchable: true,
-            options: [
-                ["value" => "apple", "label" => "Manzana"],
-                ["value" => "banana", "label" => "Plátano"],
-                ["value" => "orange", "label" => "Naranja"],
-                ["value" => "grape", "label" => "Uva"]
-            ]
-        );
-
-        // Checkboxes
-        $checkbox1 = new CheckboxComponent(
-            id: "showcase-checkbox-1",
-            label: "Checkbox simple"
-        );
-
-        $checkbox2 = new CheckboxComponent(
-            id: "showcase-checkbox-2",
-            label: "Checkbox con descripción",
-            description: "Esta es una descripción detallada del checkbox",
-            checked: true
-        );
-
-        // Radios
-        $radio1 = new RadioComponent(
-            id: "showcase-radio-1",
-            name: "showcase-radio-group",
-            label: "Opción A",
-            value: "a",
-            checked: true
-        );
-
-        $radio2 = new RadioComponent(
-            id: "showcase-radio-2",
-            name: "showcase-radio-group",
-            label: "Opción B",
-            value: "b"
-        );
-
-        // Buttons
-        $btnPrimary = new ButtonComponent(text: "Primary", variant: "primary");
-        $btnSecondary = new ButtonComponent(text: "Secondary", variant: "secondary");
-        $btnSuccess = new ButtonComponent(text: "Success", variant: "success", icon: "checkmark-outline");
-        $btnDanger = new ButtonComponent(text: "Danger", variant: "danger", icon: "trash-outline");
-        $btnGhost = new ButtonComponent(text: "Ghost", variant: "ghost");
-
-        return <<<HTML
-        <div class="components-grid">
-            <div class="component-card">
-                <h3>Input Text</h3>
-                {$input1->render()}
-                {$input2->render()}
-                {$input3->render()}
-            </div>
-
-            <div class="component-card">
-                <h3>TextArea</h3>
-                {$textarea1->render()}
-                {$textarea2->render()}
-            </div>
-
-            <div class="component-card">
-                <h3>Select</h3>
-                {$select1->render()}
-                {$select2->render()}
-            </div>
-
-            <div class="component-card">
-                <h3>Checkbox</h3>
-                {$checkbox1->render()}
-                {$checkbox2->render()}
-            </div>
-
-            <div class="component-card">
-                <h3>Radio</h3>
-                {$radio1->render()}
-                {$radio2->render()}
-            </div>
-
-            <div class="component-card">
-                <h3>Buttons</h3>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                    {$btnPrimary->render()}
-                    {$btnSecondary->render()}
-                    {$btnSuccess->render()}
-                    {$btnDanger->render()}
-                    {$btnGhost->render()}
-                </div>
-            </div>
-        </div>
-        HTML;
+        ))->render();
     }
 }

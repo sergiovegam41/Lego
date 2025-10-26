@@ -1,0 +1,39 @@
+/* ColumnComponent - Layout vertical (Flexbox column) */
+
+.lego-column {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Scroll variants */
+.lego-column--scroll-auto {
+    overflow-y: auto;
+}
+
+.lego-column--scroll-scroll {
+    overflow-y: scroll;
+}
+
+/* Scrollbar styling para mejor experiencia en dark mode */
+.lego-column--scroll-auto::-webkit-scrollbar,
+.lego-column--scroll-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.lego-column--scroll-auto::-webkit-scrollbar-track,
+.lego-column--scroll-scroll::-webkit-scrollbar-track {
+    background: var(--bg-surface);
+    border-radius: 4px;
+}
+
+.lego-column--scroll-auto::-webkit-scrollbar-thumb,
+.lego-column--scroll-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+}
+
+.lego-column--scroll-auto::-webkit-scrollbar-thumb:hover,
+.lego-column--scroll-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--border-dark);
+}
