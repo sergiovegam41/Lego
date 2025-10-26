@@ -5,18 +5,15 @@ namespace Components\Core\Home;
 use Core\Attributes\ApiComponent;
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
+use Core\Response;
 
 #[ApiComponent('/inicio', methods: ['GET'])]
 class HomeComponent extends CoreComponent
 {
-    protected $config;
 
     protected $CSS_PATHS = ["./home.css"];
 
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
+    public function __construct() {}
 
     protected function component(): string
     {
@@ -77,9 +74,9 @@ class HomeComponent extends CoreComponent
     }
 
    
-    // public function apiGet($request = null): array
+    // public function get($request = null): array
     // {
-     
+    //     p("get HomeComponent");
     //     return Response::uri( $this->render() );
     // }
 

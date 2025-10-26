@@ -6,13 +6,40 @@ use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
 use Components\Core\Home\Components\MenuComponent\features\MenuItemComponent\MenuItemComponent;
-use Components\Core\Home\Dtos\MenuItemDto;
+use Components\Core\Home\Collections\MenuItemCollection;
 
+/**
+ * MenuComponent - Sidebar navegable con menú multinivel
+ *
+ * FILOSOFÍA LEGO:
+ * Componente declarativo estilo Flutter que acepta una colección de items
+ * y los renderiza en un menú lateral con funcionalidades opcionales.
+ *
+ * PARÁMETROS:
+ * @param MenuItemCollection $options - Items del menú (OBLIGATORIO)
+ * @param string $title - Título del sidebar (OBLIGATORIO)
+ * @param string $subtitle - Subtítulo/versión (OBLIGATORIO)
+ * @param string $icon - Icono principal (OBLIGATORIO)
+ * @param bool $collapsible - Permite colapsar el sidebar (OPCIONAL, default: false)
+ * @param bool $resizable - Permite redimensionar el sidebar (OPCIONAL, default: false)
+ * @param bool $searchable - Muestra buscador de items (OPCIONAL, default: false)
+ *
+ * EJEMPLO:
+ * new MenuComponent(
+ *     options: new MenuItemCollection(
+ *         new MenuItemDto(id: "1", name: "Home", url: "/", iconName: "home")
+ *     ),
+ *     title: "Lego Framework",
+ *     subtitle: "v1.0",
+ *     icon: "menu-outline",
+ *     searchable: true,
+ *     resizable: true
+ * )
+ */
 class MenuComponent extends CoreComponent
 {
-
     use StringMethods;
-    protected $config;
+
     protected $JS_PATHS = [];
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [
@@ -20,165 +47,35 @@ class MenuComponent extends CoreComponent
         'https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'
     ];
 
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
+    public function __construct(
+        public MenuItemCollection $options,
+        public string $title,
+        public string $subtitle,
+        public string $icon,
+        public bool $collapsible = false,
+        public bool $resizable = false,
+        public bool $searchable = false
+    ) {}
 
     protected function component(): string
     {
-
         $this->JS_PATHS_WITH_ARG[] = [
-
             new ScriptCoreDTO("./menu-component.js", [
                 "message" => "hello word desde menu component "
             ])
-
         ];
 
-        $HOST_NAME = env('HOST_NAME');
-
-        /**
-         * @param MenuItemDto[] $MENU_LIST
-         */
-
-        $MENU_LIST = [
-            new MenuItemDto(
-                id: "1",
-                name: "Inicio",
-                url: $HOST_NAME . '/view/inicio',
-                iconName: "home-outline"
-            ),
-            new MenuItemDto(
-                id: "2",
-                name: "Tablero",
-                url: $HOST_NAME . '/tablero',
-                iconName: "grid-outline"
-            ),
-            new MenuItemDto(
-                id: "3",
-                name: "Actividades recientes",
-                url: $HOST_NAME . '/actividades',
-                iconName: "time-outline"
-            ),
-            new MenuItemDto(
-                id: "4",
-                name: "Submenú Profundo",
-                url: "#",
-                iconName: "chevron-forward-outline",
-                childs: [
-                    new MenuItemDto(
-                        id: "5",
-                        name: "Opción 1",
-                        url: $HOST_NAME . '/opcion1',
-                        iconName: "document-text-outline"
-                    ),
-                    new MenuItemDto(
-                        id: "6",
-                        name: "Mas",
-                        url: $HOST_NAME . '/opcion2',
-                        iconName: "document-text-outline",
-                        childs: [
-                            new MenuItemDto(
-                                id: "7",
-                                name: "Submenú Profundo",
-                                url: "#",
-                                iconName: "chevron-forward-outline",
-                                childs: [
-                                    new MenuItemDto(
-                                        id: "8",
-                                        name: "Opción 1",
-                                        url: $HOST_NAME . '/opcion1',
-                                        iconName: "document-text-outline"
-                                    ),
-                                    new MenuItemDto(
-                                        id: "9",
-                                        name: "Opción 2",
-                                        url: $HOST_NAME . '/opcion2',
-                                        iconName: "document-text-outline"
-                                    )
-                                ]
-                            ),
-                        ]
-                    )
-                ]
-            ),
-            new MenuItemDto(
-                id: "10",
-                name: "Submenú Nivel 3",
-                url: "#",
-                iconName: "chevron-forward-outline",
-                childs: [
-                    new MenuItemDto(
-                        id: "11",
-                        name: "Opción A",
-                        url: $HOST_NAME . '/opcionA',
-                        iconName: "list-outline"
-                    ),
-                    new MenuItemDto(
-                        id: "12",
-                        name: "Opción B",
-                        url: $HOST_NAME . '/opcionB',
-                        iconName: "list-outline"
-                    )
-                ]
-            ),
-            new MenuItemDto(
-                id: "13",
-                name: "Submenú Nivel 4",
-                url: "#",
-                iconName: "chevron-forward-outline",
-                childs: [
-                    new MenuItemDto(
-                        id: "14",
-                        name: "Gestión de Usuarios",
-                        url: $HOST_NAME . '/gestion-usuarios',
-                        iconName: "people-outline"
-                    )
-                ]
-            ),
-            new MenuItemDto(
-                id: "15",
-                name: "Configuración",
-                url: "#",
-                iconName: "settings-outline",
-                childs: [
-                    new MenuItemDto(
-                        id: "16",
-                        name: "Reportes",
-                        url: $HOST_NAME . '/reportes',
-                        iconName: "stats-chart-outline"
-                    )
-                ]
-            ),
-            new MenuItemDto(
-                id: "17",
-                name: "Automatizacion",
-                url: $HOST_NAME . '/view/automation',
-                iconName: "flash-outline"
-            ),
-        ];
-
-
-
-
-        /**
-         * @param string $FINAL_MENU_LIST
-         */
-
-
+        // Renderizar items del menú desde $this->options
         $FINAL_MENU_LIST = "";
-
-        /**
-         * @param MenuItemDto $MenuItem
-         */
-
-        foreach ($MENU_LIST as $key => $MenuItem) {
-            # code...
-
-            $FINAL_MENU_LIST .= (new MenuItemComponent($MenuItem))->render();
+        foreach ($this->options as $menuItem) {
+            $FINAL_MENU_LIST .= (new MenuItemComponent($menuItem))->render();
         }
 
+        // Renderizar buscador si está habilitado
+        $searchBox = $this->searchable ? $this->renderSearchBox() : '';
+
+        // Renderizar resize handle si está habilitado
+        $resizeHandle = $this->resizable ? $this->renderResizeHandle() : '';
 
         return <<<HTML
 
@@ -187,63 +84,82 @@ class MenuComponent extends CoreComponent
                 <div class="image-text">
                     <span class="image">
                         <img class="user-image" src="/assets/images/logo.png" alt="">
-                        <!-- <p>Sergio Vega</p> -->
                     </span>
 
                     <div class="text logo-text">
-                        <span class="name">Lego</span>
-                        <span class="profession">Freamework</span>
+                        <span class="name">{$this->title}</span>
+                        <span class="profession">{$this->subtitle}</span>
                     </div>
-                    
+
                 </div>
 
                 <i class='bx bx-chevron-right toggle'></i>
             </header>
 
             <div class="menu-bar">
-
-
                 <hr>
-                
-                <li class="search-box">
-                    <ion-icon class ='icon' name="search-outline"></ion-icon>
-                    <input type="text" placeholder="Search" id="search-menu">
-                </li>
+
+                {$searchBox}
+
                 <div class="menu" id="sidebar_menu">
-
-
                     <div class="custom-menu" id="">
-                        
-
                         {$FINAL_MENU_LIST}
-
-
                     </div>
                 </div>
 
                 <div class="bottom-content">
-
                     <li class="">
-                        <a href="{$HOST_NAME}/login">
+                        <a href="{$this->getLogoutUrl()}">
                             <ion-icon class ='icon'  name="log-out-outline"></ion-icon>
                             <span class="text nav-text">Logout</span>
                         </a>
                     </li>
-                    
                 </div>
             </div>
 
-            <!-- Resize handle inside sidebar -->
-            <div class="sidebar-resize-handle" 
-                 style="position: absolute !important; top: 25% !important; right: -3px !important; width: 6px !important; height: 50% !important; background: transparent !important; cursor: col-resize !important; z-index: 9999 !important; border-radius: 0 3px 3px 0 !important; transition: all 0.2s ease !important;">
-            </div>
+            {$resizeHandle}
         </nav>
-        
+
         <script>
         // cuando pongo directamente el codigo de menu-component.js aqui si funciona pero desde el componente no TODO revisar
         </script>
-  
-     
+
+
     HTML;
+    }
+
+    /**
+     * Renderiza el buscador de items del menú
+     */
+    private function renderSearchBox(): string
+    {
+        return <<<HTML
+        <li class="search-box">
+            <ion-icon class ='icon' name="search-outline"></ion-icon>
+            <input type="text" placeholder="Search" id="search-menu">
+        </li>
+        HTML;
+    }
+
+    /**
+     * Renderiza el handle para redimensionar el sidebar
+     */
+    private function renderResizeHandle(): string
+    {
+        return <<<HTML
+        <!-- Resize handle inside sidebar -->
+        <div class="sidebar-resize-handle"
+             style="position: absolute !important; top: 25% !important; right: -3px !important; width: 6px !important; height: 50% !important; background: transparent !important; cursor: col-resize !important; z-index: 9999 !important; border-radius: 0 3px 3px 0 !important; transition: all 0.2s ease !important;">
+        </div>
+        HTML;
+    }
+
+    /**
+     * Retorna la URL de logout
+     */
+    private function getLogoutUrl(): string
+    {
+        $HOST_NAME = env('HOST_NAME');
+        return $HOST_NAME . '/login';
     }
 }

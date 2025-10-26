@@ -3,18 +3,44 @@ namespace Core\Components\CoreComponent;
 
 use Core\Dtos\ScriptCoreDTO;
 
+/**
+ * CoreComponent - Clase base para todos los componentes Lego
+ *
+ * FILOSOFÍA LEGO:
+ * Los componentes son bloques reutilizables que se ensamblan de forma declarativa.
+ * Cada componente define sus propios parámetros con tipos específicos usando named arguments.
+ *
+ * CARACTERÍSTICAS:
+ * - Named arguments: Parámetros claros y type-safe
+ * - Auto-loading de CSS/JS: Define $CSS_PATHS y $JS_PATHS
+ * - Rutas relativas: Usa "./file.css" y se resuelve automáticamente
+ * - Composición: Los componentes pueden contener otros componentes
+ *
+ * EJEMPLO:
+ * class MenuComponent extends CoreComponent {
+ *     protected $CSS_PATHS = ["./menu.css"];
+ *
+ *     public function __construct(
+ *         public MenuItemCollection $options,
+ *         public string $title,
+ *         public bool $searchable = false
+ *     ) {}
+ *
+ *     protected function component(): string {
+ *         return "<div>...</div>";
+ *     }
+ * }
+ */
 abstract class CoreComponent {
 
-    protected $config;
     protected $JS_PATHS = [];
 
     /**  @var ScriptCoreDTO[] */
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [];
 
-    public function __construct($config) {
-        $this->config = $config;
-    }
+    // Los componentes hijos definen su propio constructor con named arguments
+    // No hay constructor obligatorio aquí
 
     /**
      * Resuelve rutas relativas basadas en la ubicación del componente
@@ -63,6 +89,11 @@ abstract class CoreComponent {
     protected function js_imports(): string {
         // Resolver rutas relativas en JS_PATHS
         $jsDependencies = array_map([$this, 'resolveRelativePath'], $this->JS_PATHS);
+        // Agregar cache buster a cada ruta
+        $cacheBuster = time();
+        $jsDependencies = array_map(function($path) use ($cacheBuster) {
+            return $path . (strpos($path, '?') !== false ? '&' : '?') . 'v=' . $cacheBuster;
+        }, $jsDependencies);
         return $this->generate_modulesJs($jsDependencies);
     }
   
@@ -76,13 +107,17 @@ abstract class CoreComponent {
 
         // Resolver rutas relativas en JS_PATHS_WITH_ARG
         $resolvedJsPaths = [];
+        $cacheBuster = time(); // Usar timestamp para forzar recarga
         foreach ($this->JS_PATHS_WITH_ARG as $scriptArray) {
             $resolvedArray = [];
             foreach ($scriptArray as $scriptDto) {
                 if ($scriptDto instanceof ScriptCoreDTO) {
                     // Crear una copia para no modificar el original
+                    $resolvedPath = $this->resolveRelativePath($scriptDto->path);
+                    // Agregar cache buster a la ruta
+                    $resolvedPath .= (strpos($resolvedPath, '?') !== false ? '&' : '?') . 'v=' . $cacheBuster;
                     $resolvedDto = new ScriptCoreDTO(
-                        $this->resolveRelativePath($scriptDto->path),
+                        $resolvedPath,
                         $scriptDto->arg
                     );
                     $resolvedArray[] = $resolvedDto;
@@ -104,9 +139,17 @@ abstract class CoreComponent {
         if( $this->JS_PATHS_WITH_ARG == [] ){
             return "";
         }
-   
+
         return <<<HTML
-         <script>window.addEventListener('load',()=>window.lego.loadModulesWithArguments({$modules}));</script>
+         <script>
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                window.lego.loadModulesWithArguments({$modules});
+            } else {
+                window.addEventListener('load', ()=>{
+                    window.lego.loadModulesWithArguments({$modules});
+                });
+            }
+        </script>
         HTML;
     }
 
@@ -116,20 +159,31 @@ abstract class CoreComponent {
 
     /**  @var $dependencies ScriptCoreDTO[] */
     private function generate_modulesJs(array $dependencies){
-        global $url_servidor;
 
         $modules = json_encode($dependencies);
 
         if( $dependencies == [] ){
             return "";
         }
+
         return <<<HTML
-            <script>window.addEventListener('load',()=>window.lego.loadModules({$modules}));</script>
+            <script>
+
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+
+                   window.lego.loadModules({$modules})
+                
+                }else{
+                
+                    window.addEventListener('load',()=>window.lego.loadModules({$modules}));
+                
+                }
+            
+            </script>
         HTML;
     }
 
     private function generate_imports(array $dependencies, string $type): string {
-        global $url_servidor;
 
         $html_result = "";
         $r = uniqid();
@@ -137,7 +191,6 @@ abstract class CoreComponent {
             if ($type == 'css') {
 
 
-// HTML;
             $html_result .= <<<HTML
             
             <link rel="stylesheet" href="{$path}?v={$r}" />
@@ -146,6 +199,8 @@ HTML;
 
 
             } else if ($type == 'js') {
+
+
                 $html_result  .= <<<HTML
                     
                 <script src="{$path}?v={$r}"></script>
@@ -176,13 +231,13 @@ HTML;
     }
 
     public function render(): string
-    {
-  
+    {    
+
       $component = $this->component();
       $css_imports = $this->css_imports();
       $js_imports  = $this->js_imports();
       $js_imports_with_arg  = $this->js_imports_with_arg();
-  
+    
       return <<<HTML
   
   

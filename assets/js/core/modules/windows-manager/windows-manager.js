@@ -45,12 +45,33 @@ async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
     if (!container) {
         let dataResp = await fetch(url).then(res => res.text());
-        
+
         container = document.createElement('div');
         container.id = `module-${id}`;
         container.className = 'module-container';
-        // hacer un fetch a url y remplazar el contenido de la respuesta aqui abajo (no es necesario parsear la respuesta ya viene en html)
-        container.innerHTML = dataResp;
+
+
+        // Usar insertAdjacentHTML en lugar de innerHTML para ejecutar scripts
+        container.insertAdjacentHTML('beforeend', dataResp);
+
+        // Extraer y ejecutar scripts manualmente (porque innerHTML no ejecuta scripts)
+        const scripts = container.querySelectorAll('script');
+
+        scripts.forEach((oldScript, index) => {
+            const newScript = document.createElement('script');
+
+            // Copiar atributos
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+
+            // Copiar contenido
+            newScript.textContent = oldScript.textContent;
+
+            // Reemplazar el script viejo con el nuevo (esto hace que se ejecute)
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
         document.getElementById('home-page').appendChild(container);
     }
     document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));

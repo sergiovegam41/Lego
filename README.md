@@ -40,8 +40,8 @@ Sistema unificado de variables CSS que garantiza que todos tus componentes mante
 ```php
 // ✅ Así de simple es crear un componente
 class DashboardCard extends CoreComponent {
-    protected $CSS_PATHS = ["components/App/DashboardCard/card.css"];
-    
+    protected $CSS_PATHS = ["./card.css"]; // Ruta relativa al componente
+
     public function component(): string {
         return <<<HTML
         <div class="dashboard-card">
@@ -99,10 +99,10 @@ angular-app/
 ```
 
 ```
-lego/Views/App/
+lego/components/App/
 └── UserCard/
     ├── UserCardComponent.php  ← Lógica + HTML
-    ├── user-card.css         ← Estilos  
+    ├── user-card.css         ← Estilos
     └── user-card.js          ← Comportamiento
 ```
 
@@ -162,27 +162,280 @@ Como los sets de LEGO reales, todo está **perfectamente organizado**:
 
 ```
 lego/
-├── Views/
+├── components/
 │   ├── Core/        🧱 Piezas base del framework
-│   │   ├── Login/   
-│   │   ├── Home/    
-│   │   └── Menu/
-│   ├── App/         🎨 Tus componentes específicos
-│   │   ├── Users/
-│   │   └── Products/
-│   └── Shared/      🔗 Piezas reutilizables
-├── Routes/          🛤️ Conexiones entre componentes  
+│   │   ├── Login/
+│   │   ├── Home/
+│   │   └── Automation/
+│   └── App/         🎨 Tus componentes específicos
+│       ├── TestButton/
+│       └── [TusComponentes]/
+├── Routes/          🛤️ Conexiones entre componentes
+│   ├── Web.php      → Rutas web principales
+│   ├── Api.php      → Rutas API REST
+│   └── Views.php    → Auto-discovery de componentes
 ├── Core/            ⚙️ Motor del framework
-└── docs/            📚 Guías para construir
+│   ├── Commands/    → CLI (make:component, migrate, etc)
+│   ├── Components/  → CoreComponent base
+│   └── Services/    → Servicios del framework
+├── App/             💼 Lógica de negocio
+│   ├── Controllers/ → Controladores
+│   └── Models/      → Modelos Eloquent
+├── assets/          🎨 Assets globales
+│   ├── css/core/    → Variables CSS y estilos base
+│   ├── js/          → JavaScript global
+│   └── images/      → Imágenes
+└── database/        🗄️ Migraciones
 ```
 
 ### **Cada componente = 1 carpeta completa:**
 ```
-Views/App/MiComponente/
+components/App/MiComponente/
 ├── MiComponenteComponent.php  ← Lógica y HTML
-├── mi-componente.css          ← Estilos únicos  
+├── mi-componente.css          ← Estilos únicos
 └── mi-componente.js           ← Comportamiento
 ```
+
+### **Sistema de rutas relativas:**
+Los componentes usan rutas relativas para sus assets:
+```php
+protected $CSS_PATHS = ["./mi-componente.css"];  // ✅ Se resuelve automáticamente
+protected $JS_PATHS_WITH_ARG = [
+    new ScriptCoreDTO("./mi-componente.js", [])
+];
+```
+
+### 🔗 **Sistema de Enlaces Simbólicos (Symlinks)**
+
+**¿Por qué existen `public/components/` y `public/assets/`?**
+
+El framework usa **enlaces simbólicos** para servir archivos estáticos manteniendo la organización del código:
+
+```
+Estructura real:
+├── components/          ← Código fuente de componentes (PHP, CSS, JS)
+├── assets/              ← Assets globales compartidos
+└── public/              ← DocumentRoot de Nginx/Apache
+    ├── index.php        ← Entry point
+    ├── components ->    ← SYMLINK → ../components/
+    └── assets ->        ← SYMLINK → ../assets/
+```
+
+**¿Cómo funciona?**
+1. **Nginx/Apache** sirve archivos desde `public/` (seguridad)
+2. **Los symlinks** permiten acceso HTTP a CSS/JS de componentes
+3. **Sin duplicación**: Los symlinks ocupan ~0 bytes
+
+**Flujo de acceso:**
+```
+Browser: http://localhost/components/Core/Home/home.css
+           ↓
+Nginx:   /public/components/Core/Home/home.css
+           ↓
+Symlink: ../components/Core/Home/home.css
+           ↓
+Real:    /components/Core/Home/home.css ✅
+```
+
+**Ventajas:**
+- ✅ Código organizado fuera del DocumentRoot público
+- ✅ Assets accesibles vía HTTP sin duplicación
+- ✅ Seguridad: solo `public/` expuesto al web server
+- ✅ Performance: sin copias, referencias directas
+
+**Los symlinks ya están incluidos en el repositorio.** Si por alguna razón necesitas recrearlos:
+
+```bash
+cd public/
+ln -s ../components components
+ln -s ../assets assets
+```
+
+---
+
+## 🛤️ Sistema de Routing en 3 Capas
+
+Lego Framework implementa un sistema de routing innovador que separa claramente las responsabilidades en **3 capas independientes**.
+
+### 📐 Arquitectura del Router
+
+```
+Usuario → Nginx → public/index.php → Core/Router.php
+                                            ↓
+                        ┌───────────────────┴───────────────────┐
+                        │   Analiza primer segmento de la URI   │
+                        └───────────────────┬───────────────────┘
+                                            ↓
+            ┌──────────────┬────────────────┴────────────┬──────────────┐
+            │              │                             │              │
+         /api/*      /component/*                     otros            /
+            │              │                             │              │
+            ↓              ↓                             ↓              ↓
+         Api.php      Component.php                 Web.php        Web.php
+         (JSON)     (HTML parcial + Assets)       (HTML completo)
+```
+
+---
+
+### 🔴 **Capa 1: API Backend** (`/api/*`)
+
+**Propósito:** Endpoints REST para lógica de negocio
+
+**Características:**
+- ✅ Retorna JSON
+- ✅ Autenticación modular (Admin, Api, extensible)
+- ✅ Validación de requests
+- ✅ Rutas dinámicas auto-mapeadas
+
+**Ejemplos:**
+```
+POST /api/auth/admin/login
+POST /api/auth/api/refresh_token
+GET  /api/users/list
+POST /api/products/create
+```
+
+**Archivo:** `Routes/Api.php`
+
+---
+
+### 🟢 **Capa 2: Component Routes** (`/component/*`)
+
+**Propósito:** Componentes SPA + Assets estáticos
+
+**Características:**
+- ✅ Retorna HTML parcial (sin DOCTYPE/HEAD/BODY) para componentes
+- ✅ Sirve assets estáticos (.css, .js) de componentes
+- ✅ Auto-discovery con decorador `#[ApiComponent]`
+- ✅ Se insertan en `#home-page` del layout SPA
+- ✅ **Filosofía "Sin estado en frontend"**
+- ✅ Consistencia total: `/component/` para todo lo relacionado a componentes
+
+**¿Por qué sin estado?**
+En lugar de mantener estado complejo en el frontend (Redux, Vuex, etc.),
+los componentes siempre se refrescan desde el servidor. Esto elimina:
+- ❌ Desfases de información
+- ❌ Sincronización compleja
+- ❌ Bugs de estado inconsistente
+
+Y garantiza:
+- ✅ Información siempre actualizada
+- ✅ Backend como única fuente de verdad
+- ✅ Desarrollo más simple
+
+**Ejemplo de uso:**
+
+1. **Crear componente con decorador:**
+```php
+#[ApiComponent('/inicio', methods: ['GET'])]
+class HomeComponent extends CoreComponent {
+    protected function component(): string {
+        return '<div>Dashboard actualizado</div>';
+    }
+}
+```
+
+2. **JavaScript lo refresca:**
+```javascript
+// Window Manager hace fetch automáticamente
+fetch('/component/inicio')
+    .then(html => {
+        document.getElementById('home-page').innerHTML = html;
+    });
+```
+
+3. **Assets se cargan automáticamente:**
+```html
+<link rel="stylesheet" href="/component/inicio/HomeComponent.css">
+<script src="/component/inicio/HomeComponent.js"></script>
+```
+
+4. **Usuario ve información actualizada** sin recargar la página
+
+**Ejemplos de rutas:**
+```
+GET /component/inicio              → HomeComponent (HTML)
+GET /component/automation          → AutomationComponent (HTML)
+GET /component/inicio/HomeComponent.css  → CSS del componente
+GET /component/inicio/HomeComponent.js   → JS del componente
+```
+
+**Archivo:** `Routes/Component.php`
+
+---
+
+### 🔵 **Capa 3: Web Routes** (`/*`)
+
+**Propósito:** Páginas completas (puntos de entrada)
+
+**Características:**
+- ✅ Retorna HTML completo (DOCTYPE, HEAD, BODY)
+- ✅ MainComponent (layout SPA), LoginComponent
+- ✅ Registro manual de rutas
+- ✅ Entry points de la aplicación
+
+**Ejemplos:**
+```
+GET /admin  → MainComponent (Layout con sidebar/header)
+GET /login  → LoginComponent (Página de autenticación)
+GET /       → Redirect a /admin
+```
+
+**Archivo:** `Routes/Web.php`
+
+---
+
+### 🎯 Flujo Completo en Acción
+
+**Escenario:** Usuario navega en el dashboard
+
+```
+1. Usuario accede → /admin
+   └→ Web.php → MainComponent
+   └→ Renderiza HTML completo con sidebar, header, #home-page
+
+2. Usuario hace click en "Inicio" del menú
+   └→ JavaScript fetch → /component/inicio
+   └→ Core/Router.php → Component.php → HomeComponent
+   └→ Retorna HTML parcial
+
+3. JavaScript inserta contenido en #home-page
+   └→ Usuario ve dashboard actualizado
+   └→ Sin recargar página, sin mantener estado
+
+4. Assets del componente se cargan automáticamente
+   └→ /component/inicio/HomeComponent.css
+   └→ /component/inicio/HomeComponent.js
+   └→ Servidos con caché eficiente desde PHP
+
+5. Usuario hace click en "Automatización"
+   └→ JavaScript fetch → /component/automation
+   └→ Component.php → AutomationComponent
+   └→ Información fresca del servidor
+   └→ Siempre actualizada, sin desfases
+```
+
+---
+
+### 💡 Ventajas del Sistema
+
+**1. Separación clara de responsabilidades**
+- Cada capa con propósito específico
+- Código organizado y mantenible
+
+**2. Desarrollo simple**
+- Sin estado complejo en frontend
+- Sin sincronización de datos
+- Backend como única fuente de verdad
+
+**3. Información siempre actualizada**
+- Cada refresco trae datos frescos
+- Elimina bugs de estado desincronizado
+
+**4. Escalabilidad**
+- Auto-discovery de componentes
+- Fácil agregar nuevas funcionalidades
+- Sistema modular extensible
 
 ---
 
@@ -253,4 +506,20 @@ Tu entorno viene con **todas las piezas esenciales**:
 
 
 ### ⚠️ **OBLIGATORIO**
-Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia. 
+Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia.
+
+---
+
+## 📖 Documentación
+
+### 📚 Para Desarrolladores
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitectura del framework
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Resolución de problemas comunes
+- **[QUICK_FIX.md](docs/QUICK_FIX.md)** - Guía de soluciones rápidas
+- **[TODOS.md](docs/TODOS.md)** - Lista de tareas pendientes del proyecto
+
+### 🤖 Para IA/Análisis
+- **[LEGO_ARCHITECTURE_ANALYSIS.md](AI/LEGO_ARCHITECTURE_ANALYSIS.md)** - Análisis completo de arquitectura
+- **[LEGO_VISUAL_DIAGRAMS.md](AI/LEGO_VISUAL_DIAGRAMS.md)** - Diagramas visuales del framework
+- **[implementation-guide.md](AI/implementation-guide.md)** - Guía de implementación para IA
+- **[README.md](AI/README.md)** - Contratos y reglas para desarrollo asistido por IA 

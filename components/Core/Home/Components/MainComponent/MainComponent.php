@@ -7,41 +7,96 @@ use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
 use Components\Core\Home\Components\MenuComponent\MenuComponent;
 use Components\Core\Home\Components\HeaderComponent\HeaderComponent;
+use Components\Core\Home\Collections\MenuItemCollection;
+use Components\Core\Home\Dtos\MenuItemDto;
 
-class MainComponent extends CoreComponent 
+/**
+ * MainComponent - Layout principal de la aplicación SPA
+ *
+ * PROPÓSITO:
+ * Renderiza el layout completo de la aplicación incluyendo:
+ * - MenuComponent (sidebar)
+ * - HeaderComponent (barra superior)
+ * - Contenedor principal (#home-page) para módulos dinámicos
+ *
+ * Este es un componente de página completa (retorna HTML con DOCTYPE)
+ */
+class MainComponent extends CoreComponent
 {
+    use StringMethods;
 
-  use StringMethods;
-  protected $config;
-  protected $JS_PATHS = [
+    protected $JS_PATHS = [];
+    protected $JS_PATHS_WITH_ARG = [];
+    protected $CSS_PATHS = [];
 
-  ];
+    public function __construct() {}
 
-  protected $JS_PATHS_WITH_ARG = [ ];
+    protected function component(): string
+    {
+        $this->JS_PATHS_WITH_ARG[] = [
+            new ScriptCoreDTO("assets/js/home/home.js?v=1", [
+                "hello" => "Word"
+            ])
+        ];
 
-  protected $CSS_PATHS = [
+        $HOST_NAME = env('HOST_NAME');
 
-  ];
+        // Crear el menú con la nueva API
+        $MenuComponent = (new MenuComponent(
+            options: new MenuItemCollection(
+                new MenuItemDto(
+                    id: "1",
+                    name: "Inicio",
+                    url: $HOST_NAME . '/component/inicio',
+                    iconName: "home-outline"
+                ),
+                new MenuItemDto(
+                    id: "2",
+                    name: "Tablero",
+                    url: $HOST_NAME . '/tablero',
+                    iconName: "grid-outline"
+                ),
+                new MenuItemDto(
+                    id: "3",
+                    name: "Actividades recientes",
+                    url: $HOST_NAME . '/actividades',
+                    iconName: "time-outline"
+                ),
+                new MenuItemDto(
+                    id: "4",
+                    name: "Configuración",
+                    url: "#",
+                    iconName: "settings-outline",
+                    childs: [
+                        new MenuItemDto(
+                            id: "5",
+                            name: "Reportes",
+                            url: $HOST_NAME . '/reportes',
+                            iconName: "stats-chart-outline"
+                        )
+                    ]
+                ),
+                new MenuItemDto(
+                    id: "6",
+                    name: "Automatización",
+                    url: $HOST_NAME . '/component/automation',
+                    iconName: "flash-outline"
+                ),
+                new MenuItemDto(
+                    id: "8",
+                    name: "Forms Showcase",
+                    url: $HOST_NAME . '/component/forms-showcase',
+                    iconName: "create-outline"
+                )
+            ),
+            title: "Lego",
+            subtitle: "Framework",
+            icon: "menu-outline",
+            searchable: true,
+            resizable: true
+        ))->render();
 
-  public function __construct( $config)
-  {
-
-    $this->config = $config;
-  }
-
-
-  protected function component(): string
-  {
-    $this->JS_PATHS_WITH_ARG[] = [
-
-      new ScriptCoreDTO("assets/js/home/home.js?v=1", [
-        "hello" => "Word"
-      ])
-
-    ];
-
-    $MenuComponent = (new MenuComponent([]))->render();
-    $HeaderComponent = (new HeaderComponent([]))->render();
+        $HeaderComponent = (new HeaderComponent())->render();
 
     return <<<HTML
 

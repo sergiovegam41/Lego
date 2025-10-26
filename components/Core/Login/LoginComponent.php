@@ -8,7 +8,6 @@ use Core\Dtos\ScriptCoreDTO;
 class LoginComponent extends CoreComponent
 {
 
-    protected $config;
 
     protected $JS_PATHS = [];
 
@@ -16,10 +15,7 @@ class LoginComponent extends CoreComponent
 
     protected $CSS_PATHS = ["./login.css"];
 
-    public function __construct( $config)
-    {
-        $this->config = $config;
-    }
+    public function __construct() {}
 
     protected function component(): string
     {

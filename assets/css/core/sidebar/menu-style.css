@@ -219,6 +219,7 @@ hr{
     cursor: pointer;
     transition: var(--transition-slow);
     margin-top: .3rem;
+    margin-left: .28rem;
 }
 
 .sidebar.close .search-box{

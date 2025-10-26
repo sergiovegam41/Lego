@@ -6,25 +6,31 @@ use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
 use Core\providers\StringMethods;
 
+/**
+ * HeaderComponent - Barra superior de la aplicación
+ *
+ * PROPÓSITO:
+ * Renderiza la barra superior con información del usuario y notificaciones
+ */
 class HeaderComponent extends CoreComponent
 {
     use StringMethods;
-    protected $config;
+
     protected $JS_PATHS = [];
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [
         './header-component.css'
     ];
 
-    public function __construct($config)
-    {
-        $this->config = $config;
-    }
+    public function __construct(
+        public string $title = "Dashboard",
+        public bool $showNotifications = true
+    ) {}
 
     protected function component(): string
     {
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("components/Core/Home/Components/HeaderComponent/header-component.js", [
+            new ScriptCoreDTO("./header-component.js", [
                 "user" => [
                     "name" => "Admin User",
                     "role" => "Administrator",

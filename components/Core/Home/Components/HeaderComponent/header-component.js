@@ -1,7 +1,7 @@
 // Header Component JavaScript
 let context = {CONTEXT};
 
-    console.log('Header component loaded');
+    console.log('Header component loaded.');
     
     // Initialize header functionality
     initializeThemeToggle();

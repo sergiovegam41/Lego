@@ -43,19 +43,42 @@ class ApiRouteDiscovery
             return [];
         }
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path)
-        );
-
-        $phpFiles = new RegexIterator(
-            $iterator,
-            '/^.+Component\.php$/i',
-            RegexIterator::GET_MATCH
-        );
-
         $files = [];
-        foreach ($phpFiles as $file) {
-            $files[] = $file[0];
+
+        // Escanear recursivamente todos los subdirectorios
+        $directories = [$path];
+
+        while (!empty($directories)) {
+            $currentDir = array_shift($directories);
+
+            try {
+                if (!is_dir($currentDir) || !is_readable($currentDir)) {
+                    continue;
+                }
+
+                $items = @scandir($currentDir);
+                if ($items === false) {
+                    error_log("ApiRouteDiscovery: Cannot read directory: $currentDir");
+                    continue;
+                }
+
+                foreach ($items as $item) {
+                    if ($item === '.' || $item === '..') {
+                        continue;
+                    }
+
+                    $itemPath = $currentDir . DIRECTORY_SEPARATOR . $item;
+
+                    if (is_dir($itemPath)) {
+                        $directories[] = $itemPath;
+                    } elseif (is_file($itemPath) && preg_match('/Component\.php$/i', $item)) {
+                        $files[] = $itemPath;
+                    }
+                }
+            } catch (\Exception $e) {
+                error_log("ApiRouteDiscovery: Error scanning $currentDir - " . $e->getMessage());
+                continue;
+            }
         }
 
         return $files;
@@ -67,7 +90,7 @@ class ApiRouteDiscovery
     private static function registerApiRoute(string $filePath): void
     {
         $className = self::extractClassName($filePath);
-        
+
         if (!$className || !class_exists($className)) {
             return;
         }
