@@ -39,6 +39,12 @@ abstract class CoreComponent {
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [];
 
+    /**
+     * Children components - para composición tipo LEGO
+     * @var array<CoreComponent|string>
+     */
+    protected array $children = [];
+
     // Los componentes hijos definen su propio constructor con named arguments
     // No hay constructor obligatorio aquí
 
@@ -228,6 +234,30 @@ HTML;
             $result[] = $val . "?v=$date";
         }
         $this->CSS_PATHS = $result;
+    }
+
+    /**
+     * Renderiza los componentes children
+     * Soporta:
+     * - CoreComponent instances (llama a ->render())
+     * - Strings (HTML directo)
+     * - Arrays de children (recursivo)
+     *
+     * @return string HTML renderizado de todos los children
+     */
+    protected function renderChildren(): string
+    {
+        return implode('', array_map(
+            fn($child) => match(true) {
+                $child instanceof CoreComponent => $child->render(),
+                is_array($child) => implode('', array_map(
+                    fn($c) => $c instanceof CoreComponent ? $c->render() : (string)$c,
+                    $child
+                )),
+                default => (string)$child
+            },
+            $this->children
+        ));
     }
 
     public function render(): string

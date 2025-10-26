@@ -16,13 +16,23 @@ use Core\Components\CoreComponent\CoreComponent;
  * - Manejo de loading state
  * - Eventos custom (submit, validation)
  * - Type-safe con named arguments
+ * - Soporta children array (recomendado) o content string (legacy)
  *
- * EJEMPLO:
+ * EJEMPLO MODERNO (con children):
  * new FormComponent(
  *     id: "contact-form",
  *     action: "/api/contact",
  *     method: "POST",
- *     content: $inputsAndButtons
+ *     children: [
+ *         new InputTextComponent(id: "name", label: "Nombre"),
+ *         new ButtonComponent(text: "Enviar", type: "submit")
+ *     ]
+ * )
+ *
+ * EJEMPLO LEGACY (con content):
+ * new FormComponent(
+ *     id: "contact-form",
+ *     content: $input->render() . $button->render()
  * )
  */
 class FormComponent extends CoreComponent {
@@ -32,7 +42,8 @@ class FormComponent extends CoreComponent {
 
     public function __construct(
         public string $id,
-        public string $content,
+        public string $content = "", // Legacy: usar children en su lugar
+        public array $children = [], // Moderno: array de componentes
         public string $action = "",
         public string $method = "POST",
         public string $title = "",
@@ -72,11 +83,16 @@ class FormComponent extends CoreComponent {
             HTML;
         }
 
+        // Usar children si están disponibles, sino usar content (legacy)
+        $bodyContent = !empty($this->children)
+            ? $this->renderChildren()
+            : $this->content;
+
         return <<<HTML
         <form {$formAttrsStr}>
             {$headerHtml}
             <div class="lego-form__body">
-                {$this->content}
+                {$bodyContent}
             </div>
             <div class="lego-form__messages" style="display: none;">
                 <div class="lego-form__success" style="display: none;"></div>

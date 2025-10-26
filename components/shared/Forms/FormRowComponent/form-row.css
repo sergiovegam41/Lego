@@ -1,0 +1,23 @@
+/* FormRowComponent - Layout horizontal para formularios */
+
+.lego-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.lego-form__row > * {
+    flex: 1;
+    min-width: 0; /* Previene overflow de inputs largos */
+}
+
+/* Responsive: se apila en móviles */
+@media (max-width: 768px) {
+    .lego-form__row {
+        flex-direction: column;
+    }
+
+    .lego-form__row > * {
+        width: 100%;
+    }
+}

@@ -10,6 +10,9 @@ use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
 use Components\Shared\Forms\CheckboxComponent\CheckboxComponent;
 use Components\Shared\Forms\RadioComponent\RadioComponent;
 use Components\Shared\Forms\FormComponent\FormComponent;
+use Components\Shared\Forms\FormGroupComponent\FormGroupComponent;
+use Components\Shared\Forms\FormActionsComponent\FormActionsComponent;
+use Components\Shared\Forms\FormRowComponent\FormRowComponent;
 
 /**
  * FormsShowcaseComponent - Página de demostración de componentes de formulario
@@ -40,10 +43,7 @@ class FormsShowcaseComponent extends CoreComponent {
         <div class="forms-showcase">
             <div class="forms-showcase__header">
                 <h1 class="forms-showcase__title">Componentes de Formulario Lego</h1>
-                <p class="forms-showcase__description">
-                    Sistema completo de componentes de formulario con validación, estados y estilos consistentes.
-                    Todos los componentes siguen la filosofía Lego: declarativos, type-safe y reutilizables.
-                </p>
+                
             </div>
 
             <div class="forms-showcase__content">
@@ -79,179 +79,164 @@ class FormsShowcaseComponent extends CoreComponent {
     }
 
     private function renderContactForm(): string {
-        $nameInput = new InputTextComponent(
-            id: "contact-name",
-            label: "Nombre completo",
-            placeholder: "Juan Pérez",
-            required: true,
-            icon: "person-outline"
-        );
-
-        $emailInput = new InputTextComponent(
-            id: "contact-email",
-            label: "Correo electrónico",
-            placeholder: "juan@ejemplo.com",
-            type: "email",
-            required: true,
-            icon: "mail-outline"
-        );
-
-        $subjectSelect = new SelectComponent(
-            id: "contact-subject",
-            label: "Asunto",
-            placeholder: "Selecciona un asunto",
-            required: true,
-            options: [
-                ["value" => "general", "label" => "Consulta general"],
-                ["value" => "support", "label" => "Soporte técnico"],
-                ["value" => "sales", "label" => "Ventas"],
-                ["value" => "other", "label" => "Otro"]
-            ]
-        );
-
-        $messageTextarea = new TextAreaComponent(
-            id: "contact-message",
-            label: "Mensaje",
-            placeholder: "Escribe tu mensaje aquí...",
-            required: true,
-            maxLength: 500,
-            showCounter: true,
-            autoResize: true,
-            rows: 4
-        );
-
-        $subscribeCheckbox = new CheckboxComponent(
-            id: "contact-subscribe",
-            label: "Suscribirme al newsletter",
-            description: "Recibe noticias y actualizaciones por correo"
-        );
-
-        $submitButton = new ButtonComponent(
-            text: "Enviar mensaje",
-            type: "submit",
-            variant: "primary",
-            icon: "send-outline",
-            fullWidth: true
-        );
-
-        $formContent = $nameInput->render() .
-                      $emailInput->render() .
-                      $subjectSelect->render() .
-                      $messageTextarea->render() .
-                      $subscribeCheckbox->render() .
-                      '<div class="lego-form__actions lego-form__actions--end">' .
-                      $submitButton->render() .
-                      '</div>';
-
-        $contactForm = new FormComponent(
+        return (new FormComponent(
             id: "contact-form",
             title: "Contáctanos",
             description: "Completa este formulario y te responderemos pronto.",
-            content: $formContent
-        );
+            children: [
+                new InputTextComponent(
+                    id: "contact-name",
+                    label: "Nombre completo",
+                    placeholder: "Juan Pérez",
+                    required: true,
+                    icon: "person-outline"
+                ),
 
-        return $contactForm->render();
+                new InputTextComponent(
+                    id: "contact-email",
+                    label: "Correo electrónico",
+                    placeholder: "juan@ejemplo.com",
+                    type: "email",
+                    required: true,
+                    icon: "mail-outline"
+                ),
+
+                new SelectComponent(
+                    id: "contact-subject",
+                    label: "Asunto",
+                    placeholder: "Selecciona un asunto",
+                    required: true,
+                    options: [
+                        ["value" => "general", "label" => "Consulta general"],
+                        ["value" => "support", "label" => "Soporte técnico"],
+                        ["value" => "sales", "label" => "Ventas"],
+                        ["value" => "other", "label" => "Otro"]
+                    ]
+                ),
+
+                new TextAreaComponent(
+                    id: "contact-message",
+                    label: "Mensaje",
+                    placeholder: "Escribe tu mensaje aquí...",
+                    required: true,
+                    maxLength: 500,
+                    showCounter: true,
+                    autoResize: true,
+                    rows: 4
+                ),
+
+                new CheckboxComponent(
+                    id: "contact-subscribe",
+                    label: "Suscribirme al newsletter",
+                    description: "Recibe noticias y actualizaciones por correo"
+                ),
+
+                new FormActionsComponent(
+                    layout: "end",
+                    children: [
+                        new ButtonComponent(
+                            text: "Enviar mensaje",
+                            type: "submit",
+                            variant: "primary",
+                            icon: "send-outline",
+                            fullWidth: true
+                        )
+                    ]
+                )
+            ]
+        ))->render();
     }
 
     private function renderRegisterForm(): string {
-        $usernameInput = new InputTextComponent(
-            id: "reg-username",
-            label: "Nombre de usuario",
-            placeholder: "usuario123",
-            required: true,
-            minLength: 3,
-            maxLength: 20,
-            showCounter: true,
-            helpText: "Entre 3 y 20 caracteres"
-        );
-
-        $passwordInput = new InputTextComponent(
-            id: "reg-password",
-            label: "Contraseña",
-            type: "password",
-            required: true,
-            minLength: 8,
-            helpText: "Mínimo 8 caracteres"
-        );
-
-        $countrySelect = new SelectComponent(
-            id: "reg-country",
-            label: "País",
-            required: true,
-            searchable: true,
-            options: [
-                ["value" => "mx", "label" => "México"],
-                ["value" => "us", "label" => "Estados Unidos"],
-                ["value" => "es", "label" => "España"],
-                ["value" => "ar", "label" => "Argentina"],
-                ["value" => "co", "label" => "Colombia"]
-            ]
-        );
-
-        $genderRadio1 = new RadioComponent(
-            id: "gender-male",
-            name: "gender",
-            label: "Masculino",
-            value: "male"
-        );
-
-        $genderRadio2 = new RadioComponent(
-            id: "gender-female",
-            name: "gender",
-            label: "Femenino",
-            value: "female"
-        );
-
-        $genderRadio3 = new RadioComponent(
-            id: "gender-other",
-            name: "gender",
-            label: "Otro",
-            value: "other"
-        );
-
-        $termsCheckbox = new CheckboxComponent(
-            id: "reg-terms",
-            label: "Acepto los términos y condiciones",
-            required: true
-        );
-
-        $registerButton = new ButtonComponent(
-            text: "Crear cuenta",
-            type: "submit",
-            variant: "success",
-            icon: "checkmark-circle-outline",
-            fullWidth: true
-        );
-
-        $cancelButton = new ButtonComponent(
-            text: "Cancelar",
-            type: "button",
-            variant: "ghost",
-            fullWidth: true
-        );
-
-        $formContent = $usernameInput->render() .
-                      $passwordInput->render() .
-                      $countrySelect->render() .
-                      '<div class="lego-form__group"><div class="lego-form__group-title">Género</div>' .
-                      $genderRadio1->render() .
-                      $genderRadio2->render() .
-                      $genderRadio3->render() .
-                      '</div>' .
-                      $termsCheckbox->render() .
-                      '<div class="lego-form__actions lego-form__actions--between">' .
-                      $cancelButton->render() .
-                      $registerButton->render() .
-                      '</div>';
-
-        $registerForm = new FormComponent(
+        return (new FormComponent(
             id: "register-form",
             title: "Registro de Usuario",
             description: "Crea tu cuenta para acceder a todas las funcionalidades.",
-            content: $formContent
-        );
+            children: [
+                new InputTextComponent(
+                    id: "reg-username",
+                    label: "Nombre de usuario",
+                    placeholder: "usuario123",
+                    required: true,
+                    minLength: 3,
+                    maxLength: 20,
+                    showCounter: true,
+                    helpText: "Entre 3 y 20 caracteres"
+                ),
 
-        return $registerForm->render();
+                new InputTextComponent(
+                    id: "reg-password",
+                    label: "Contraseña",
+                    type: "password",
+                    required: true,
+                    minLength: 8,
+                    helpText: "Mínimo 8 caracteres"
+                ),
+
+                new SelectComponent(
+                    id: "reg-country",
+                    label: "País",
+                    required: true,
+                    searchable: true,
+                    options: [
+                        ["value" => "mx", "label" => "México"],
+                        ["value" => "us", "label" => "Estados Unidos"],
+                        ["value" => "es", "label" => "España"],
+                        ["value" => "ar", "label" => "Argentina"],
+                        ["value" => "co", "label" => "Colombia"]
+                    ]
+                ),
+
+                new FormGroupComponent(
+                    title: "Género",
+                    children: [
+                        new RadioComponent(
+                            id: "gender-male",
+                            name: "gender",
+                            label: "Masculino",
+                            value: "male"
+                        ),
+                        new RadioComponent(
+                            id: "gender-female",
+                            name: "gender",
+                            label: "Femenino",
+                            value: "female"
+                        ),
+                        new RadioComponent(
+                            id: "gender-other",
+                            name: "gender",
+                            label: "Otro",
+                            value: "other"
+                        )
+                    ]
+                ),
+
+                new CheckboxComponent(
+                    id: "reg-terms",
+                    label: "Acepto los términos y condiciones",
+                    required: true
+                ),
+
+                new FormActionsComponent(
+                    layout: "between",
+                    children: [
+                        new ButtonComponent(
+                            text: "Cancelar",
+                            type: "button",
+                            variant: "ghost",
+                            fullWidth: true
+                        ),
+                        new ButtonComponent(
+                            text: "Crear cuenta",
+                            type: "submit",
+                            variant: "success",
+                            icon: "checkmark-circle-outline",
+                            fullWidth: true
+                        )
+                    ]
+                )
+            ]
+        ))->render();
     }
 
     private function renderComponentsShowcase(): string {
