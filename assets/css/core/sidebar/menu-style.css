@@ -132,6 +132,7 @@ header .image-text .profession{
 
 
 .sidebar header .image{
+    margin-left: .3rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -492,26 +493,14 @@ hr{
 
 .menu_item_openable:hover {
     color: var(--accent-primary);
-    z-index: 10000;
-    transition: var(--transition-normal);
-    border-radius: 10px;
-    transform: translateX(6px);
-    
+
     p {
         color: var(--accent-primary);
     }
-    
+
     ion-icon{
         color: var(--accent-primary);
     }
-}
-
-.sidebar.close  .menu_item_openable:hover {
-    color: var(--accent-primary);
-    z-index: 10000;
-    transition: var(--transition-normal);
-    border-radius: 10px;
-    transform: translateX(0px);
 }
 
   .menu_item_openable:hover ~ .menu_item_openable {
@@ -650,10 +639,13 @@ hr{
     border-radius: 50%;
     background: var(--accent-primary);
     opacity: 0;
-    transition: opacity 0.2s ease;
-    margin-left: auto;
-    margin-right: 0.5rem;
+    transition: opacity 0.3s ease-in 0s;
+    position: absolute;
+    top: 50%;
+    right: calc(0.5rem + 0.38rem); /* Centrado con el círculo de la X (1.125rem / 2 - 6px / 2) */
+    transform: translateY(-50%);
     flex-shrink: 0;
+    z-index: 9;
 }
 
 /* Active state - only color, no background */
@@ -677,8 +669,8 @@ hr{
     position: absolute;
     top: 50%;
     right: 0.5rem;
-    transform: translateY(-50%);
-    background: rgba(220, 38, 38, 0.9);
+    transform: translateY(-50%) scale(0.1); /* Empieza pequeño como el punto */
+    background: var(--accent-primary); /* Comienza con el color del puntito */
     border: none;
     cursor: pointer;
     padding: 0;
@@ -690,37 +682,45 @@ hr{
     height: 1.125rem;
     opacity: 0; /* Start invisible */
     pointer-events: none; /* No clickable when invisible */
-    transition: opacity 0.3s ease-in 0s, transform 0.2s ease;
+    transition: opacity 0.3s ease-in 0s, transform 0.3s ease-out 0s, background 0.3s ease-out 0s; /* Añadimos transición de color */
 }
 
 .menu-close-button ion-icon {
     font-size: 0.625rem;
-    color: #ffffff !important; /* Blanco puro */
+    color: var(--text-on-focus) !important; /* Siempre blanco por defecto (dark mode) */
 }
 
 .menu-close-button:hover {
-    background: rgba(220, 38, 38, 1);
-    transform: translateY(-50%) scale(1.15);
+    background: var(--bg-surface-hover); /* Responde al tema */
 }
 
 .menu-close-button:active {
-    transform: translateY(-50%) scale(0.95);
+    transform: translateY(-50%) scale(0.9);
 }
 
-/* Show close button on hover for open windows with 1s delay */
+/* Show close button on hover - appears after 0.5s and grows from dot size */
 .menu_item_openable.menu-state--open:hover .menu-close-button,
 .menu_item_openable.menu-state--active:hover .menu-close-button {
     opacity: 1;
     pointer-events: auto;
-    transition: opacity 0.3s ease-in 1s, transform 0.2s ease; /* 1s delay before fade in */
+    transform: translateY(-50%) scale(1); /* Crece a tamaño normal */
+    background: var(--bg-surface); /* Cambia al color de superficie según el tema */
+    transition: opacity 0.3s ease-in 0.5s, transform 0.3s ease-out 0.5s, background 0.3s ease-out 0.5s; /* Todas con 0.5s delay */
 }
 
-/* Hide dot when close button is visible - with same delay */
-.menu_item_openable.menu-state--open:hover .menu-state-indicator,
-.menu_item_openable.menu-state--active:hover .menu-state-indicator {
-    opacity: 0;
-    transition: opacity 0.3s ease-in 1s; /* Same delay as close button */
+/* En modo claro, el ícono debe ser negro para contraste */
+html.light .menu-close-button ion-icon {
+    color: var(--color-black) !important;
 }
+
+/* Hide dot when hovering - fades out as X fades in */
+.menu_item_openable.menu-state--open:hover .menu-state-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease-out 0.5s; /* Fades out when X appears */
+}
+
+/* For active state (no dot by default), just show X on hover */
+/* No need to hide dot since it's not visible */
 
 /* Menu item needs to be positioned relatively for absolute close button */
 .menu_item_openable {
@@ -746,9 +746,49 @@ hr{
     margin: 0;
 }
 
-/* Collapsed sidebar - hide indicators */
-.sidebar.close .menu-state-indicator,
+/* Collapsed sidebar - show indicators as badges on icon */
+.sidebar.close .menu_item_openable {
+    position: relative;
+}
+
+.sidebar.close .custom-button {
+    position: relative;
+}
+
+/* Dot badge on icon when sidebar is collapsed */
+.sidebar.close .menu-state-indicator {
+    display: block;
+    position: absolute;
+    top: .15rem;
+    right: auto;
+    left: 2rem; /* Moved slightly to the right to center with X circle */
+    transform: none;
+}
+
+/* X badge on icon when sidebar is collapsed */
 .sidebar.close .menu-close-button {
-    display: none;
+    display: flex;
+    position: absolute;
+    top: -2px;
+    right: auto;
+    left: 1.75rem; /* Position for X */
+    transform: scale(0.4); /* Smaller initial size */
+    width: 1rem; /* Smaller size */
+    height: 1rem;
+}
+
+/* Show X on hover in collapsed sidebar */
+.sidebar.close .menu_item_openable.menu-state--open:hover .menu-close-button,
+.sidebar.close .menu_item_openable.menu-state--active:hover .menu-close-button {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(0.9); /* Smaller final size */
+    transition: opacity 0.3s ease-in 0.5s, transform 0.3s ease-out 0.5s;
+}
+
+/* Hide dot when X appears in collapsed sidebar */
+.sidebar.close .menu_item_openable.menu-state--open:hover .menu-state-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease-out 0.5s;
 }
 
