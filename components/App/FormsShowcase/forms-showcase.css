@@ -4,6 +4,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    padding-top: 0;
 }
 
 .forms-showcase__header {
@@ -33,10 +34,9 @@
 }
 
 .forms-showcase__section {
-    background-color: var(--bg-surface);
+    border: .75px solid var(--border-light);
     border-radius: 0.75rem;
     padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .forms-showcase__section-title {
@@ -61,8 +61,8 @@
 }
 
 .component-card {
-    background-color: var(--bg-surface-secondary);
-    border: 1px solid var(--border-light);
+    /* background-color: var(--bg-surface-secondary); */
+    border: 0.75px solid var(--border-light);
     border-radius: 0.5rem;
     padding: 1.5rem;
 }
@@ -73,7 +73,7 @@
     color: var(--text-primary);
     margin: 0 0 1.5rem 0;
     padding-bottom: 0.75rem;
-    border-bottom: 2px solid var(--accent-primary);
+    border-bottom: 1px solid var(--border-light);
 }
 
 .component-card > *:not(h3) {
@@ -88,6 +88,7 @@
 @media (max-width: 768px) {
     .forms-showcase {
         padding: 1rem;
+        padding-top: 0;
     }
 
     .forms-showcase__title {
@@ -110,12 +111,11 @@
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
-    .forms-showcase__section {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    .component-card {
+        border-color: var(--border-light);
     }
 
-    .component-card {
-        background-color: var(--bg-surface-secondary);
-        border-color: var(--border-dark);
+    .component-card h3 {
+        border-bottom-color: var(--border-light);
     }
 }

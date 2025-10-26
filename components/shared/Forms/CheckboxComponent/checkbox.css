@@ -31,9 +31,9 @@
     height: 1.25rem;
     flex-shrink: 0;
     margin-top: 0.125rem;
-    border: 2px solid var(--border-dark);
+    border: 2px solid var(--border-primary);
     border-radius: 0.25rem;
-    background-color: var(--bg-surface);
+    background-color: var(--bg-input);
     transition: all 0.2s ease;
 }
 
@@ -104,24 +104,24 @@
 
 .lego-checkbox__error {
     font-size: 0.75rem;
-    color: var(--color-red-600);
+    color: var(--color-orange-600);
     line-height: 1.4;
     margin-left: 2rem;
 }
 
 /* Estado de error */
 .lego-checkbox--error .lego-checkbox__checkmark {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
 }
 
 .lego-checkbox--error .lego-checkbox__input:checked + .lego-checkbox__checkmark {
-    background-color: var(--color-red-600);
-    border-color: var(--color-red-600);
+    background-color: var(--color-orange-600);
+    border-color: var(--color-orange-600);
 }
 
 /* Estado disabled */
 .lego-checkbox--disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     pointer-events: none;
 }
 
@@ -131,6 +131,7 @@
 
 .lego-checkbox--disabled .lego-checkbox__checkmark {
     background-color: var(--bg-disabled);
+    border-color: var(--border-primary);
 }
 
 /* Animación al hacer check */
@@ -148,11 +149,4 @@
 
 .lego-checkbox__input:checked + .lego-checkbox__checkmark .lego-checkbox__icon--check {
     animation: checkboxBounce 0.3s ease;
-}
-
-/* Dark mode ajustes */
-@media (prefers-color-scheme: dark) {
-    .lego-checkbox__checkmark {
-        border-color: var(--border-light);
-    }
 }

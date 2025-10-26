@@ -174,7 +174,7 @@ hr{
     margin: var(--menu-item-spacing); /* Mismo espaciado que los elementos del menú */
     margin-top: 12px;
     border: none;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 0.75px solid var(--border-light);
     height: 0;
 }
 

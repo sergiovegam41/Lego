@@ -47,7 +47,7 @@
 }
 
 .lego-input-text__field:hover:not(:disabled) {
-    border-color: var(--border-dark);
+    border-color: var(--border-light);
 }
 
 .lego-input-text__field:focus {
@@ -57,11 +57,12 @@
 
 .lego-input-text__field::placeholder {
     color: var(--text-tertiary);
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .lego-input-text__field:focus::placeholder {
-    opacity: 0.3;
+    opacity: 0.8;
+    color: var(--text-secondary);
 }
 
 /* Ocultar placeholder cuando hay valor (fallback) */
@@ -96,17 +97,17 @@
 
 .lego-input-text__error {
     font-size: 0.75rem;
-    color: var(--color-red-600);
+    color: var(--color-orange-600);
     line-height: 1.4;
 }
 
 /* Estado de error */
 .lego-input-text--error .lego-input-text__field {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
 }
 
 .lego-input-text--error .lego-input-text__field:focus {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
@@ -131,7 +132,7 @@
 @media (prefers-color-scheme: dark) {
     .lego-input-text__field {
         background-color: var(--bg-surface);
-        border-color: var(--border-dark);
+        border-color: var(--border-light);
     }
 
     .lego-input-text__field:hover:not(:disabled) {

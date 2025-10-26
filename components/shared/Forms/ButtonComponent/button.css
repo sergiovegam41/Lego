@@ -46,8 +46,8 @@
 }
 
 .lego-button--primary:hover:not(:disabled) {
-    background-color: var(--accent-primary-dark);
-    border-color: var(--accent-primary-dark);
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -63,8 +63,8 @@
 }
 
 .lego-button--secondary:hover:not(:disabled) {
-    background-color: var(--bg-surface-tertiary);
-    border-color: var(--border-dark);
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-medium);
 }
 
 .lego-button--success {
@@ -82,13 +82,13 @@
 
 .lego-button--danger {
     color: white;
-    background-color: var(--color-red-600);
-    border-color: var(--color-red-600);
+    background-color: var(--color-orange-600);
+    border-color: var(--color-orange-600);
 }
 
 .lego-button--danger:hover:not(:disabled) {
-    background-color: var(--color-red-700);
-    border-color: var(--color-red-700);
+    background-color: var(--color-orange-700);
+    border-color: var(--color-orange-700);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }

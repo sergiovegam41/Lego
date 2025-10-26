@@ -31,7 +31,7 @@
     height: 1.25rem;
     flex-shrink: 0;
     margin-top: 0.125rem;
-    border: 2px solid var(--border-dark);
+    border: 2px solid var(--border-light);
     border-radius: 50%;
     background-color: var(--bg-surface);
     transition: all 0.2s ease;
@@ -84,19 +84,19 @@
 
 .lego-radio__error {
     font-size: 0.75rem;
-    color: var(--color-red-600);
+    color: var(--color-orange-600);
     line-height: 1.4;
     margin-left: 2rem;
 }
 
 /* Estado de error */
 .lego-radio--error .lego-radio__checkmark {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
 }
 
 .lego-radio--error .lego-radio__input:checked + .lego-radio__checkmark {
-    background-color: var(--color-red-600);
-    border-color: var(--color-red-600);
+    background-color: var(--color-orange-600);
+    border-color: var(--color-orange-600);
 }
 
 /* Estado disabled */

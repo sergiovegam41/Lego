@@ -36,7 +36,7 @@
 }
 
 .lego-select__trigger:hover:not(.lego-select--disabled .lego-select__trigger) {
-    border-color: var(--border-dark);
+    border-color: var(--border-light);
 }
 
 .lego-select__trigger:focus {
@@ -115,7 +115,7 @@
 }
 
 .lego-select__options::-webkit-scrollbar-thumb {
-    background: var(--border-dark);
+    background: var(--border-light);
     border-radius: 4px;
 }
 
@@ -180,17 +180,17 @@
 
 .lego-select__error {
     font-size: 0.75rem;
-    color: var(--color-red-600);
+    color: var(--color-orange-600);
     line-height: 1.4;
 }
 
 /* Estado de error */
 .lego-select--error .lego-select__trigger {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
 }
 
 .lego-select--error .lego-select__trigger:focus {
-    border-color: var(--color-red-600);
+    border-color: var(--color-orange-600);
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
