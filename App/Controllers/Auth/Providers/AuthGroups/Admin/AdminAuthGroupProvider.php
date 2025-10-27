@@ -3,15 +3,15 @@ namespace App\Controllers\Auth\Providers\AuthGroups\Admin;
 
 use App\Controllers\Auth\Contracts\AbstractAuthCoreContract;
 use App\Controllers\Auth\DTOs\AuthRequestDTO;
-use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGruopsIDs;
+use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGroupsIDs;
 use Core\Models\ResponseDTO;
 use Core\Services\AuthServicesCore;
 
-class AdminAuthGroupProvider extends AbstractAuthCoreContract 
+class AdminAuthGroupProvider extends AbstractAuthCoreContract
 {
 
     public const AUTH_GROUP_NAME = [
-        "id"=> AuthGruopsIDs::ADMINS, // una vez definido no debe cambiar nunca el identificador
+        "id"=> AuthGroupsIDs::ADMINS, // una vez definido no debe cambiar nunca el identificador
         "route"=>"admin", // este sera el nombre de la ruta en la url
         "description"=>"destinado a usuarios de administración y backoffice" 
     ];
@@ -42,20 +42,29 @@ class AdminAuthGroupProvider extends AbstractAuthCoreContract
 
     }
     
-    public function logout(AuthRequestDTO $request): ResponseDTO
+    public function logout(AuthRequestDTO $authRequestDTO): ResponseDTO
     {
-
-        p($request);
-
-        return new ResponseDTO(false, "error", null);
+        $device_id = $authRequestDTO->request->request['device_id'] ?? null;
+        return (new AuthServicesCore())->coreLogout($device_id);
     }
 
-    public function register(AuthRequestDTO $request): ResponseDTO
+    public function register(AuthRequestDTO $authRequestDTO): ResponseDTO
     {
+        $email = $authRequestDTO->request->request['email'] ?? null;
+        $password = $authRequestDTO->request->request['password'] ?? null;
+        $name = $authRequestDTO->request->request['name'] ?? null;
+        $role_name = $authRequestDTO->request->request['role_name'] ?? 'ADMIN';
 
-        p($request);
+        if (!$email || !$password) {
+            return new ResponseDTO(false, "Email y password son requeridos", null, 400);
+        }
 
-        return new ResponseDTO(false, "error", null);
+        return (new AuthServicesCore())->coreRegister(
+            $email,
+            $password,
+            AdminAuthGroupProvider::AUTH_GROUP_NAME["id"],
+            $role_name
+        );
     }
 
     public function getProfile(AuthRequestDTO $request): ResponseDTO

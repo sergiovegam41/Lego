@@ -18,13 +18,15 @@ class UserSession extends Model
         'firebase_token',
         'expires_at',
         'refresh_expires_at',
-        'is_active'
+        'is_active',
+        'last_activity_at'
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
         'refresh_expires_at' => 'datetime',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'last_activity_at' => 'datetime'
     ];
 
     /**

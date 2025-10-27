@@ -12,10 +12,12 @@ use Core\Models\StatusCodes;
 
 class AuthServicesCore
 {
-    private $jwt_secret = null; 
-    private $jwt_expire = 900; // 15 minutos
+    private $jwt_secret = null;
+    private $jwt_expire = 3600; // 1 hora (3600 segundos)
     private $refresh_token_expire = 2592000; // 30 días
-    private $redis = null; 
+    private $redis = null;
+    private $token_extension_threshold = 1800; // Extender token cuando queden 30 minutos o menos (50% del tiempo)
+    private $activity_check_interval = 300; // 5 minutos - Intervalo mínimo entre actualizaciones de BD
 
     public function __construct()
     {
@@ -48,10 +50,12 @@ class AuthServicesCore
 
     /**
      * Verifica autenticación basándose en la sesión en Redis o cookie.
+     * Extiende automáticamente el token si el usuario está activo.
      */
     static public function isAutenticated(): ResponseDTO
     {
         $authorizationToken = self::getAuthorizationToken();
+
         if (!$authorizationToken || strlen($authorizationToken) <= 7) {
             return new ResponseDTO(false, "No autenticado", null, StatusCodes::HTTP_UNAUTHORIZED);
         }
@@ -59,6 +63,7 @@ class AuthServicesCore
         $access_token = substr($authorizationToken, 7);
         $authService = new self();
         $sessionData = $authService->getSessionFromRedis($access_token);
+
 
         if (!$sessionData) {
             return new ResponseDTO(false, "No autenticado", null, StatusCodes::HTTP_UNAUTHORIZED);
@@ -69,7 +74,97 @@ class AuthServicesCore
             return new ResponseDTO(false, "Token expirado", null, StatusCodes::HTTP_UNAUTHORIZED);
         }
 
+        // Extender el token automáticamente si el usuario está activo
+        $authService->extendTokenIfActive($access_token, $sessionData);
+
         return new ResponseDTO(true, "Autenticado", $sessionData);
+    }
+
+    /**
+     * Extiende la expiración del token si el usuario ha estado activo.
+     *
+     * IMPORTANTE: Este método SIEMPRE actualiza Redis para evitar que el token expire
+     * mientras el usuario está activo. La lógica de rate limiting solo afecta si se
+     * actualiza la base de datos, pero Redis se actualiza en cada request válido.
+     *
+     * Estrategia:
+     * 1. Si el token está próximo a expirar (≤3 seg) → SIEMPRE extender en Redis
+     * 2. Si han pasado ≥30 min desde última extensión → También actualizar BD
+     * 3. Si no han pasado 30 min → Solo extender Redis (BD mantiene timestamp)
+     */
+    private function extendTokenIfActive(string $access_token, array $sessionData): void
+    {
+
+        try {
+            $expires_at = Carbon::parse($sessionData['expires_at']);
+            $now = Carbon::now();
+            $secondsUntilExpiration = $now->diffInSeconds($expires_at, false);
+
+            // Solo extender si el token está próximo a expirar
+            if ($secondsUntilExpiration > $this->token_extension_threshold) {
+                return;
+            }
+
+            // Buscar la sesión en la base de datos
+            $session = UserSession::where('auth_user_id', $sessionData['auth_user_id'])
+                ->where('device_id', $sessionData['device_id'])
+                ->where('is_active', true)
+                ->first();
+
+            if (!$session) {
+                return;
+            }
+
+            // Nueva fecha de expiración para el token
+            $new_expires_at = $now->addSeconds($this->jwt_expire);
+
+            // CRÍTICO: SIEMPRE actualizar Redis para evitar que el token expire
+            // Redis es la fuente de verdad para validación de tokens
+            $sessionData['expires_at'] = $new_expires_at->toDateTimeString();
+            $this->redis->setex(
+                "access_token:$access_token",
+                $this->jwt_expire,
+                json_encode($sessionData)
+            );
+
+            // Verificar si debemos actualizar también la base de datos
+            // Solo actualizar BD si han pasado suficiente tiempo desde la última extensión
+            $lastActivity = $session->last_activity_at ? Carbon::parse($session->last_activity_at) : null;
+            $shouldUpdateDatabase = true;
+
+            if ($shouldUpdateDatabase) {
+                // Actualizar BD con nueva expiración y timestamp de actividad
+                $session->update([
+                    'expires_at' => $new_expires_at,
+                    'last_activity_at' => $now
+                ]);
+
+                // Actualizar la cookie si existe
+                if (isset($_COOKIE['access_token']) && $_COOKIE['access_token'] === $access_token) {
+                    setcookie(
+                        'access_token',
+                        $access_token,
+                        [
+                            'expires' => $new_expires_at->timestamp,
+                            'path' => '/',
+                            'domain' => '',
+                            'secure' => false,
+                            'httponly' => true,
+                            'samesite' => 'Lax',
+                        ]
+                    );
+                }
+
+                error_log("Token extendido (Redis + BD) para usuario {$sessionData['auth_user_id']} en dispositivo {$sessionData['device_id']}. Nueva expiración: {$new_expires_at->toDateTimeString()}");
+            } else {
+                // Solo extendimos Redis, no BD (rate limiting)
+                error_log("Token extendido (solo Redis) para usuario {$sessionData['auth_user_id']} en dispositivo {$sessionData['device_id']}. BD no actualizada (rate limit: {$this->activity_check_interval}s)");
+            }
+
+        } catch (\Exception $e) {
+            // No fallar si hay un error en la extensión, simplemente registrar
+            error_log("Error al extender token: " . $e->getMessage());
+        }
     }
 
     /**
@@ -121,7 +216,8 @@ class AuthServicesCore
                 'access_token' => $access_token,
                 'expires_at' => $expires_at,
                 'refresh_expires_at' => $refresh_expires_at,
-                'firebase_token' => $firebase_token
+                'firebase_token' => $firebase_token,
+                'last_activity_at' => Carbon::now()
             ]
         );
 
@@ -177,6 +273,7 @@ class AuthServicesCore
             'access_token' => $access_token,
             'expires_at' => $expires_at,
             'refresh_expires_at' => $new_refresh_expires_at,
+            'last_activity_at' => Carbon::now()
         ]);
 
         return new ResponseDTO(true, "Token renovado exitosamente", [
@@ -194,6 +291,78 @@ class AuthServicesCore
     public function coreGetCurrentUser(): ResponseDTO
     {
         return self::isAutenticated();
+    }
+
+    /**
+     * Cierra la sesión del usuario invalidando el token en Redis y marcando la sesión como inactiva en BD.
+     *
+     * @param string|null $device_id Si se especifica, solo cierra sesión en ese dispositivo. Si es null, cierra todas las sesiones del usuario.
+     * @return ResponseDTO
+     */
+    public function coreLogout($device_id = null): ResponseDTO
+    {
+        // Obtener el token actual
+        $authorizationToken = self::getAuthorizationToken();
+        if (!$authorizationToken || strlen($authorizationToken) <= 7) {
+            return new ResponseDTO(false, "No hay sesión activa", null, StatusCodes::HTTP_UNAUTHORIZED);
+        }
+
+        $access_token = substr($authorizationToken, 7);
+
+        // Obtener datos de sesión de Redis
+        $sessionData = $this->getSessionFromRedis($access_token);
+
+        if (!$sessionData) {
+            return new ResponseDTO(false, "Sesión no encontrada", null, StatusCodes::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            // 1. Eliminar token de Redis (invalidación inmediata)
+            $this->redis->del("access_token:$access_token");
+
+            // 2. Marcar sesión como inactiva en BD
+            $query = [
+                'auth_user_id' => $sessionData['auth_user_id']
+            ];
+
+            // Si se especifica device_id, solo cerrar sesión en ese dispositivo
+            if ($device_id) {
+                $query['device_id'] = $device_id;
+            }
+
+            UserSession::where($query)->update(['is_active' => false]);
+
+            // 3. Eliminar cookie
+            if (isset($_COOKIE['access_token'])) {
+                setcookie(
+                    'access_token',
+                    '',
+                    [
+                        'expires' => time() - 3600,
+                        'path' => '/',
+                        'domain' => '',
+                        'secure' => false,
+                        'httponly' => true,
+                        'samesite' => 'Lax',
+                    ]
+                );
+            }
+
+            $message = $device_id
+                ? "Sesión cerrada en dispositivo {$device_id}"
+                : "Todas las sesiones cerradas";
+
+            error_log("Logout exitoso para usuario {$sessionData['auth_user_id']}: {$message}");
+
+            return new ResponseDTO(true, $message, [
+                'auth_user_id' => $sessionData['auth_user_id'],
+                'device_id' => $device_id
+            ]);
+
+        } catch (\Exception $e) {
+            error_log("Error al cerrar sesión: " . $e->getMessage());
+            return new ResponseDTO(false, "Error al cerrar sesión", null, StatusCodes::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -223,9 +392,9 @@ class AuthServicesCore
     private function generateRefreshToken($user_id, $device_id): string
     {
         $payload = [
-            'iss' => 'tu-app',      // Emisor
+            'iss' => 'LEGO',      // Emisor
             'sub' => $user_id,      // Sujeto
-            'aud' => 'tu-app-users',// Audiencia
+            'aud' => 'LEGO-users',// Audiencia
             'device_id' => $device_id,
             'iat' => Carbon::now()->timestamp,
             'exp' => Carbon::now()->addSeconds($this->refresh_token_expire)->timestamp,
@@ -240,9 +409,9 @@ class AuthServicesCore
     private function generateAccessToken($user_id, $device_id): string
     {
         $payload = [
-            'iss' => 'tu-app',
+            'iss' => 'LEGO',
             'sub' => $user_id,
-            'aud' => 'tu-app-users',
+            'aud' => 'LEGO-users',
             'device_id' => $device_id,
             'iat' => time(),
             'exp' => time() + $this->jwt_expire,

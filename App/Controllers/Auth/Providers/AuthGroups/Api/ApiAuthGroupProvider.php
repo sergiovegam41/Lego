@@ -3,16 +3,16 @@ namespace App\Controllers\Auth\Providers\AuthGroups\Api;
 
 use App\Controllers\Auth\Contracts\AbstractAuthCoreContract;
 use App\Controllers\Auth\DTOs\AuthRequestDTO;
-use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGruopsIDs;
+use App\Controllers\Auth\Providers\AuthGroups\Constants\AuthGroupsIDs;
 use App\Controllers\Auth\Providers\AuthGroupsProvider;
 use Core\Models\ResponseDTO;
 use Core\Services\AuthServicesCore;
 
-class ApiAuthGroupProvider extends AbstractAuthCoreContract 
+class ApiAuthGroupProvider extends AbstractAuthCoreContract
 {
 
     public const AUTH_GROUP_NAME = [
-        "id"=>AuthGruopsIDs::APIS, // una vez definido no debe cambiar nunca el identificador
+        "id"=>AuthGroupsIDs::APIS, // una vez definido no debe cambiar nunca el identificador
         "route"=>"api", // este sera el nombre de la ruta en la url
         "description"=>"destinado a usuarios externos y aplicaciones web o moviles" 
     ];

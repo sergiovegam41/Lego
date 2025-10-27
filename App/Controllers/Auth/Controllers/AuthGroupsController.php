@@ -29,39 +29,39 @@ class AuthGroupsController extends CoreController
   public function login( AuthRequestDTO $AuthRequestDTO ){
 
       $AuthRequestDTO->request->setRules([
-              
         'username' => 'required|email',
-        'password' => 'required'
-
+        'password' => 'required|min:6'
       ])->validateMake();
-      
+
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
-      
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_OK, (array)$resp);
 
   }
 
   public function login_by_code( AuthRequestDTO $AuthRequestDTO ){
 
       $AuthRequestDTO->request->setRules([
-              
         'email' => 'email',
         'number_phone' => 'required',
-        'code' => ''
-
+        'code' => 'required'
       ])->validateMake();
-      
+
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
-      
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_OK, (array)$resp);
 
   }
 
   public function refresh_token( AuthRequestDTO $AuthRequestDTO ){
 
+      $AuthRequestDTO->request->setRules([
+        'refresh_token' => 'required'
+      ])->validateMake();
+
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
 
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_OK, (array)$resp);
 
   }
 
@@ -69,15 +69,20 @@ class AuthGroupsController extends CoreController
 
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
 
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_OK, (array)$resp);
 
   }
-  
+
   public function register( AuthRequestDTO $AuthRequestDTO ){
+
+      $AuthRequestDTO->request->setRules([
+        'email' => 'required|email',
+        'password' => 'required|min:8'
+      ])->validateMake();
 
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
 
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_CREATED, (array)$resp);
 
   }
 
@@ -85,7 +90,7 @@ class AuthGroupsController extends CoreController
 
       $resp = (new AuthGroupsProvider())->handle( $AuthRequestDTO );
 
-      return Response::json(StatusCodes::HTTP_OK, (array)$resp);
+      return Response::json($resp->statusCode ?? StatusCodes::HTTP_OK, (array)$resp);
 
   }
 

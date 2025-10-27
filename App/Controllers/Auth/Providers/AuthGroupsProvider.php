@@ -7,89 +7,65 @@ use App\Controllers\Auth\DTOs\AuthRequestDTO;
 use App\Controllers\Auth\Providers\AuthGroups\Admin\AdminAuthGroupProvider;
 use App\Controllers\Auth\Providers\AuthGroups\Api\ApiAuthGroupProvider;
 use Core\Models\ResponseDTO;
+use Core\Models\StatusCodes;
 
-class AuthGroupsProvider 
+class AuthGroupsProvider
 {
+    /**
+     * Mapa estático de providers por ruta.
+     * Se inicializa una sola vez para mejor rendimiento.
+     */
+    private static ?array $providerMap = null;
 
-    private $providers = [];
-
-    public function __construct() {
-        // Definir la lista de proveedores de pago
-        $this->providers = [
-
-            new AdminAuthGroupProvider(),
-            
-            new ApiAuthGroupProvider(),
-           
-        ];
-
-      
-
-    }
-
-    public function handle( AuthRequestDTO $AuthRequestDTO, $user = null ):ResponseDTO{
-    
-        $accion =  $AuthRequestDTO->auth_accion;
-
-        foreach ($this->providers as $provider) {
-            
-            if ( defined(get_class($provider) . '::AUTH_GROUP_NAME') && strtolower(constant(get_class($provider) . '::AUTH_GROUP_NAME')['route']) === strtolower( $AuthRequestDTO->auth_grup_name ) ) {
-                
-                switch ($accion) {
-
-                    case AuthActions::LOGIN:
-                        return $this->login($provider, $AuthRequestDTO );
-                      break;
-                    case AuthActions::LOGIN_BY_CODE:
-                        return $this->loginByCode($provider, $AuthRequestDTO );
-                      break;
-                    case AuthActions::REFRESH_TOKEN:
-                        return $this->refresh_token($provider, $AuthRequestDTO, $user);
-                      break;
-                    case AuthActions::LOGOUT:
-                        return $this->logout($provider, $AuthRequestDTO, $user);
-                      break;
-                    case AuthActions::REGISTER:
-                        return $this->register($provider, $AuthRequestDTO, $user);
-                      break;
-                    case AuthActions::PROFILE:
-                        return $this->getProfile($provider, $AuthRequestDTO, $user);
-                      break;
-
-                }
-
-            }
-
+    /**
+     * Obtiene el mapa de providers (lazy initialization).
+     */
+    private static function getProviderMap(): array
+    {
+        if (self::$providerMap === null) {
+            self::$providerMap = [
+                'admin' => new AdminAuthGroupProvider(),
+                'api' => new ApiAuthGroupProvider(),
+            ];
         }
 
-        return new ResponseDTO( false, "Provider not found for integration: " . null, null );
-
+        return self::$providerMap;
     }
 
-    private function login( $provider,  AuthRequestDTO $AuthRequestDTO ):ResponseDTO {
-        return $provider->login( $AuthRequestDTO );
+    /**
+     * Maneja las requests de autenticación delegando al provider correcto.
+     */
+    public function handle(AuthRequestDTO $authRequestDTO): ResponseDTO
+    {
+        $providerMap = self::getProviderMap();
+        $routeName = strtolower($authRequestDTO->auth_grup_name);
+
+        // Buscar provider en el mapa (O(1) vs O(n) del foreach anterior)
+        $provider = $providerMap[$routeName] ?? null;
+
+        if (!$provider) {
+            return new ResponseDTO(
+                false,
+                "Provider not found for route: {$authRequestDTO->auth_grup_name}",
+                null,
+                StatusCodes::HTTP_NOT_FOUND
+            );
+        }
+
+        // Usar match expression (PHP 8) en lugar de switch
+        return match ($authRequestDTO->auth_accion) {
+            AuthActions::LOGIN => $provider->login($authRequestDTO),
+            AuthActions::LOGIN_BY_CODE => $provider->loginByCode($authRequestDTO),
+            AuthActions::REFRESH_TOKEN => $provider->refresh_token($authRequestDTO),
+            AuthActions::LOGOUT => $provider->logout($authRequestDTO),
+            AuthActions::REGISTER => $provider->register($authRequestDTO),
+            AuthActions::PROFILE => $provider->getProfile($authRequestDTO),
+            default => new ResponseDTO(
+                false,
+                "Action not supported: {$authRequestDTO->auth_accion}",
+                null,
+                StatusCodes::HTTP_BAD_REQUEST
+            )
+        };
     }
-
-    private function loginByCode( $provider,  AuthRequestDTO $AuthRequestDTO, $user = null):ResponseDTO {
-        return $provider->loginByCode(  $AuthRequestDTO );
-    }
-
-    private function refresh_token( $provider,  AuthRequestDTO $AuthRequestDTO, $user ):ResponseDTO {
-        return $provider->refresh_token( $AuthRequestDTO );
-    }
-
-    private function logout( $provider,  AuthRequestDTO $AuthRequestDTO, $user ):ResponseDTO {
-        return $provider->logout( $AuthRequestDTO );
-    }
-
-    private function register( $provider,  AuthRequestDTO $AuthRequestDTO, $user = null):ResponseDTO {
-        return $provider->register(  $AuthRequestDTO );
-    }
-    private function getProfile( $provider,  AuthRequestDTO $AuthRequestDTO, $user = null):ResponseDTO {
-        return $provider->getProfile(  $AuthRequestDTO );
-    }
-
-
-
-
 }

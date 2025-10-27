@@ -1,3 +1,5 @@
 [
-    
+    {
+        "sql": "migrations/20251026_add_last_activity_to_user_sessions.sql"
+    }
 ]
