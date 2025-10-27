@@ -51,10 +51,8 @@ class FormsShowcaseComponent extends CoreComponent {
 
         return <<<HTML
         <div class="forms-showcase">
-            <div class="forms-showcase__header">
-                <h1 class="forms-showcase__title">Componentes de Formulario Lego</h1>
-                
-            </div>
+            <h2 class="forms-showcase__title">Componentes de Formulario Lego</h2>
+            
 
             <div class="forms-showcase__content">
                 <!-- Formulario de Contacto -->
