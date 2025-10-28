@@ -11,7 +11,7 @@
 console.log('🔵 [FormsShowcase] Inißcializando...');
 (function() {
 
-    // Manejar formulario de contacto
+    // Manejar formulario de contacto|
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('lego:form-submit', async (e) => {

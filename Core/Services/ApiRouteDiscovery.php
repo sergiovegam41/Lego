@@ -100,7 +100,7 @@ class ApiRouteDiscovery
         }
 
         $apiConfig = $attributes[0]->newInstance();
-        
+
         foreach ($apiConfig->methods as $method) {
             self::registerMethod($method, $apiConfig, $className);
         }
@@ -115,8 +115,7 @@ class ApiRouteDiscovery
         $path = $config->path;
 
 
-        Flight::route("$httpMethod $path", function() use ($className, $method, $config) {
-            
+        Flight::route("$httpMethod $path", function() use ($className, $config) {
             if ($config->requiresAuth && !AdminMiddlewares::isAutenticated()) {
                 http_response_code(401);
                 header('Content-Type: application/json');
@@ -124,18 +123,7 @@ class ApiRouteDiscovery
             }
 
             $component = new $className([]);
-
-            return Response::uri( $component->render() );
-            // $methodName = 'api' . ucfirst(strtolower($method));
-            
-            // if (method_exists($component, $methodName)) {
-            //     $result = $component->$methodName(Flight::request());
-            // } else {
-            //     $result = ['error' => "Method $methodName not found"];
-            // }
-
-            // header('Content-Type: application/json');
-            // return json_encode($result);
+            return Response::uri($component->render());
         });
     }
 

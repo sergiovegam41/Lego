@@ -11,10 +11,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-md, 1rem);
-    background: var(--bg-surface, #ffffff);
+    /* background: var(--bg-surface, #ffffff); */
     border-radius: var(--radius-card, 8px);
-    padding: var(--spacing-card, 1.5rem);
-    box-shadow: var(--shadow-card, 0 2px 8px rgba(0,0,0,0.1));
+    /* padding: var(--spacing-card, 1.5rem); */
+    /* box-shadow: var(--shadow-card, 0 2px 8px rgba(0,0,0,0.1)); */
 }
 
 /* ===== Toolbar ===== */
@@ -193,6 +193,87 @@
 
     .lego-table-container {
         box-shadow: none;
-        border: var(--border-width, 1px) solid var(--border-light, #e0e0e0);
+        /* border: var(--border-width, 1px) solid var(--border-light, #e0e0e0); */
+    }
+}
+
+/* ===== Dark Mode Support ===== */
+@media (prefers-color-scheme: dark) {
+    .lego-table-container {
+        /* background: var(--bg-surface, #1f2937); */
+        /* box-shadow: 0 2px 8px rgba(0,0,0,0.3); */
+    }
+
+    .lego-table-toolbar {
+        border-bottom-color: var(--border-light, #374151);
+    }
+
+    .lego-table-toolbar__btn {
+        background: var(--bg-surface, #374151);
+        border-color: var(--border-light, #4b5563);
+        color: var(--text-primary, #f3f4f6);
+    }
+
+    .lego-table-toolbar__btn:hover {
+        background: var(--bg-surface-hover, #4b5563);
+        border-color: var(--accent-primary, #3b82f6);
+    }
+
+    .lego-table {
+        border-color: var(--border-light, #374151);
+    }
+
+    .lego-table-loader {
+        background: rgba(31, 41, 55, 0.9);
+    }
+
+    .lego-table-loader__spinner {
+        border-color: var(--border-light, #4b5563);
+        border-top-color: var(--accent-primary, #3b82f6);
+    }
+
+    .lego-table-loader__message {
+        color: var(--text-secondary, #9ca3af);
+    }
+
+    /* AG Grid dark mode overrides */
+    .ag-theme-quartz {
+        --ag-background-color: #1f2937;
+        --ag-header-background-color: #111827;
+        --ag-odd-row-background-color: #1f2937;
+        --ag-row-hover-color: #374151;
+        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+        --ag-border-color: #374151;
+        --ag-header-foreground-color: #f3f4f6;
+        --ag-foreground-color: #e5e7eb;
+        --ag-secondary-foreground-color: #9ca3af;
+        --ag-input-border-color: #4b5563;
+        --ag-input-focus-border-color: #3b82f6;
+    }
+
+    .ag-theme-alpine {
+        --ag-background-color: #1f2937;
+        --ag-header-background-color: #111827;
+        --ag-odd-row-background-color: #1f2937;
+        --ag-row-hover-color: #374151;
+        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+        --ag-border-color: #374151;
+        --ag-foreground-color: #e5e7eb;
+    }
+
+    .ag-theme-balham {
+        --ag-background-color: #1f2937;
+        --ag-header-background-color: #111827;
+        --ag-odd-row-background-color: #1f2937;
+        --ag-row-hover-color: #374151;
+        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .ag-theme-material {
+        --ag-background-color: #1f2937;
+        --ag-header-background-color: #111827;
+        --ag-odd-row-background-color: #1f2937;
+        --ag-row-hover-color: #374151;
+        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
     }
 }

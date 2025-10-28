@@ -93,6 +93,12 @@ class MainComponent extends CoreComponent
                     name: "Table Showcase",
                     url: $HOST_NAME . '/component/table-showcase',
                     iconName: "grid-outline"
+                ),
+                new MenuItemDto(
+                    id: "10",
+                    name: "Products CRUD",
+                    url: $HOST_NAME . '/component/products-crud',
+                    iconName: "cube-outline"
                 )
             ),
             title: "Lego",
@@ -112,14 +118,18 @@ class MainComponent extends CoreComponent
           <meta charset="UTF-8">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Home</title> 
+          <title>Home</title>
           <link rel="stylesheet" href="./assets/css/core/base.css">
           <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
+          <link rel="stylesheet" href="./assets/css/core/alert-service.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
           <!-- Solo necesitamos una versión de Babel -->
-          
+
           <!-- Universal Theme Initialization -->
           <script src="./assets/js/core/universal-theme-init.js"></script>
+
+          <!-- Alert Service -->
+          <script src="./assets/js/services/AlertService.js"></script>
 
       </head>
       <body>

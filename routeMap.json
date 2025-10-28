@@ -1,4 +1,5 @@
 {
     "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController",
+    "products": "\\App\\Controllers\\Products\\Controllers\\ProductsController",
     "storage": "\\App\\Controllers\\Storage\\Controllers\\StorageController"
 }

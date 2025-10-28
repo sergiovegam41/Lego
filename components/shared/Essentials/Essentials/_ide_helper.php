@@ -32,11 +32,6 @@ class Div extends \Components\Shared\Essentials\DivComponent\DivComponent {}
 class Grid extends \Components\Shared\Essentials\GridComponent\GridComponent {}
 
 /**
- * @see \Components\Shared\Essentials\TableComponent\TableComponent
- */
-class Table extends \Components\Shared\Essentials\TableComponent\TableComponent {}
-
-/**
  * @see \Components\Shared\FragmentComponent\FragmentComponent
  */
 class Fragment extends \Components\Shared\FragmentComponent\FragmentComponent {}

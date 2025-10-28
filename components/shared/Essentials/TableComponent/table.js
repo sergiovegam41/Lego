@@ -74,6 +74,82 @@ let context = {CONTEXT};
             return;
         }
 
+        // Integrar con el sistema de temas de LEGO Framework
+        const body = document.body;
+        const html = document.documentElement;
+
+        // Función para sincronizar el tema de AG Grid con LEGO
+        const syncTheme = (theme) => {
+            // Determinar si es modo oscuro
+            let isDark = false;
+            if (theme) {
+                // Si recibimos el tema como parámetro, usarlo
+                isDark = theme === 'dark';
+            } else {
+                // Si no, detectar del DOM
+                isDark = html.classList.contains('dark') || body.classList.contains('dark');
+            }
+
+            console.log('[LEGO Table] Sincronizando tema. Parámetro:', theme, '| isDark:', isDark, '| html.classList:', html.classList.toString());
+
+            // Aplicar atributos para CSS
+            body.setAttribute('data-ag-theme-mode', isDark ? 'dark' : 'light');
+            html.setAttribute('data-ag-theme-mode', isDark ? 'dark' : 'light');
+
+            if (gridDiv) {
+                gridDiv.setAttribute('data-ag-theme-mode', isDark ? 'dark' : 'light');
+
+                // Aplicar variables CSS directamente al div de AG Grid
+                if (isDark) {
+                    gridDiv.style.setProperty('--ag-background-color', '#1f2937');
+                    gridDiv.style.setProperty('--ag-header-background-color', '#111827');
+                    gridDiv.style.setProperty('--ag-odd-row-background-color', '#1f2937');
+                    gridDiv.style.setProperty('--ag-row-hover-color', '#374151');
+                    gridDiv.style.setProperty('--ag-selected-row-background-color', 'rgba(59, 130, 246, 0.2)');
+                    gridDiv.style.setProperty('--ag-border-color', '#374151');
+                    gridDiv.style.setProperty('--ag-header-foreground-color', '#f3f4f6');
+                    gridDiv.style.setProperty('--ag-foreground-color', '#e5e7eb');
+                    gridDiv.style.setProperty('--ag-secondary-foreground-color', '#9ca3af');
+                    gridDiv.style.setProperty('--ag-input-border-color', '#4b5563');
+                } else {
+                    // Aplicar valores de tema claro explícitamente
+                    gridDiv.style.setProperty('--ag-background-color', '#ffffff');
+                    gridDiv.style.setProperty('--ag-header-background-color', '#f9fafb');
+                    gridDiv.style.setProperty('--ag-odd-row-background-color', '#ffffff');
+                    gridDiv.style.setProperty('--ag-row-hover-color', '#f3f4f6');
+                    gridDiv.style.setProperty('--ag-selected-row-background-color', 'rgba(59, 130, 246, 0.1)');
+                    gridDiv.style.setProperty('--ag-border-color', '#e5e7eb');
+                    gridDiv.style.setProperty('--ag-header-foreground-color', '#1f2937');
+                    gridDiv.style.setProperty('--ag-foreground-color', '#374151');
+                    gridDiv.style.setProperty('--ag-secondary-foreground-color', '#6b7280');
+                    gridDiv.style.setProperty('--ag-input-border-color', '#d1d5db');
+                }
+            }
+
+            console.log('[LEGO Table] Tema sincronizado:', isDark ? 'dark' : 'light');
+        };
+
+        // Aplicar tema inicial
+        const initialTheme = window.themeManager ? window.themeManager.getCurrentTheme() :
+                           (html.classList.contains('dark') ? 'dark' : 'light');
+        syncTheme(initialTheme);
+        console.log('[LEGO Table] Tema inicial aplicado:', initialTheme);
+
+        // Suscribirse a cambios de tema del LEGO Framework
+        if (window.themeManager) {
+            window.themeManager.subscribe((theme) => {
+                console.log('[LEGO Table] Cambio de tema detectado:', theme);
+                syncTheme(theme);
+            });
+            console.log('[LEGO Table] Suscrito al ThemeManager');
+        } else {
+            // Fallback: escuchar cambios en la preferencia del sistema si no hay ThemeManager
+            console.warn('[LEGO Table] ThemeManager no disponible, usando fallback');
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                syncTheme(e.matches ? 'dark' : 'light');
+            });
+        }
+
         // Configuración completa de AG Grid
         const fullGridOptions = {
             columnDefs: columnDefs,

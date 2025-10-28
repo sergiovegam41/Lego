@@ -60,20 +60,18 @@ use Core\Router;
 
 // PRIORIDAD 1: Servir assets estáticos (.css, .js) antes del auto-discovery
 // Esto evita conflictos y mantiene eficiencia similar a nginx
-\Flight::route('GET /@componentName/@file', function($componentName, $file) {
-    // Solo archivos CSS y JS
-    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-    if (!in_array($extension, ['css', 'js'])) {
-        \Flight::notFound();
-        return;
-    }
-
-    // Construir ruta al archivo
-    // La URI viene sin el prefijo /component/ gracias a Core/Router.php
+// Patrón específico: solo captura archivos que terminen en .css o .js
+\Flight::route('GET /@componentName/@file.css', function($componentName, $file) {
+    // Construir ruta al archivo CSS
     $basePath = __DIR__ . '/../components/' . $componentName;
-    $filePath = $basePath . '/' . $file;
+    $filePath = $basePath . '/' . $file . '.css';
+    Router::serveStaticFile($filePath);
+});
 
-    // Servir archivo estático con caché eficiente
+\Flight::route('GET /@componentName/@file.js', function($componentName, $file) {
+    // Construir ruta al archivo JS
+    $basePath = __DIR__ . '/../components/' . $componentName;
+    $filePath = $basePath . '/' . $file . '.js';
     Router::serveStaticFile($filePath);
 });
 
