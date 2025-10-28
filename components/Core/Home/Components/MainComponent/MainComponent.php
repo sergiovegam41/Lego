@@ -87,6 +87,12 @@ class MainComponent extends CoreComponent
                     name: "Forms Showcase",
                     url: $HOST_NAME . '/component/forms-showcase',
                     iconName: "create-outline"
+                ),
+                new MenuItemDto(
+                    id: "9",
+                    name: "Table Showcase",
+                    url: $HOST_NAME . '/component/table-showcase',
+                    iconName: "grid-outline"
                 )
             ),
             title: "Lego",

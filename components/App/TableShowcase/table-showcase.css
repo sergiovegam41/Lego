@@ -1,0 +1,217 @@
+/**
+ * TableShowcase Styles
+ *
+ * FILOSOFÍA LEGO:
+ * Estilos para la página de demostración del TableComponent
+ */
+
+.table-showcase {
+    padding: var(--spacing-section, 2rem);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.table-showcase__header {
+    margin-bottom: var(--space-xl, 2rem);
+    text-align: center;
+}
+
+.table-showcase__title {
+    font-size: var(--font-size-3xl, 2.5rem);
+    font-weight: 700;
+    color: var(--text-primary, #333);
+    margin: 0 0 var(--space-md, 1rem) 0;
+}
+
+.table-showcase__description {
+    font-size: var(--font-size-lg, 1.125rem);
+    color: var(--text-secondary, #666);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.table-showcase__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl, 3rem);
+}
+
+.table-showcase__section {
+    background: var(--bg-surface, #ffffff);
+    border-radius: var(--radius-card, 8px);
+    padding: var(--spacing-card, 1.5rem);
+    box-shadow: var(--shadow-card, 0 2px 8px rgba(0,0,0,0.1));
+}
+
+.table-showcase__section-title {
+    font-size: var(--font-size-xl, 1.5rem);
+    font-weight: 600;
+    color: var(--text-primary, #333);
+    margin: 0 0 var(--space-sm, 0.5rem) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 0.5rem);
+}
+
+.table-showcase__section-title ion-icon {
+    font-size: 1.5em;
+    color: var(--accent-primary, #3b82f6);
+}
+
+.table-showcase__section-description {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--text-secondary, #666);
+    margin: 0 0 var(--space-lg, 1.5rem) 0;
+    line-height: 1.5;
+}
+
+.table-showcase__example {
+    margin-bottom: var(--space-lg, 1.5rem);
+}
+
+.table-showcase__code {
+    margin-top: var(--space-md, 1rem);
+    border: var(--border-width, 1px) solid var(--border-light, #e0e0e0);
+    border-radius: var(--radius-card, 8px);
+    overflow: hidden;
+}
+
+.table-showcase__code summary {
+    padding: var(--space-md, 1rem);
+    background: var(--bg-surface-hover, #f8f9fa);
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-primary, #333);
+    user-select: none;
+}
+
+.table-showcase__code summary:hover {
+    background: var(--bg-surface, #f0f0f0);
+}
+
+.table-showcase__code pre {
+    margin: 0;
+    padding: var(--space-lg, 1.5rem);
+    background: var(--bg-dark, #1e1e1e);
+    overflow-x: auto;
+}
+
+.table-showcase__code code {
+    color: var(--text-inverse, #f0f0f0);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: var(--font-size-sm, 0.875rem);
+    line-height: 1.5;
+}
+
+.table-showcase__actions {
+    display: flex;
+    gap: var(--space-md, 1rem);
+    margin-top: var(--space-lg, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.showcase-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 0.25rem);
+    padding: var(--space-sm, 0.5rem) var(--space-lg, 1.5rem);
+    border: none;
+    border-radius: var(--radius-button, 6px);
+    font-size: var(--font-size-base, 1rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-normal, all 0.2s ease);
+}
+
+.showcase-btn ion-icon {
+    font-size: 1.2em;
+}
+
+.showcase-btn--primary {
+    background: var(--accent-primary, #3b82f6);
+    color: #ffffff;
+}
+
+.showcase-btn--primary:hover {
+    background: var(--accent-primary-dark, #2563eb);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.showcase-btn--secondary {
+    background: var(--bg-surface-hover, #f8f9fa);
+    color: var(--text-primary, #333);
+    border: var(--border-width, 1px) solid var(--border-light, #e0e0e0);
+}
+
+.showcase-btn--secondary:hover {
+    background: var(--bg-surface, #e9ecef);
+    border-color: var(--border-dark, #ccc);
+}
+
+.table-showcase__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg, 1.5rem);
+    margin-top: var(--space-lg, 1.5rem);
+}
+
+.feature-card {
+    padding: var(--space-lg, 1.5rem);
+    background: var(--bg-surface-hover, #f8f9fa);
+    border-radius: var(--radius-card, 8px);
+    text-align: center;
+}
+
+.feature-card ion-icon {
+    font-size: 3rem;
+    color: var(--accent-primary, #3b82f6);
+    margin-bottom: var(--space-md, 1rem);
+}
+
+.feature-card h3 {
+    font-size: var(--font-size-lg, 1.125rem);
+    font-weight: 600;
+    color: var(--text-primary, #333);
+    margin: 0 0 var(--space-sm, 0.5rem) 0;
+}
+
+.feature-card p {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-secondary, #666);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-showcase {
+        padding: var(--spacing-section-mobile, 1rem);
+    }
+
+    .table-showcase__title {
+        font-size: var(--font-size-2xl, 2rem);
+    }
+
+    .table-showcase__description {
+        font-size: var(--font-size-base, 1rem);
+    }
+
+    .table-showcase__section {
+        padding: var(--spacing-card-mobile, 1rem);
+    }
+
+    .table-showcase__actions {
+        flex-direction: column;
+    }
+
+    .showcase-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-showcase__features {
+        grid-template-columns: 1fr;
+    }
+}
