@@ -39,6 +39,16 @@ class InitCommand extends CoreCommand
 
         $this->line("");
 
+        // Initialize storage
+        $this->info("📦 Initializing storage...");
+        $initStorageCommand = new InitStorageCommand($this->arguments);
+        if (!$initStorageCommand->execute()) {
+            $this->warning("⚠️  Storage initialization skipped (MinIO may not be running)");
+            // No marcamos como error ya que MinIO es opcional
+        }
+
+        $this->line("");
+
         // Final status
         if ($success) {
             $this->success("✅ Lego Framework initialized successfully!");

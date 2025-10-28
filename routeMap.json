@@ -1,3 +1,4 @@
 {
-    "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController"
+    "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController",
+    "storage": "\\App\\Controllers\\Storage\\Controllers\\StorageController"
 }
