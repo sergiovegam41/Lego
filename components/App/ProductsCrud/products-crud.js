@@ -145,6 +145,12 @@ async function loadProducts() {
                 console.log('[ProductsCrud] Actualizando datos de tabla...');
                 api.setGridOption('rowData', formattedProducts);
                 console.log('[ProductsCrud] Datos actualizados en tabla');
+
+                // Actualizar contador de registros
+                if (typeof window.legoTable_products_crud_table_updateRowCount === 'function') {
+                    window.legoTable_products_crud_table_updateRowCount();
+                    console.log('[ProductsCrud] Contador actualizado');
+                }
             } else {
                 console.error('[ProductsCrud] API de tabla no disponible');
             }

@@ -287,18 +287,18 @@ let context = {CONTEXT};
         window[`legoTable_${jsId}_exportExcel`] = function() {
             const api = window[`legoTable_${jsId}_api`];
             if (api) {
-                // Nota: Excel export requiere AG Grid Enterprise
-                if (api.exportDataAsExcel) {
-                    api.exportDataAsExcel({
-                        fileName: config.exportFileName || 'export'
-                    });
-                    console.log('[LEGO Table] Exportando a Excel...');
-                } else {
-                    console.warn('[LEGO Table] Excel export requiere AG Grid Enterprise. Exportando como CSV...');
-                    api.exportDataAsCsv({
-                        fileName: config.exportFileName || 'export'
-                    });
-                }
+                // AG Grid Community no soporta Excel export
+                // Usar CSV como alternativa compatible
+                console.log('[LEGO Table] Exportando datos...');
+                console.warn('[LEGO Table] Excel export requiere AG Grid Enterprise. Usando formato CSV.');
+
+                api.exportDataAsCsv({
+                    fileName: config.exportFileName || 'export'
+                });
+
+                console.log('[LEGO Table] ✓ Archivo CSV descargado exitosamente');
+            } else {
+                console.error('[LEGO Table] API de tabla no disponible');
             }
         };
 

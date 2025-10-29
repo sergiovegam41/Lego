@@ -191,9 +191,11 @@ class ProductsController extends CoreController
 
             $product->update([
                 'name' => $data['name'] ?? $product->name,
+                'sku' => $data['sku'] ?? $product->sku,
                 'description' => $data['description'] ?? $product->description,
                 'price' => $data['price'] ?? $product->price,
                 'stock' => $data['stock'] ?? $product->stock,
+                'min_stock' => $data['min_stock'] ?? $product->min_stock,
                 'category' => $data['category'] ?? $product->category,
                 'image_url' => $data['image_url'] ?? $product->image_url,
                 'is_active' => isset($data['is_active']) ? $data['is_active'] : $product->is_active

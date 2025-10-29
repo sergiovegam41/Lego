@@ -157,19 +157,10 @@ class TableComponent extends CoreComponent {
                         type="button"
                         class="lego-table-toolbar__btn"
                         onclick="legoTable_{$jsId}_exportCSV()"
-                        title="Exportar a CSV"
+                        title="Exportar datos a archivo CSV (compatible con Excel)"
                     >
                         <ion-icon name="download-outline"></ion-icon>
                         <span>Exportar CSV</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="lego-table-toolbar__btn"
-                        onclick="legoTable_{$jsId}_exportExcel()"
-                        title="Exportar a Excel"
-                    >
-                        <ion-icon name="document-outline"></ion-icon>
-                        <span>Exportar Excel</span>
                     </button>
                 </div>
                 <div class="lego-table-toolbar__right">
