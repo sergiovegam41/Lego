@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Product Model
@@ -115,5 +116,36 @@ class Product extends Model
         if ($this->stock > 10) return 'En Stock';
         if ($this->stock > 0) return 'Pocas Unidades';
         return 'Agotado';
+    }
+
+    /**
+     * Relación: Un producto tiene múltiples imágenes
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('order');
+    }
+
+    /**
+     * Relación: Obtener solo la imagen principal
+     */
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * Accessor: URL de la imagen principal (fallback al campo image_url legacy)
+     */
+    public function getPrimaryImageUrlAttribute(): ?string
+    {
+        // Primero intentar con la relación de imágenes
+        $primaryImage = $this->primaryImage;
+        if ($primaryImage && $primaryImage->url) {
+            return $primaryImage->url;
+        }
+
+        // Fallback al campo legacy image_url
+        return $this->image_url;
     }
 }

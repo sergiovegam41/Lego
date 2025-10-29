@@ -123,6 +123,11 @@ class MainComponent extends CoreComponent
           <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
           <link rel="stylesheet" href="./assets/css/core/alert-service.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
+
+          <!-- FilePond CSS -->
+          <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+          <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
+
           <!-- Solo necesitamos una versión de Babel -->
 
           <!-- Universal Theme Initialization -->
@@ -130,6 +135,13 @@ class MainComponent extends CoreComponent
 
           <!-- Alert Service -->
           <script src="./assets/js/services/AlertService.js"></script>
+
+          <!-- LEGO Modular Services (Bloques) -->
+          <script src="./assets/js/core/services/ApiClient.js"></script>
+          <script src="./assets/js/core/services/StateManager.js"></script>
+          <script src="./assets/js/core/services/ValidationEngine.js"></script>
+          <script src="./assets/js/core/services/TableManager.js"></script>
+          <script src="./assets/js/core/services/FormBuilder.js"></script>
 
       </head>
       <body>
@@ -158,9 +170,15 @@ class MainComponent extends CoreComponent
               
           </div>
           
+          <!-- FilePond JS - Cargar antes de base-lego-framework -->
+          <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+          <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+          <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+          <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+          <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+
           <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-
 
       </body>
 

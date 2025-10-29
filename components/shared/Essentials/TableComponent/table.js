@@ -233,6 +233,31 @@ let context = {CONTEXT};
                 window[`legoTable_${jsId}_api`] = event.api;
                 window[`legoTable_${jsId}_columnApi`] = event.columnApi;
 
+                // Inicializar registry global de tablas
+                if (!window.LEGO_TABLES) {
+                    window.LEGO_TABLES = {};
+                }
+
+                // Guardar referencia estructurada
+                window.LEGO_TABLES[id] = {
+                    api: event.api,
+                    columnApi: event.columnApi,
+                    tableId: id,
+                    jsId: jsId
+                };
+
+                // Disparar evento personalizado para que otros componentes sepan que la tabla está lista
+                const tableReadyEvent = new CustomEvent('lego:table:ready', {
+                    detail: {
+                        tableId: id,
+                        jsId: jsId,
+                        api: event.api,
+                        columnApi: event.columnApi
+                    }
+                });
+                window.dispatchEvent(tableReadyEvent);
+                console.log('[LEGO Table] Evento lego:table:ready disparado para:', id);
+
                 // Callback personalizado onGridReady
                 if (callbacks.onGridReady) {
                     window[callbacks.onGridReady]?.(event);

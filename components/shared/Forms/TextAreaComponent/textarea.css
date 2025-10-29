@@ -11,7 +11,8 @@
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-primary);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
+    text-align: left;
 }
 
 .lego-textarea__wrapper {

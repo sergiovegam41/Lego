@@ -189,7 +189,7 @@ function updateStats(products) {
 window.createProduct = async function() {
     // Cargar formulario desde el child component
     const result = await AlertService.componentModal('/component/products-crud/product-form', {
-        title: '➕ Nuevo Producto',
+     
         confirmButtonText: 'Crear Producto',
         cancelButtonText: 'Cancelar',
         width: '700px'
@@ -244,7 +244,7 @@ window.editProduct = async function(id) {
 
         try {
             const updateResponse = await fetch(`${API_BASE}/update`, {
-                method: 'PUT',
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formValues)
             });

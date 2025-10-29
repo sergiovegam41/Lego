@@ -18,6 +18,9 @@ use Components\Shared\Essentials\Essentials\{
     Column
 };
 
+use Components\Shared\Essentials\ImageGalleryComponent\ImageGalleryComponent;
+use App\Models\Product;
+
 /**
  * ProductFormComponent - Formulario para crear/editar productos
  *
@@ -37,11 +40,31 @@ class ProductFormComponent extends CoreComponent
         $productId = $_GET['id'] ?? null;
         $isEdit = !empty($productId);
 
-        // En producción, cargarías los datos del producto desde la BD
+        // Cargar datos del producto desde la BD si está en modo edición
         $product = [];
+        $existingImages = [];
         if ($isEdit) {
-            // TODO: Cargar producto desde BD
-            // $product = Product::find($productId);
+            try {
+                $productModel = Product::with('images')->find($productId);
+                if ($productModel) {
+                    $product = $productModel->toArray();
+                    // Formatear imágenes para el componente
+                    $existingImages = array_map(function($img) {
+                        return [
+                            'id' => $img['id'],
+                            'url' => $img['url'],
+                            'original_name' => $img['original_name'],
+                            'size' => $img['size'],
+                            'size_formatted' => $this->formatBytes($img['size'] ?? 0),
+                            'is_primary' => $img['is_primary'],
+                            'order' => $img['order']
+                        ];
+                    }, $product['images'] ?? []);
+                }
+            } catch (\Exception $e) {
+                // Si hay error, continuar sin datos
+                error_log("Error cargando producto: " . $e->getMessage());
+            }
         }
 
         // Categorías disponibles
@@ -165,8 +188,43 @@ class ProductFormComponent extends CoreComponent
                     label: 'Producto activo',
                     description: 'Los productos activos son visibles para los clientes',
                     checked: $product['is_active'] ?? true
+                ),
+
+                // Separador visual
+                '<div class="mt-6 mb-4 border-t border-gray-200 dark:border-gray-700"></div>',
+
+                // Título de sección de imágenes
+                '<div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Galería de Imágenes</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sube hasta 10 imágenes del producto (máx. 5MB cada una)</p>
+                </div>',
+
+                // Componente de galería de imágenes
+                ImageGalleryComponent::create(
+                    id: 'product-gallery',
+                    entityId: $productId,
+                    existingImages: $existingImages,
+                    uploadEndpoint: '/api/products/upload_image',
+                    deleteEndpoint: '/api/products/delete_image',
+                    reorderEndpoint: '/api/products/reorder_images',
+                    setPrimaryEndpoint: '/api/products/set_primary',
+                    maxFiles: 10,
+                    maxFileSize: 5242880 // 5MB
                 )
             ]
         ))->render();
+    }
+
+    /**
+     * Helper para formatear bytes a formato legible
+     */
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes === 0) return '0 B';
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = floor(log($bytes, 1024));
+
+        return round($bytes / pow(1024, $i), 2) . ' ' . $units[$i];
     }
 }
