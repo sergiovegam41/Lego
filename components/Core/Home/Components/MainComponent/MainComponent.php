@@ -99,6 +99,13 @@ class MainComponent extends CoreComponent
                     name: "Products CRUD",
                     url: $HOST_NAME . '/component/products-crud',
                     iconName: "cube-outline"
+                ),
+                new MenuItemDto(
+                    id: "11",
+                    name: "Products CRUD V2",
+                    url: $HOST_NAME . '/component/products-crud-v2',
+                    iconName: "cube-outline",
+                    badge: "New"
                 )
             ),
             title: "Lego",
