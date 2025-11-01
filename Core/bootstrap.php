@@ -33,6 +33,9 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
+// Registrar componentes dinámicos
+\Core\Bootstrap\RegisterDynamicComponents::register();
+
 // Definir variables globales para compatibilidad
 $DB_USERNAME = $_ENV['DB_USERNAME'];
 $DB_DATABASE = $_ENV['DB_DATABASE'];

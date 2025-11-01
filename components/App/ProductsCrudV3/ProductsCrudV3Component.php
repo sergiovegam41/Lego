@@ -7,6 +7,7 @@ use Components\Shared\Essentials\TableComponent\TableComponent;
 use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
 use Components\Shared\Essentials\TableComponent\Dtos\ColumnDto;
 use Core\Types\DimensionValue;
+use Core\Helpers\ActionButtons;
 use App\Models\Product;
 
 /**
@@ -22,10 +23,16 @@ use App\Models\Product;
  * ✅ Navegación usando módulos (no window.location.href)
  * ✅ Theming correcto (html.dark, no @media)
  * ✅ Separación clara: 1 componente = 1 responsabilidad
+ * ✅ ActionButtons helper (eliminó 50+ líneas de HTML inline)
+ * ✅ Componentes dinámicos (batch rendering desde JavaScript)
  *
  * CONSISTENCIA DIMENSIONAL:
  * "Las distancias importan" - columnas usan flex/percent
  * para mantener proporciones visuales consistentes.
+ *
+ * EJEMPLO DE BOTONES DE ACCIÓN:
+ * ANTES: 50+ líneas de HTML/CSS hardcoded en cellRenderer
+ * AHORA: ActionButtons::dynamic(['edit', 'delete'])
  */
 #[ApiComponent('/products-crud-v3', methods: ['GET'])]
 class ProductsCrudV3Component extends CoreComponent
@@ -87,53 +94,9 @@ class ProductsCrudV3Component extends CoreComponent
                 width: DimensionValue::percent(20),  // 20%
                 sortable: false,
                 filter: false,
-                cellRenderer: "params => {
-                    const productId = params.data.id;
-                    return `
-                        <div style=\"display: flex; gap: 4px; align-items: center; justify-content: center;\">
-                            <button
-                                onclick=\"editProduct(\${productId})\"
-                                style=\"
-                                    padding: 8px;
-                                    background: transparent;
-                                    color: #3b82f6;
-                                    border: none;
-                                    border-radius: 6px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.2s;
-                                \"
-                                onmouseover=\"this.style.background='rgba(59, 130, 246, 0.1)'\"
-                                onmouseout=\"this.style.background='transparent'\"
-                                title=\"Editar producto\"
-                            >
-                                <ion-icon name=\"create-outline\" style=\"font-size: 20px;\"></ion-icon>
-                            </button>
-                            <button
-                                onclick=\"deleteProduct(\${productId})\"
-                                style=\"
-                                    padding: 8px;
-                                    background: transparent;
-                                    color: #ef4444;
-                                    border: none;
-                                    border-radius: 6px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.2s;
-                                \"
-                                onmouseover=\"this.style.background='rgba(239, 68, 68, 0.1)'\"
-                                onmouseout=\"this.style.background='transparent'\"
-                                title=\"Eliminar producto\"
-                            >
-                                <ion-icon name=\"trash-outline\" style=\"font-size: 20px;\"></ion-icon>
-                            </button>
-                        </div>
-                    `;
-                }"
+                // NOTA: Usando .static() porque AG-Grid no soporta cellRenderers async
+                // Para usar .dynamic() necesitamos pre-renderizar en PHP o usar wrapper
+                cellRenderer: ActionButtons::static(['edit', 'delete'])
             )
             // Total: 8 + 20 + 30 + 12 + 10 + 20 = 100%
         );

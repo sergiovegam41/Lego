@@ -51,6 +51,7 @@ namespace Routes;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
 use App\Controllers\Products\Controllers\ProductsController;
+use App\Controllers\ComponentsController;
 use Core\Controller\CoreController;
 use Flight;
 
@@ -105,6 +106,31 @@ Flight::route('DELETE /products/@id', function($id) {
     $input['id'] = $id;
     $_POST = array_merge($_POST, $input);
     new ProductsController('delete');
+});
+
+/**
+ * Rutas de componentes dinámicos (Sistema LEGO)
+ * Renderizado de componentes desde JavaScript
+ */
+
+// GET /api/components/render - Renderizar componente único
+// Query: ?id=icon-button&params={"action":"edit","entityId":14}
+Flight::route('GET /components/render', function() {
+    $controller = new ComponentsController();
+    $controller->render();
+});
+
+// POST /api/components/batch - Renderizar múltiples componentes en batch
+// Body: {"component":"icon-button","renders":[{...},{...}]}
+Flight::route('POST /components/batch', function() {
+    $controller = new ComponentsController();
+    $controller->batch();
+});
+
+// GET /api/components/list - Listar componentes registrados (debug)
+Flight::route('GET /components/list', function() {
+    $controller = new ComponentsController();
+    $controller->list();
 });
 
 /**

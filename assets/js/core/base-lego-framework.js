@@ -4,6 +4,7 @@ import { loading } from './modules/loading/loadingsScript.js';
 import {generateMenuLinks, _openModule, _closeModule} from './modules/windows-manager/windows-manager.js'
 import ThemeManager from './modules/theme/theme-manager.js';
 import storageManager from './modules/storage/storage-manager.js';
+import DynamicComponentsManager from './modules/components/dynamic-components-manager.js';
 
 window.lego = window.lego || {};
 
@@ -30,6 +31,12 @@ if (!window.themeManager) {
 if (!window.lego.events && window.legoEvents) {
   window.lego.events = window.legoEvents;
   console.log('[Lego] Sistema de eventos disponible en window.lego.events');
+}
+
+// Initialize dynamic components system
+if (!window.lego.components) {
+  window.lego.components = new DynamicComponentsManager();
+  console.log('[Lego] Sistema de componentes dinámicos disponible en window.lego.components');
 }
 
 activeMenu()
