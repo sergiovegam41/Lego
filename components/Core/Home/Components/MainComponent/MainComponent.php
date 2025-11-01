@@ -97,15 +97,22 @@ class MainComponent extends CoreComponent
                 new MenuItemDto(
                     id: "10",
                     name: "Products CRUD",
-                    url: $HOST_NAME . '/component/products-crud',
-                    iconName: "cube-outline"
-                ),
-                new MenuItemDto(
-                    id: "11",
-                    name: "Products CRUD V2",
-                    url: $HOST_NAME . '/component/products-crud-v2',
+                    url: null,
                     iconName: "cube-outline",
-                    badge: "New"
+                    childs: [
+                        new MenuItemDto(
+                            id: "10-1",
+                            name: "Tabla",
+                            url: $HOST_NAME . '/component/products-crud-v3',
+                            iconName: "grid-outline"
+                        ),
+                        new MenuItemDto(
+                            id: "10-2",
+                            name: "Crear",
+                            url: $HOST_NAME . '/component/products-crud-v3/create',
+                            iconName: "add-circle-outline"
+                        )
+                    ]
                 )
             ),
             title: "Lego",
@@ -183,6 +190,9 @@ class MainComponent extends CoreComponent
           <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
           <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
           <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+
+          <!-- Lego Events System - Cargar ANTES de base-lego-framework -->
+          <script src="./assets/js/core/modules/events/lego-events.js"></script>
 
           <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

@@ -31,7 +31,12 @@ use Core\Components\CoreComponent\CoreComponent;
 class SelectComponent extends CoreComponent {
 
     protected $CSS_PATHS = ["./select.css"];
-    protected $JS_PATHS = ["./select.js"];
+    protected $JS_PATHS = [
+        "./SelectModel.js",
+        "./SelectView.js",
+        "./SelectController.js",
+        "./select.js"
+    ];
 
     public function __construct(
         public string $id,

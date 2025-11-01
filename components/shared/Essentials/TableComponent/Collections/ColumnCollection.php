@@ -44,12 +44,58 @@ class ColumnCollection implements \IteratorAggregate, \Countable {
 
     /**
      * Convierte todas las columnas a configuración de AG Grid
+     *
+     * SISTEMA DE ANCHOS PORCENTUALES AUTOMÁTICOS:
+     * Si hay columnas sin width definido, se calcula automáticamente
+     * el porcentaje restante y se distribuye equitativamente.
      */
     public function toAgGridConfig(): array {
-        return array_map(
+        $configs = array_map(
             fn(ColumnDto $column) => $column->toArray(),
             $this->columns
         );
+
+        // Normalizar anchos porcentuales si es necesario
+        return $this->normalizePercentageWidths($configs);
+    }
+
+    /**
+     * Normaliza los anchos porcentuales para que sumen 100%
+     *
+     * Si hay columnas sin width, calcula el porcentaje restante
+     * y lo distribuye equitativamente entre ellas.
+     */
+    private function normalizePercentageWidths(array $configs): array {
+        $totalPercentage = 0;
+        $columnsWithoutWidth = 0;
+
+        // Calcular total de porcentajes definidos y contar columnas sin width
+        foreach ($configs as $config) {
+            if (isset($config['width'])) {
+                // Si es un string terminado en '%', extraer el número
+                if (is_string($config['width']) && str_ends_with($config['width'], '%')) {
+                    $totalPercentage += (float)str_replace('%', '', $config['width']);
+                }
+            } else if (!isset($config['flex'])) {
+                // No tiene width ni flex definido
+                $columnsWithoutWidth++;
+            }
+        }
+
+        // Si hay columnas sin width, calcular el porcentaje restante
+        if ($columnsWithoutWidth > 0) {
+            $remainingPercentage = max(0, 100 - $totalPercentage);
+            $percentagePerColumn = $remainingPercentage / $columnsWithoutWidth;
+
+            // Asignar porcentaje a columnas sin width
+            foreach ($configs as &$config) {
+                if (!isset($config['width']) && !isset($config['flex'])) {
+                    $config['width'] = number_format($percentagePerColumn, 2, '.', '') . '%';
+                }
+            }
+        }
+
+        return $configs;
     }
 
     /**

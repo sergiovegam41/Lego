@@ -6,7 +6,6 @@
  * Carga AG Grid desde CDN y configura todas las opciones recibidas desde PHP.
  */
 
-// Recibir configuración desde PHP
 let context = {CONTEXT};
 
 (function() {
@@ -63,6 +62,37 @@ let context = {CONTEXT};
                 reject(error);
             };
             document.head.appendChild(script);
+        });
+    }
+
+    // Procesar columnDefs para convertir código de formatters a funciones
+    function processColumnDefs(columns) {
+        return columns.map(col => {
+            const processedCol = { ...col };
+
+            // Convertir _valueFormatterCode a función real
+            if (col._valueFormatterCode) {
+                try {
+                    // Evaluar el código como función
+                    processedCol.valueFormatter = new Function('return ' + col._valueFormatterCode)();
+                    delete processedCol._valueFormatterCode;
+                } catch (error) {
+                    console.error('[LEGO Table] Error creando valueFormatter para columna:', col.field, error);
+                }
+            }
+
+            // Convertir _cellRendererCode a función real
+            if (col._cellRendererCode) {
+                try {
+                    // Evaluar el código como función
+                    processedCol.cellRenderer = new Function('return ' + col._cellRendererCode)();
+                    delete processedCol._cellRendererCode;
+                } catch (error) {
+                    console.error('[LEGO Table] Error creando cellRenderer para columna:', col.field, error);
+                }
+            }
+
+            return processedCol;
         });
     }
 
@@ -150,9 +180,12 @@ let context = {CONTEXT};
             });
         }
 
+        // Procesar columnDefs para convertir código JavaScript a funciones
+        const processedColumnDefs = processColumnDefs(columnDefs);
+
         // Configuración completa de AG Grid
         const fullGridOptions = {
-            columnDefs: columnDefs,
+            columnDefs: processedColumnDefs,
             rowData: rowData,
             ...gridOptions,
 
@@ -265,6 +298,36 @@ let context = {CONTEXT};
 
                 // Autoajustar columnas si es necesario
                 event.api.sizeColumnsToFit();
+
+                // Hacer la tabla responsive al resize del viewport
+                const resizeObserver = new ResizeObserver(() => {
+                    // Debounce para evitar demasiadas llamadas
+                    if (window._legoTableResizeTimeout) {
+                        clearTimeout(window._legoTableResizeTimeout);
+                    }
+                    window._legoTableResizeTimeout = setTimeout(() => {
+                        if (event.api) {
+                            event.api.sizeColumnsToFit();
+                        }
+                    }, 150);
+                });
+
+                // Observar cambios en el tamaño del contenedor de la grid
+                resizeObserver.observe(gridDiv);
+
+                // También escuchar eventos de resize de ventana
+                window.addEventListener('resize', () => {
+                    if (window._legoTableWindowResizeTimeout) {
+                        clearTimeout(window._legoTableWindowResizeTimeout);
+                    }
+                    window._legoTableWindowResizeTimeout = setTimeout(() => {
+                        if (event.api) {
+                            event.api.sizeColumnsToFit();
+                        }
+                    }, 150);
+                });
+
+                console.log('[LEGO Table] Auto-resize configurado');
             }
         };
 

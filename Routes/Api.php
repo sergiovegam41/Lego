@@ -50,6 +50,7 @@
 namespace Routes;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
+use App\Controllers\Products\Controllers\ProductsController;
 use Core\Controller\CoreController;
 use Flight;
 
@@ -61,7 +62,53 @@ use Flight;
 Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
 
 /**
- * Rutas dinámicas de controladores
+ * Rutas REST para ProductsCrudV3
+ * Métodos HTTP correctos (GET, POST, PUT, DELETE)
+ */
+
+// GET /api/products - Listar todos
+Flight::route('GET /products', function() {
+    new ProductsController('list');
+});
+
+// GET /api/products/{id} - Obtener uno por ID
+Flight::route('GET /products/@id', function($id) {
+    $_REQUEST['id'] = $id;
+    $_GET['id'] = $id;
+    new ProductsController('get');
+});
+
+// POST /api/products - Crear nuevo
+Flight::route('POST /products', function() {
+    new ProductsController('create');
+});
+
+// PUT /api/products/{id} - Actualizar existente
+Flight::route('PUT /products/@id', function($id) {
+    // Parsear body de PUT request
+    $input = json_decode(file_get_contents('php://input'), true);
+    if ($input) {
+        $input['id'] = $id;
+        // Simular POST para compatibilidad con controlador
+        $_POST = array_merge($_POST, $input);
+    }
+    new ProductsController('update');
+});
+
+// DELETE /api/products/{id} - Eliminar
+Flight::route('DELETE /products/@id', function($id) {
+    // Parsear body de DELETE request
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!$input) {
+        $input = [];
+    }
+    $input['id'] = $id;
+    $_POST = array_merge($_POST, $input);
+    new ProductsController('delete');
+});
+
+/**
+ * Rutas dinámicas de controladores (LEGACY para V1/V2)
  * Se mapean automáticamente desde App/Controllers/
  */
 $dynamicRoutes = CoreController::getMymapControllers();

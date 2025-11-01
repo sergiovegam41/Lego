@@ -205,10 +205,8 @@ HTML;
 
 
             } else if ($type == 'js') {
-
-
                 $html_result  .= <<<HTML
-                    
+
                 <script src="{$path}?v={$r}"></script>
 
                 HTML;

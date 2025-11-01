@@ -1,0 +1,188 @@
+/**
+ * ProductsCrudV3 - Estilos (REFACTORIZADO)
+ *
+ * FILOSOFÍA LEGO:
+ * Estilos consistentes usando variables CSS y theming correcto.
+ *
+ * THEMING CORRECTO:
+ * ✅ Usa html.dark y html.light (NO @media prefers-color-scheme)
+ * ✅ Variables CSS para consistencia dimensional
+ * ✅ Colores semánticos del design system
+ *
+ * CONSISTENCIA DIMENSIONAL:
+ * "Las distancias importan" - spacing usa escala consistente:
+ * --space-xs: 4px
+ * --space-sm: 8px
+ * --space-md: 16px
+ * --space-lg: 24px
+ * --space-xl: 32px
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONTAINER PRINCIPAL
+   ═══════════════════════════════════════════════════════════════ */
+
+.products-crud-v3 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg, 24px);
+    padding: var(--space-lg, 24px);
+    height: 100%;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════ */
+
+.products-crud-v3__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md, 16px);
+}
+
+.products-crud-v3__title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.products-crud-v3__create-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.products-crud-v3__create-btn:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.products-crud-v3__create-btn:active {
+    transform: translateY(0);
+}
+
+.products-crud-v3__create-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TABLA
+   ═══════════════════════════════════════════════════════════════ */
+
+.products-crud-v3__table {
+    flex: 1;
+    min-height: 0; /* Necesario para flex shrink */
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ACCIONES EN CELDAS (custom renderer)
+   ═══════════════════════════════════════════════════════════════ */
+
+.products-crud-v3__actions {
+    display: flex;
+    gap: var(--space-sm, 8px);
+    align-items: center;
+}
+
+.products-crud-v3__action-btn {
+    padding: var(--space-xs, 4px) var(--space-sm, 8px);
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.products-crud-v3__action-btn:hover {
+    background: var(--bg-surface-secondary);
+    border-color: var(--border-hover);
+}
+
+.products-crud-v3__action-btn--edit {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.products-crud-v3__action-btn--edit:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.products-crud-v3__action-btn--delete {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.products-crud-v3__action-btn--delete:hover {
+    background: var(--color-danger);
+    color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEMING - LIGHT MODE
+   ═══════════════════════════════════════════════════════════════ */
+
+html.light .products-crud-v3 {
+    --bg-surface: #ffffff;
+    --bg-surface-secondary: #f5f5f5;
+    --text-primary: #1a1a1a;
+    --border-default: #e0e0e0;
+    --border-hover: #bdbdbd;
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-danger: #dc2626;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEMING - DARK MODE
+   ═══════════════════════════════════════════════════════════════ */
+
+html.dark .products-crud-v3 {
+    --bg-surface: #1a1a1a;
+    --bg-surface-secondary: #2a2a2a;
+    --text-primary: #f5f5f5;
+    --border-default: #404040;
+    --border-hover: #525252;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-danger: #ef4444;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .products-crud-v3__header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .products-crud-v3__create-btn {
+        justify-content: center;
+    }
+}

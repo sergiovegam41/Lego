@@ -13,19 +13,27 @@ use Core\Services\Storage\StorageService;
 /**
  * ProductsController - API REST para productos
  *
- * ENDPOINTS:
- * GET    /api/products/list              - Listar todos los productos
- * GET    /api/products/get               - Obtener un producto por ID
- * POST   /api/products/create            - Crear nuevo producto
- * POST   /api/products/update            - Actualizar producto
- * POST   /api/products/delete            - Eliminar producto
- * POST   /api/products/upload_image      - Subir imagen de producto
- * POST   /api/products/delete_image      - Eliminar imagen de producto
+ * ENDPOINTS REST (ProductsCrudV3):
+ * GET    /api/products                   - Listar todos los productos
+ * GET    /api/products/{id}              - Obtener un producto por ID
+ * POST   /api/products                   - Crear nuevo producto
+ * PUT    /api/products/{id}              - Actualizar producto
+ * DELETE /api/products/{id}              - Eliminar producto
+ *
+ * ENDPOINTS LEGACY (ProductsCrud V1/V2):
+ * GET    /api/products/list              - Listar todos (LEGACY)
+ * GET    /api/products/get               - Obtener por ID (LEGACY)
+ * POST   /api/products/create            - Crear (LEGACY)
+ * POST   /api/products/update            - Actualizar (LEGACY)
+ * POST   /api/products/delete            - Eliminar (LEGACY)
+ * POST   /api/products/upload_image      - Subir imagen
+ * POST   /api/products/delete_image      - Eliminar imagen
  * POST   /api/products/reorder_images    - Reordenar imágenes
  * POST   /api/products/set_primary       - Marcar imagen como principal
  */
 class ProductsController extends CoreController
 {
+    
     const ROUTE = 'products';
 
     public function __construct($accion)
@@ -71,7 +79,8 @@ class ProductsController extends CoreController
     public function get()
     {
         try {
-            $id = $_GET['id'] ?? null;
+            $data = json_decode(file_get_contents('php://input'), true);
+            $id = $data['id'] ?? null;
 
             if (!$id) {
                 Response::json(StatusCodes::HTTP_BAD_REQUEST, (array)new ResponseDTO(

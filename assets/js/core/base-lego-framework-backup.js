@@ -9,8 +9,6 @@ window.lego = window.lego || {};
 
 lego.loadModulesWithArguments = _loadModulesWithArguments;
 lego.loadModules = _loadModules;
-lego.openModule = _openModule;
-lego.closeModule = _closeModule;
 window.toggleSubMenu = toggleSubMenu;
 window.lego.loading = loading;
 
@@ -22,14 +20,6 @@ if (!window.storageManager) {
 // Initialize unified theme system
 if (!window.themeManager) {
   window.themeManager = new ThemeManager();
-}
-
-// Initialize unified events system
-// IMPORTANTE: lego-events.js debe cargarse ANTES de este archivo
-// y expone window.legoEvents directamente (sin ES6 modules)
-if (!window.lego.events && window.legoEvents) {
-  window.lego.events = window.legoEvents;
-  console.log('[Lego] Sistema de eventos disponible en window.lego.events');
 }
 
 activeMenu()

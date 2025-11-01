@@ -70,26 +70,35 @@ function executeCode(code) {
  * @param {string} code - Código JavaScript a ejecutar
  * @param {string} moduleName - Nombre del módulo para logging
  */
-function executeCodeSafely(code, moduleName) {
+function executeCodeSafely(code, moduleName, contextData = null) {
     try {
+        // Si hay contextData, inyectarlo como variable global antes de ejecutar el código
+        if (contextData) {
+            // Crear una variable global temporal con el contexto
+            // Usamos un nombre único para evitar colisiones
+            const contextVarName = '_LEGO_CONTEXT_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+            window[contextVarName] = contextData;
+
+            // Reemplazar {CONTEXT} con referencia a la variable global
+            code = code.replace('{CONTEXT}', contextVarName);
+        }
+
         // Crear un contexto aislado para el módulo
-        const moduleFunction = new Function(`
-            try {
-                // Scope aislado del módulo
-                (function() {
-                    ${code}
-                })();
-            } catch (moduleError) {
-                console.error('🚨 Error in module ${moduleName}:', moduleError);
-                console.warn('⚠️  Module ${moduleName} failed but other modules will continue');
-                // No re-lanzar el error para no romper otros módulos
-            }
-        `);
-        
+        const wrappedCode =
+            'try {' +
+                '(function() {' +
+                    code +
+                '})();' +
+            '} catch (moduleError) {' +
+                'console.error("🚨 Error in module ' + moduleName + ':", moduleError);' +
+                'console.warn("⚠️  Module ' + moduleName + ' failed but other modules will continue");' +
+            '}';
+
+        const moduleFunction = new Function(wrappedCode);
         moduleFunction();
-        
+
     } catch (criticalError) {
-        console.error(`💥 Critical error loading module ${moduleName}:`, criticalError);
+        console.error('💥 Critical error loading module ' + moduleName + ':', criticalError);
         console.warn('⚠️  Module failed at execution level, skipping...');
     }
 }
@@ -122,16 +131,14 @@ export async function _loadModulesWithArguments(scripts) {
                 ? transformJSX(code)
                 : code;
             
-            // Reemplazar {CONTEXT} con los datos reales
-            const contextData = JSON.stringify({
+            // Preparar el contexto como objeto (NO como JSON string)
+            const contextData = {
                 context: scripts.context,
                 arg
-            });
-            
-            processedCode = processedCode.replace('{CONTEXT}', contextData);
-            
-            // Ejecutar código en un contexto aislado
-            executeCodeSafely(processedCode, path);
+            };
+
+            // Ejecutar código en un contexto aislado, pasando contextData como objeto
+            executeCodeSafely(processedCode, path, contextData);
             // console.log(`✅ Module loaded successfully: ${path}`);
             
             return { success: true, path };
