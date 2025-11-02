@@ -1,0 +1,466 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * LEGO FRAMEWORK - SISTEMA DE VARIABLES DE TEMA
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * FILOSOFÍA:
+ * Este archivo define el sistema completo de theming del framework.
+ * Usa variables semánticas que cambian automáticamente con el tema.
+ *
+ * REGLAS:
+ * 1. NUNCA usar colores hardcodeados (#fff, white, etc.) en componentes
+ * 2. SIEMPRE usar variables semánticas (--text-primary, --bg-surface, etc.)
+ * 3. Las variables cambian automáticamente con html.dark / html.light
+ * 4. Sin necesidad de suscripciones JS para componentes CSS-only
+ *
+ * ARQUITECTURA:
+ * - Variables base (no cambian con tema): Spacing, typography, shadows
+ * - Variables semánticas (cambian con tema): Colors, backgrounds, borders
+ * - Variables específicas por componente: button, input, card, etc.
+ *
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTE 1: PALETA BASE (Inmutable - no cambia con el tema)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* === Paleta de Grises === */
+    --neutral-50: #f9f9f9;
+    --neutral-100: #f5f5f5;
+    --neutral-200: #e5e5e5;
+    --neutral-300: #dddddd;
+    --neutral-400: #b0b0b0;
+    --neutral-500: #909090;
+    --neutral-600: #707070;
+    --neutral-700: #5a5a5a;
+    --neutral-800: #404040;
+    --neutral-900: #2d2e2f;
+    --neutral-950: #1a1a1a;
+
+    /* === Paleta de Colores de Marca === */
+    --blue-50: #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-200: #bfdbfe;
+    --blue-300: #93c5fd;
+    --blue-400: #60a5fa;
+    --blue-500: #3ba1ff;  /* Primary brand color */
+    --blue-600: #2b91ef;
+    --blue-700: #1d4ed8;
+    --blue-800: #1e3a8a;
+    --blue-900: #1e293b;
+
+    /* === Paleta de Estado === */
+    --green-50: #f0fdf4;
+    --green-100: #dcfce7;
+    --green-200: #d1fae5;
+    --green-500: #76cb84;
+    --green-600: #4caf50;
+    --green-700: #45a049;
+    --green-800: #065f46;
+
+    --red-50: #fef2f2;
+    --red-100: #fee2e2;
+    --red-500: #ff6b6b;
+    --red-600: #ff4444;
+    --red-700: #dc2626;
+    --red-800: #991b1b;
+
+    --yellow-50: #fffbeb;
+    --yellow-100: #fef3c7;
+    --yellow-500: #fbbf24;
+    --yellow-600: #f59e0b;
+    --yellow-700: #d97706;
+
+    --orange-50: #fff4ed;
+    --orange-100: #ffe4cc;
+    --orange-200: #ffd4bb;
+    --orange-400: #ffa570;
+    --orange-600: #ff7e41;
+    --orange-700: #e66f3a;
+    --orange-800: #cc5f32;
+
+    /* === Espaciado (8px base) === */
+    --space-0: 0;
+    --space-xs: 0.25rem;   /* 4px */
+    --space-sm: 0.5rem;    /* 8px */
+    --space-md: 0.75rem;   /* 12px */
+    --space-lg: 1rem;      /* 16px */
+    --space-xl: 1.5rem;    /* 24px */
+    --space-2xl: 2rem;     /* 32px */
+    --space-3xl: 3rem;     /* 48px */
+    --space-4xl: 4rem;     /* 64px */
+
+    /* === Tipografía === */
+    --font-family-base: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-family-mono: 'Courier New', 'Consolas', 'Monaco', monospace;
+
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.8125rem;  /* 13px */
+    --font-size-base: 0.875rem; /* 14px */
+    --font-size-lg: 1rem;       /* 16px */
+    --font-size-xl: 1.125rem;   /* 18px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    --font-size-3xl: 2rem;      /* 32px */
+
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* === Border Radius === */
+    --radius-none: 0;
+    --radius-sm: 0.25rem;    /* 4px */
+    --radius-md: 0.375rem;   /* 6px */
+    --radius-lg: 0.5rem;     /* 8px */
+    --radius-xl: 0.75rem;    /* 12px */
+    --radius-2xl: 1rem;      /* 16px */
+    --radius-3xl: 1.5rem;    /* 24px */
+    --radius-full: 9999px;
+
+    /* === Sombras === */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    /* === Transiciones === */
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+
+    /* === Z-Index Scale === */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTE 2: VARIABLES SEMÁNTICAS (Cambian con el tema)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* === DARK MODE (Default) === */
+html,
+html.dark {
+    color-scheme: dark;
+
+    /* --- Backgrounds --- */
+    --bg-body: var(--neutral-950);
+    --bg-sidebar: #242526;
+    --bg-surface: #3a3b3c;
+    --bg-surface-secondary: var(--neutral-900);
+    --bg-surface-hover: var(--neutral-800);
+    --bg-input: var(--neutral-900);
+    --bg-disabled: #4a4b4c;
+    --bg-overlay: rgba(0, 0, 0, 0.6);
+    --bg-code: #1e293b;
+
+    /* --- Text Colors --- */
+    --text-primary: #ffffff;
+    --text-secondary: #dddddd;
+    --text-tertiary: var(--neutral-400);
+    --text-disabled: #808080;
+    --text-on-primary: #ffffff;
+    --text-on-accent: #ffffff;
+    --text-inverse: #000000;
+
+    /* --- Border Colors --- */
+    --border-light: var(--neutral-800);
+    --border-medium: #5a5a5a;
+    --border-dark: #6a6b6c;
+    --border-focus: var(--blue-500);
+    --border-error: var(--red-600);
+    --border-success: var(--green-600);
+
+    /* --- Interactive States --- */
+    --state-hover: rgba(255, 255, 255, 0.1);
+    --state-active: rgba(255, 255, 255, 0.15);
+    --state-focus: rgba(59, 161, 255, 0.2);
+    --state-disabled: rgba(255, 255, 255, 0.05);
+
+    /* --- Accent Colors --- */
+    --accent-primary: var(--blue-500);
+    --accent-primary-hover: var(--blue-600);
+    --accent-primary-light: rgba(59, 161, 255, 0.1);
+    --accent-primary-alpha: rgba(59, 161, 255, 0.2);
+
+    /* --- Status Colors --- */
+    --success: var(--green-600);
+    --success-bg: rgba(76, 175, 80, 0.1);
+    --success-border: var(--green-700);
+
+    --error: var(--red-600);
+    --error-bg: rgba(255, 68, 68, 0.1);
+    --error-border: var(--red-700);
+
+    --warning: var(--yellow-600);
+    --warning-bg: rgba(251, 191, 36, 0.1);
+    --warning-border: var(--yellow-700);
+
+    --info: var(--blue-500);
+    --info-bg: rgba(59, 161, 255, 0.1);
+    --info-border: var(--blue-600);
+
+    /* --- Component-Specific --- */
+    --toggle-bg: #ffffff;
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: var(--neutral-700);
+    --scrollbar-thumb-hover: var(--neutral-600);
+}
+
+/* === LIGHT MODE === */
+html.light {
+    color-scheme: light;
+
+    /* --- Backgrounds --- */
+    --bg-body: #ffffff;
+    --bg-sidebar: #ffffff;
+    --bg-surface: var(--neutral-100);
+    --bg-surface-secondary: var(--neutral-50);
+    --bg-surface-hover: var(--neutral-200);
+    --bg-input: #ffffff;
+    --bg-disabled: var(--neutral-100);
+    --bg-overlay: rgba(0, 0, 0, 0.4);
+    --bg-code: var(--blue-900);
+
+    /* --- Text Colors --- */
+    --text-primary: #000000;
+    --text-secondary: var(--neutral-600);
+    --text-tertiary: var(--neutral-500);
+    --text-disabled: var(--neutral-400);
+    --text-on-primary: #ffffff;
+    --text-on-accent: #ffffff;
+    --text-inverse: #ffffff;
+
+    /* --- Border Colors --- */
+    --border-light: var(--neutral-200);
+    --border-medium: var(--neutral-300);
+    --border-dark: var(--neutral-400);
+    --border-focus: var(--blue-500);
+    --border-error: var(--red-600);
+    --border-success: var(--green-600);
+
+    /* --- Interactive States --- */
+    --state-hover: rgba(0, 0, 0, 0.05);
+    --state-active: rgba(0, 0, 0, 0.1);
+    --state-focus: rgba(59, 161, 255, 0.15);
+    --state-disabled: rgba(0, 0, 0, 0.02);
+
+    /* --- Accent Colors --- */
+    --accent-primary: var(--blue-500);
+    --accent-primary-hover: var(--blue-600);
+    --accent-primary-light: rgba(59, 161, 255, 0.08);
+    --accent-primary-alpha: rgba(59, 161, 255, 0.15);
+
+    /* --- Status Colors --- */
+    --success: var(--green-700);
+    --success-bg: var(--green-100);
+    --success-border: var(--green-600);
+
+    --error: var(--red-700);
+    --error-bg: var(--red-100);
+    --error-border: var(--red-600);
+
+    --warning: var(--yellow-700);
+    --warning-bg: var(--yellow-100);
+    --warning-border: var(--yellow-600);
+
+    --info: var(--blue-600);
+    --info-bg: var(--blue-100);
+    --info-border: var(--blue-500);
+
+    /* --- Component-Specific --- */
+    --toggle-bg: var(--neutral-300);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: var(--neutral-300);
+    --scrollbar-thumb-hover: var(--neutral-400);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTE 3: VARIABLES ESPECÍFICAS POR COMPONENTE
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* === Button === */
+    --button-bg-primary: var(--accent-primary);
+    --button-bg-primary-hover: var(--accent-primary-hover);
+    --button-text-primary: var(--text-on-accent);
+
+    --button-bg-secondary: var(--bg-surface);
+    --button-bg-secondary-hover: var(--bg-surface-hover);
+    --button-text-secondary: var(--text-primary);
+
+    --button-bg-ghost: transparent;
+    --button-bg-ghost-hover: var(--state-hover);
+    --button-text-ghost: var(--text-primary);
+
+    --button-bg-danger: var(--error);
+    --button-bg-danger-hover: var(--red-700);
+    --button-text-danger: var(--text-on-accent);
+
+    --button-padding-sm: var(--space-xs) var(--space-md);
+    --button-padding-md: var(--space-sm) var(--space-lg);
+    --button-padding-lg: var(--space-md) var(--space-xl);
+    --button-radius: var(--radius-lg);
+
+    /* === Input === */
+    --input-bg: var(--bg-input);
+    --input-bg-hover: var(--bg-surface-hover);
+    --input-bg-focus: var(--bg-input);
+    --input-bg-disabled: var(--bg-disabled);
+
+    --input-text: var(--text-primary);
+    --input-text-placeholder: var(--text-tertiary);
+    --input-text-disabled: var(--text-disabled);
+
+    --input-border: var(--border-light);
+    --input-border-hover: var(--border-medium);
+    --input-border-focus: var(--border-focus);
+    --input-border-error: var(--border-error);
+
+    --input-padding: var(--space-sm) var(--space-md);
+    --input-radius: var(--radius-md);
+
+    /* === Card === */
+    --card-bg: var(--bg-surface);
+    --card-bg-hover: var(--bg-surface-hover);
+    --card-border: var(--border-light);
+    --card-shadow: var(--shadow-sm);
+    --card-shadow-hover: var(--shadow-md);
+    --card-padding: var(--space-xl);
+    --card-radius: var(--radius-xl);
+
+    /* === Dropdown/Select === */
+    --dropdown-bg: var(--bg-surface);
+    --dropdown-border: var(--border-light);
+    --dropdown-shadow: var(--shadow-lg);
+    --dropdown-item-hover: var(--state-hover);
+    --dropdown-item-active: var(--state-active);
+
+    /* === Modal === */
+    --modal-bg: var(--bg-surface);
+    --modal-backdrop: var(--bg-overlay);
+    --modal-border: var(--border-light);
+    --modal-shadow: var(--shadow-2xl);
+
+    /* === Table === */
+    --table-bg: var(--bg-surface);
+    --table-header-bg: var(--bg-surface-secondary);
+    --table-border: var(--border-light);
+    --table-row-hover: var(--state-hover);
+    --table-row-selected: var(--state-active);
+
+    /* === Badge === */
+    --badge-success-bg: var(--success-bg);
+    --badge-success-text: var(--success);
+    --badge-success-border: var(--success-border);
+
+    --badge-error-bg: var(--error-bg);
+    --badge-error-text: var(--error);
+    --badge-error-border: var(--error-border);
+
+    --badge-warning-bg: var(--warning-bg);
+    --badge-warning-text: var(--warning);
+    --badge-warning-border: var(--warning-border);
+
+    --badge-info-bg: var(--info-bg);
+    --badge-info-text: var(--info);
+    --badge-info-border: var(--info-border);
+
+    /* === Sidebar === */
+    --sidebar-width: 15rem;
+    --sidebar-width-collapsed: 4.4rem;
+    --sidebar-bg: var(--bg-sidebar);
+    --sidebar-border: var(--border-light);
+    --sidebar-item-hover: var(--state-hover);
+    --sidebar-item-active: var(--accent-primary);
+
+    /* === Code Block === */
+    --code-bg: var(--bg-code);
+    --code-text: #e2e8f0;
+    --code-border: var(--border-light);
+    --code-inline-bg: var(--bg-surface-secondary);
+    --code-inline-text: var(--accent-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTE 4: UTILIDADES Y HELPERS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* === Scrollbar Styling === */
+*::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* === Focus Visible (Accesibilidad) === */
+*:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+}
+
+/* === Selection === */
+::selection {
+    background: var(--accent-primary-alpha);
+    color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GUÍA DE USO
+   ═══════════════════════════════════════════════════════════════════
+
+   ✅ CORRECTO:
+   .my-component {
+       background: var(--bg-surface);
+       color: var(--text-primary);
+       border: 1px solid var(--border-light);
+   }
+
+   ❌ INCORRECTO:
+   .my-component {
+       background: #ffffff;  /* ← Hardcoded! */
+       color: #000000;       /* ← No responde a theme! */
+       border: 1px solid #e5e5e5;  /* ← Fixed color! */
+   }
+
+   BENEFICIOS:
+   - Cambio automático de tema sin JS
+   - Consistencia visual garantizada
+   - Fácil mantenimiento
+   - Escalable y predecible
+
+   ═══════════════════════════════════════════════════════════════════ */

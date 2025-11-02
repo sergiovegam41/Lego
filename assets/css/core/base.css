@@ -1,6 +1,19 @@
 /* Google Font Import - Poppins. */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
+/* ═══════════════════════════════════════════════════════════════════
+   SISTEMA DE THEMING MODERNO
+   ═══════════════════════════════════════════════════════════════════
+   Importamos el nuevo sistema de variables de tema que proporciona:
+   - Variables semánticas que cambian automáticamente con dark/light
+   - Variables de diseño (spacing, typography, shadows, etc.)
+   - Variables específicas por componente (button, input, card, etc.)
+
+   IMPORTANTE: Este import debe estar ANTES de cualquier otro CSS
+   para que las variables estén disponibles en todo el framework.
+   ═══════════════════════════════════════════════════════════════════ */
+@import url('./theme-variables.css');
+
 /* ===== Base HTML rem setup ===== */
 html {
     font-size: 16px; /* 1rem = 16px base */

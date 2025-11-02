@@ -1,68 +1,74 @@
 /**
  * ProductsTableDemo Styles
+ * Usando sistema de variables de tema para compatibilidad automática dark/light
  */
 
 .products-table-demo {
-    padding: 2rem;
+    padding: var(--space-2xl);
     max-width: 1400px;
     margin: 0 auto;
 }
 
 .products-table-demo__header {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
     text-align: center;
 }
 
 .products-table-demo__title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: var(--space-md);
 }
 
 .products-table-demo__title ion-icon {
     font-size: 2.5rem;
-    color: #4F46E5;
+    color: var(--accent-primary);
 }
 
 .products-table-demo__subtitle {
-    font-size: 1rem;
-    color: #666;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
     margin: 0;
 }
 
 .products-table-demo__subtitle code {
-    background: #f3f4f6;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    color: #4F46E5;
+    background: var(--code-inline-bg);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-mono);
+    color: var(--code-inline-text);
 }
 
 .products-table-demo__info {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-2xl);
 }
 
 .info-card {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-fast);
+}
+
+.info-card:hover {
+    box-shadow: var(--card-shadow-hover);
 }
 
 .info-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0 0 1rem 0;
-    color: #1a1a1a;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--text-primary);
 }
 
 .info-card ul {
@@ -72,10 +78,10 @@
 }
 
 .info-card ul li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 0.9rem;
-    color: #4b5563;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
 }
 
 .info-card ul li:last-child {
@@ -83,81 +89,85 @@
 }
 
 .info-card ul li strong {
-    color: #1a1a1a;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
 }
 
 .info-card pre {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 1rem;
-    border-radius: 6px;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
     overflow-x: auto;
     margin: 0;
+    border: 1px solid var(--code-border);
 }
 
 .info-card code {
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
 }
 
 .products-table-demo__table-container {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    background: var(--table-bg);
+    border: 1px solid var(--table-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--card-shadow);
+    margin-bottom: var(--space-2xl);
 }
 
 .products-table-demo__footer {
     text-align: center;
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    padding: var(--card-padding);
+    background: var(--bg-surface-secondary);
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-light);
 }
 
 .products-table-demo__footer p {
-    margin: 0.5rem 0;
-    color: #6b7280;
-    font-size: 0.9rem;
+    margin: var(--space-sm) 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
 }
 
 .products-table-demo__footer code {
-    background: #e5e7eb;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    color: #1e293b;
-    font-weight: 600;
+    background: var(--code-inline-bg);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-mono);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-semibold);
 }
 
-/* Badge styles */
+/* Badge styles - usando sistema de tema */
 .badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
     text-align: center;
+    border: 1px solid transparent;
 }
 
 .badge-success {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--badge-success-bg);
+    color: var(--badge-success-text);
+    border-color: var(--badge-success-border);
 }
 
 .badge-inactive {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--badge-error-bg);
+    color: var(--badge-error-text);
+    border-color: var(--badge-error-border);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .products-table-demo {
-        padding: 1rem;
+        padding: var(--space-lg);
     }
 
     .products-table-demo__info {
@@ -165,6 +175,18 @@
     }
 
     .products-table-demo__title {
-        font-size: 1.5rem;
+        font-size: var(--font-size-2xl);
     }
 }
+
+/**
+ * ✅ MIGRADO AL NUEVO SISTEMA DE THEMING
+ *
+ * Cambios realizados:
+ * - Reemplazados 24 colores hardcodeados por variables semánticas
+ * - Ahora responde automáticamente a cambios de tema (dark/light)
+ * - Usa variables de espaciado, tipografía y componentes del sistema
+ * - Consistente con el resto del framework
+ *
+ * Sin necesidad de JavaScript para reactividad de tema!
+ */
