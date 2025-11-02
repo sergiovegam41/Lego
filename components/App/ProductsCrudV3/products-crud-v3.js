@@ -118,42 +118,95 @@ tableManager.onReady(() => {
  * El sistema usa pestañas dinámicas con ModuleStore
  */
 function openCreateModule() {
-    if (!window.moduleStore) {
-        console.error('[ProductsCrudV3] ModuleStore no disponible');
+    if (!window.legoWindowManager) {
+        console.error('[ProductsCrudV3] legoWindowManager no disponible');
         return;
     }
 
     const moduleId = 'products-crud-v3-create';
     const moduleUrl = '/component/products-crud-v3/create';
 
-    // Usar sistema de módulos
-    if (window.lego && window.lego.openModule) {
-        window.lego.openModule(moduleId, moduleUrl);
-        console.log('[ProductsCrudV3] Abriendo módulo crear');
-    } else {
-        console.error('[ProductsCrudV3] lego.openModule no disponible');
-    }
+    // Abrir con ítem de menú dinámico
+    console.log('[ProductsCrudV3] DEBUG - Intentando crear ítem dinámico con parentMenuId: 10-1');
+    window.legoWindowManager.openModuleWithMenu({
+        moduleId: moduleId,
+        parentMenuId: '10-1', // ID del ítem "Tabla" en el menú (MenuItemDto id)
+        label: 'Nuevo Producto',
+        url: moduleUrl,
+        icon: 'add-circle-outline'
+    });
+
+    console.log('[ProductsCrudV3] Abriendo módulo crear con menú dinámico');
 }
 
 /**
  * Abrir módulo de editar producto
+ *
+ * OPCIÓN 2: Ventana de edición reutilizable única
+ * Solo existe UNA ventana "Editar Producto" que reemplaza su contenido
+ * cuando se edita un producto diferente.
  */
 function openEditModule(productId, productData) {
-    if (!window.moduleStore) {
-        console.error('[ProductsCrudV3] ModuleStore no disponible');
+    if (!window.legoWindowManager || !window.moduleStore) {
+        console.error('[ProductsCrudV3] legoWindowManager o moduleStore no disponible');
         return;
     }
 
-    const moduleId = `products-crud-v3-edit-${productId}`;
+    // FIJO: Solo una ventana de edición reutilizable
+    const moduleId = 'products-crud-v3-edit';
     const moduleUrl = `/component/products-crud-v3/edit?id=${productId}`;
 
-    // Usar sistema de módulos
-    if (window.lego && window.lego.openModule) {
-        window.lego.openModule(moduleId, moduleUrl);
-        console.log('[ProductsCrudV3] Abriendo módulo editar:', productId);
-    } else {
-        console.error('[ProductsCrudV3] lego.openModule no disponible');
+    // Verificar si ya existe una ventana de edición abierta
+    const modules = window.moduleStore.getModules();
+    if (modules[moduleId]) {
+        console.log('[ProductsCrudV3] Ventana de edición ya existe, recargando con producto:', productId);
+
+        // Obtener el container del módulo
+        const container = document.getElementById(`module-${moduleId}`);
+        if (container) {
+            // Activar el módulo
+            document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+            container.classList.add('active');
+            window.moduleStore._openModule(moduleId, modules[moduleId].component);
+
+            // Recargar el contenido del módulo con nuevo producto
+            fetch(moduleUrl)
+                .then(res => res.text())
+                .then(html => {
+                    // Reemplazar contenido
+                    container.innerHTML = html;
+
+                    // Ejecutar scripts manualmente
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach((oldScript) => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+                        newScript.textContent = oldScript.textContent;
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+
+                    console.log('[ProductsCrudV3] Contenido recargado para producto:', productId);
+                })
+                .catch(err => {
+                    console.error('[ProductsCrudV3] Error recargando contenido:', err);
+                });
+        }
+        return;
     }
+
+    // Abrir con ítem de menú dinámico (primera vez)
+    console.log('[ProductsCrudV3] Abriendo ventana de edición para producto:', productId);
+    window.legoWindowManager.openModuleWithMenu({
+        moduleId: moduleId,
+        parentMenuId: '10-1', // ID del ítem "Tabla" en el menú (MenuItemDto id)
+        label: 'Editar Producto',
+        url: moduleUrl,
+        icon: 'create-outline'
+    });
+
+    console.log('[ProductsCrudV3] Módulo editar abierto con menú dinámico');
 }
 
 /**

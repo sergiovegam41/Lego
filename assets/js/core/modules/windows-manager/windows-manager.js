@@ -253,6 +253,9 @@ if (typeof window.legoWindowManager === 'undefined') {
             // Close via ModuleStore
             window.moduleStore.closeModule(id);
 
+            // Remove dynamic menu item if it exists
+            this.removeDynamicMenuItem(id);
+
             // Sync menu state
             if (window.menuStateManager) {
                 window.menuStateManager.syncWithModuleStore();
@@ -286,6 +289,156 @@ if (typeof window.legoWindowManager === 'undefined') {
             const activeId = window.moduleStore.activeModule;
             this.closeModule(activeId);
             console.log('Current window closed:', activeId);
+        },
+
+        /**
+         * Add a temporary menu item that appears as a sibling of the parent menu item
+         * @param {Object} config - Configuration object
+         * @param {string} config.moduleId - Unique ID for the module/window
+         * @param {string} config.parentMenuId - ID of the parent menu item to add this as a sibling
+         * @param {string} config.label - Display label for the menu item
+         * @param {string} config.icon - Icon name (optional, defaults to parent's icon or 'document-outline')
+         * @param {string} config.url - URL to load when clicked
+         */
+        addDynamicMenuItem: function(config) {
+            const { moduleId, parentMenuId, label, icon, url } = config;
+
+            console.log('[WindowManager] addDynamicMenuItem called with:', config);
+
+            if (!moduleId || !parentMenuId || !label) {
+                console.error('[WindowManager] addDynamicMenuItem: moduleId, parentMenuId, and label are required');
+                return;
+            }
+
+            // Find the parent menu item
+            console.log(`[WindowManager] Buscando parent menu item con selector: [data-menu-item-id="${parentMenuId}"]`);
+            const parentMenuItem = document.querySelector(`[data-menu-item-id="${parentMenuId}"]`);
+            console.log('[WindowManager] Parent menu item encontrado:', parentMenuItem);
+
+            if (!parentMenuItem) {
+                console.warn(`[WindowManager] Parent menu item not found: ${parentMenuId}`);
+                // DEBUG: Listar todos los data-menu-item-id disponibles
+                const allMenuItems = document.querySelectorAll('[data-menu-item-id]');
+                console.log('[WindowManager] DEBUG - IDs de menú disponibles:',
+                    Array.from(allMenuItems).map(el => el.getAttribute('data-menu-item-id')));
+                return;
+            }
+
+            // Check if dynamic item already exists
+            const existingItem = document.querySelector(`[data-menu-item-id="${moduleId}"]`);
+            if (existingItem) {
+                console.log('Dynamic menu item already exists:', moduleId);
+                return;
+            }
+
+            // Get parent's submenu or create insertion point
+            let submenu = parentMenuItem.parentElement.querySelector('.custom-submenu');
+            if (!submenu) {
+                // If parent doesn't have a submenu, create one
+                submenu = document.createElement('div');
+                submenu.className = 'custom-submenu';
+                submenu.style.display = 'block'; // Ensure it's visible
+                parentMenuItem.parentElement.appendChild(submenu);
+            }
+
+            // Determine icon to use
+            const itemIcon = icon || parentMenuItem.querySelector('ion-icon')?.getAttribute('name') || 'document-outline';
+
+            // Create the dynamic menu item HTML matching MenuItemComponent.php structure
+            const menuItemHTML = `
+                <div class="custom-menu-section menu_item_openable dynamic-menu-item"
+                    moduleId="${moduleId}"
+                    moduleUrl="${url}"
+                    data-menu-item-id="${moduleId}"
+                    data-module-id="${moduleId}"
+                    data-module-url="${url}"
+                    data-dynamic-item="true">
+                    <button class="menu-close-button" title="Cerrar">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                    <button class="custom-button level-0">
+                        <ion-icon name="${itemIcon}" class="icon_menu"></ion-icon>
+                        <p class="text_menu_option">${label}</p>
+                        <div class="menu-state-indicator"></div>
+                    </button>
+                </div>
+            `;
+
+            // Insert into submenu
+            submenu.insertAdjacentHTML('beforeend', menuItemHTML);
+
+            // Add click listener to the new item
+            const newMenuItem = document.querySelector(`[data-menu-item-id="${moduleId}"]`);
+            if (newMenuItem) {
+                // Click event should be on the menu section itself (matching generateMenuLinks pattern)
+                newMenuItem.addEventListener('click', (e) => {
+                    // Prevent triggering if clicking close button
+                    if (e.target.closest('.menu-close-button')) return;
+
+                    const id = newMenuItem.getAttribute('moduleId');
+                    const itemUrl = newMenuItem.getAttribute('moduleUrl');
+
+                    if (window.moduleStore.getActiveModule() !== id) {
+                        openModule(id, itemUrl, label, { url: itemUrl, name: label });
+                    } else {
+                        // Already active - just make sure it's visible
+                        const container = document.getElementById(`module-${id}`);
+                        if (container) {
+                            document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+                            container.classList.add('active');
+                        }
+                    }
+                });
+            }
+
+            console.log('Dynamic menu item added:', moduleId);
+        },
+
+        /**
+         * Remove a dynamic menu item
+         * @param {string} moduleId - Module ID of the dynamic item to remove
+         */
+        removeDynamicMenuItem: function(moduleId) {
+            const menuItem = document.querySelector(`[data-menu-item-id="${moduleId}"][data-dynamic-item="true"]`);
+            if (menuItem) {
+                // Check if parent submenu will be empty after removal
+                const submenu = menuItem.parentElement;
+                const siblingDynamicItems = submenu.querySelectorAll('.dynamic-menu-item');
+
+                menuItem.remove();
+
+                // If submenu is now empty and it was created for dynamic items, remove it
+                if (siblingDynamicItems.length === 1 && submenu.children.length === 0) {
+                    submenu.remove();
+                }
+
+                console.log('Dynamic menu item removed:', moduleId);
+            }
+        },
+
+        /**
+         * Open a module with automatic dynamic menu item creation
+         * @param {Object} config - Configuration object
+         * @param {string} config.moduleId - Unique ID for the module
+         * @param {string} config.parentMenuId - ID of the parent menu item
+         * @param {string} config.label - Display label
+         * @param {string} config.url - URL to load
+         * @param {string} config.icon - Icon name (optional)
+         */
+        openModuleWithMenu: function(config) {
+            const { moduleId, parentMenuId, label, url, icon } = config;
+
+            // First, add the dynamic menu item
+            this.addDynamicMenuItem({
+                moduleId,
+                parentMenuId,
+                label,
+                icon,
+                url
+            });
+
+            // Then open the module
+            openModule(moduleId, url, label, { url, name: label });
         },
 
         /**
@@ -332,6 +485,25 @@ if (typeof window.legoWindowManager === 'undefined') {
                     currentElement = currentElement.parentElement?.parentElement?.closest('.custom-submenu')?.previousElementSibling;
                 } else {
                     break;
+                }
+            }
+
+            // If no parent was found but we're in a submenu, look for parent section
+            if (breadcrumbItems.length === 1) {
+                const submenu = menuItem.parentElement;
+                if (submenu && submenu.classList.contains('custom-submenu')) {
+                    // Find the parent custom-menu-section that contains this submenu
+                    const parentSection = submenu.parentElement;
+                    if (parentSection && parentSection.classList.contains('custom-menu-section')) {
+                        // Look for the custom-menu-title sibling
+                        const menuTitle = parentSection.querySelector('.custom-menu-title');
+                        if (menuTitle) {
+                            const parentText = menuTitle.querySelector('.text_menu_option');
+                            if (parentText) {
+                                breadcrumbItems.unshift({ label: parentText.textContent.trim(), href: '#' });
+                            }
+                        }
+                    }
                 }
             }
 

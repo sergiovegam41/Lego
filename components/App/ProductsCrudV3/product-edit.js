@@ -285,9 +285,21 @@ function loadProductImages(images) {
 async function initializeForm() {
     console.log('[ProductEdit] Inicializando formulario...');
 
-    // IMPORTANTE: Buscar específicamente el contenedor con data-product-id (edit form)
-    // No usar .product-form a secas porque podría encontrar el formulario de create
-    const container = document.querySelector('.product-form[data-product-id]');
+    // IMPORTANTE: Buscar el container dentro del módulo activo SOLAMENTE
+    const activeModuleId = window.moduleStore?.getActiveModule();
+    if (!activeModuleId) {
+        console.error('[ProductEdit] No hay módulo activo');
+        return;
+    }
+
+    const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
+    if (!activeModuleContainer) {
+        console.error('[ProductEdit] No se encontró container del módulo activo:', activeModuleId);
+        return;
+    }
+
+    // Buscar el formulario DENTRO del módulo activo
+    const container = activeModuleContainer.querySelector('.product-form[data-product-id]');
     console.log('[ProductEdit] Container encontrado:', container);
     console.log('[ProductEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
 
@@ -299,10 +311,11 @@ async function initializeForm() {
         return;
     }
 
-    const form = document.getElementById('product-edit-form');
-    const submitBtn = document.getElementById('product-form-submit-btn');
-    const cancelBtn = document.getElementById('product-form-cancel-btn');
-    const loading = document.getElementById('product-form-loading');
+    // Buscar elementos del form DENTRO del módulo activo
+    const form = activeModuleContainer.querySelector('#product-edit-form');
+    const submitBtn = activeModuleContainer.querySelector('#product-form-submit-btn');
+    const cancelBtn = activeModuleContainer.querySelector('#product-form-cancel-btn');
+    const loading = activeModuleContainer.querySelector('#product-form-loading');
 
     if (!form || !loading) {
         console.warn('[ProductEdit] Elementos no encontrados aún, esperando...');

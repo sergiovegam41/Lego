@@ -86,8 +86,20 @@ async function initializeFilePond() {
         FilePondPluginImageExifOrientation
     );
 
-    // Buscar todos los contenedores FilePond
-    const containers = document.querySelectorAll('.lego-filepond__container');
+    // IMPORTANTE: Buscar containers SOLO dentro del módulo activo
+    const activeModuleId = window.moduleStore?.getActiveModule();
+    let searchContext = document;
+
+    if (activeModuleId) {
+        const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
+        if (activeModuleContainer) {
+            searchContext = activeModuleContainer;
+            console.log('[FilePondComponent] Buscando solo en módulo activo:', activeModuleId);
+        }
+    }
+
+    // Buscar contenedores FilePond dentro del contexto (módulo activo o documento completo)
+    const containers = searchContext.querySelectorAll('.lego-filepond__container');
 
     containers.forEach(container => {
         const config = JSON.parse(container.getAttribute('data-config') || '{}');

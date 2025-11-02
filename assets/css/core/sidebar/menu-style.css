@@ -830,3 +830,46 @@ html.light .menu-close-button ion-icon {
     transition: opacity 0.3s ease-out 0.5s;
 }
 
+/* ===== Dynamic Menu Items (Temporary/Ghost Windows) ===== */
+
+/* Dynamic menu items - slightly different styling to indicate they're temporary */
+.dynamic-menu-item {
+    opacity: 0.95;
+    transition: opacity var(--transition-fast);
+}
+
+/* Icon slightly smaller/dimmer for dynamic items */
+.dynamic-menu-item .icon_menu {
+    opacity: 0.85;
+    font-size: calc(1.25rem * 0.9);
+}
+
+/* Text styling for dynamic items */
+.dynamic-menu-item .text_menu_option {
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* Hover effect for dynamic items */
+.dynamic-menu-item:hover {
+    opacity: 1;
+}
+
+.dynamic-menu-item:hover .icon_menu,
+.dynamic-menu-item:hover .text_menu_option {
+    opacity: 1;
+}
+
+/* Active state for dynamic items */
+.dynamic-menu-item.menu-state--active .text_menu_option,
+.dynamic-menu-item.menu-state--active .icon_menu {
+    opacity: 1;
+    font-style: normal;
+}
+
+/* Dynamic items always show close button when active or open */
+.dynamic-menu-item.menu-state--open .menu-close-button,
+.dynamic-menu-item.menu-state--active .menu-close-button {
+    display: block;
+}
+
