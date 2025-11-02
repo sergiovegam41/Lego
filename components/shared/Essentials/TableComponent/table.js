@@ -92,6 +92,22 @@ let context = {CONTEXT};
                 }
             }
 
+            // Auto-detectar tipo de filtro según el campo o tipo de columna
+            // Solo si no tiene filtro personalizado ya definido
+            if (!processedCol.filter && processedCol.field) {
+                // Campos numéricos comunes
+                const numericFields = ['price', 'stock', 'quantity', 'amount', 'total', 'count', 'id'];
+                const isNumeric = numericFields.some(nf => processedCol.field.toLowerCase().includes(nf));
+
+                if (isNumeric) {
+                    processedCol.filter = 'agNumberColumnFilter';
+                    processedCol.filterParams = {
+                        buttons: ['reset', 'apply'],
+                        closeOnApply: true
+                    };
+                }
+            }
+
             return processedCol;
         });
     }
@@ -368,6 +384,23 @@ let context = {CONTEXT};
             rowData: rowData,
             ...gridOptions,
 
+            // Habilitar selección y copia de texto
+            enableCellTextSelection: true,
+            ensureDomOrder: true,
+
+            // Habilitar tercera opción de ordenamiento (sin orden)
+            unSortIcon: true,
+
+            // Mejorar configuración de filtros (accesibles desde menú de columna)
+            defaultColDef: {
+                ...(gridOptions.defaultColDef || {}),
+                filter: 'agTextColumnFilter', // Filtro de texto por defecto
+                filterParams: {
+                    buttons: ['reset', 'apply'],
+                    closeOnApply: true
+                }
+            },
+
             // Localización en español
             localeText: {
                 // Paginación
@@ -533,6 +566,8 @@ let context = {CONTEXT};
                     rowCount: null,
                     getRows: function(params) {
                         console.log('[LEGO Table] Solicitando filas:', params.startRow, '-', params.endRow);
+                        console.log('[LEGO Table] Sort model:', params.sortModel);
+                        console.log('[LEGO Table] Filter model:', params.filterModel);
 
                         // Calcular página actual
                         const page = Math.floor(params.startRow / config.apiConfig.perPage) + 1;
@@ -541,6 +576,34 @@ let context = {CONTEXT};
                         const url = new URL(config.apiConfig.apiEndpoint, window.location.origin);
                         url.searchParams.append('page', page);
                         url.searchParams.append('limit', config.apiConfig.perPage);
+
+                        // Agregar parámetros de ordenamiento
+                        if (params.sortModel && params.sortModel.length > 0) {
+                            const sortBy = params.sortModel[0].colId;
+                            const sortOrder = params.sortModel[0].sort; // 'asc' or 'desc'
+                            url.searchParams.append('sort', sortBy);
+                            url.searchParams.append('order', sortOrder);
+                        }
+
+                        // Agregar parámetros de filtrado
+                        if (params.filterModel && Object.keys(params.filterModel).length > 0) {
+                            // Convertir filterModel a parámetros de query
+                            Object.entries(params.filterModel).forEach(([field, filter]) => {
+                                if (filter.filterType === 'text') {
+                                    url.searchParams.append(`filter[${field}]`, filter.filter || '');
+                                    if (filter.type) {
+                                        url.searchParams.append(`filter[${field}_type]`, filter.type); // contains, equals, etc
+                                    }
+                                } else if (filter.filterType === 'number') {
+                                    if (filter.filter !== undefined) {
+                                        url.searchParams.append(`filter[${field}]`, filter.filter);
+                                    }
+                                    if (filter.type) {
+                                        url.searchParams.append(`filter[${field}_type]`, filter.type); // equals, greaterThan, etc
+                                    }
+                                }
+                            });
+                        }
 
                         console.log('[LEGO Table] Fetching:', url.toString());
 

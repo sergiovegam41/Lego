@@ -143,6 +143,10 @@ class AbstractGetController
     /**
      * Aplicar filtros desde query params
      *
+     * Soporta tipos de filtro AG Grid:
+     * - contains, notContains, equals, notEqual (texto)
+     * - equals, notEqual, lessThan, greaterThan, lessThanOrEqual, greaterThanOrEqual (números)
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return void
      */
@@ -154,9 +158,76 @@ class AbstractGetController
             return;
         }
 
-        foreach ($filters as $field => $value) {
-            if ($this->config->isFilterable($field)) {
-                $query->where($field, $value);
+        foreach ($filters as $key => $value) {
+            // Ignorar keys que terminan en _type (son metadata)
+            if (str_ends_with($key, '_type')) {
+                continue;
+            }
+
+            $field = $key;
+
+            // Verificar si el campo es filtrable
+            if (!$this->config->isFilterable($field)) {
+                continue;
+            }
+
+            // Obtener tipo de filtro (si existe)
+            $filterType = $filters[$field . '_type'] ?? 'equals';
+
+            // Aplicar filtro según tipo
+            switch ($filterType) {
+                case 'contains':
+                    $query->where($field, 'ILIKE', "%{$value}%");
+                    break;
+
+                case 'notContains':
+                    $query->where($field, 'NOT ILIKE', "%{$value}%");
+                    break;
+
+                case 'equals':
+                    $query->where($field, '=', $value);
+                    break;
+
+                case 'notEqual':
+                    $query->where($field, '!=', $value);
+                    break;
+
+                case 'startsWith':
+                    $query->where($field, 'ILIKE', "{$value}%");
+                    break;
+
+                case 'endsWith':
+                    $query->where($field, 'ILIKE', "%{$value}");
+                    break;
+
+                case 'lessThan':
+                    $query->where($field, '<', $value);
+                    break;
+
+                case 'lessThanOrEqual':
+                    $query->where($field, '<=', $value);
+                    break;
+
+                case 'greaterThan':
+                    $query->where($field, '>', $value);
+                    break;
+
+                case 'greaterThanOrEqual':
+                    $query->where($field, '>=', $value);
+                    break;
+
+                case 'blank':
+                    $query->whereNull($field);
+                    break;
+
+                case 'notBlank':
+                    $query->whereNotNull($field);
+                    break;
+
+                default:
+                    // Por defecto, igualdad exacta
+                    $query->where($field, '=', $value);
+                    break;
             }
         }
     }

@@ -51,8 +51,8 @@ use Core\Attributes\ApiGetResource;
     endpoint: 'products',  // Opcional: Personaliza (sin /api/get, se agrega automáticamente)
     pagination: 'offset',
     perPage: 20,
-    sortable: ['id', 'name', 'price', 'stock', 'created_at'],
-    filterable: ['category', 'is_active'],
+    sortable: ['id', 'name', 'description', 'price', 'stock', 'category', 'created_at'],
+    filterable: ['id', 'name', 'description', 'price', 'stock', 'category', 'is_active'],
     searchable: ['name', 'description', 'sku']
 )]
 class Product extends Model
