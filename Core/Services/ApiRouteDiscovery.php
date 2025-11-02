@@ -55,7 +55,6 @@ class ApiRouteDiscovery
 
                 $items = @scandir($currentDir);
                 if ($items === false) {
-                    error_log("ApiRouteDiscovery: Cannot read directory: $currentDir");
                     continue;
                 }
 
@@ -73,7 +72,6 @@ class ApiRouteDiscovery
                     }
                 }
             } catch (\Exception $e) {
-                error_log("ApiRouteDiscovery: Error scanning $currentDir - " . $e->getMessage());
                 continue;
             }
         }
@@ -114,7 +112,6 @@ class ApiRouteDiscovery
         $httpMethod = strtoupper($method);
         $path = $config->path;
 
-
         Flight::route("$httpMethod $path", function() use ($className, $config) {
             if ($config->requiresAuth && !AdminMiddlewares::isAutenticated()) {
                 http_response_code(401);
@@ -133,15 +130,17 @@ class ApiRouteDiscovery
     private static function extractClassName(string $filePath): ?string
     {
         $content = file_get_contents($filePath);
-        
+
         if (!preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatch)) {
             return null;
         }
-        
-        if (!preg_match('/class\s+(\w+)/', $content, $classMatch)) {
+
+        // Match actual class definition (class Foo or class Foo extends Bar or class Foo implements Baz)
+        // Use word boundary and require class name to start with uppercase
+        if (!preg_match('/^\s*(final\s+)?(abstract\s+)?class\s+([A-Z]\w+)/m', $content, $classMatch)) {
             return null;
         }
 
-        return trim($namespaceMatch[1]) . '\\' . $classMatch[1];
+        return trim($namespaceMatch[1]) . '\\' . $classMatch[3];
     }
 }

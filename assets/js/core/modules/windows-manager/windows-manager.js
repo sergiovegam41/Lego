@@ -185,6 +185,9 @@ function openModule(id, url, name, component) {
     updateMenu();
 }
 
+// Expose openModule globally for onclick handlers
+window.openModule = openModule;
+
 
 /**
  * LegoWindowManager - Global API for window management

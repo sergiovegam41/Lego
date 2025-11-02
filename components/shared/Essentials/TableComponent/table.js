@@ -97,6 +97,179 @@ let context = {CONTEXT};
     }
 
     // Inicializar la tabla
+    /**
+     * Crea la columna de acciones con botones personalizables
+     * Los callbacks se buscan en el scope del módulo, NO en window global
+     */
+    function createActionsColumn(actions, tableId) {
+        return {
+            headerName: "Acciones",
+            field: "_actions",
+            width: 120 + (actions.length * 40), // Ancho dinámico según cantidad de acciones
+            pinned: 'right',
+            sortable: false,
+            filter: false,
+            resizable: false,
+            cellRenderer: (params) => {
+                const container = document.createElement('div');
+                container.className = 'lego-table-actions';
+                container.style.cssText = 'display: flex; gap: 0.5rem; align-items: center; height: 100%;';
+
+                actions.forEach(action => {
+                    // Evaluar visibilidad condicional
+                    if (action.visibleIf) {
+                        try {
+                            const visibleFn = new Function('params', `return ${action.visibleIf}`);
+                            if (!visibleFn(params)) return;
+                        } catch (e) {
+                            console.error(`[LEGO Table] Error evaluando visibleIf para acción ${action.id}:`, e);
+                        }
+                    }
+
+                    // Evaluar disabled condicional
+                    let isDisabled = false;
+                    if (action.disabledIf) {
+                        try {
+                            const disabledFn = new Function('params', `return ${action.disabledIf}`);
+                            isDisabled = disabledFn(params);
+                        } catch (e) {
+                            console.error(`[LEGO Table] Error evaluando disabledIf para acción ${action.id}:`, e);
+                        }
+                    }
+
+                    const button = document.createElement('button');
+                    button.className = `lego-table-action-btn lego-table-action-${action.variant}`;
+                    button.title = action.tooltip;
+                    button.disabled = isDisabled;
+                    button.style.cssText = `
+                        padding: 0.375rem 0.5rem;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
+                        background: ${getVariantColor(action.variant, isDisabled)};
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.25rem;
+                        font-size: 0.875rem;
+                        transition: all 0.2s;
+                        opacity: ${isDisabled ? '0.5' : '1'};
+                    `;
+
+                    // Agregar icono si existe
+                    if (action.icon) {
+                        const icon = document.createElement('ion-icon');
+                        icon.name = action.icon;
+                        icon.style.fontSize = '1.1rem';
+                        button.appendChild(icon);
+                    }
+
+                    // Agregar label si showLabel es true
+                    if (action.showLabel && action.label) {
+                        const label = document.createElement('span');
+                        label.textContent = action.label;
+                        button.appendChild(label);
+                    }
+
+                    // Event listener con callback scoped
+                    if (!isDisabled) {
+                        button.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+
+                            // Confirmación si es necesaria
+                            if (action.confirm) {
+                                const confirmed = await showConfirmDialog(action.confirmMessage);
+                                if (!confirmed) return;
+                            }
+
+                            // Ejecutar callback scoped (busca en el scope del módulo)
+                            executeCallback(action.callback, params.data, tableId);
+                        });
+
+                        // Hover effects
+                        button.addEventListener('mouseenter', () => {
+                            if (!isDisabled) {
+                                button.style.opacity = '0.8';
+                                button.style.transform = 'scale(1.05)';
+                            }
+                        });
+                        button.addEventListener('mouseleave', () => {
+                            if (!isDisabled) {
+                                button.style.opacity = '1';
+                                button.style.transform = 'scale(1)';
+                            }
+                        });
+                    }
+
+                    container.appendChild(button);
+                });
+
+                return container;
+            }
+        };
+    }
+
+    /**
+     * Obtiene el color según el variant
+     */
+    function getVariantColor(variant, isDisabled) {
+        if (isDisabled) {
+            return '#9ca3af'; // gray-400
+        }
+        const colors = {
+            'primary': '#4F46E5',    // indigo-600
+            'secondary': '#6b7280',  // gray-500
+            'danger': '#dc2626',     // red-600
+            'success': '#059669',    // green-600
+            'warning': '#f59e0b'     // amber-500
+        };
+        return colors[variant] || colors.secondary;
+    }
+
+    /**
+     * Muestra un diálogo de confirmación
+     */
+    async function showConfirmDialog(message) {
+        // Usar AlertService si está disponible
+        if (window.lego && window.lego.alert && window.lego.alert.confirm) {
+            return await window.lego.alert.confirm({
+                title: 'Confirmar',
+                text: message,
+                icon: 'warning'
+            });
+        }
+        // Fallback a confirm nativo
+        return confirm(message);
+    }
+
+    /**
+     * Ejecuta un callback scoped al componente
+     * Busca la función en el scope del módulo, NO en window global
+     */
+    function executeCallback(callbackName, rowData, tableId) {
+        console.log(`[LEGO Table] Ejecutando callback: ${callbackName} para tabla ${tableId}`);
+
+        // Intentar buscar en window primero (por retrocompatibilidad)
+        if (typeof window[callbackName] === 'function') {
+            console.log(`[LEGO Table] Callback encontrado en window.${callbackName}`);
+            window[callbackName](rowData, tableId);
+            return;
+        }
+
+        // Si no está en window, emitir evento para que el componente lo maneje
+        if (window.lego && window.lego.events) {
+            console.log(`[LEGO Table] Emitiendo evento: table:action:${callbackName}`);
+            window.lego.events.emit(`table:action:${callbackName}`, {
+                rowData,
+                tableId
+            });
+            return;
+        }
+
+        console.error(`[LEGO Table] No se encontró el callback: ${callbackName}`);
+        console.error('[LEGO Table] Asegúrate de definir la función en window o suscribirte al evento table:action:' + callbackName);
+    }
+
     function initTable() {
         const gridDiv = document.getElementById(id);
         if (!gridDiv) {
@@ -181,7 +354,13 @@ let context = {CONTEXT};
         }
 
         // Procesar columnDefs para convertir código JavaScript a funciones
-        const processedColumnDefs = processColumnDefs(columnDefs);
+        let processedColumnDefs = processColumnDefs(columnDefs);
+
+        // Si hay rowActions, agregar columna de acciones
+        if (config.rowActions && config.rowActions.length > 0) {
+            const actionsColumn = createActionsColumn(config.rowActions, id);
+            processedColumnDefs.push(actionsColumn);
+        }
 
         // Configuración completa de AG Grid
         const fullGridOptions = {
@@ -330,6 +509,70 @@ let context = {CONTEXT};
                 console.log('[LEGO Table] Auto-resize configurado');
             }
         };
+
+        // ========================================
+        // SERVER-SIDE MODE (Model-Driven)
+        // ========================================
+        if (config.serverSide && config.apiConfig) {
+            console.log('[LEGO Table] Modo server-side habilitado:', config.apiConfig);
+
+            // Remover rowData inicial (se cargará desde API)
+            delete fullGridOptions.rowData;
+
+            // Configurar paginación server-side
+            fullGridOptions.rowModelType = 'infinite';
+            fullGridOptions.cacheBlockSize = config.apiConfig.perPage;
+            fullGridOptions.cacheOverflowSize = 2;
+            fullGridOptions.maxConcurrentDatasourceRequests = 1;
+            fullGridOptions.infiniteInitialRowCount = 1000;
+            fullGridOptions.maxBlocksInCache = 10;
+
+            // Crear datasource para cargar datos desde API
+            fullGridOptions.onGridReady = function(params) {
+                const dataSource = {
+                    rowCount: null,
+                    getRows: function(params) {
+                        console.log('[LEGO Table] Solicitando filas:', params.startRow, '-', params.endRow);
+
+                        // Calcular página actual
+                        const page = Math.floor(params.startRow / config.apiConfig.perPage) + 1;
+
+                        // Construir URL con parámetros
+                        const url = new URL(config.apiConfig.apiEndpoint, window.location.origin);
+                        url.searchParams.append('page', page);
+                        url.searchParams.append('limit', config.apiConfig.perPage);
+
+                        console.log('[LEGO Table] Fetching:', url.toString());
+
+                        // Hacer fetch a la API
+                        fetch(url.toString())
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    console.log('[LEGO Table] Datos recibidos:', data.data.length, 'filas');
+
+                                    // Actualizar total de filas
+                                    let lastRow = -1;
+                                    if (data.pagination && data.pagination.total !== undefined) {
+                                        lastRow = data.pagination.total;
+                                    }
+
+                                    params.successCallback(data.data, lastRow);
+                                } else {
+                                    console.error('[LEGO Table] Error en respuesta API:', data);
+                                    params.failCallback();
+                                }
+                            })
+                            .catch(error => {
+                                console.error('[LEGO Table] Error fetching data:', error);
+                                params.failCallback();
+                            });
+                    }
+                };
+
+                params.api.setGridOption('datasource', dataSource);
+            };
+        }
 
         // Crear la grid
         const gridApi = agGrid.createGrid(gridDiv, fullGridOptions);

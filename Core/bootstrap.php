@@ -3,6 +3,8 @@
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 $capsule = new Capsule;
 
@@ -32,6 +34,15 @@ $capsule->addConnection([
 // Hace que el ORM esté disponible globalmente
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+// Configurar el Paginator para paginación de Eloquent
+Paginator::currentPathResolver(function () {
+    return strtok($_SERVER['REQUEST_URI'], '?');
+});
+
+Paginator::currentPageResolver(function ($pageName = 'page') {
+    return $_GET[$pageName] ?? 1;
+});
 
 // Registrar componentes dinámicos
 \Core\Bootstrap\RegisterDynamicComponents::register();

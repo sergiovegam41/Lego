@@ -20,6 +20,75 @@
 console.log('[ProductsCrudV3] Inicializando...');
 
 // ═══════════════════════════════════════════════════════════════════
+// CALLBACKS PARA ROW ACTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Callback para editar producto
+ * Se ejecuta cuando el usuario hace clic en el botón "Editar"
+ */
+window.handleEditProduct = function(rowData, tableId) {
+    console.log('[ProductsCrudV3] Editar producto:', rowData);
+
+    // Abrir módulo de edición con el ID del producto
+    openEditModule(rowData.id);
+};
+
+/**
+ * Callback para eliminar producto
+ * Se ejecuta cuando el usuario hace clic en el botón "Eliminar" y confirma
+ */
+window.handleDeleteProduct = async function(rowData, tableId) {
+    console.log('[ProductsCrudV3] Eliminar producto:', rowData);
+
+    try {
+        // Hacer fetch al endpoint de eliminación
+        const response = await fetch('/api/products/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: rowData.id })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.msj || 'Error al eliminar producto');
+        }
+
+        // Mostrar mensaje de éxito
+        if (window.lego && window.lego.alert) {
+            await window.lego.alert.success({
+                title: 'Eliminado',
+                text: result.msj || 'Producto eliminado correctamente'
+            });
+        }
+
+        // Recargar SOLO el módulo actual (LEGO way)
+        if (window.legoWindowManager) {
+            console.log('[ProductsCrudV3] Recargando módulo activo...');
+            window.legoWindowManager.reloadActive();
+        } else {
+            console.warn('[ProductsCrudV3] legoWindowManager no disponible, recargando página');
+            window.location.reload();
+        }
+
+    } catch (error) {
+        console.error('[ProductsCrudV3] Error eliminando producto:', error);
+
+        if (window.lego && window.lego.alert) {
+            await window.lego.alert.error({
+                title: 'Error',
+                text: error.message || 'Error al eliminar producto'
+            });
+        } else {
+            alert('Error al eliminar producto: ' + error.message);
+        }
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════
 // CREAR INSTANCIA DE TableManager
 // ═══════════════════════════════════════════════════════════════════
 

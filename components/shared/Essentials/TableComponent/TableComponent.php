@@ -3,7 +3,9 @@ namespace Components\Shared\Essentials\TableComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
+use Core\Components\Table\TableConfig;
 use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
+use Components\Shared\Essentials\TableComponent\Collections\RowActionsCollection;
 
 /**
  * TableComponent - Tabla avanzada con AG Grid
@@ -12,10 +14,14 @@ use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
  * Componente declarativo que integra AG Grid (https://www.ag-grid.com/)
  * para crear tablas potentes con ordenamiento, filtrado, paginación y más.
  *
+ * NUEVO EN V2 (Model-Driven):
+ * Ahora soporta modo "mágico" donde pasas un modelo con #[ApiGetResource]
+ * y todo se configura automáticamente (endpoint, paginación server-side, etc.)
+ *
  * CARACTERÍSTICAS:
  * - Ordenamiento por columnas
  * - Filtros avanzados (texto, número, fecha)
- * - Paginación automática
+ * - Paginación automática (client-side o server-side)
  * - Selección de filas (simple o múltiple)
  * - Edición en línea
  * - Exportación a CSV/Excel
@@ -24,7 +30,7 @@ use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
  * - Temas personalizables
  * - Type-safe con named arguments
  *
- * EJEMPLO BÁSICO:
+ * EJEMPLO BÁSICO (V1 - Compatible):
  * new TableComponent(
  *     id: "users-table",
  *     columns: new ColumnCollection(
@@ -36,7 +42,20 @@ use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
  *     rowData: $users
  * )
  *
- * EJEMPLO CON PAGINACIÓN:
+ * EJEMPLO MODEL-DRIVEN (V2 - Nuevo):
+ * new TableComponent(
+ *     id: "products-table",
+ *     model: Product::class,  // ← Magia! Auto-configura todo
+ *     columns: new ColumnCollection(
+ *         new ColumnDto(field: "id", headerName: "ID"),
+ *         new ColumnDto(field: "name", headerName: "Nombre"),
+ *         new ColumnDto(field: "price", headerName: "Precio")
+ *     )
+ *     // rowData se omite - se carga desde API
+ *     // pagination server-side automática
+ * )
+ *
+ * EJEMPLO CON PAGINACIÓN CLIENT-SIDE:
  * new TableComponent(
  *     id: "products-table",
  *     columns: $productColumns,
@@ -58,11 +77,20 @@ class TableComponent extends CoreComponent {
 
     protected $CSS_PATHS = ["./table.css"];
 
+    // TableConfig para modo model-driven
+    private ?TableConfig $tableConfig = null;
+
     public function __construct(
         // Básicos (requeridos)
         public string $id,
-        public ColumnCollection $columns,
+        public ?ColumnCollection $columns = null,
         public array $rowData = [],
+
+        // NUEVO: Model-Driven Mode
+        public ?string $model = null,  // Clase del modelo (ej: Product::class)
+
+        // NUEVO: Row Actions (Acciones de fila)
+        public ?RowActionsCollection $rowActions = null,  // Acciones personalizables (edit, delete, etc.)
 
         // Dimensiones
         public string $height = "500px",
@@ -111,8 +139,47 @@ class TableComponent extends CoreComponent {
 
         // Estilos
         public string $className = "",
-        public string $containerClass = ""
-    ) {}
+        public string $containerClass = "",
+
+        // NUEVO: Server-Side Pagination Mode
+        public bool $serverSide = false  // Si true, usa paginación server-side
+    ) {
+        // Inicializar modo model-driven si se especificó un modelo
+        if ($this->model !== null) {
+            $this->initializeModelDrivenMode();
+        }
+
+        // Validar que se proporcionaron columns (excepto en modo model-driven por ahora)
+        if ($this->columns === null && $this->model === null) {
+            throw new \InvalidArgumentException(
+                "TableComponent requires either 'columns' or 'model' parameter"
+            );
+        }
+    }
+
+    /**
+     * Inicializar modo model-driven desde modelo con #[ApiGetResource]
+     */
+    private function initializeModelDrivenMode(): void
+    {
+        // Crear TableConfig desde el modelo
+        $this->tableConfig = TableConfig::fromModel(
+            modelClass: $this->model,
+            componentId: $this->id
+        );
+
+        // Habilitar servidor-side mode automáticamente
+        $this->serverSide = true;
+
+        // Configurar paginación desde modelo
+        $this->pagination = true;
+        $this->paginationPageSize = $this->tableConfig->getPerPage();
+
+        // Si no se especificaron rowData, inicializar vacío (se cargará desde API)
+        if (empty($this->rowData)) {
+            $this->rowData = [];
+        }
+    }
 
     protected function component(): string {
         // Sanitizar ID para JavaScript (reemplazar guiones por guiones bajos)
@@ -120,18 +187,32 @@ class TableComponent extends CoreComponent {
 
         // Preparar configuración para AG Grid
         $gridOptions = $this->buildGridOptions();
-        $columnDefs = $this->columns->toAgGridConfig();
+        $columnDefs = $this->columns ? $this->columns->toAgGridConfig() : [];
+
+        // Construir configuración para JavaScript
+        $jsConfig = [
+            'id' => $this->id,
+            'jsId' => $jsId,
+            'columnDefs' => $columnDefs,
+            'rowData' => $this->rowData,
+            'gridOptions' => $gridOptions,
+            'callbacks' => $this->buildCallbacks(),
+            'serverSide' => $this->serverSide,
+        ];
+
+        // Si es modo model-driven, agregar configuración de API
+        if ($this->tableConfig !== null) {
+            $jsConfig['apiConfig'] = $this->tableConfig->toArray();
+        }
+
+        // Si hay acciones de fila, agregarlas
+        if ($this->rowActions !== null && !$this->rowActions->isEmpty()) {
+            $jsConfig['rowActions'] = $this->rowActions->toArray();
+        }
 
         // Pasar configuración a JavaScript
         $this->JS_PATHS_WITH_ARG[] = [
-            new ScriptCoreDTO("./table.js", [
-                'id' => $this->id,
-                'jsId' => $jsId,
-                'columnDefs' => $columnDefs,
-                'rowData' => $this->rowData,
-                'gridOptions' => $gridOptions,
-                'callbacks' => $this->buildCallbacks()
-            ])
+            new ScriptCoreDTO("./table.js", $jsConfig)
         ];
 
         // Construir clases CSS

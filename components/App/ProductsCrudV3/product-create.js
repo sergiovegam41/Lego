@@ -61,8 +61,8 @@ async function createProduct(formData) {
             return null;
         }
 
-        // Enviar con fetch
-        const response = await fetch('/api/products', {
+        // Enviar con fetch (legacy endpoint)
+        const response = await fetch('/api/products/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -133,6 +133,41 @@ function showValidationErrors(errors) {
             }
         }
     });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LIMPIAR FORMULARIO
+// ═══════════════════════════════════════════════════════════════════
+
+function clearForm() {
+    console.log('[ProductCreate] Limpiando formulario...');
+
+    // Limpiar campos de texto
+    const nameInput = document.getElementById('product-name');
+    const descriptionInput = document.getElementById('product-description');
+    const priceInput = document.getElementById('product-price');
+    const stockInput = document.getElementById('product-stock');
+
+    if (nameInput) nameInput.value = '';
+    if (descriptionInput) descriptionInput.value = '';
+    if (priceInput) priceInput.value = '';
+    if (stockInput) stockInput.value = '';
+
+    // Limpiar select usando LegoSelect
+    if (window.LegoSelect) {
+        window.LegoSelect.setValue('product-category', '');
+    }
+
+    // Limpiar errores de validación
+    document.querySelectorAll('.lego-input__error, .lego-select__error, .lego-textarea__error').forEach(el => {
+        el.remove();
+    });
+
+    document.querySelectorAll('.lego-input--error, .lego-select--error, .lego-textarea--error').forEach(el => {
+        el.classList.remove('lego-input--error', 'lego-select--error', 'lego-textarea--error');
+    });
+
+    console.log('[ProductCreate] Formulario limpiado');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -220,9 +255,36 @@ function initializeForm() {
                     alert('Producto creado correctamente');
                 }
 
-                // Recargar tabla y cerrar
+                // Limpiar formulario
+                clearForm();
+
+                // Recargar tabla
                 reloadProductsTable();
-                closeModule();
+
+                // Volver al módulo de la tabla (no cerrar, activar tabla)
+                const tableModule = Object.keys(window.moduleStore.modules).find(id =>
+                    id.includes('products-crud-v3') && !id.includes('create') && !id.includes('edit')
+                );
+
+                if (tableModule && window.moduleStore) {
+                    // Activar el módulo de la tabla
+                    window.moduleStore._openModule(tableModule, window.moduleStore.modules[tableModule].component);
+
+                    // Mostrar visualmente el módulo de la tabla
+                    document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+                    const tableContainer = document.getElementById(`module-${tableModule}`);
+                    if (tableContainer) {
+                        tableContainer.classList.add('active');
+                    }
+
+                    // Cerrar el módulo de creación
+                    const currentModule = window.moduleStore.getActiveModule();
+                    if (currentModule && currentModule.includes('create')) {
+                        setTimeout(() => {
+                            window.moduleStore.closeModule(currentModule);
+                        }, 300);
+                    }
+                }
             }
 
         } catch (error) {

@@ -53,9 +53,39 @@ use App\Controllers\Auth\Controllers\AuthGroupsController;
 use App\Controllers\Products\Controllers\ProductsController;
 use App\Controllers\ComponentsController;
 use Core\Controller\CoreController;
+use Core\Routing\ApiCrudRouter;
+use Core\Routing\ApiGetRouter;
 use Flight;
 
 /**
+ * ========================================
+ * AUTO-GET ROUTES (Table-Driven API)
+ * ========================================
+ * Rutas GET de solo lectura generadas automáticamente desde modelos con #[ApiGetResource].
+ * Específico para alimentar TableComponent con paginación, filtros y búsqueda.
+ * Ver: Core/Routing/ApiGetRouter.php
+ *
+ * Patrón: /api/get/{resource}
+ * Endpoints: GET /api/get/{resource} (list), GET /api/get/{resource}/{id} (get)
+ */
+ApiGetRouter::registerRoutes();
+
+/**
+ * ========================================
+ * AUTO-CRUD ROUTES (Model-Driven API)
+ * ========================================
+ * Rutas CRUD completas generadas automáticamente desde modelos con #[ApiCrudResource].
+ * Ver: Core/Routing/ApiCrudRouter.php
+ *
+ * Patrón: /api/{resource}
+ * Endpoints: GET, POST, PUT, DELETE /api/{resource}
+ */
+ApiCrudRouter::registerRoutes();
+
+/**
+ * ========================================
+ * AUTHENTICATION ROUTES
+ * ========================================
  * Rutas de autenticación modular
  * Patrón: /auth/{group}/{action}
  * Grupos: admin, api, [extensibles]
@@ -63,10 +93,17 @@ use Flight;
 Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
 
 /**
- * Rutas REST para ProductsCrudV3
- * Métodos HTTP correctos (GET, POST, PUT, DELETE)
+ * ========================================
+ * LEGACY PRODUCT ROUTES (DEPRECATED)
+ * ========================================
+ * NOTA: Estas rutas ahora se generan automáticamente desde Product model.
+ * Ver: App/Models/Product.php con #[ApiCrudResource]
+ *
+ * Las rutas manuales están comentadas. Si necesitas comportamiento custom,
+ * puedes especificar un controllerClass custom en el atributo #[ApiCrudResource].
  */
 
+/*
 // GET /api/products - Listar todos
 Flight::route('GET /products', function() {
     new ProductsController('list');
@@ -86,11 +123,9 @@ Flight::route('POST /products', function() {
 
 // PUT /api/products/{id} - Actualizar existente
 Flight::route('PUT /products/@id', function($id) {
-    // Parsear body de PUT request
     $input = json_decode(file_get_contents('php://input'), true);
     if ($input) {
         $input['id'] = $id;
-        // Simular POST para compatibilidad con controlador
         $_POST = array_merge($_POST, $input);
     }
     new ProductsController('update');
@@ -98,7 +133,6 @@ Flight::route('PUT /products/@id', function($id) {
 
 // DELETE /api/products/{id} - Eliminar
 Flight::route('DELETE /products/@id', function($id) {
-    // Parsear body de DELETE request
     $input = json_decode(file_get_contents('php://input'), true);
     if (!$input) {
         $input = [];
@@ -107,6 +141,7 @@ Flight::route('DELETE /products/@id', function($id) {
     $_POST = array_merge($_POST, $input);
     new ProductsController('delete');
 });
+*/
 
 /**
  * Rutas de componentes dinámicos (Sistema LEGO)

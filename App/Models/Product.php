@@ -4,13 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Core\Attributes\ApiGetResource;
 
 /**
  * Product Model
  *
  * FILOSOFÍA LEGO:
  * Modelo Eloquent para la tabla products.
- * Ejemplo de CRUD completo con todas las operaciones básicas.
+ * Exposición de API de solo LECTURA para TableComponent.
+ *
+ * API AUTOMÁTICO GET-ONLY:
+ * Este modelo expone automáticamente endpoints de lectura para tablas:
+ * - GET /api/get/products        → Listar con paginación, filtros, búsqueda
+ * - GET /api/get/products/{id}   → Obtener por ID
+ *
+ * PROPÓSITO:
+ * - Alimentar TableComponent con datos
+ * - Paginación server-side
+ * - Filtros y búsqueda globales
+ * - Sin operaciones de escritura (solo lectura)
+ * - Evita colisión con App/Controllers/Products/Controllers/ProductsController.php
  *
  * CAMPOS:
  * - id: PK auto-increment
@@ -23,7 +36,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * - is_active: Estado activo/inactivo
  * - created_at: Fecha de creación
  * - updated_at: Fecha de actualización
+ *
+ * CONFIGURACIÓN API GET:
+ * - endpoint: Ruta SIN /api/get (ej: 'products' o 'catalog/items')
+ *   El prefijo /api/get se agrega automáticamente
+ *   Si se omite, auto-genera: 'products'
+ * - pagination: 'offset' (page/limit) | 'cursor' | 'page'
+ * - perPage: Elementos por página (1-100, default: 20)
+ * - sortable: Campos permitidos para ordenar
+ * - filterable: Campos permitidos para filtrar
+ * - searchable: Campos donde buscar con ?search=texto
  */
+#[ApiGetResource(
+    endpoint: 'products',  // Opcional: Personaliza (sin /api/get, se agrega automáticamente)
+    pagination: 'offset',
+    perPage: 20,
+    sortable: ['id', 'name', 'price', 'stock', 'created_at'],
+    filterable: ['category', 'is_active'],
+    searchable: ['name', 'description', 'sku']
+)]
 class Product extends Model
 {
     /**

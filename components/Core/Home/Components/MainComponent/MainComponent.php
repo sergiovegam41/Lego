@@ -111,6 +111,12 @@ class MainComponent extends CoreComponent
                             name: "Crear",
                             url: $HOST_NAME . '/component/products-crud-v3/create',
                             iconName: "add-circle-outline"
+                        ),
+                        new MenuItemDto(
+                            id: "10-3",
+                            name: "Table Demo (Model-Driven) ✨",
+                            url: $HOST_NAME . '/component/products-table-demo',
+                            iconName: "flash-outline"
                         )
                     ]
                 )
