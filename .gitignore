@@ -1,2 +1,46 @@
+# Dependencies
 /vendor
+composer.lock
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# IDE and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.phpactor.json
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.tmp
+
+# Logs
+*.log
+/logs
+/storage/logs
+
+# Cache
+/storage/cache
+/storage/sessions
+/storage/views
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+/coverage
+
+# Temporary files
+/tmp
+*.temp

@@ -1,0 +1,686 @@
+# PLAN DE LIMPIEZA DEL PROYECTO LEGO2
+
+**Fecha de análisis:** 2 de Noviembre, 2025
+**Versión:** 1.0
+**Estado:** Pendiente de ejecución
+
+---
+
+## RESUMEN EJECUTIVO
+
+Este documento contiene el plan completo para limpiar el proyecto Lego2 de código muerto, inconsistencias y archivos sin uso. El análisis identificó **38+ archivos/directorios** que requieren atención, divididos en **6 fases** de implementación progresiva.
+
+### Estadísticas del Análisis
+
+| Categoría | Cantidad | Nivel de Riesgo |
+|-----------|----------|-----------------|
+| Archivos sin usar (JS) | 3 | BAJO - Eliminación segura |
+| Inconsistencias de nomenclatura | 2 directorios | MEDIO - Requiere migración |
+| Componentes probablemente sin usar | 3 | MEDIO - Requiere verificación |
+| IDE helpers innecesarios | 4 | BAJO - Eliminación segura |
+| Código duplicado | 2 casos | MEDIO - Requiere consolidación |
+| Documentación obsoleta | 6+ archivos | BAJO - Archivar/eliminar |
+| Typos en nombres | 1 | BAJO - Renombrar |
+| Archivos de desarrollo | 3 | BAJO - Remover/gitignore |
+
+---
+
+## FASE 1: LIMPIEZA DE ARCHIVOS SEGUROS (RIESGO BAJO)
+
+**Objetivo:** Eliminar archivos que con certeza NO se están utilizando
+**Tiempo estimado:** 15-20 minutos
+**Riesgo:** BAJO
+**Pruebas requeridas:** Verificar que la aplicación carga correctamente
+
+### 1.1 Archivos JavaScript sin uso
+
+#### Eliminar:
+```
+/assets/js/core/base-lego-framework-backup.js
+```
+- **Razón:** Es un backup del archivo principal
+- **Confianza:** ALTA
+- **Acción:** Eliminar directamente
+
+---
+
+```
+/assets/js/core/api/ApiClient.example.js
+```
+- **Razón:** Archivo de ejemplo, existe versión de producción
+- **Confianza:** ALTA
+- **Acción:** Eliminar directamente
+
+---
+
+```
+/components/shared/Forms/SelectComponent/select-old.js
+```
+- **Razón:** Versión antigua reemplazada por arquitectura MVC moderna
+- **Confianza:** ALTA
+- **Acción:** Eliminar directamente
+
+### 1.2 Archivos IDE Helpers (generados automáticamente)
+
+#### Eliminar:
+```
+/components/shared/Buttons/Buttons/_ide_helper.php
+/components/shared/Essentials/Essentials/_ide_helper.php
+/components/shared/Forms/Forms/_ide_helper.php
+/components/shared/Navigation/Navigation/_ide_helper.php
+```
+- **Razón:** Archivos generados para autocompletado de IDE, no necesarios en producción
+- **Confianza:** ALTA
+- **Acción:**
+  1. Eliminar estos archivos
+  2. Agregar `*_ide_helper.php` a `.gitignore`
+
+### 1.3 Archivos de desarrollo que no deben estar en el repositorio
+
+#### Eliminar:
+```
+/cookies.txt
+```
+- **Razón:** Archivo local de testing, no debe estar en control de versiones
+- **Confianza:** ALTA
+- **Acción:**
+  1. Eliminar el archivo
+  2. Agregar `cookies.txt` a `.gitignore`
+
+### 1.4 Actualizar .gitignore
+
+#### Agregar estas líneas:
+```gitignore
+# IDE Helpers
+*_ide_helper.php
+_ide_helper.php
+
+# Testing files
+cookies.txt
+
+# Generated route maps
+routeMap.json
+```
+
+### Comandos para Fase 1:
+
+```bash
+# Eliminar archivos JavaScript sin uso
+rm /assets/js/core/base-lego-framework-backup.js
+rm /assets/js/core/api/ApiClient.example.js
+rm /components/shared/Forms/SelectComponent/select-old.js
+
+# Eliminar IDE helpers
+rm /components/shared/Buttons/Buttons/_ide_helper.php
+rm /components/shared/Essentials/Essentials/_ide_helper.php
+rm /components/shared/Forms/Forms/_ide_helper.php
+rm /components/shared/Navigation/Navigation/_ide_helper.php
+
+# Eliminar archivo de testing
+rm /cookies.txt
+
+# Actualizar .gitignore (manual)
+```
+
+### Verificación Fase 1:
+- [ ] Abrir la aplicación en el navegador
+- [ ] Verificar que la página principal carga
+- [ ] Verificar que no hay errores en consola del navegador
+- [ ] Verificar que los formularios funcionan
+- [ ] Hacer git commit de los cambios
+
+---
+
+## FASE 2: CORRECCIÓN DE TYPOS Y NOMENCLATURA SIMPLE (RIESGO BAJO)
+
+**Objetivo:** Corregir nombres de archivos con typos
+**Tiempo estimado:** 10 minutos
+**Riesgo:** BAJO (solo renombrar archivo)
+**Pruebas requeridas:** Verificar que sidebar funciona
+
+### 2.1 Renombrar SidebarScrtipt.js (typo: falta 'p' en Script)
+
+#### Archivo actual:
+```
+/assets/js/core/modules/sidebar/SidebarScrtipt.js
+```
+
+#### Nuevo nombre:
+```
+/assets/js/core/modules/sidebar/SidebarScript.js
+```
+
+#### Archivos que importan este módulo (ACTUALIZAR):
+1. `/assets/js/core/base-lego-framework.js` - línea con import
+2. `/assets/js/core/base-lego-login.js` - línea con import
+3. `/assets/js/core/base-lego-framework-backup.js` - **YA ELIMINADO EN FASE 1**
+
+### Comandos para Fase 2:
+
+```bash
+# Renombrar archivo
+mv /assets/js/core/modules/sidebar/SidebarScrtipt.js \
+   /assets/js/core/modules/sidebar/SidebarScript.js
+
+# Actualizar referencias (usar herramienta de búsqueda/reemplazo)
+# En /assets/js/core/base-lego-framework.js:
+#   BUSCAR: import { SidebarScript } from './modules/sidebar/SidebarScrtipt.js';
+#   REEMPLAZAR: import { SidebarScript } from './modules/sidebar/SidebarScript.js';
+
+# En /assets/js/core/base-lego-login.js:
+#   BUSCAR: import { SidebarScript } from './modules/sidebar/SidebarScrtipt.js';
+#   REEMPLAZAR: import { SidebarScript } from './modules/sidebar/SidebarScript.js';
+```
+
+### Verificación Fase 2:
+- [ ] Abrir la aplicación en el navegador
+- [ ] Verificar que el sidebar funciona correctamente
+- [ ] No hay errores en consola del navegador
+- [ ] Hacer git commit
+
+---
+
+## FASE 3: CONSOLIDACIÓN DE CÓDIGO DUPLICADO (RIESGO MEDIO)
+
+**Objetivo:** Eliminar duplicación de ApiClient.js
+**Tiempo estimado:** 20-30 minutos
+**Riesgo:** MEDIO (requiere análisis de cuál versión se usa)
+**Pruebas requeridas:** Probar todas las llamadas API
+
+### 3.1 Análisis de ApiClient.js duplicado
+
+#### Versión 1:
+```
+/assets/js/core/api/ApiClient.js
+```
+- **Tamaño:** 361 líneas
+- **Ubicación:** Carpeta dedicada a API
+- **Contenido:** Clase completa con todos los métodos HTTP
+
+#### Versión 2:
+```
+/assets/js/core/services/ApiClient.js
+```
+- **Tamaño:** 133 líneas
+- **Ubicación:** Carpeta de servicios
+- **Contenido:** Versión más simple o alternativa
+
+### Acción Requerida (INVESTIGAR ANTES):
+
+**PASO 1:** Buscar todas las referencias a ambos archivos:
+```bash
+# Buscar imports de versión 1
+grep -r "from.*api/ApiClient" .
+
+# Buscar imports de versión 2
+grep -r "from.*services/ApiClient" .
+```
+
+**PASO 2:** Comparar contenido de ambos archivos y decidir:
+- ¿Cuál es la versión más completa?
+- ¿Cuál se está usando activamente?
+- ¿Hay funcionalidades únicas en cada una?
+
+**PASO 3:** Consolidar en UNA ubicación (recomendación: `/assets/js/core/api/ApiClient.js`)
+
+**PASO 4:** Actualizar todos los imports para usar la versión consolidada
+
+**PASO 5:** Eliminar la versión no utilizada
+
+### Verificación Fase 3:
+- [ ] Probar login/logout
+- [ ] Probar carga de productos
+- [ ] Probar operaciones CRUD
+- [ ] Verificar que no hay errores de API en consola
+- [ ] Hacer git commit
+
+---
+
+## FASE 4: VERIFICACIÓN Y LIMPIEZA DE COMPONENTES (RIESGO MEDIO)
+
+**Objetivo:** Verificar uso real de componentes y eliminar los no utilizados
+**Tiempo estimado:** 30-45 minutos
+**Riesgo:** MEDIO (requiere verificación manual)
+**Pruebas requeridas:** Probar navegación completa de la aplicación
+
+### 4.1 Componentes a verificar
+
+#### ProductsTableDemo
+```
+/components/App/ProductsTableDemo/
+├── ProductsTableDemoComponent.php
+├── products-table-demo.js
+└── products-table-demo.css
+```
+
+**Verificación:**
+1. Buscar decorador `#[ApiComponent]` en el archivo PHP
+2. Buscar referencias en rutas o menús
+3. Buscar imports en otros componentes
+
+**Acción:**
+- Si NO tiene decorador y NO se usa → **ELIMINAR**
+- Si tiene decorador pero no se accede → **REVISAR CON USUARIO**
+
+---
+
+#### TableShowcase
+```
+/components/App/TableShowcase/
+├── TableShowcaseComponent.php
+├── table-showcase.js
+└── table-showcase.css
+```
+
+**Verificación:**
+1. Buscar en `/Routes/Web.php` si está registrado
+2. Buscar decorador `#[ApiComponent]`
+3. Buscar en menús o enlaces
+
+**Acción:**
+- Si NO está en rutas y NO tiene decorador → **ELIMINAR**
+
+---
+
+#### AutomationComponent
+```
+/components/Core/Automation/
+├── AutomationComponent.php
+├── automation.js
+└── automation.css
+```
+
+**Verificación:**
+1. Mencionado en comentario de `/Routes/Component.php` como ejemplo
+2. Verificar si se usa en producción o es solo POC
+
+**Acción:**
+- Si es solo ejemplo/POC → **ELIMINAR**
+- Si es funcionalidad activa → **MANTENER**
+
+### Comandos para Fase 4:
+
+```bash
+# Buscar decoradores ApiComponent
+grep -r "#\[ApiComponent" /components/
+
+# Buscar referencias en rutas
+grep -r "ProductsTableDemo" /Routes/
+grep -r "TableShowcase" /Routes/
+grep -r "AutomationComponent" /Routes/
+
+# Buscar en menús
+grep -r "products-table-demo" /components/
+grep -r "table-showcase" /components/
+grep -r "automation" /components/
+```
+
+### Verificación Fase 4:
+- [ ] Navegar por todos los menús de la aplicación
+- [ ] Verificar que no hay enlaces rotos
+- [ ] Verificar que no hay errores de componentes faltantes
+- [ ] Hacer git commit
+
+---
+
+## FASE 5: LIMPIEZA DE DOCUMENTACIÓN OBSOLETA (RIESGO BAJO)
+
+**Objetivo:** Archivar o eliminar documentación que ya no es relevante
+**Tiempo estimado:** 15 minutos
+**Riesgo:** BAJO (solo documentación)
+**Pruebas requeridas:** Ninguna (no afecta código)
+
+### 5.1 Documentación en /docs/archive/ (considerar eliminar)
+
+#### Análisis antiguos:
+```
+/docs/archive/ANALISIS_CRUD_PRODUCTOS.md
+/docs/archive/ANALISIS_EJECUTIVO.md
+/docs/archive/EJEMPLOS_COMPARATIVOS.md
+```
+- **Razón:** Análisis de versiones anteriores
+- **Acción:** Eliminar (ya están en historial de git)
+
+---
+
+#### Guías de versiones obsoletas:
+```
+/docs/archive/PRODUCTS_CRUD_V2_GUIDE.md
+```
+- **Razón:** Versión 2 reemplazada por V3
+- **Acción:** Eliminar (ya está en git history)
+
+---
+
+#### Arquitectura anterior:
+```
+/docs/archive/MODULAR_BLOCKS_ARCHITECTURE.md
+/docs/archive/REFACTORING_ROADMAP.md
+```
+- **Razón:** Roadmaps y arquitecturas ya implementadas
+- **Acción:** Eliminar
+
+### 5.2 Archivo de test en docs
+```
+/docs/test-dynamic-components.js
+```
+- **Razón:** Script de testing manual probablemente obsoleto
+- **Acción:** Verificar uso, si no se usa → Eliminar
+
+### 5.3 Documentación de Theming (revisar duplicación)
+
+Archivos existentes:
+```
+/docs/THEMING_GUIDE.md
+/docs/THEMING_IMPLEMENTATION_SUMMARY.md
+/docs/THEMING_README.md
+/docs/THEMING_SYSTEM_GUIDE.md
+```
+
+**Acción:** Revisar contenido y consolidar en UN solo archivo de guía de theming
+
+### Comandos para Fase 5:
+
+```bash
+# Eliminar análisis antiguos
+rm /docs/archive/ANALISIS_CRUD_PRODUCTOS.md
+rm /docs/archive/ANALISIS_EJECUTIVO.md
+rm /docs/archive/EJEMPLOS_COMPARATIVOS.md
+rm /docs/archive/PRODUCTS_CRUD_V2_GUIDE.md
+rm /docs/archive/MODULAR_BLOCKS_ARCHITECTURE.md
+rm /docs/archive/REFACTORING_ROADMAP.md
+
+# Eliminar test obsoleto (verificar primero)
+rm /docs/test-dynamic-components.js
+
+# Consolidar docs de theming (manual)
+# Revisar contenido y crear un solo THEMING_GUIDE.md definitivo
+```
+
+### Verificación Fase 5:
+- [ ] Verificar que la documentación restante es suficiente
+- [ ] Hacer git commit
+
+---
+
+## FASE 6: REFACTORIZACIÓN DE ESTRUCTURA (RIESGO ALTO)
+
+**Objetivo:** Unificar nomenclatura de directorios (`Controller` vs `Controllers`)
+**Tiempo estimado:** 1-2 horas
+**Riesgo:** ALTO (requiere actualizar muchos imports)
+**Pruebas requeridas:** Probar TODA la aplicación
+
+### 6.1 Problema: Inconsistencia Controller vs Controllers
+
+#### Situación actual:
+
+**Carpeta `/Core/Controller/` (SINGULAR):**
+```
+/Core/Controller/CoreController.php
+/Core/Controller/CoreViewController.php
+/Core/Controller/RestfulController.php
+```
+- Son clases base legacy pero AÚN EN USO
+- Se importan en: `/Routes/Api.php`, todos los controladores de App
+
+**Carpeta `/Core/Controllers/` (PLURAL):**
+```
+/Core/Controllers/AbstractCrudController.php
+/Core/Controllers/AbstractGetController.php
+```
+- Son nuevos controladores abstractos modernos
+- Se importan en: atributos `#[ApiCrudResource]`, `#[ApiGetResource]`
+
+### 6.2 Estrategia de Unificación
+
+**OPCIÓN RECOMENDADA:** Migrar todo a `/Core/Controllers/` (plural)
+
+#### Pasos:
+
+**PASO 1:** Mover archivos de `/Core/Controller/` a `/Core/Controllers/`
+```bash
+mv /Core/Controller/CoreController.php /Core/Controllers/
+mv /Core/Controller/CoreViewController.php /Core/Controllers/
+mv /Core/Controller/RestfulController.php /Core/Controllers/
+```
+
+**PASO 2:** Actualizar TODOS los imports (búsqueda global):
+```
+BUSCAR: use Core\Controller\CoreController;
+REEMPLAZAR: use Core\Controllers\CoreController;
+
+BUSCAR: use Core\Controller\CoreViewController;
+REEMPLAZAR: use Core\Controllers\CoreViewController;
+
+BUSCAR: use Core\Controller\RestfulController;
+REEMPLAZAR: use Core\Controllers\RestfulController;
+```
+
+**PASO 3:** Verificar archivos que importan estas clases:
+- `/Routes/Api.php`
+- Todos los controladores en `/App/Controllers/`
+- `/Core/Commands/MapRoutesCommand.php`
+- Cualquier otro archivo que extienda estas clases
+
+**PASO 4:** Eliminar carpeta vacía:
+```bash
+rmdir /Core/Controller/
+```
+
+### Archivos a Actualizar (lista exhaustiva):
+
+1. `/Routes/Api.php` - Importa CoreController
+2. `/App/Controllers/Products/Controllers/ProductsController.php` - Puede extender clases base
+3. `/App/Controllers/Auth/Controllers/AuthGroupsController.php` - Puede extender
+4. `/App/Controllers/Storage/Controllers/StorageController.php` - Puede extender
+5. `/App/Controllers/Files/Controllers/FilesController.php` - Puede extender
+6. `/App/Controllers/ComponentsController.php` - Puede extender
+7. `/Core/Commands/MapRoutesCommand.php` - Usa CoreController
+
+### Comandos para Fase 6:
+
+```bash
+# 1. Mover archivos
+mv Core/Controller/CoreController.php Core/Controllers/
+mv Core/Controller/CoreViewController.php Core/Controllers/
+mv Core/Controller/RestfulController.php Core/Controllers/
+
+# 2. Buscar y reemplazar en todos los archivos PHP
+# (usar herramienta de búsqueda/reemplazo del IDE)
+
+# 3. Verificar que no quedan referencias
+grep -r "Core\\\\Controller\\\\" .
+grep -r "Core/Controller/" .
+
+# 4. Eliminar carpeta vacía
+rmdir Core/Controller/
+```
+
+### Verificación Fase 6 (CRÍTICA):
+- [ ] Ejecutar composer dump-autoload
+- [ ] Abrir la aplicación en el navegador
+- [ ] Probar login
+- [ ] Probar navegación por todos los módulos
+- [ ] Probar CRUD de productos
+- [ ] Probar subida de archivos
+- [ ] Verificar que no hay errores en logs
+- [ ] Verificar que no hay errores en consola
+- [ ] Hacer git commit
+
+---
+
+## FASE 7: VERIFICACIÓN DE HELPERS Y TRAITS SIN USO (RIESGO MEDIO)
+
+**Objetivo:** Eliminar helpers y traits que no se están utilizando
+**Tiempo estimado:** 20 minutos
+**Riesgo:** MEDIO
+**Pruebas requeridas:** Verificar funcionalidad general
+
+### 7.1 TimeSet.php (Trait sin uso aparente)
+
+```
+/Core/providers/TimeSet.php
+```
+
+**Verificación:**
+```bash
+# Buscar uso del trait
+grep -r "use.*TimeSet" .
+grep -r "TimeSet" . --include="*.php"
+```
+
+**Acción:**
+- Si NO hay referencias → **ELIMINAR**
+- Si hay referencias → **MANTENER**
+
+### 7.2 ActionButtons.php (Helper potencialmente sin uso)
+
+```
+/Core/Helpers/ActionButtons.php
+```
+
+**Verificación:**
+```bash
+# Buscar uso del helper
+grep -r "ActionButtons" . --include="*.php"
+```
+
+**Acción:**
+- Si solo aparece en comentarios → **ELIMINAR**
+- Si se usa en código productivo → **MANTENER**
+
+### 7.3 debug_routes.php (Script de debugging)
+
+```
+/debug_routes.php
+```
+
+**Verificación:**
+- Verificar si se ejecuta en producción o solo desarrollo
+
+**Acción:**
+- Si es solo para desarrollo → **MOVER a /scripts/ o ELIMINAR**
+
+### Verificación Fase 7:
+- [ ] Verificar que la aplicación funciona
+- [ ] No hay errores de clases/traits faltantes
+- [ ] Hacer git commit
+
+---
+
+## CHECKLIST GENERAL DE SEGURIDAD
+
+Antes de ejecutar cada fase, verificar:
+
+- [ ] Tener backup o commit previo limpio
+- [ ] Rama de desarrollo separada (no hacer en main)
+- [ ] Documentar cambios realizados
+- [ ] Probar la aplicación después de cada fase
+- [ ] No avanzar a siguiente fase si hay errores
+
+## COMANDOS ÚTILES PARA VERIFICACIÓN
+
+```bash
+# Verificar que no hay errores de sintaxis PHP
+find . -name "*.php" -exec php -l {} \;
+
+# Regenerar autoload de Composer
+composer dump-autoload
+
+# Buscar referencias a un archivo
+grep -r "nombre_archivo" .
+
+# Verificar imports de un namespace
+grep -r "use Core\\\\Controller\\\\" .
+
+# Ver archivos modificados en git
+git status
+
+# Crear commit de fase
+git add .
+git commit -m "Fase X: [descripción]"
+```
+
+---
+
+## ORDEN DE EJECUCIÓN RECOMENDADO
+
+1. **Fase 1** → Limpieza archivos seguros (BAJO RIESGO) ✅
+2. **Fase 2** → Corrección de typos (BAJO RIESGO) ✅
+3. **Fase 5** → Limpieza de documentación (BAJO RIESGO) ✅
+4. **Fase 3** → Consolidación de código duplicado (MEDIO RIESGO) ⚠️
+5. **Fase 4** → Verificación de componentes (MEDIO RIESGO) ⚠️
+6. **Fase 7** → Helpers y traits sin uso (MEDIO RIESGO) ⚠️
+7. **Fase 6** → Refactorización de estructura (ALTO RIESGO) 🔴
+
+**IMPORTANTE:** Hacer commit después de cada fase y probar la aplicación.
+
+---
+
+## RESUMEN DE ARCHIVOS A ELIMINAR
+
+### Eliminación Inmediata (Fase 1):
+- `/assets/js/core/base-lego-framework-backup.js`
+- `/assets/js/core/api/ApiClient.example.js`
+- `/components/shared/Forms/SelectComponent/select-old.js`
+- `/components/shared/Buttons/Buttons/_ide_helper.php`
+- `/components/shared/Essentials/Essentials/_ide_helper.php`
+- `/components/shared/Forms/Forms/_ide_helper.php`
+- `/components/shared/Navigation/Navigation/_ide_helper.php`
+- `/cookies.txt`
+
+### Eliminación Condicional (verificar primero):
+- `/components/App/ProductsTableDemo/` (si no se usa)
+- `/components/App/TableShowcase/` (si no se usa)
+- `/components/Core/Automation/` (si es solo POC)
+- `/docs/test-dynamic-components.js` (si no se usa)
+- `/Core/providers/TimeSet.php` (si no se usa)
+- `/Core/Helpers/ActionButtons.php` (si no se usa)
+- `/debug_routes.php` (si solo es para desarrollo)
+
+### Documentación a eliminar (Fase 5):
+- `/docs/archive/ANALISIS_CRUD_PRODUCTOS.md`
+- `/docs/archive/ANALISIS_EJECUTIVO.md`
+- `/docs/archive/EJEMPLOS_COMPARATIVOS.md`
+- `/docs/archive/PRODUCTS_CRUD_V2_GUIDE.md`
+- `/docs/archive/MODULAR_BLOCKS_ARCHITECTURE.md`
+- `/docs/archive/REFACTORING_ROADMAP.md`
+
+### Código a consolidar:
+- `ApiClient.js` (decidir entre `/api/` y `/services/`)
+
+### Refactorización de estructura:
+- Migrar `/Core/Controller/` → `/Core/Controllers/`
+
+---
+
+## ESTIMACIÓN TOTAL
+
+- **Tiempo total:** 3-4 horas
+- **Commits esperados:** 7 (uno por fase)
+- **Archivos a eliminar:** ~25
+- **Archivos a modificar:** ~15
+- **Directorios a consolidar:** 1
+
+---
+
+## NOTAS FINALES
+
+Este plan está diseñado para ser ejecutado de manera incremental y segura. Cada fase debe:
+1. Ejecutarse completamente
+2. Probarse en la interfaz
+3. Hacer commit antes de pasar a la siguiente
+
+Si en alguna fase se encuentran errores o comportamientos inesperados:
+- **DETENER** la ejecución
+- Hacer rollback con `git reset --hard HEAD~1`
+- Revisar el problema
+- Ajustar el plan según sea necesario
+
+**¡IMPORTANTE!** No ejecutar todas las fases de una vez. Ir paso a paso y probar después de cada fase.
+
+---
+
+**Generado por:** Claude Code
+**Proyecto:** Lego2
+**Fecha:** 2025-11-02

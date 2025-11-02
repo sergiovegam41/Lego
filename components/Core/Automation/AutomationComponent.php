@@ -4,7 +4,9 @@ namespace Components\Core\Automation;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
+use Core\Attributes\ApiComponent;
 
+#[ApiComponent('/automation', methods: ['GET'])]
 class AutomationComponent extends CoreComponent
 {
 

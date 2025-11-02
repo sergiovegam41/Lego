@@ -148,7 +148,7 @@ body:not(.dark), body.light {
     --color-gray-200: #f4f4f4;
     --color-gray-300: #ccc;
     --color-gray-400: #e0e0e0;
-    --color-gray-800: #120120120;
+    --color-gray-800: #121212;
     
     /* ===== Colores con transparencia ===== */
     --color-black-10: rgba(0, 0, 0, 0.1);

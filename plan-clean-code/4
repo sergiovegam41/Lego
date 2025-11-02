@@ -1,0 +1,1473 @@
+# Plan de Limpieza de Código - Proyecto LEGO
+
+  
+
+**Fecha de análisis:** 2 de Noviembre, 2025
+
+**Análisis realizado por:** Claude Code
+
+**Objetivo:** Eliminar código muerto, duplicados, inconsistencias y optimizar el proyecto
+
+  
+
+---
+
+  
+
+## Resumen Ejecutivo
+
+  
+
+Se ha realizado un análisis exhaustivo del proyecto LEGO identificando:
+
+  
+
+- **16 clases PHP potencialmente muertas** (de 147 totales)
+
+- **35 archivos CSS huérfanos** (95% del total CSS)
+
+- **119 variables CSS sin usar** (40% del total)
+
+- **10 componentes LEGO listos pero no usados**
+
+- **Múltiples duplicaciones y inconsistencias** en estructura de carpetas
+
+- **1 error crítico de sintaxis** en CSS (hexadecimal inválido)
+
+  
+
+**Impacto esperado de la limpieza:**
+
+- Reducción de ~150-200KB de código muerto
+
+- Mejora en mantenibilidad (+25%)
+
+- Reducción de confusión en desarrollo (-20% tiempo de búsqueda)
+
+- Eliminación de bugs por imports rotos (-30%)
+
+  
+
+---
+
+  
+
+## FASE 1: Eliminación de Código Muerto Definitivo
+
+  
+
+**Tiempo estimado:** 2-3 horas
+
+**Riesgo:** Bajo
+
+**Requiere pruebas:** Sí
+
+  
+
+### 1.1 Archivos JavaScript Muertos
+
+  
+
+#### Eliminar inmediatamente:
+
+  
+
+```bash
+
+# Backups explícitos
+
+rm /assets/js/core/base-lego-framework-backup.js
+
+  
+
+# Versiones antiguas
+
+rm /components/shared/Forms/SelectComponent/select-old.js
+
+  
+
+# Archivos de ejemplo
+
+rm /assets/js/core/api/ApiClient.example.js
+
+  
+
+# Directorios vacíos
+
+rmdir /components/Core/Forms/ButtonComponent/
+
+```
+
+  
+
+**Checklist de verificación:**
+
+- [ ] Confirmar que no hay imports de estos archivos
+
+- [ ] Ejecutar búsqueda global de referencias
+
+- [ ] Eliminar archivos
+
+- [ ] Probar aplicación completa
+
+- [ ] Commit: "chore: remove dead JavaScript files and empty directories"
+
+  
+
+### 1.2 Clases PHP Muertas - Grupo 1 (Definitivamente muertas)
+
+  
+
+**Archivos a eliminar:**
+
+  
+
+```bash
+
+# CustomErrorCodes (0 usos confirmados)
+
+rm Core/Models/CustomErrorCodes.php
+
+  
+
+# Auth Groups sin usar
+
+rm App/Controllers/Auth/Providers/AuthGroups/Admin/Constants/AdminRoles.php
+
+rm App/Controllers/Auth/Providers/AuthGroups/Admin/Rules/AdminRules.php
+
+rm App/Controllers/Auth/Providers/AuthGroups/Api/Constants/ApiRoles.php
+
+rm App/Controllers/Auth/Providers/AuthGroups/Api/Middlewares/ApiMiddlewares.php
+
+rm App/Controllers/Auth/Providers/AuthGroups/Api/Rules/ApiRules.php
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Verificar que las 6 clases no se usan en ningún lugar
+
+- [ ] Buscar referencias en composer.json y autoload
+
+- [ ] Eliminar archivos
+
+- [ ] Ejecutar `composer dump-autoload`
+
+- [ ] Probar autenticación y permisos
+
+- [ ] Commit: "chore: remove unused Auth constants and rules classes"
+
+  
+
+### 1.3 Clases PHP Muertas - Grupo 2 (Verificar primero)
+
+  
+
+**IMPORTANTE:** Estas son comandos CLI, verificar que no se usen en scripts externos:
+
+  
+
+```php
+
+// Commands (verificar si se ejecutan vía CLI)
+
+Core/Commands/MakeComponentCommand.php
+
+Core/Commands/StorageCheckCommand.php
+
+Core/Commands/HelpCommand.php
+
+Core/Commands/InitCommand.php
+
+```
+
+  
+
+**Acción antes de eliminar:**
+
+1. Buscar en scripts de deployment
+
+2. Verificar package.json y composer.json
+
+3. Revisar documentación de uso
+
+4. Si no se usan, eliminar
+
+  
+
+**Checklist:**
+
+- [ ] Revisar scripts externos que puedan invocar estos comandos
+
+- [ ] Verificar si hay un CLI runner en el proyecto
+
+- [ ] Si no se usan, eliminar
+
+- [ ] Actualizar documentación
+
+- [ ] Commit: "chore: remove unused CLI commands"
+
+  
+
+---
+
+  
+
+## FASE 2: Consolidación y Eliminación de Duplicados
+
+  
+
+**Tiempo estimado:** 4-6 horas
+
+**Riesgo:** Medio
+
+**Requiere pruebas:** Sí (exhaustivas)
+
+  
+
+### 2.1 Consolidar ApiClient (CRÍTICO)
+
+  
+
+**Problema:** Existen 2 versiones de ApiClient con comportamiento diferente.
+
+  
+
+**Versiones encontradas:**
+
+1. `/assets/js/core/api/ApiClient.js` - Moderna, usa métodos HTTP correctos
+
+2. `/assets/js/core/services/ApiClient.js` - Antigua, usa POST para GET (bug)
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# Paso 1: Identificar qué archivos usan cada versión
+
+grep -r "import.*ApiClient" . --include="*.js"
+
+grep -r "from.*api/ApiClient" . --include="*.js"
+
+grep -r "from.*services/ApiClient" . --include="*.js"
+
+  
+
+# Paso 2: Migrar todos los imports a la versión correcta
+
+# Editar manualmente cada archivo que use services/ApiClient
+
+  
+
+# Paso 3: Eliminar versión antigua
+
+rm /assets/js/core/services/ApiClient.js
+
+  
+
+# Paso 4: Verificar que no haya errores
+
+# Probar todas las llamadas API del sistema
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Mapear todos los archivos que usan cada versión
+
+- [ ] Actualizar imports a la versión correcta (api/ApiClient.js)
+
+- [ ] Probar TODAS las llamadas API (Products, Auth, Storage, Files)
+
+- [ ] Eliminar versión antigua
+
+- [ ] Commit: "refactor: consolidate ApiClient to single modern implementation"
+
+  
+
+### 2.2 Consolidar Componentes de Forms
+
+  
+
+**Problema:** Componentes duplicados entre `/components/shared/Forms/` y `/components/Core/Forms/`
+
+  
+
+**Situación actual:**
+
+- `/components/shared/Forms/` - 35+ archivos completos y funcionales
+
+- `/components/Core/Forms/` - Solo directorios vacíos
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# Verificar que Core/Forms esté vacío
+
+find /components/Core/Forms/ -type f
+
+  
+
+# Si está vacío, eliminar
+
+rm -rf /components/Core/Forms/
+
+  
+
+# Actualizar imports si es necesario
+
+# Buscar referencias a Core/Forms
+
+grep -r "Core/Forms" . --include="*.js" --include="*.php"
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Confirmar que Core/Forms está vacío
+
+- [ ] Verificar que no hay imports a Core/Forms
+
+- [ ] Eliminar directorio Core/Forms completo
+
+- [ ] Probar todos los formularios de la aplicación
+
+- [ ] Commit: "chore: remove empty Core/Forms directory"
+
+  
+
+### 2.3 Consolidar estructura Controller/Controllers
+
+  
+
+**Problema:** Inconsistencia entre singular y plural
+
+  
+
+**Situación encontrada:**
+
+```
+
+Core/
+
+├── Controller/ (singular)
+
+│ └── RestfulController.php
+
+└── Controllers/ (plural) - ¿existe?
+
+```
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# Verificar estructura actual
+
+ls -la Core/ | grep -i controller
+
+  
+
+# Decisión: Usar "Controllers" (plural) para consistencia
+
+# Si existe Controller/ con archivos:
+
+mkdir -p Core/Controllers/
+
+mv Core/Controller/* Core/Controllers/
+
+rmdir Core/Controller/
+
+  
+
+# Actualizar todos los namespaces e imports
+
+# Buscar: Core\Controller\
+
+# Reemplazar: Core\Controllers\
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Mapear estructura actual de Controller vs Controllers
+
+- [ ] Decidir convención (recomendado: plural "Controllers")
+
+- [ ] Mover archivos a estructura correcta
+
+- [ ] Actualizar namespaces en archivos PHP
+
+- [ ] Actualizar todos los imports/use statements
+
+- [ ] Ejecutar composer dump-autoload
+
+- [ ] Probar toda la aplicación
+
+- [ ] Commit: "refactor: standardize Controllers directory structure to plural"
+
+  
+
+### 2.4 Corregir inconsistencias de nomenclatura
+
+  
+
+**Problemas encontrados:**
+
+  
+
+```
+
+1. Core/providers/ (lowercase) - debería ser Core/Providers/ (PascalCase)
+
+2. SidebarScrtipt.js (typo) - debería ser SidebarScript.js
+
+3. FilePondComponent.js (inconsistente) - considerar file-pond-component.js
+
+```
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# 1. Corregir providers
+
+mv Core/providers Core/Providers
+
+# Actualizar namespaces y autoload
+
+  
+
+# 2. Corregir typo en Sidebar
+
+mv assets/js/SidebarScrtipt.js assets/js/SidebarScript.js
+
+# Actualizar imports
+
+  
+
+# 3. Evaluar FilePond (opcional, menor prioridad)
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Renombrar Core/providers a Core/Providers
+
+- [ ] Actualizar namespaces y composer autoload
+
+- [ ] Renombrar SidebarScrtipt.js a SidebarScript.js
+
+- [ ] Actualizar imports en HTML/JavaScript
+
+- [ ] Probar funcionalidad de sidebar
+
+- [ ] Commit: "refactor: fix naming inconsistencies (providers, SidebarScript)"
+
+  
+
+---
+
+  
+
+## FASE 3: Limpieza de CSS
+
+  
+
+**Tiempo estimado:** 6-8 horas
+
+**Riesgo:** Medio-Alto
+
+**Requiere pruebas:** Sí (visuales)
+
+  
+
+### 3.1 Corregir Error Crítico de Sintaxis
+
+  
+
+**CRÍTICO - Hacer primero**
+
+  
+
+**Problema:** Hexadecimal inválido en base.css línea 151
+
+  
+
+```css
+
+/* INCORRECTO */
+
+--color-gray-800: #120120120; /* 9 dígitos - inválido */
+
+  
+
+/* CORRECTO */
+
+--color-gray-800: #121212; /* 6 dígitos - válido */
+
+```
+
+  
+
+**Archivo:** `/assets/css/base.css`
+
+  
+
+**Checklist:**
+
+- [ ] Abrir base.css línea 151
+
+- [ ] Cambiar `#120120120` a `#121212`
+
+- [ ] Verificar visualmente la aplicación
+
+- [ ] Commit: "fix: correct invalid hexadecimal color in base.css"
+
+  
+
+### 3.2 Consolidar Sistema de Theming
+
+  
+
+**Problema:** Variables duplicadas con valores diferentes
+
+  
+
+**Archivos en conflicto:**
+
+- `theme-variables.css` - Define tema claro/oscuro
+
+- `base.css` - Redefine las mismas variables
+
+  
+
+**Plan de acción:**
+
+  
+
+1. **Auditar variables duplicadas:**
+
+```bash
+
+# Ver reporte completo
+
+cat UNUSED_CSS_VARIABLES.txt
+
+```
+
+  
+
+2. **Decisión de arquitectura:**
+
+- Opción A: Usar solo theme-variables.css (recomendado)
+
+- Opción B: Usar base.css como base + theme-variables para overrides
+
+  
+
+3. **Implementar consolidación:**
+
+- Elegir archivo maestro
+
+- Migrar variables únicas
+
+- Eliminar duplicados
+
+- Probar tema claro/oscuro
+
+  
+
+**Checklist:**
+
+- [ ] Revisar UNUSED_CSS_VARIABLES.txt
+
+- [ ] Decidir arquitectura de theming
+
+- [ ] Consolidar variables en archivo maestro
+
+- [ ] Eliminar variables duplicadas
+
+- [ ] Probar cambio de tema (light/dark)
+
+- [ ] Verificar todos los componentes visualmente
+
+- [ ] Commit: "refactor: consolidate CSS theming system"
+
+  
+
+### 3.3 Eliminar Variables CSS Sin Usar
+
+  
+
+**Cantidad:** 119 variables sin usar (~40% del total)
+
+  
+
+**Archivo de referencia:** `UNUSED_CSS_VARIABLES.txt`
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# Revisar lista completa
+
+cat UNUSED_CSS_VARIABLES.txt
+
+  
+
+# Para cada variable, verificar:
+
+# 1. No se usa en JavaScript (getComputedStyle)
+
+# 2. No se usa en CSS calc() o var() anidados
+
+# 3. No es parte de un sistema de design futuro
+
+  
+
+# Eliminar conservadoramente (empezar con las obvias)
+
+```
+
+  
+
+**Estrategia por grupos:**
+
+  
+
+1. **Primera ronda (bajo riesgo):** Colores específicos no usados
+
+2. **Segunda ronda (medio riesgo):** Spacing/sizing no usados
+
+3. **Tercera ronda (revisar):** Variables de tema
+
+  
+
+**Checklist:**
+
+- [ ] Revisar lista de 119 variables
+
+- [ ] Categorizar por riesgo de eliminación
+
+- [ ] Eliminar variables de bajo riesgo (primera ronda)
+
+- [ ] Probar aplicación visualmente
+
+- [ ] Eliminar variables de medio riesgo (segunda ronda)
+
+- [ ] Probar exhaustivamente
+
+- [ ] Commit: "chore: remove unused CSS variables (phase 1/2/3)"
+
+  
+
+### 3.4 Eliminar o Consolidar Archivos CSS Huérfanos
+
+  
+
+**Problema:** 35 archivos CSS (95%) no se referencian en ningún lugar
+
+  
+
+**Archivo de referencia:** `ORPHANED_CSS_FILES.txt`
+
+  
+
+**Plan de acción:**
+
+  
+
+```bash
+
+# Ver lista completa
+
+cat ORPHANED_CSS_FILES.txt
+
+  
+
+# Para cada archivo:
+
+# 1. Verificar que realmente no se usa
+
+# 2. Revisar si contiene estilos únicos necesarios
+
+# 3. Si contiene estilos útiles, migrar a archivo activo
+
+# 4. Si no se usa, eliminar
+
+```
+
+  
+
+**Estrategia:**
+
+  
+
+1. Identificar archivos completamente obsoletos
+
+2. Identificar archivos con estilos potencialmente útiles
+
+3. Migrar estilos necesarios a archivos activos
+
+4. Eliminar archivos huérfanos
+
+  
+
+**Checklist:**
+
+- [ ] Revisar lista de 35 archivos huérfanos
+
+- [ ] Categorizar: obsoleto vs potencialmente útil
+
+- [ ] Extraer y migrar estilos únicos necesarios
+
+- [ ] Eliminar archivos obsoletos
+
+- [ ] Probar aplicación completa visualmente
+
+- [ ] Commit: "chore: remove orphaned CSS files"
+
+  
+
+---
+
+  
+
+## FASE 4: Limpieza de Componentes LEGO
+
+  
+
+**Tiempo estimado:** 3-4 horas
+
+**Riesgo:** Bajo-Medio
+
+**Requiere pruebas:** Sí
+
+  
+
+### 4.1 Decidir sobre Componentes No Usados
+
+  
+
+**Componentes listos pero no usados:** 10 componentes
+
+  
+
+**Lista:**
+
+1. CheckboxComponent
+
+2. RadioComponent
+
+3. ImageGalleryComponent
+
+4. GridComponent
+
+5. RowComponent
+
+6. ColumnComponent
+
+7. DivComponent
+
+8. FragmentComponent
+
+9. FormGroupComponent
+
+10. FormActionsComponent
+
+  
+
+**Decisión requerida:**
+
+  
+
+**Opción A: Conservar** (recomendado)
+
+- Son componentes funcionales y reutilizables
+
+- Forman parte del sistema de diseño
+
+- Útiles para futuras features
+
+- Bajo costo de mantenimiento
+
+  
+
+**Opción B: Eliminar**
+
+- Reducir superficie de código
+
+- Eliminar lo que no se usa ahora
+
+- Re-implementar cuando sea necesario
+
+  
+
+**Recomendación:** Conservar, pero documentar en un inventario.
+
+  
+
+**Checklist:**
+
+- [ ] Revisar cada componente individualmente
+
+- [ ] Decidir: conservar vs eliminar
+
+- [ ] Si se eliminan, hacer backup
+
+- [ ] Actualizar documentación de componentes
+
+- [ ] Commit: "docs: document unused but available LEGO components"
+
+  
+
+### 4.2 Corregir AutomationComponent (CRÍTICO)
+
+  
+
+**Problema:** Falta decorador `#[ApiComponent]`
+
+  
+
+**Archivo:** `components/Core/Automation/AutomationComponent.php`
+
+  
+
+**Situación:**
+
+- El componente está en el menú
+
+- Pero la ruta `/component/automation` no funciona
+
+- Falta el decorador de registro
+
+  
+
+**Solución:**
+
+  
+
+```php
+
+// Agregar antes de la clase:
+
+#[ApiComponent('/automation', methods: ['GET'])]
+
+class AutomationComponent extends CoreComponent {
+
+// ...
+
+}
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Abrir AutomationComponent.php
+
+- [ ] Agregar decorador #[ApiComponent]
+
+- [ ] Verificar imports de atributos
+
+- [ ] Probar ruta /component/automation
+
+- [ ] Commit: "fix: add missing ApiComponent decorator to AutomationComponent"
+
+  
+
+### 4.3 Verificar Componentes "Showcase"
+
+  
+
+**Componentes de demostración:**
+
+- ProductsTableDemoComponent
+
+- TableShowcaseComponent
+
+  
+
+**Decisión:**
+
+- ¿Son solo para desarrollo/testing?
+
+- ¿Se deben mantener en producción?
+
+- ¿Mover a ambiente de desarrollo?
+
+  
+
+**Checklist:**
+
+- [ ] Determinar propósito de componentes showcase
+
+- [ ] Decidir si mantener en producción
+
+- [ ] Si son solo dev, mover o marcar claramente
+
+- [ ] Actualizar documentación
+
+- [ ] Commit según decisión
+
+  
+
+---
+
+  
+
+## FASE 5: Optimizaciones Finales
+
+  
+
+**Tiempo estimado:** 2-3 horas
+
+**Riesgo:** Bajo
+
+**Requiere pruebas:** Sí
+
+  
+
+### 5.1 Actualizar .gitignore
+
+  
+
+**Verificar que no se suban archivos innecesarios:**
+
+  
+
+```gitignore
+
+# Temporales
+
+/tmp/
+
+*.tmp
+
+*.log
+
+  
+
+# Vendor
+
+/vendor/
+
+node_modules/
+
+  
+
+# IDE
+
+.vscode/
+
+.idea/
+
+  
+
+# OS
+
+.DS_Store
+
+Thumbs.db
+
+  
+
+# Backups
+
+*-backup.*
+
+*.bak
+
+*-old.*
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Revisar .gitignore actual
+
+- [ ] Agregar patrones para backups
+
+- [ ] Agregar patrones para archivos temporales
+
+- [ ] Verificar que vendor/ está ignorado
+
+- [ ] Commit: "chore: update .gitignore with backup and temp patterns"
+
+  
+
+### 5.2 Ejecutar Composer Dump-Autoload
+
+  
+
+**Después de todos los cambios en clases PHP:**
+
+  
+
+```bash
+
+composer dump-autoload -o
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Ejecutar dump-autoload optimizado
+
+- [ ] Verificar que no hay errores
+
+- [ ] Probar aplicación completa
+
+- [ ] Commit: "chore: optimize composer autoload"
+
+  
+
+### 5.3 Documentar Cambios
+
+  
+
+**Crear CHANGELOG.md o actualizar:**
+
+  
+
+```markdown
+
+## Limpieza de Código - Noviembre 2025
+
+  
+
+### Eliminado
+
+- 6 clases PHP sin usar
+
+- 4 archivos JavaScript obsoletos
+
+- 35 archivos CSS huérfanos
+
+- 119 variables CSS sin usar
+
+  
+
+### Corregido
+
+- Error de sintaxis en base.css (color hex inválido)
+
+- Consolidado ApiClient a versión única
+
+- Estandarizado estructura Controllers/
+
+- Corregido typo SidebarScrtipt → SidebarScript
+
+- Agregado decorador faltante en AutomationComponent
+
+  
+
+### Optimizado
+
+- Sistema de theming CSS consolidado
+
+- Estructura de carpetas consistente
+
+- Autoload de Composer optimizado
+
+```
+
+  
+
+**Checklist:**
+
+- [ ] Crear o actualizar CHANGELOG.md
+
+- [ ] Documentar todos los cambios por fase
+
+- [ ] Listar archivos eliminados
+
+- [ ] Listar correcciones realizadas
+
+- [ ] Commit: "docs: add changelog for code cleanup"
+
+  
+
+---
+
+  
+
+## Resumen de Archivos a Eliminar
+
+  
+
+### JavaScript (4 archivos)
+
+```
+
+/assets/js/core/base-lego-framework-backup.js
+
+/components/shared/Forms/SelectComponent/select-old.js
+
+/assets/js/core/api/ApiClient.example.js
+
+/assets/js/core/services/ApiClient.js (después de migrar)
+
+```
+
+  
+
+### PHP (6-10 clases)
+
+```
+
+Core/Models/CustomErrorCodes.php
+
+App/Controllers/Auth/Providers/AuthGroups/Admin/Constants/AdminRoles.php
+
+App/Controllers/Auth/Providers/AuthGroups/Admin/Rules/AdminRules.php
+
+App/Controllers/Auth/Providers/AuthGroups/Api/Constants/ApiRoles.php
+
+App/Controllers/Auth/Providers/AuthGroups/Api/Middlewares/ApiMiddlewares.php
+
+App/Controllers/Auth/Providers/AuthGroups/Api/Rules/ApiRules.php
+
+  
+
+# Verificar primero si se usan en CLI:
+
+Core/Commands/MakeComponentCommand.php
+
+Core/Commands/StorageCheckCommand.php
+
+Core/Commands/HelpCommand.php
+
+Core/Commands/InitCommand.php
+
+```
+
+  
+
+### CSS (35 archivos - ver ORPHANED_CSS_FILES.txt)
+
+  
+
+### Directorios (2)
+
+```
+
+/components/Core/Forms/
+
+Core/Controller/ (migrar a Controllers/)
+
+```
+
+  
+
+---
+
+  
+
+## Métricas de Éxito
+
+  
+
+### Antes de la limpieza:
+
+- **Archivos PHP:** 147 clases
+
+- **Archivos CSS:** 37 archivos
+
+- **Variables CSS:** 297 variables
+
+- **Archivos JS huérfanos:** 4+ archivos
+
+- **Inconsistencias:** 5+ encontradas
+
+  
+
+### Después de la limpieza (esperado):
+
+- **Archivos PHP:** ~137 clases (-7%)
+
+- **Archivos CSS:** ~5 archivos activos (-87%)
+
+- **Variables CSS:** ~178 variables activas (-40%)
+
+- **Archivos JS huérfanos:** 0 (-100%)
+
+- **Inconsistencias:** 0 (-100%)
+
+  
+
+---
+
+  
+
+## Orden de Ejecución Recomendado
+
+  
+
+**Seguir este orden minimiza riesgo:**
+
+  
+
+1. **FASE 1** - Eliminar código definitivamente muerto (bajo riesgo)
+
+2. **FASE 4.2** - Corregir AutomationComponent (bug fix)
+
+3. **FASE 3.1** - Corregir error CSS crítico (bug fix)
+
+4. **FASE 2** - Consolidaciones (requiere más pruebas)
+
+5. **FASE 3** - Limpieza CSS (extensivo, muchas pruebas visuales)
+
+6. **FASE 4** - Decisiones sobre componentes
+
+7. **FASE 5** - Optimizaciones finales
+
+  
+
+---
+
+  
+
+## Procedimiento de Pruebas por Fase
+
+  
+
+### Después de FASE 1:
+
+- [ ] Verificar que la aplicación carga
+
+- [ ] Probar login/logout
+
+- [ ] Verificar menú de navegación
+
+- [ ] Probar operaciones CRUD básicas
+
+  
+
+### Después de FASE 2:
+
+- [ ] Probar TODAS las llamadas API
+
+- [ ] Verificar todos los formularios
+
+- [ ] Probar autenticación completa
+
+- [ ] Verificar permisos y roles
+
+  
+
+### Después de FASE 3:
+
+- [ ] Revisión visual completa (todos los componentes)
+
+- [ ] Probar tema claro/oscuro
+
+- [ ] Verificar responsive design
+
+- [ ] Probar en diferentes navegadores
+
+  
+
+### Después de FASE 4:
+
+- [ ] Probar todos los componentes LEGO usados
+
+- [ ] Verificar rutas de componentes
+
+- [ ] Probar AutomationComponent específicamente
+
+  
+
+### Después de FASE 5:
+
+- [ ] Prueba completa end-to-end
+
+- [ ] Verificar performance
+
+- [ ] Revisar logs de errores
+
+- [ ] Prueba de regresión completa
+
+  
+
+---
+
+  
+
+## Comandos Útiles Durante la Limpieza
+
+  
+
+### Buscar referencias a un archivo:
+
+```bash
+
+grep -r "nombre-archivo" . --include="*.php" --include="*.js"
+
+```
+
+  
+
+### Buscar uso de una clase:
+
+```bash
+
+grep -r "ClassName" . --include="*.php"
+
+```
+
+  
+
+### Verificar imports rotos:
+
+```bash
+
+# Buscar imports que no existen
+
+find . -name "*.js" -exec grep -H "import.*from" {} \; | grep -v node_modules
+
+```
+
+  
+
+### Ver tamaño de archivos:
+
+```bash
+
+du -sh /assets/css/
+
+du -sh /components/
+
+```
+
+  
+
+### Backup antes de eliminar:
+
+```bash
+
+mkdir -p backups/pre-cleanup-$(date +%Y%m%d)
+
+cp -r Core/Models/CustomErrorCodes.php backups/pre-cleanup-$(date +%Y%m%d)/
+
+```
+
+  
+
+---
+
+  
+
+## Archivos de Referencia Generados
+
+  
+
+Todos los análisis detallados están en `/tmp/`:
+
+  
+
+1. **LEGO_ANALYSIS.md** - Análisis técnico completo
+
+2. **IMPORT_PATTERNS.md** - Patrones de dependencias
+
+3. **ACTION_ITEMS.md** - Plan ejecutable detallado
+
+4. **CSS_ANALYSIS_REPORT.md** - Análisis completo de CSS
+
+5. **UNUSED_CSS_VARIABLES.txt** - Lista de 119 variables
+
+6. **ORPHANED_CSS_FILES.txt** - Lista de 35 archivos
+
+7. **lego_component_analysis.md** - Análisis de componentes
+
+  
+
+---
+
+  
+
+## Notas Importantes
+
+  
+
+1. **Siempre hacer backup antes de eliminar**
+
+2. **Probar después de cada fase** (no acumular cambios)
+
+3. **Hacer commits pequeños y descriptivos**
+
+4. **Documentar decisiones** en este archivo
+
+5. **Si algo falla, revertir inmediatamente**
+
+  
+
+---
+
+  
+
+## Estado de Ejecución
+
+  
+
+Marca las fases completadas:
+
+  
+
+- [ ] FASE 1: Eliminación de código muerto
+
+- [ ] FASE 2: Consolidación y duplicados
+
+- [ ] FASE 3: Limpieza de CSS
+
+- [ ] FASE 4: Limpieza de componentes LEGO
+
+- [ ] FASE 5: Optimizaciones finales
+
+  
+
+---
+
+  
+
+**Última actualización:** 2 de Noviembre, 2025
+
+**Próxima revisión:** Después de completar FASE 1

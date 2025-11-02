@@ -1,5 +1,5 @@
 import { _loadModulesWithArguments, _loadModules } from "./modules/windows-manager/loads-scripts.js";
-import { activeMenu, toggleSubMenu } from './modules/sidebar/SidebarScrtipt.js';
+import { activeMenu, toggleSubMenu } from './modules/sidebar/SidebarScript.js';
 import { loading } from './modules/loading/loadingsScript.js';
 import {generateMenuLinks, _openModule, _closeModule} from './modules/windows-manager/windows-manager.js'
 import ThemeManager from './modules/theme/theme-manager.js';

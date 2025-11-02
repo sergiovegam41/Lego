@@ -1,0 +1,178 @@
+# Plan de Limpieza del Proyecto LEGO Framework
+
+## 📊 Resumen Ejecutivo
+
+**Hallazgos Principales:**
+
+- 23 archivos/items críticos detectados como código muerto
+- ~100KB de código sin uso (servicios JS + archivos obsoletos)
+- 1 inconsistencia estructural crítica: `/Core/Controller` vs `/Core/Controllers`
+- 7 servicios JavaScript completos (1,688 líneas) nunca implementados
+- 3 modelos PHP preparatorios sin uso actual
+
+**Impacto Estimado:**
+
+- Reducción de codebase: -100KB (-4%)
+- Archivos eliminados: ~11
+- Claridad y mantenibilidad: Significativa mejora
+- Tiempo total: 8-9 horas (distribuido en 7 fases)
+
+---
+
+## 🎯 Plan de Ejecución por Fases
+
+### **FASE 1: Limpieza Segura** (30 min) - ⭐ EMPEZAR AQUÍ
+
+**Riesgo: BAJO** | **Testing requerido: Mínimo**
+
+ 
+
+**Archivos a eliminar:**
+
+1. `/Core/Models/La.php` - Clase de idioma sin referencias
+2. `/components/shared/Forms/SelectComponent/select-old.js` - Obsoleto explícito
+3. `/assets/js/core/base-lego-framework-backup.js` - Backup duplicado
+
+**Archivos a mover (no eliminar):** 4. `/assets/js/core/api/ApiClient.example.js` → `/docs/examples/api-client/` 5. `/docs/test-dynamic-components.js` → `/tests/` (o eliminar si no se usa)
+
+ 
+
+**Validación:** Verificar que app arranca sin errores
+
+---
+
+### **FASE 2: Servicios JS Sin Uso** (1 hora)
+
+**Riesgo: MEDIO** | **Requiere decisión**
+
+ 
+
+**7 servicios completos (1,688 líneas) nunca importados:**
+
+- FormBuilder.js (390 líneas)
+- StateManager.js (109 líneas)
+- ValidationEngine.js (182 líneas)
+- RestClient.js (227 líneas)
+- CrudManager.js (336 líneas)
+- TableHelper.js (181 líneas)
+- ThemeAwareComponent.js (263 líneas)
+
+**Opciones:**
+
+- **A)** Eliminar completamente
+- **B)** Archivar en `/docs/unused-services/` (RECOMENDADO)
+- **C)** Implementar y usar (requiere ~40 horas)
+
+**Decisión requerida:** ¿Eliminar o archivar?
+
+---
+
+### **FASE 3: Consolidar ApiClient** (45 min)
+
+**Riesgo: BAJO**
+
+ 
+
+Eliminar `/assets/js/core/api/ApiClient.js` (duplicado no usado) Mantener `/assets/js/core/services/ApiClient.js` (versión en uso)
+
+---
+
+### **FASE 4: Modelos PHP Sin Uso** (2 horas)
+
+**Riesgo: ALTO** | **Requiere decisión arquitectural**
+
+ 
+
+**Modelos preparatorios sin implementar:**
+
+- `ProductImage.php` - Sistema de gestión avanzada de imágenes
+- `UserSession.php` - Sistema de refresh tokens
+- `EntityFileAssociation.php` - Sistema polimórfico de archivos
+
+**Opciones:**
+
+- **A)** Implementar completamente (16-40 horas de trabajo)
+- **B)** Eliminar y simplificar arquitectura (RECOMENDADO)
+
+**Decisión requerida:** ¿Implementar o simplificar?
+
+---
+
+### **FASE 5: Consolidar Controller/Controllers** (2 horas) ⚠️
+
+**Riesgo: ALTO** | **Requiere refactor de imports**
+
+ 
+
+**Problema:** Coexisten `/Core/Controller/` y `/Core/Controllers/`
+
+ 
+
+**Solución:**
+
+1. Mover todo a `/Core/Controllers/` (plural)
+2. Actualizar 8 archivos con imports
+3. Testing exhaustivo
+
+**⚠️ Crítico:** Puede romper PSR-4 autoloading si no se hace bien
+
+---
+
+### **FASE 6: Revisión Documentación** (1 hora)
+
+**Riesgo: BAJO**
+
+- Revisar TODOs en código
+- Crear GitHub Issues para TODOs válidos
+- Actualizar documentación eliminando referencias a código removido
+
+---
+
+### **FASE 7: Optimización Final** (1 hora)
+
+**Riesgo: BAJO**
+
+- Linter y formateo
+- Análisis de bundle size
+- Git cleanup
+
+---
+
+## 📋 Recomendación de Ejecución
+
+**Estrategia Conservadora (RECOMENDADA):**
+
+1. **HOY:** Ejecutar Fase 1 (30 min) → Testing inmediato
+2. **HOY:** Decidir sobre Fase 2 (archivar servicios)
+3. **Mañana:** Ejecutar Fases 2-3 (1.5 horas) → Testing
+4. **Decidir:** Fase 4 requiere análisis de arquitectura
+5. **Postponer:** Fase 5 hasta tener tests automáticos
+
+**Puntos de No Retorno:**
+
+- Fase 1-3: Reversibles (git revert)
+- Fase 4-5: Requieren más cuidado
+
+---
+
+## ❓ Decisiones Pendientes
+
+**Antes de continuar, necesito tu input en:**
+
+1. **Fase 2:** ¿Eliminar o archivar servicios sin uso?
+2. **Fase 4:** ¿Implementar o eliminar modelos preparatorios?
+3. **Fase 5:** ¿Ejecutar ahora o postponer consolidación Controller/Controllers?
+
+---
+
+## 📄 Documento Generado
+
+Se creará: `/CODIGO_MUERTO_ANALISIS.md` con análisis completo de 15+ páginas incluyendo:
+
+- Tablas detalladas de todos los archivos
+- Justificaciones técnicas
+- Scripts de automatización
+- Checklist de validación
+- Métricas de impacto
+
+**¿Procedo con la generación del documento y ejecución de Fase 1?**

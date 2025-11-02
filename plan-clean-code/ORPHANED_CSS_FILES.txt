@@ -1,0 +1,49 @@
+# LISTA COMPLETA DE 33 ARCHIVOS CSS SIN REFERENCIA EN EL PROYECTO
+
+# ARCHIVOS CORE (3)
+assets/css/core/alert-service.css
+assets/css/core/windows-manager.css
+assets/css/core/sidebar/menu-style.css
+
+# COMPONENTES CORE HOME (7)
+components/Core/Home/home.css
+components/Core/Home/Components/MainComponent/main-component.css
+components/Core/Home/Components/MenuComponent/menu-component.css
+components/Core/Home/Components/MenuComponent/features/MenuItemComponent/menu-item-component.css
+components/Core/Home/Components/HeaderComponent/header-component.css
+components/Core/Automation/automation.css
+components/Core/Login/login.css
+
+# COMPONENTES SHARED FORMS (9)
+components/shared/Forms/ButtonComponent/button.css
+components/shared/Forms/CheckboxComponent/checkbox.css
+components/shared/Forms/FilePondComponent/FilePondComponent.css
+components/shared/Forms/FormComponent/form.css
+components/shared/Forms/FormRowComponent/form-row.css
+components/shared/Forms/InputTextComponent/input-text.css
+components/shared/Forms/RadioComponent/radio.css
+components/shared/Forms/SelectComponent/select.css
+components/shared/Forms/TextAreaComponent/textarea.css
+
+# COMPONENTES SHARED ESSENTIALS (6)
+components/shared/Essentials/ColumnComponent/column.css
+components/shared/Essentials/DivComponent/div.css
+components/shared/Essentials/GridComponent/grid.css
+components/shared/Essentials/ImageGalleryComponent/image-gallery.css
+components/shared/Essentials/RowComponent/row.css
+components/shared/Essentials/TableComponent/table.css
+
+# COMPONENTES SHARED NAVIGATION/BUTTONS (2)
+components/shared/Buttons/IconButtonComponent/icon-button.css
+components/shared/Navigation/BreadcrumbComponent/breadcrumb.css
+
+# COMPONENTES APP (6)
+components/App/FormsShowcase/forms-showcase.css
+components/App/ProductsCrudV3/products-crud-v3.css
+components/App/ProductsCrudV3/childs/ProductCreate/product-form.css
+components/App/ProductsCrudV3/childs/ProductEdit/product-form.css
+components/App/ProductsTableDemo/products-table-demo.css
+components/App/TableShowcase/table-showcase.css
+
+TOTAL: 33 archivos CSS sin referencia (89% de todos los archivos CSS)
+NOTA: Esto sugiere que estos archivos son código legado que debería ser eliminado.
