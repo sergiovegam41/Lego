@@ -1,5 +1,5 @@
 <?php
-namespace Components\App\ProductsCrudV3;
+namespace Components\App\ProductsCrudV3\Childs\ProductCreate;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;

@@ -1,404 +1,388 @@
-# ProductsCrudV3 - Listo para Probar ✅
+# ProductsCrudV3 - CRUD Modular de Productos
 
-**Filosofía:** "Las distancias importan más que los valores absolutos"
+## 📂 Estructura de Carpetas (Nueva)
 
-ProductsCrudV3 está completamente implementado y listo para usar. Esta versión corrige todos los problemas de V1 y V2.
+```
+ProductsCrudV3/
+├── ProductsCrudV3Component.php     ← Componente principal (tabla de productos)
+├── products-crud-v3.css            ← Estilos de la tabla
+├── products-crud-v3.js             ← Lógica de la tabla (navegación, callbacks)
+├── README.md                       ← Este archivo
+└── childs/                         ← Componentes hijos (formularios)
+    ├── ProductCreate/
+    │   ├── ProductCreateComponent.php
+    │   ├── product-create.js
+    │   └── product-form.css
+    └── ProductEdit/
+        ├── ProductEditComponent.php
+        ├── product-edit.js
+        └── product-form.css
+```
+
+**📖 Ver documentación completa:** [Estructura de Carpetas para Componentes](/docs/COMPONENT_FOLDER_STRUCTURE.md)
 
 ---
 
-## 🎯 ¿Qué se Arregló?
+## 🎯 Filosofía de Diseño
 
-### ❌ Problemas de V1 y V2
+### Separación de Responsabilidades
 
-**V1:**
-- Modal para formularios (mala UX)
-- No responsive
-- Código duplicado
+Cada componente tiene una responsabilidad única:
 
-**V2:**
-- Botones no funcionaban
-- Anchos estáticos en pixels (no adaptables)
-- Theming roto (`@media prefers-color-scheme`)
-- `.click()` hacks en SelectComponent
-- No validación de respuestas HTTP
+| Componente | Responsabilidad | Ruta |
+|------------|----------------|------|
+| **ProductsCrud V3** | Mostrar tabla de productos con paginación server-side | `/products-crud-v3` |
+| **ProductCreate** | Formulario para crear nuevos productos | `/products-crud-v3/create` |
+| **ProductEdit** | Formulario para editar productos existentes | `/products-crud-v3/edit` |
 
-### ✅ Soluciones en V3
+### Ventajas de esta Estructura
 
-1. **✅ 3 Componentes Separados**
-   - `ProductsCrudV3Component.php` - Tabla
-   - `ProductCreateComponent.php` - Crear
-   - `ProductEditComponent.php` - Editar
-
-2. **✅ Navegación con Módulos**
-   ```javascript
-   // ❌ ANTES: window.location.href
-   // ✅ AHORA: openCreateModule(), openEditModule()
-   ```
-
-3. **✅ DimensionValue System**
-   ```php
-   // Anchos type-safe y responsivos
-   width: DimensionValue::flex(2)  // Crece 2x
-   width: DimensionValue::px(120)  // Fijo en pixels
-   width: DimensionValue::percent(25)  // 25% del ancho
-   ```
-
-4. **✅ SelectComponent MVC**
-   ```javascript
-   // ❌ ANTES: LegoSelect.setValue() → .click() hack
-   // ✅ AHORA: model.setValue() → cambio directo de estado
-   ```
-
-5. **✅ ApiClient con Validación**
-   ```javascript
-   try {
-       await api.post('/api/products', data);
-   } catch (error) {
-       if (error.isValidationError()) { /* ... */ }
-       if (error.isNetworkError()) { /* ... */ }
-   }
-   ```
-
-6. **✅ Theming Correcto**
-   ```css
-   /* ❌ ANTES: @media (prefers-color-scheme: dark) */
-   /* ✅ AHORA: html.dark */
-   html.dark .component { --bg: #1a1a1a; }
-   html.light .component { --bg: #ffffff; }
-   ```
+✅ **Clara separación:** Cada componente está autocontenido en su carpeta
+✅ **Escalable:** Agregar más funcionalidades (view, delete) es fácil
+✅ **Mantenible:** Fácil localizar archivos relacionados
+✅ **Reutilizable:** Componentes hijos comparten estilos (product-form.css)
+✅ **Refleja jerarquía:** Estructura de carpetas = estructura conceptual
 
 ---
 
-## 🚀 Cómo Probar
+## 🏗️ Componente Principal: ProductsCrudV3
 
-### 1. Acceder al Sistema
+### Propósito
 
-```bash
-# Iniciar servidor (si no está corriendo)
-php -S localhost:8080 -t public router.php
+Componente enfocado ÚNICAMENTE en mostrar la tabla de productos con:
+- Server-side pagination automática
+- Filtros y ordenamiento
+- Acciones por fila (Editar, Eliminar)
+- Navegación hacia formularios de crear/editar
 
-# O con docker-compose
-docker-compose up -d
-```
+### Archivos
 
-Abrir navegador: `http://localhost:8080`
+- **ProductsCrudV3Component.php**: Renderiza la tabla usando TableComponent
+- **products-crud-v3.css**: Estilos específicos de la tabla
+- **products-crud-v3.js**:
+  - Gestión de tabla con TableManager
+  - Callbacks para acciones (edit, delete)
+  - Navegación a formularios usando módulos
 
----
+### Características
 
-### 2. Navegar a ProductsCrudV3
-
-En el menú lateral, buscar:
-
-```
-📦 Products CRUD V3  [NEW]
-   ├── 📊 Tabla
-   └── ➕ Crear
-```
-
-**Nota:** El menú "Products CRUD V3" es expandible (tiene hijos)
-
----
-
-### 3. Flujo Completo de Prueba
-
-#### ✅ Paso 1: Ver Tabla de Productos
-
-1. Click en **"Tabla"** en el menú
-2. Verificar que la tabla carga productos
-3. Verificar columnas con anchos correctos:
-   - ID: 80px (fijo)
-   - Nombre: flex(2) - crece 2x
-   - Descripción: flex(3) - crece 3x
-   - Precio: 120px (fijo)
-   - Stock: 100px (fijo)
-   - Acciones: 150px (fijo)
-
-#### ✅ Paso 2: Crear Producto
-
-1. Click en botón **"Crear Producto"** (arriba derecha)
-2. O click en **"Crear"** en el menú
-3. Llenar formulario:
-   - **Nombre:** "Laptop Test V3"
-   - **Descripción:** "Producto de prueba"
-   - **Precio:** 999.99
-   - **Stock:** 10
-   - **Categoría:** Seleccionar "Electrónica"
-4. Click en **"Crear Producto"**
-5. Verificar que:
-   - Se cierra el formulario automáticamente
-   - La tabla se refresca con el nuevo producto
-   - Aparece el producto en la lista
-
-#### ✅ Paso 3: Editar Producto
-
-1. En la tabla, buscar el producto creado
-2. Click en botón **"Editar"** de la fila
-3. Verificar que:
-   - Se abre formulario con datos pre-cargados
-   - Todos los campos tienen los valores correctos
-   - SelectComponent muestra categoría seleccionada
-4. Modificar datos:
-   - **Precio:** 1299.99
-   - **Stock:** 15
-5. Click en **"Guardar Cambios"**
-6. Verificar que:
-   - Se cierra el formulario
-   - La tabla se refresca
-   - Los cambios se reflejan en la tabla
-
-#### ✅ Paso 4: Eliminar Producto
-
-1. En la tabla, buscar el producto editado
-2. Click en botón **"Eliminar"** de la fila
-3. Confirmar eliminación en el alert
-4. Verificar que:
-   - El producto desaparece de la tabla
-   - No hay errores en consola
-
-#### ✅ Paso 5: Probar Dark Mode
-
-1. Toggle del tema (light/dark) en el header
-2. Verificar que:
-   - Todos los componentes cambian de tema
-   - Variables CSS se aplican correctamente
-   - No hay colores hardcodeados que no cambien
+- ✅ Model-driven con `Product::class`
+- ✅ Paginación server-side desde `/api/get/products`
+- ✅ RowActions con callbacks personalizados
+- ✅ Navegación usando `openModuleWithMenu()` (no `window.location.href`)
+- ✅ Theming automático con variables CSS
 
 ---
 
-## 🧪 Validación Técnica
+## 📝 Componentes Hijos
 
-### Verificar en DevTools
+### ProductCreate
 
-#### 1. Network Tab
+**Ubicación:** `childs/ProductCreate/`
+**Namespace:** `Components\App\ProductsCrudV3\Childs\ProductCreate`
 
-**GET /api/products**
-```json
-{
-    "success": true,
-    "message": "Productos obtenidos correctamente",
-    "data": [...]
-}
+**Propósito:** Formulario para crear nuevos productos
+
+**Archivos:**
+- `ProductCreateComponent.php`: Renderiza formulario vacío
+- `product-create.js`: Validación y envío a `/api/products/create`
+- `product-form.css`: Estilos compartidos del formulario
+
+**Flujo:**
+1. Usuario hace clic en "Nuevo Producto" en tabla
+2. Se abre módulo con `openCreateModule()`
+3. Formulario se valida client-side
+4. POST a `/api/products/create`
+5. Auto-cierre y recarga de tabla
+6. Ítem de menú dinámico "Nuevo Producto" aparece y desaparece
+
+### ProductEdit
+
+**Ubicación:** `childs/ProductEdit/`
+**Namespace:** `Components\App\ProductsCrudV3\Childs\ProductEdit`
+
+**Propósito:** Formulario para editar productos existentes
+
+**Archivos:**
+- `ProductEditComponent.php`: Renderiza formulario con datos del producto
+- `product-edit.js`: Carga producto, valida y actualiza
+- `product-form.css`: Estilos compartidos del formulario
+
+**Flujo:**
+1. Usuario hace clic en "Editar" en fila de tabla
+2. Se abre módulo con `openEditModule(productId)`
+3. Sistema usa ventana reutilizable `products-crud-v3-edit`
+4. Producto se carga vía `/api/products/{id}`
+5. Formulario pre-poblado se muestra
+6. PUT a `/api/products/update`
+7. Auto-cierre y recarga de tabla
+8. Solo UN ítem de menú "Editar Producto" (reutilizable)
+
+---
+
+## 🔗 Flujo de Navegación
+
 ```
-
-**POST /api/products**
-```json
-// Request
-{
-    "name": "Laptop Test V3",
-    "price": 999.99,
-    "stock": 10,
-    "category": "electronics"
-}
-
-// Response
-{
-    "success": true,
-    "message": "Producto creado correctamente",
-    "data": { "id": 123, ... }
-}
-```
-
-**PUT /api/products/123**
-```json
-// Request
-{
-    "name": "Laptop Test V3",
-    "price": 1299.99,
-    "stock": 15,
-    "category": "electronics"
-}
-
-// Response
-{
-    "success": true,
-    "message": "Producto actualizado correctamente",
-    "data": { "id": 123, ... }
-}
-```
-
-**DELETE /api/products/123**
-```json
-{
-    "success": true,
-    "message": "Producto 'Laptop Test V3' eliminado correctamente"
-}
+┌─────────────────────────────────┐
+│  ProductsCrudV3 (Tabla)         │
+│  Route: /products-crud-v3       │
+│  Namespace: ProductsCrudV3      │
+└────────┬────────────────┬───────┘
+         │                │
+    ┌────▼─────┐     ┌────▼─────┐
+    │  Crear   │     │  Editar  │
+    └────┬─────┘     └────┬─────┘
+         │                │
+         │                │
+    ┌────▼────────────────▼───────┐
+    │  childs/                    │
+    │  ├── ProductCreate/         │
+    │  │   Namespace: ...Childs   │
+    │  │   .ProductCreate         │
+    │  └── ProductEdit/           │
+    │      Namespace: ...Childs   │
+    │      .ProductEdit           │
+    └─────────────────────────────┘
 ```
 
 ---
 
-#### 2. Console Tab
+## 🚀 Cómo Usar
 
-**Sin errores:**
-- ✅ No `Uncaught TypeError`
-- ✅ No `404 Not Found`
-- ✅ No `CORS errors`
+### Ver Tabla de Productos
 
-**Logs esperados:**
 ```
-[ProductsCrudV3] Componente inicializado
-[ProductsCrudV3] Abriendo módulo crear
-[ProductCreate] Componente inicializado
-[ProductCreate] Producto creado: {id: 123, ...}
-[ProductsCrudV3] Módulo cerrado: products-crud-v3-create
-[ProductEdit] Cargando producto: 123
-[ProductEdit] Producto cargado: {...}
-[ProductEdit] Producto actualizado: {...}
+URL: /products-crud-v3
+Component: ProductsCrudV3Component
 ```
+
+La tabla se carga automáticamente con:
+- Paginación server-side (20 items por página)
+- Filtros por categoría, activo/inactivo
+- Ordenamiento por nombre, precio, stock, etc.
+
+### Crear Producto
+
+**Desde la tabla:**
+```javascript
+// Botón "Nuevo Producto"
+openCreateModule();
+```
+
+**Abre:**
+```
+URL: /products-crud-v3/create
+Component: childs/ProductCreate/ProductCreateComponent
+Module ID: products-crud-v3-create
+Menu Item: "Nuevo Producto" (dinámico, temporal)
+```
+
+### Editar Producto
+
+**Desde una fila:**
+```javascript
+// Botón "Editar" en fila
+handleEditProduct(rowData, tableId);
+```
+
+**Abre:**
+```
+URL: /products-crud-v3/edit?id={productId}
+Component: childs/ProductEdit/ProductEditComponent
+Module ID: products-crud-v3-edit (ÚNICO, reutilizable)
+Menu Item: "Editar Producto" (reemplaza contenido al editar otros)
+```
+
+**Nota:** Solo existe UNA ventana de edición que reemplaza su contenido al editar diferentes productos. Esto evita proliferación de ítems de menú.
 
 ---
 
-#### 3. Elements Tab
+## 🛠️ Tecnologías Utilizadas
 
-**Verificar theming:**
-```html
-<!-- Light mode -->
-<html class="light">
+### PHP Components
 
-<!-- Dark mode -->
-<html class="dark">
-```
+- **TableComponent**: Tabla con AG Grid
+- **InputTextComponent**: Inputs de texto
+- **TextAreaComponent**: Descripción del producto
+- **SelectComponent**: Selector de categoría
+- **FilePondComponent**: Upload de imágenes
 
-**Variables CSS aplicadas:**
+### JavaScript
+
+- **TableManager**: Gestión de AG Grid
+- **ValidationEngine**: Validación client-side
+- **ApiClient**: Fetch con manejo de errores
+- **ModuleStore**: Sistema de módulos/pestañas
+- **ThemeManager**: Cambio de tema dark/light
+- **WindowManager**: Gestión de ventanas y menú dinámico
+
+### CSS
+
+- **Variables de tema**: Sistema unificado de theming
+- **Grid layout**: Formularios responsivos
+- **Transitions**: Animaciones suaves
+
+---
+
+## 📦 APIs Consumidas
+
+| Endpoint | Método | Propósito |
+|----------|--------|-----------|
+| `/api/get/products` | GET | Listar productos con paginación |
+| `/api/products/create` | POST | Crear nuevo producto |
+| `/api/products/{id}` | GET | Obtener producto por ID |
+| `/api/products/update` | PUT | Actualizar producto existente |
+| `/api/products/delete` | POST | Eliminar producto |
+
+---
+
+## 🎨 Theming
+
+Todos los componentes usan el **nuevo sistema de variables CSS** para theming automático:
+
 ```css
-.products-crud-v3 {
-    --bg-surface: #ffffff; /* light */
-    --bg-surface: #1a1a1a; /* dark */
+/* Ejemplo: products-crud-v3.css */
+.products-crud-header {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
 }
 ```
 
----
+**Sin JavaScript necesario** - los colores cambian automáticamente al hacer toggle del tema.
 
-## 📁 Estructura de Archivos
-
-```
-components/App/ProductsCrudV3/
-├── ProductsCrudV3Component.php      # Componente tabla
-├── ProductCreateComponent.php       # Componente crear
-├── ProductEditComponent.php         # Componente editar
-├── products-crud-v3.js             # Lógica tabla
-├── products-crud-v3.css            # Estilos tabla
-├── product-create.js               # Lógica crear
-├── product-edit.js                 # Lógica editar
-├── product-form.css                # Estilos compartidos (create/edit)
-└── README.md                       # Este archivo
-```
+**📖 Ver documentación:** [Sistema de Theming](/docs/THEMING_README.md)
 
 ---
 
-## 🔧 Rutas Registradas
+## 🔄 Mejoras vs V1/V2
 
-### API REST (nuevas)
+### V1 (Antiguo)
+❌ Todo en un solo archivo
+❌ Modales para crear/editar
+❌ Código duplicado
+❌ window.location.href para navegación
+❌ Colores hardcodeados
 
-```
-GET    /api/products        → Listar todos
-GET    /api/products/{id}   → Obtener uno
-POST   /api/products        → Crear nuevo
-PUT    /api/products/{id}   → Actualizar
-DELETE /api/products/{id}   → Eliminar
-```
+### V2 (Intermedio)
+⚠️ Componentes separados pero sin organización
+⚠️ Archivos mezclados en carpeta raíz
+⚠️ Difícil de mantener
 
-### Componentes (auto-discovery)
-
-```
-GET /component/products-crud-v3        → Tabla
-GET /component/products-crud-v3/create → Crear
-GET /component/products-crud-v3/edit   → Editar (con ?id=123)
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Error: "ModuleStore no disponible"
-
-**Causa:** JavaScript no se ejecutó correctamente
-
-**Solución:**
-```javascript
-// Verificar en consola
-console.log(window.moduleStore);  // Debe existir
-console.log(window._openModule);  // Debe ser función
-```
+### V3 (Actual) ✅
+✅ Estructura de carpetas jerárquica con `childs/`
+✅ Componentes completamente separados
+✅ Navegación con módulos (no page reload)
+✅ Server-side pagination model-driven
+✅ Ventana de edición reutilizable (evita proliferación)
+✅ Sistema de theming automático
+✅ Validación unificada
+✅ Auto-cierre de formularios
+✅ Items de menú dinámicos (fantasma)
+✅ Namespaces reflejan estructura
 
 ---
 
-### Error: "No se encontró select con id..."
+## 🤝 Contribuir
 
-**Causa:** SelectComponent no se inicializó
+Al agregar nuevas funcionalidades (ej: ProductView, ProductDelete):
 
-**Solución:**
-```javascript
-// Verificar en consola
-console.log(window.LegoSelect);  // Debe existir
-console.log(window.LegoSelect.getValue('product-category'));
-```
+### 1. Crear carpeta en `childs/`
 
----
-
-### Error: Tabla no carga datos
-
-**Causa:** API no responde o URL incorrecta
-
-**Solución:**
-1. Verificar en Network tab: `GET /api/products`
-2. Verificar response: `{"success": true, "data": [...]}`
-3. Verificar TableComponent apiUrl: `/api/products`
-
----
-
-### Error: Theming no funciona
-
-**Causa:** Variables CSS no definidas
-
-**Solución:**
 ```bash
-# Ejecutar validador
-node scripts/validate-theming.js
+mkdir childs/ProductView
+```
 
-# Verificar que usa html.dark/html.light
-# NO @media (prefers-color-scheme)
+### 2. Crear archivos del componente
+
+```
+childs/ProductView/
+├── ProductViewComponent.php
+├── product-view.js
+└── product-view.css
+```
+
+### 3. Usar namespace correcto
+
+```php
+<?php
+namespace Components\App\ProductsCrudV3\Childs\ProductView;
+
+use Core\Components\CoreComponent\CoreComponent;
+use Core\Attributes\ApiComponent;
+
+#[ApiComponent('/products-crud-v3/view', methods: ['GET'])]
+class ProductViewComponent extends CoreComponent
+{
+    protected $CSS_PATHS = ["./product-view.css"];
+    protected $JS_PATHS = ["./product-view.js"];
+
+    // ...
+}
+```
+
+### 4. Agregar navegación en `products-crud-v3.js`
+
+```javascript
+function openViewModule(productId) {
+    window.legoWindowManager.openModuleWithMenu({
+        moduleId: `products-crud-v3-view-${productId}`,
+        parentMenuId: '10-1',
+        label: `Ver #${productId}`,
+        url: `/component/products-crud-v3/view?id=${productId}`,
+        icon: 'eye-outline'
+    });
+}
+
+window.openViewModule = openViewModule;
+```
+
+### 5. Agregar acción en tabla (opcional)
+
+```php
+// En ProductsCrudV3Component.php
+$actions = new RowActionsCollection(
+    // ... acciones existentes
+    new RowActionDto(
+        id: "view",
+        label: "Ver",
+        icon: "eye-outline",
+        callback: "handleViewProduct",
+        variant: "secondary",
+        tooltip: "Ver detalles"
+    )
+);
 ```
 
 ---
 
-## ✅ Checklist Final
+## ✅ Checklist de Calidad
 
-Antes de marcar como "Listo":
+Este componente cumple con:
 
-- [ ] Tabla carga y muestra productos
-- [ ] Botón "Crear Producto" funciona
-- [ ] Formulario crear se abre correctamente
-- [ ] Producto se crea y tabla se refresca
-- [ ] Botón "Editar" en tabla funciona
-- [ ] Formulario editar carga datos correctos
-- [ ] Cambios se guardan y tabla se refresca
-- [ ] Botón "Eliminar" funciona con confirmación
-- [ ] Dark mode funciona en todos los componentes
-- [ ] No hay errores en consola
-- [ ] Network requests usan métodos HTTP correctos (GET, POST, PUT, DELETE)
-- [ ] SelectComponent funciona sin .click() hacks
-- [ ] Columnas tienen anchos correctos (flex, px)
+- [x] Estructura de carpetas jerárquica con `childs/`
+- [x] Separación de responsabilidades (SRP)
+- [x] Namespaces reflejan estructura de carpetas
+- [x] Sin colores hardcodeados (usa variables CSS)
+- [x] Theming automático dark/light
+- [x] Navegación con módulos (no page reload)
+- [x] Validación client-side consistente
+- [x] Manejo de errores robusto
+- [x] Auto-cierre de formularios
+- [x] Items de menú dinámicos con gestión inteligente
+- [x] Ventana de edición reutilizable
+- [x] Documentación completa
 
 ---
 
 ## 📚 Documentación Relacionada
 
-- [PROPUESTA_PRODUCTSCRUDV3.md](../../../PROPUESTA_PRODUCTSCRUDV3.md) - Propuesta completa
-- [THEMING_GUIDE.md](../../../docs/THEMING_GUIDE.md) - Guía de theming
-- [ApiClient.example.js](../../../assets/js/core/api/ApiClient.example.js) - Ejemplos ApiClient
+- **[Estructura de Carpetas para Componentes](/docs/COMPONENT_FOLDER_STRUCTURE.md)** - Guía completa
+- **[Sistema de Theming](/docs/THEMING_README.md)** - Theming automático
+- **[TableComponent Guide](/docs/TABLE_COMPONENT.md)** - Uso de tablas
 
 ---
 
-## 🎉 ¡Listo para Producción!
-
-ProductsCrudV3 está implementado según las mejores prácticas:
-
-- ✅ **Arquitectura limpia** - Separación de responsabilidades
-- ✅ **Type-safe** - DimensionValue, Enums, DTOs
-- ✅ **Validación** - Client-side y server-side
-- ✅ **Theming correcto** - html.dark/html.light
-- ✅ **REST correcto** - GET, POST, PUT, DELETE
-- ✅ **Sin duplicación** - DRY principle
-- ✅ **Consistencia dimensional** - "Las distancias importan"
-
-**¡Feliz testing!** 🚀
+**Versión:** 3.0
+**Última actualización:** 2025-11-02
+**Mantenido por:** LEGO Framework Team
