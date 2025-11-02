@@ -275,6 +275,20 @@ if (typeof window.legoWindowManager === 'undefined') {
         },
 
         /**
+         * Close the currently active module
+         */
+        closeCurrentWindow: function() {
+            if (!window.moduleStore || !window.moduleStore.activeModule) {
+                console.warn('No active module to close');
+                return;
+            }
+
+            const activeId = window.moduleStore.activeModule;
+            this.closeModule(activeId);
+            console.log('Current window closed:', activeId);
+        },
+
+        /**
          * Update breadcrumb based on currently active module
          */
         updateBreadcrumbFromActiveModule: function() {

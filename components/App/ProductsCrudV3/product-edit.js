@@ -285,7 +285,9 @@ function loadProductImages(images) {
 async function initializeForm() {
     console.log('[ProductEdit] Inicializando formulario...');
 
-    const container = document.querySelector('.product-form');
+    // IMPORTANTE: Buscar específicamente el contenedor con data-product-id (edit form)
+    // No usar .product-form a secas porque podría encontrar el formulario de create
+    const container = document.querySelector('.product-form[data-product-id]');
     console.log('[ProductEdit] Container encontrado:', container);
     console.log('[ProductEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
 
@@ -374,30 +376,12 @@ async function initializeForm() {
                 // Recargar tabla
                 reloadProductsTable();
 
-                // Volver al módulo de la tabla (similar a product-create)
-                const tableModule = Object.keys(window.moduleStore.modules).find(id =>
-                    id.includes('products-crud-v3') && !id.includes('create') && !id.includes('edit')
-                );
-
-                if (tableModule && window.moduleStore) {
-                    // Activar el módulo de la tabla
-                    window.moduleStore._openModule(tableModule, window.moduleStore.modules[tableModule].component);
-
-                    // Mostrar visualmente el módulo de la tabla
-                    document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
-                    const tableContainer = document.getElementById(`module-${tableModule}`);
-                    if (tableContainer) {
-                        tableContainer.classList.add('active');
+                // Cerrar automáticamente el formulario después de un breve delay
+                setTimeout(() => {
+                    if (window.legoWindowManager) {
+                        window.legoWindowManager.closeCurrentWindow();
                     }
-
-                    // Cerrar el módulo de edición
-                    const currentModule = window.moduleStore.getActiveModule();
-                    if (currentModule && currentModule.includes('edit')) {
-                        setTimeout(() => {
-                            window.moduleStore.closeModule(currentModule);
-                        }, 300);
-                    }
-                }
+                }, 500); // Delay para que el usuario vea el mensaje de éxito
             }
 
         } catch (error) {
@@ -427,7 +411,8 @@ let attempts = 0;
 const maxAttempts = 40; // 40 * 50ms = 2 segundos
 
 function tryInitialize() {
-    const container = document.querySelector('.product-form');
+    // IMPORTANTE: Buscar el contenedor específico del edit form (con data-product-id)
+    const container = document.querySelector('.product-form[data-product-id]');
     const form = document.getElementById('product-edit-form');
 
     if (container && form) {

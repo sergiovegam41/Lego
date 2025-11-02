@@ -62,6 +62,16 @@ class HeaderComponent extends CoreComponent
             className: "header-reload-btn"
         ))->render();
 
+        // Render close button
+        $closeButton = (new IconButtonComponent(
+            icon: "close-outline",
+            size: "medium",
+            variant: "ghost",
+            onClick: "window.legoWindowManager?.closeCurrentWindow()",
+            title: "Cerrar ventana actual",
+            className: "header-close-btn"
+        ))->render();
+
         return <<<HTML
         <header id="top-header" class="main-header">
             <div class="header-left">
@@ -69,6 +79,7 @@ class HeaderComponent extends CoreComponent
             </div>
             <div class="header-center">
                 {$reloadButton}
+                {$closeButton}
             </div>
             <div class="header-right">
                 <div class="notification-btn" id="notification-btn">

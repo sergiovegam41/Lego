@@ -258,36 +258,15 @@ function initializeForm() {
                     alert('Producto creado correctamente');
                 }
 
-                // Limpiar formulario
-                clearForm();
-
                 // Recargar tabla
                 reloadProductsTable();
 
-                // Volver al módulo de la tabla (no cerrar, activar tabla)
-                const tableModule = Object.keys(window.moduleStore.modules).find(id =>
-                    id.includes('products-crud-v3') && !id.includes('create') && !id.includes('edit')
-                );
-
-                if (tableModule && window.moduleStore) {
-                    // Activar el módulo de la tabla
-                    window.moduleStore._openModule(tableModule, window.moduleStore.modules[tableModule].component);
-
-                    // Mostrar visualmente el módulo de la tabla
-                    document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
-                    const tableContainer = document.getElementById(`module-${tableModule}`);
-                    if (tableContainer) {
-                        tableContainer.classList.add('active');
+                // Cerrar automáticamente el formulario después de un breve delay
+                setTimeout(() => {
+                    if (window.legoWindowManager) {
+                        window.legoWindowManager.closeCurrentWindow();
                     }
-
-                    // Cerrar el módulo de creación
-                    const currentModule = window.moduleStore.getActiveModule();
-                    if (currentModule && currentModule.includes('create')) {
-                        setTimeout(() => {
-                            window.moduleStore.closeModule(currentModule);
-                        }, 300);
-                    }
-                }
+                }, 500); // Delay para que el usuario vea el mensaje de éxito
             }
 
         } catch (error) {

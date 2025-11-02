@@ -55,6 +55,14 @@
     color: var(--text-secondary);
 }
 
+.header-close-btn {
+    color: var(--text-secondary);
+}
+
+.header-close-btn:hover {
+    color: var(--error);
+}
+
 /* Header Right Section - User Info & Controls */
 .header-right {
     display: flex;
