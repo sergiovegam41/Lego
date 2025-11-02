@@ -84,7 +84,7 @@ class ProductCreateComponent extends CoreComponent
         $filePondImages = new FilePondComponent(
             id: "product-images",
             label: "Imágenes del Producto",
-            productId: null, // No hay product_id aún (se creará al submit)
+            path: "products/images/", // Ruta en MinIO
             maxFiles: 5,
             allowReorder: true,
             allowMultiple: true,

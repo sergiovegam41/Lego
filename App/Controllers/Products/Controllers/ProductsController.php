@@ -8,7 +8,9 @@ use Core\Models\ResponseDTO;
 use Core\Models\StatusCodes;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\EntityFile;
 use Core\Services\Storage\StorageService;
+use Core\Services\File\FileService;
 
 /**
  * ProductsController - API REST para productos
@@ -33,11 +35,14 @@ use Core\Services\Storage\StorageService;
  */
 class ProductsController extends CoreController
 {
-    
+
     const ROUTE = 'products';
+    private FileService $fileService;
 
     public function __construct($accion)
     {
+        $this->fileService = new FileService();
+
         try {
             $this->$accion();
         } catch (\Exception $e) {
@@ -74,7 +79,7 @@ class ProductsController extends CoreController
 
     /**
      * GET /api/products/get?id=1
-     * Obtiene un producto por ID (incluye imágenes)
+     * Obtiene un producto por ID (incluye imágenes vía entity_files)
      */
     public function get()
     {
@@ -91,7 +96,7 @@ class ProductsController extends CoreController
                 return;
             }
 
-            $product = Product::with('images')->find($id);
+            $product = Product::find($id);
 
             if (!$product) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
@@ -104,13 +109,25 @@ class ProductsController extends CoreController
 
             $productData = $product->toArray();
 
-            // Agregar formato a las imágenes
-            if (isset($productData['images'])) {
-                $productData['images'] = array_map(function($img) {
-                    $img['size_formatted'] = $this->formatBytes($img['size'] ?? 0);
-                    return $img;
-                }, $productData['images']);
-            }
+            // Obtener archivos asociados usando FileService (OPCIÓN B: entity_files)
+            $fileAssociations = $this->fileService->getEntityFiles('Product', $id);
+
+            // Formatear imágenes
+            $productData['images'] = $fileAssociations->map(function($assoc) {
+                $file = $assoc->file;
+                return [
+                    'id' => $file->id,
+                    'url' => $file->url,
+                    'key' => $file->key,
+                    'original_name' => $file->original_name,
+                    'size' => $file->size,
+                    'size_formatted' => $this->formatBytes($file->size ?? 0),
+                    'mime_type' => $file->mime_type,
+                    'display_order' => $assoc->display_order,
+                    'is_primary' => $assoc->isPrimary(),
+                    'created_at' => $file->created_at
+                ];
+            })->toArray();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
@@ -155,17 +172,17 @@ class ProductsController extends CoreController
                 'is_active' => $data['is_active'] ?? true
             ]);
 
-            // Asociar imágenes si se proporcionaron IDs
+            // Asociar imágenes usando OPCIÓN B: entity_files (polimórfica)
             if (!empty($data['image_ids']) && is_array($data['image_ids'])) {
                 foreach ($data['image_ids'] as $index => $imageId) {
-                    $image = ProductImage::find($imageId);
-                    if ($image) {
-                        $image->update([
-                            'product_id' => $product->id,
-                            'display_order' => $index,
-                            'is_primary' => $index === 0 // Primera imagen es la principal
-                        ]);
-                    }
+                    // Usar FileService para asociar el archivo a la entidad Product
+                    $this->fileService->associateFileToEntity(
+                        $imageId,
+                        'Product',
+                        $product->id,
+                        $index,
+                        ['is_primary' => $index === 0] // Primera imagen es la principal
+                    );
                 }
             }
 
@@ -224,24 +241,20 @@ class ProductsController extends CoreController
                 'is_active' => isset($data['is_active']) ? $data['is_active'] : $product->is_active
             ]);
 
-            // Actualizar asociación de imágenes si se proporcionaron IDs
+            // Actualizar asociación de imágenes usando OPCIÓN B: entity_files
             if (isset($data['image_ids']) && is_array($data['image_ids'])) {
-                // Primero, marcar todas las imágenes actuales como no asociadas
-                ProductImage::where('product_id', $product->id)->update([
-                    'product_id' => null,
-                    'is_primary' => false
-                ]);
+                // Eliminar todas las asociaciones actuales de este producto
+                \App\Models\EntityFileAssociation::forEntity('Product', $product->id)->delete();
 
-                // Luego, asociar las nuevas imágenes
+                // Crear nuevas asociaciones
                 foreach ($data['image_ids'] as $index => $imageId) {
-                    $image = ProductImage::find($imageId);
-                    if ($image) {
-                        $image->update([
-                            'product_id' => $product->id,
-                            'display_order' => $index,
-                            'is_primary' => $index === 0
-                        ]);
-                    }
+                    $this->fileService->associateFileToEntity(
+                        $imageId,
+                        'Product',
+                        $product->id,
+                        $index,
+                        ['is_primary' => $index === 0]
+                    );
                 }
             }
 

@@ -76,6 +76,12 @@ class ApiRouteDiscovery
             }
         }
 
+        // IMPORTANTE: Ordenar por longitud de path (más largos primero)
+        // Esto asegura que /products-crud-v3/edit se registre ANTES que /products-crud-v3
+        usort($files, function($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
         return $files;
     }
 

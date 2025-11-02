@@ -126,7 +126,7 @@ class ProductEditComponent extends CoreComponent
         $filePondImages = new FilePondComponent(
             id: "product-images",
             label: "Imágenes del Producto",
-            productId: $productId,
+            path: "products/images/", // Ruta en MinIO
             maxFiles: 5,
             allowReorder: true,
             allowMultiple: true,

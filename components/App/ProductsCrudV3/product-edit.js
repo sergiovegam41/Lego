@@ -251,8 +251,8 @@ function loadProductImages(images) {
             // Agregar cada imagen a FilePond
             images.forEach(image => {
                 // FilePond espera objetos con esta estructura para archivos existentes
-                // IMPORTANTE: Guardar el ID en metadata para poder recuperarlo
-                pond.addFile(image.url, {
+                // IMPORTANTE: Usar el ID como source para que delete() funcione correctamente
+                pond.addFile(image.id.toString(), {
                     type: 'local',
                     file: {
                         name: image.original_name || 'image.jpg',
@@ -260,8 +260,8 @@ function loadProductImages(images) {
                         type: image.mime_type || 'image/jpeg'
                     },
                     metadata: {
-                        poster: image.url,
-                        imageId: image.id // CRÍTICO: Guardar el ID aquí para recuperarlo en updateImageIds
+                        poster: image.url, // URL para mostrar la imagen
+                        imageId: image.id   // ID para referencia adicional
                     }
                 }).then(file => {
                     console.log('[ProductEdit] Imagen agregada a FilePond con ID:', image.id);
@@ -286,10 +286,14 @@ async function initializeForm() {
     console.log('[ProductEdit] Inicializando formulario...');
 
     const container = document.querySelector('.product-form');
+    console.log('[ProductEdit] Container encontrado:', container);
+    console.log('[ProductEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
+
     const productId = container?.getAttribute('data-product-id');
+    console.log('[ProductEdit] Product ID extraído:', productId);
 
     if (!productId) {
-        console.error('[ProductEdit] No se encontró ID de producto');
+        console.error('[ProductEdit] No se encontró ID de producto en el container');
         return;
     }
 

@@ -5,35 +5,44 @@ namespace Components\Shared\Forms\FilePondComponent;
 use Core\Components\CoreComponent\CoreComponent;
 
 /**
- * FilePondComponent - Upload de archivos con FilePond
+ * FilePondComponent - Upload UNIVERSAL de archivos con FilePond
  *
  * FILOSOFÍA LEGO:
- * Componente reutilizable para upload de imágenes con preview.
- * Integrado con MinIO vía ProductsController endpoints.
+ * Componente GENÉRICO reutilizable para upload de archivos/imágenes.
+ * Integrado con MinIO vía FilesController (universal).
  *
  * CARACTERÍSTICAS:
- * ✅ Upload múltiple de imágenes
- * ✅ Preview instantáneo
+ * ✅ Upload múltiple de archivos
+ * ✅ Preview instantáneo (para imágenes)
  * ✅ Drag & drop
  * ✅ Validación client-side (tamaño, tipo)
  * ✅ Integración con MinIO Storage
- * ✅ Reordenamiento de imágenes
+ * ✅ Reordenamiento
  * ✅ Eliminación individual
+ * ✅ NO ACOPLADO a ninguna entidad específica
  *
- * ENDPOINTS BACKEND (ProductsController):
- * - POST /api/products/upload_image    - Subir imagen
- * - POST /api/products/delete_image    - Eliminar imagen
- * - POST /api/products/reorder_images  - Reordenar
- * - POST /api/products/set_primary     - Marcar como principal
+ * ENDPOINTS BACKEND (FilesController - UNIVERSAL):
+ * - POST /api/files/upload    - Subir archivo (retorna ID)
+ * - POST /api/files/delete    - Eliminar archivo por ID
  *
  * USO BÁSICO:
  * ```php
+ * // Para productos:
  * $filePond = new FilePondComponent(
  *     id: 'product-images',
  *     label: 'Imágenes del Producto',
- *     productId: 123,  // Opcional: para asociar a producto existente
+ *     path: 'products/images/',  // Ruta en MinIO
  *     maxFiles: 5
  * );
+ *
+ * // Para documentos:
+ * $filePond = new FilePondComponent(
+ *     id: 'user-documents',
+ *     label: 'Documentos',
+ *     path: 'documents/pdf/',
+ *     acceptedFileTypes: ['application/pdf']
+ * );
+ *
  * echo $filePond->render();
  * ```
  */
@@ -44,8 +53,8 @@ class FilePondComponent extends CoreComponent
 
     public function __construct(
         public readonly string $id,
-        public readonly string $label = 'Imágenes',
-        public readonly ?int $productId = null,
+        public readonly string $label = 'Archivos',
+        public readonly string $path = 'general/', // Ruta en MinIO (ej: 'products/images/', 'documents/pdf/')
         public readonly int $maxFiles = 5,
         public readonly int $maxFileSize = 5242880, // 5MB en bytes
         public readonly array $acceptedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
@@ -67,7 +76,7 @@ class FilePondComponent extends CoreComponent
         $acceptTypes = implode(',', $this->acceptedFileTypes);
 
         // Preparar valores para data-config JSON
-        $productIdValue = $this->productId !== null ? $this->productId : 'null';
+        $pathJson = json_encode($this->path);
         $acceptedTypesJson = json_encode($this->acceptedFileTypes);
         $allowReorderStr = $this->allowReorder ? 'true' : 'false';
         $allowMultipleStr = $this->allowMultiple ? 'true' : 'false';
@@ -82,7 +91,7 @@ class FilePondComponent extends CoreComponent
 
             <!-- Help text -->
             <div class="lego-filepond__help">
-                Arrastra imágenes o haz clic para seleccionar • Máx. {$this->maxFiles} archivos • {$maxFileSizeMB}MB por archivo
+                Arrastra archivos o haz clic para seleccionar • Máx. {$this->maxFiles} archivos • {$maxFileSizeMB}MB por archivo
             </div>
 
             <!-- FilePond Container -->
@@ -90,7 +99,7 @@ class FilePondComponent extends CoreComponent
                 class="lego-filepond__container"
                 data-config='{
                     "id": "{$this->id}",
-                    "productId": {$productIdValue},
+                    "path": {$pathJson},
                     "maxFiles": {$this->maxFiles},
                     "maxFileSize": {$this->maxFileSize},
                     "acceptedFileTypes": {$acceptedTypesJson},

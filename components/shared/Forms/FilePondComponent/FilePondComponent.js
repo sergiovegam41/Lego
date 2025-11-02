@@ -143,9 +143,9 @@ async function initializeFilePond() {
 
             // Configuración de servidor
             server: {
-                // Upload
+                // Upload (UNIVERSAL)
                 process: {
-                    url: '/api/products/upload_image',
+                    url: '/api/files/upload',
                     method: 'POST',
                     withCredentials: false,
                     headers: {},
@@ -153,10 +153,10 @@ async function initializeFilePond() {
                     ondata: (formData) => {
                         console.log('[FilePondComponent] Preparando upload, FormData:', formData);
 
-                        // Agregar product_id si existe
-                        if (config.productId) {
-                            formData.append('product_id', config.productId);
-                            console.log('[FilePondComponent] Product ID agregado:', config.productId);
+                        // Agregar path (ej: 'products/images/', 'documents/pdf/')
+                        if (config.path) {
+                            formData.append('path', config.path);
+                            console.log('[FilePondComponent] Path agregado:', config.path);
                         }
 
                         // Debug: ver todos los campos del FormData
@@ -168,8 +168,7 @@ async function initializeFilePond() {
                     },
                     onload: (response) => {
                         console.log('[FilePondComponent] Upload exitoso, response:', response);
-                        // FilePond espera que retornemos el ID del archivo
-                        // ProductsController retorna el ID como text/plain
+                        // FilesController retorna el ID del archivo como text/plain
                         return response;
                     },
                     onerror: (response) => {
@@ -208,15 +207,15 @@ async function initializeFilePond() {
                     };
                 },
 
-                // Remove (eliminar archivo ya subido)
+                // Remove (eliminar archivo ya subido - UNIVERSAL)
                 remove: (source, load, error) => {
-                    fetch('/api/products/delete_image', {
+                    fetch('/api/files/delete', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            image_id: source
+                            file_id: source
                         })
                     })
                     .then(response => response.json())
@@ -229,7 +228,7 @@ async function initializeFilePond() {
                     })
                     .catch(err => {
                         console.error('[FilePondComponent] Error eliminando:', err);
-                        error('Error al eliminar imagen');
+                        error('Error al eliminar archivo');
                     });
                 }
             },
