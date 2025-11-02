@@ -192,17 +192,14 @@ function closeModule() {
 // ═══════════════════════════════════════════════════════════════════
 
 function reloadProductsTable() {
-    // Buscar el módulo de la tabla
-    const tableModule = Object.keys(window.moduleStore.modules).find(id =>
-        id.includes('products-crud-v3') && !id.includes('create') && !id.includes('edit')
-    );
+    // Recargar la tabla usando la función global de refresh
+    const refreshFn = window.legoTable_products_table_v3_refresh;
 
-    if (tableModule) {
-        // Recargar usando legoWindowManager
-        const previousModule = window.moduleStore.activeModule;
-        window.moduleStore.activeModule = tableModule;
-        window.legoWindowManager?.reloadActive();
-        window.moduleStore.activeModule = previousModule;
+    if (refreshFn) {
+        console.log('[ProductCreate] Recargando tabla de productos...');
+        refreshFn();
+    } else {
+        console.warn('[ProductCreate] Función de recarga de tabla no encontrada');
     }
 }
 
@@ -241,6 +238,12 @@ function initializeForm() {
                 stock: parseInt(document.getElementById('product-stock')?.value || 0),
                 category: window.LegoSelect?.getValue('product-category') || ''
             };
+
+            // Obtener IDs de imágenes de FilePond
+            const imageIds = window.FilePondComponent?.getImageIds('product-images') || [];
+            if (imageIds.length > 0) {
+                formData.image_ids = imageIds;
+            }
 
             console.log('[ProductCreate] Datos del formulario:', formData);
 

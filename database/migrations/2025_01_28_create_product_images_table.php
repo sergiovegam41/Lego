@@ -15,20 +15,20 @@ return new class {
     {
         Capsule::schema()->create('product_images', function ($table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
             $table->string('url', 500); // URL completa de MinIO
             $table->string('key', 500); // Key/path en MinIO para operaciones de eliminación
             $table->string('original_name', 255)->nullable(); // Nombre original del archivo
             $table->integer('size')->nullable(); // Tamaño en bytes
             $table->string('mime_type', 100)->nullable(); // Tipo MIME
-            $table->integer('order')->default(0); // Orden de visualización
+            $table->integer('display_order')->default(0); // Orden de visualización
             $table->boolean('is_primary')->default(false); // Imagen principal del producto
             $table->timestamps();
 
             // Índices
             $table->index('product_id');
             $table->index('is_primary');
-            $table->index('order');
+            $table->index('display_order');
         });
 
         echo "✓ Tabla 'product_images' creada exitosamente\n";

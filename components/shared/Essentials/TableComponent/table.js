@@ -702,6 +702,16 @@ let context = {CONTEXT};
             }
         };
 
+        // Función para recargar datos del servidor (purge cache)
+        window[`legoTable_${jsId}_refresh`] = function() {
+            const api = window[`legoTable_${jsId}_api`];
+            if (api) {
+                console.log('[LEGO Table] Recargando datos del servidor...');
+                api.refreshInfiniteCache();
+                console.log('[LEGO Table] Datos recargados');
+            }
+        };
+
         // Función para actualizar contador de filas
         window[`legoTable_${jsId}_updateRowCount`] = function() {
             const api = window[`legoTable_${jsId}_api`];

@@ -79,8 +79,8 @@ class ProductsController extends CoreController
     public function get()
     {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            $id = $data['id'] ?? null;
+            // Obtener ID desde query params para GET request
+            $id = $_GET['id'] ?? $_REQUEST['id'] ?? null;
 
             if (!$id) {
                 Response::json(StatusCodes::HTTP_BAD_REQUEST, (array)new ResponseDTO(
@@ -155,10 +155,24 @@ class ProductsController extends CoreController
                 'is_active' => $data['is_active'] ?? true
             ]);
 
+            // Asociar imágenes si se proporcionaron IDs
+            if (!empty($data['image_ids']) && is_array($data['image_ids'])) {
+                foreach ($data['image_ids'] as $index => $imageId) {
+                    $image = ProductImage::find($imageId);
+                    if ($image) {
+                        $image->update([
+                            'product_id' => $product->id,
+                            'display_order' => $index,
+                            'is_primary' => $index === 0 // Primera imagen es la principal
+                        ]);
+                    }
+                }
+            }
+
             Response::json(StatusCodes::HTTP_CREATED, (array)new ResponseDTO(
                 true,
                 'Producto creado correctamente',
-                $product->toArray()
+                $product->fresh()->toArray()
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
@@ -209,6 +223,27 @@ class ProductsController extends CoreController
                 'image_url' => $data['image_url'] ?? $product->image_url,
                 'is_active' => isset($data['is_active']) ? $data['is_active'] : $product->is_active
             ]);
+
+            // Actualizar asociación de imágenes si se proporcionaron IDs
+            if (isset($data['image_ids']) && is_array($data['image_ids'])) {
+                // Primero, marcar todas las imágenes actuales como no asociadas
+                ProductImage::where('product_id', $product->id)->update([
+                    'product_id' => null,
+                    'is_primary' => false
+                ]);
+
+                // Luego, asociar las nuevas imágenes
+                foreach ($data['image_ids'] as $index => $imageId) {
+                    $image = ProductImage::find($imageId);
+                    if ($image) {
+                        $image->update([
+                            'product_id' => $product->id,
+                            'display_order' => $index,
+                            'is_primary' => $index === 0
+                        ]);
+                    }
+                }
+            }
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
@@ -351,52 +386,36 @@ class ProductsController extends CoreController
             // Construir la key para referencia
             $key = 'products/images/' . $filename;
 
-            // Si hay un product_id, guardar en BD
-            $imageData = null;
+            // SIEMPRE guardar en BD (con o sin product_id)
+            // Si no hay product_id, se guarda con NULL para asociar después
+
+            $maxOrder = 0;
+            $isPrimary = false;
+
             if ($productId) {
                 // Determinar el orden (último + 1)
-                $maxOrder = ProductImage::where('product_id', $productId)->max('order') ?? -1;
+                $maxOrder = ProductImage::where('product_id', $productId)->max('display_order') ?? -1;
+                $maxOrder++;
 
                 // Determinar si es la primera imagen (será primary)
                 $isPrimary = ProductImage::where('product_id', $productId)->count() === 0;
-
-                $productImage = ProductImage::create([
-                    'product_id' => $productId,
-                    'url' => $url,
-                    'key' => $key,
-                    'original_name' => $file['name'],
-                    'size' => $file['size'],
-                    'mime_type' => $mimeType,
-                    'order' => $maxOrder + 1,
-                    'is_primary' => $isPrimary
-                ]);
-
-                $imageData = $productImage->toArray();
-                $imageData['size_formatted'] = $this->formatBytes($file['size']);
-            } else {
-                // Si no hay product_id, solo devolver la URL
-                $imageData = [
-                    'url' => $url,
-                    'key' => $key,
-                    'original_name' => $file['name'],
-                    'size' => $file['size'],
-                    'size_formatted' => $this->formatBytes($file['size']),
-                    'mime_type' => $mimeType
-                ];
             }
 
-            // FilePond espera solo el ID del archivo como texto plano, no JSON
-            // Si hay imageData (se guardó en BD), retornar el ID
-            if (isset($imageData['id'])) {
-                header('Content-Type: text/plain');
-                echo $imageData['id'];
-                exit();
-            } else {
-                // Si no se guardó en BD, retornar la URL como identificador temporal
-                header('Content-Type: text/plain');
-                echo $url;
-                exit();
-            }
+            $productImage = ProductImage::create([
+                'product_id' => $productId, // Puede ser NULL
+                'url' => $url,
+                'key' => $key,
+                'original_name' => $file['name'],
+                'size' => $file['size'],
+                'mime_type' => $mimeType,
+                'display_order' => $maxOrder,
+                'is_primary' => $isPrimary
+            ]);
+
+            // FilePond espera solo el ID del archivo como texto plano
+            header('Content-Type: text/plain');
+            echo $productImage->id;
+            exit();
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
@@ -455,7 +474,7 @@ class ProductsController extends CoreController
             if ($image->is_primary) {
                 $nextImage = ProductImage::where('product_id', $image->product_id)
                     ->where('id', '!=', $image->id)
-                    ->orderBy('order')
+                    ->orderBy('display_order')
                     ->first();
 
                 if ($nextImage) {

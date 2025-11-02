@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - original_name: Nombre original del archivo
  * - size: Tamaño en bytes
  * - mime_type: Tipo MIME
- * - order: Orden de visualización
+ * - display_order: Orden de visualización
  * - is_primary: Marca si es la imagen principal
  * - created_at: Fecha de creación
  * - updated_at: Fecha de actualización
@@ -42,7 +42,7 @@ class ProductImage extends Model
         'original_name',
         'size',
         'mime_type',
-        'order',
+        'display_order',
         'is_primary'
     ];
 
@@ -52,7 +52,7 @@ class ProductImage extends Model
     protected $casts = [
         'product_id' => 'integer',
         'size' => 'integer',
-        'order' => 'integer',
+        'display_order' => 'integer',
         'is_primary' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
@@ -62,7 +62,7 @@ class ProductImage extends Model
      * Valores por defecto para atributos
      */
     protected $attributes = [
-        'order' => 0,
+        'display_order' => 0,
         'is_primary' => false
     ];
 
@@ -87,7 +87,7 @@ class ProductImage extends Model
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('order', 'asc');
+        return $query->orderBy('display_order', 'asc');
     }
 
     /**

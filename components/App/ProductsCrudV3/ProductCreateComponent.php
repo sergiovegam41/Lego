@@ -6,6 +6,7 @@ use Core\Attributes\ApiComponent;
 use Components\Shared\Forms\InputTextComponent\InputTextComponent;
 use Components\Shared\Forms\SelectComponent\SelectComponent;
 use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
+use Components\Shared\Forms\FilePondComponent\FilePondComponent;
 
 /**
  * ProductCreateComponent - Formulario de creación (CRUD V3)
@@ -80,6 +81,16 @@ class ProductCreateComponent extends CoreComponent
             searchable: true
         );
 
+        $filePondImages = new FilePondComponent(
+            id: "product-images",
+            label: "Imágenes del Producto",
+            productId: null, // No hay product_id aún (se creará al submit)
+            maxFiles: 5,
+            allowReorder: true,
+            allowMultiple: true,
+            required: false
+        );
+
         return <<<HTML
         <div class="product-form">
             <!-- Header -->
@@ -113,6 +124,11 @@ class ProductCreateComponent extends CoreComponent
                     <!-- Categoría -->
                     <div class="product-form__field product-form__field--full">
                         {$categorySelect->render()}
+                    </div>
+
+                    <!-- Imágenes -->
+                    <div class="product-form__field product-form__field--full">
+                        {$filePondImages->render()}
                     </div>
                 </div>
 

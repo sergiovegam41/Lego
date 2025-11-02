@@ -27,6 +27,9 @@ RUN pecl install mongodb \
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copiar configuración personalizada de PHP para uploads
+COPY docker-php-uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Crear usuario y grupo con ID 1000
 RUN addgroup --gid 1000 appuser && \
     adduser --uid 1000 --gid 1000 --disabled-password --gecos "" appuser

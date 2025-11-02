@@ -6,6 +6,7 @@ use Core\Attributes\ApiComponent;
 use Components\Shared\Forms\InputTextComponent\InputTextComponent;
 use Components\Shared\Forms\SelectComponent\SelectComponent;
 use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
+use Components\Shared\Forms\FilePondComponent\FilePondComponent;
 
 /**
  * ProductEditComponent - Formulario de edición (CRUD V3)
@@ -30,15 +31,33 @@ class ProductEditComponent extends CoreComponent
     protected $CSS_PATHS = ["./product-form.css"];
     protected $JS_PATHS = ["./product-edit.js"];
 
-    public function __construct(
-        public readonly ?int $productId = null
-    ) {}
+    public function __construct(array $params = [])
+    {
+        // Obtener ID del producto desde parámetros o query string
+        // Intentar obtener de múltiples fuentes
+        $id = $params['id'] ?? $_GET['id'] ?? $_REQUEST['id'] ?? null;
+
+        // Convertir a int si es string numérico
+        if ($id !== null) {
+            $this->productId = is_numeric($id) ? (int)$id : null;
+        }
+
+        // Debug log
+        error_log('[ProductEditComponent] Constructor - params: ' . json_encode($params));
+        error_log('[ProductEditComponent] Constructor - $_GET: ' . json_encode($_GET));
+        error_log('[ProductEditComponent] Constructor - productId: ' . ($this->productId ?? 'NULL'));
+    }
+
+    private ?int $productId = null;
 
     protected function component(): string
     {
-        // En producción, cargar datos del producto desde BD
-        // Por ahora, los datos se cargarán via JS usando ApiClient
-        $productId = $this->productId ?? $_GET['id'] ?? null;
+        // Obtener product ID con múltiples fallbacks
+        $productId = $this->productId
+            ?? (isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null)
+            ?? (isset($_REQUEST['id']) && is_numeric($_REQUEST['id']) ? (int)$_REQUEST['id'] : null);
+
+        error_log('[ProductEditComponent] component() - productId final: ' . ($productId ?? 'NULL'));
 
         if (!$productId) {
             return <<<HTML
@@ -46,6 +65,12 @@ class ProductEditComponent extends CoreComponent
                 <div class="product-form__error">
                     <h2>Error</h2>
                     <p>ID de producto no especificado</p>
+                    <p style="font-size: 12px; color: #666;">
+                        Debug: \$_GET = " . htmlspecialchars(json_encode($_GET)) . "
+                    </p>
+                    <p style="font-size: 12px; color: #666;">
+                        Debug: \$this->productId = " . htmlspecialchars($this->productId ?? 'NULL') . "
+                    </p>
                 </div>
             </div>
             HTML;
@@ -98,6 +123,16 @@ class ProductEditComponent extends CoreComponent
             searchable: true
         );
 
+        $filePondImages = new FilePondComponent(
+            id: "product-images",
+            label: "Imágenes del Producto",
+            productId: $productId,
+            maxFiles: 5,
+            allowReorder: true,
+            allowMultiple: true,
+            required: false
+        );
+
         return <<<HTML
         <div class="product-form" data-product-id="{$productId}">
             <!-- Header -->
@@ -136,6 +171,11 @@ class ProductEditComponent extends CoreComponent
                     <!-- Categoría -->
                     <div class="product-form__field product-form__field--full">
                         {$categorySelect->render()}
+                    </div>
+
+                    <!-- Imágenes -->
+                    <div class="product-form__field product-form__field--full">
+                        {$filePondImages->render()}
                     </div>
                 </div>
 

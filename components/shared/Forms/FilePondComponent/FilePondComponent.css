@@ -1,0 +1,109 @@
+/**
+ * FilePondComponent - Estilos
+ *
+ * FILOSOFÍA LEGO:
+ * Estilos minimalistas que se adaptan al tema light/dark del framework.
+ * FilePond ya incluye sus estilos, aquí solo personalizamos lo necesario.
+ */
+
+.lego-filepond {
+    margin-bottom: 1.5rem;
+}
+
+.lego-filepond__label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #1f2937);
+}
+
+html.dark .lego-filepond__label {
+    color: var(--text-primary-dark, #f9fafb);
+}
+
+.lego-filepond__help {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #6b7280);
+    margin-bottom: 0.75rem;
+}
+
+html.dark .lego-filepond__help {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+.lego-filepond__container {
+    position: relative;
+}
+
+.lego-filepond__input {
+    /* FilePond reemplazará este input, pero lo mantenemos por accesibilidad */
+}
+
+.lego-filepond__error {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--error-color, #dc2626);
+}
+
+/* Personalización de FilePond para tema LEGO */
+.filepond--root {
+    font-family: inherit;
+}
+
+.filepond--panel-root {
+    background-color: var(--input-bg, #ffffff);
+    border: 2px dashed var(--border-color, #d1d5db);
+    border-radius: 0.5rem;
+}
+
+html.dark .filepond--panel-root {
+    background-color: var(--input-bg-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+}
+
+.filepond--drop-label {
+    color: var(--text-secondary, #6b7280);
+}
+
+html.dark .filepond--drop-label {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+/* Botones de FilePond */
+.filepond--file-action-button {
+    cursor: pointer;
+}
+
+.filepond--file-action-button:hover {
+    box-shadow: 0 0 0 0.125em rgba(79, 70, 229, 0.4);
+}
+
+/* Imagen preview */
+.filepond--image-preview {
+    background-color: var(--bg-secondary, #f9fafb);
+}
+
+html.dark .filepond--image-preview {
+    background-color: var(--bg-secondary-dark, #111827);
+}
+
+/* Progress bar */
+.filepond--file-status-main {
+    color: var(--text-primary, #1f2937);
+}
+
+html.dark .filepond--file-status-main {
+    color: var(--text-primary-dark, #f9fafb);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .lego-filepond__label {
+        font-size: 0.8125rem;
+    }
+
+    .lego-filepond__help {
+        font-size: 0.6875rem;
+    }
+}
