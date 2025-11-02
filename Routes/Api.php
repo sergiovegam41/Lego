@@ -52,7 +52,7 @@ namespace Routes;
 use App\Controllers\Auth\Controllers\AuthGroupsController;
 use App\Controllers\Products\Controllers\ProductsController;
 use App\Controllers\ComponentsController;
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 use Core\Routing\ApiCrudRouter;
 use Core\Routing\ApiGetRouter;
 use Flight;

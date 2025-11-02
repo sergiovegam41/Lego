@@ -1,5 +1,5 @@
 <?php
-namespace Core\Controller;
+namespace Core\Controllers;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
 use Core\Contracts\CoreControllerContract;

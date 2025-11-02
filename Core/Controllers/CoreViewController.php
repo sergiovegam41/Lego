@@ -1,5 +1,5 @@
 <?php
-namespace Core\Controller;
+namespace Core\Controllers;
 
 use Rakit\Validation\Validator;
 

@@ -3,7 +3,7 @@
 namespace Components\Core\Home\Components\MenuComponent\features\MenuItemComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
-use Core\providers\StringMethods;
+use Core\Providers\StringMethods;
 use Components\Core\Home\Dtos\MenuItemDto;
 
 /**

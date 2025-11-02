@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\providers;
+namespace Core\Providers;
 
 trait TimeSet {
 

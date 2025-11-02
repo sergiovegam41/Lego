@@ -4,7 +4,7 @@ namespace Components\Core\Home\Components\HeaderComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
-use Core\providers\StringMethods;
+use Core\Providers\StringMethods;
 use Components\Shared\Navigation\BreadcrumbComponent\BreadcrumbComponent;
 use Components\Shared\Buttons\IconButtonComponent\IconButtonComponent;
 

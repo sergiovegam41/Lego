@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Products\Controllers;
 
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 use Core\Response;
 use Core\Models\ResponseDTO;
 use Core\Models\StatusCodes;

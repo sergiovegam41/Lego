@@ -2,7 +2,7 @@
 
 namespace Core\Commands;
 
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 
 /**
  * MapRoutesCommand - Map and register application routes

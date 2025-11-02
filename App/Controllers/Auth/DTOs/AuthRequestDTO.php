@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Auth\DTOs;
 
-use Core\providers\Request;
+use Core\Providers\Request;
 
 class AuthRequestDTO {
     public function __construct( 

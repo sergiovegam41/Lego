@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Controller;
+namespace Core\Controllers;
 
 use Core\Response;
 use Core\Models\ResponseDTO;

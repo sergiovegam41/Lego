@@ -7,9 +7,9 @@ use App\Controllers\Auth\DTOs\AuthRequestDTO;
 
 use App\Controllers\Auth\Providers\AuthGroupsProvider;
 
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 use Core\Models\StatusCodes;
-use Core\providers\Request;
+use Core\Providers\Request;
 use Core\Response;
 
 class AuthGroupsController extends CoreController

@@ -4,7 +4,7 @@ namespace Components\Core\Home\Components\MenuComponent;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Dtos\ScriptCoreDTO;
-use Core\providers\StringMethods;
+use Core\Providers\StringMethods;
 use Components\Core\Home\Components\MenuComponent\features\MenuItemComponent\MenuItemComponent;
 use Components\Core\Home\Collections\MenuItemCollection;
 

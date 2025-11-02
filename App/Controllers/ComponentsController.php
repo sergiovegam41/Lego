@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 use Core\Components\ComponentRegistry;
 use Core\Response;
-use Core\providers\Request;
+use Core\Providers\Request;
 
 /**
  * ComponentsController - API para renderizado dinámico de componentes

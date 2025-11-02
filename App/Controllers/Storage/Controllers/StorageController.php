@@ -18,7 +18,7 @@
 
 namespace App\Controllers\Storage\Controllers;
 
-use Core\Controller\CoreController;
+use Core\Controllers\CoreController;
 use Core\Response;
 use Core\Models\ResponseDTO;
 use App\Controllers\Storage\Providers\StorageProvider;
