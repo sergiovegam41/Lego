@@ -659,6 +659,13 @@ let context = {CONTEXT};
                                     }
 
                                     params.successCallback(data.data, lastRow);
+
+                                    // Mostrar overlay si no hay datos
+                                    if (data.data.length === 0 && params.startRow === 0) {
+                                        setTimeout(() => {
+                                            params.api.showNoRowsOverlay();
+                                        }, 100);
+                                    }
                                 } else {
                                     console.error('[LEGO Table] Error en respuesta API:', data);
                                     params.failCallback();
