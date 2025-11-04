@@ -62,7 +62,7 @@ class ProductsCrudV3Component extends CoreComponent
             new ColumnDto(
                 field: "description",
                 headerName: "Descripción",
-                width: DimensionValue::px(300),
+                width: DimensionValue::px(250),
                 sortable: false,
                 filter: false
             ),
@@ -86,7 +86,7 @@ class ProductsCrudV3Component extends CoreComponent
             new ColumnDto(
                 field: "category",
                 headerName: "Categoría",
-                width: DimensionValue::px(150),
+                width: DimensionValue::px(999),
                 sortable: true,
                 filter: true
             )

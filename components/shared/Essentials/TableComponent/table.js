@@ -121,7 +121,7 @@ let context = {CONTEXT};
         return {
             headerName: "Acciones",
             field: "_actions",
-            width: 120 + (actions.length * 40), // Ancho dinámico según cantidad de acciones
+            width: 60 + (actions.length * 20), // Ancho reducido: menos de la mitad del anterior
             pinned: 'right',
             sortable: false,
             filter: false,
@@ -129,7 +129,7 @@ let context = {CONTEXT};
             cellRenderer: (params) => {
                 const container = document.createElement('div');
                 container.className = 'lego-table-actions';
-                container.style.cssText = 'display: flex; gap: 0.5rem; align-items: center; height: 100%;';
+                container.style.cssText = 'display: flex; gap: 0.25rem; align-items: center; height: 100%; justify-content: center;';
 
                 actions.forEach(action => {
                     // Evaluar visibilidad condicional
@@ -158,25 +158,27 @@ let context = {CONTEXT};
                     button.title = action.tooltip;
                     button.disabled = isDisabled;
                     button.style.cssText = `
-                        padding: 0.375rem 0.5rem;
+                        padding: 0.25rem;
                         border: none;
-                        border-radius: 4px;
+                        background: transparent;
                         cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
-                        background: ${getVariantColor(action.variant, isDisabled)};
-                        color: white;
                         display: flex;
                         align-items: center;
+                        justify-content: center;
                         gap: 0.25rem;
                         font-size: 0.875rem;
                         transition: all 0.2s;
                         opacity: ${isDisabled ? '0.5' : '1'};
+                        border-radius: 4px;
                     `;
 
                     // Agregar icono si existe
                     if (action.icon) {
                         const icon = document.createElement('ion-icon');
                         icon.name = action.icon;
-                        icon.style.fontSize = '1.1rem';
+                        icon.style.fontSize = '1.25rem';
+                        icon.style.color = getVariantColor(action.variant, isDisabled);
+                        icon.style.transition = 'all 0.2s';
                         button.appendChild(icon);
                     }
 
@@ -184,6 +186,7 @@ let context = {CONTEXT};
                     if (action.showLabel && action.label) {
                         const label = document.createElement('span');
                         label.textContent = action.label;
+                        label.style.color = getVariantColor(action.variant, isDisabled);
                         button.appendChild(label);
                     }
 
@@ -202,17 +205,23 @@ let context = {CONTEXT};
                             executeCallback(action.callback, params.data, tableId);
                         });
 
-                        // Hover effects
+                        // Hover effects - solo al ícono
                         button.addEventListener('mouseenter', () => {
                             if (!isDisabled) {
-                                button.style.opacity = '0.8';
-                                button.style.transform = 'scale(1.05)';
+                                button.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+                                const icon = button.querySelector('ion-icon');
+                                if (icon) {
+                                    icon.style.transform = 'scale(1.15)';
+                                }
                             }
                         });
                         button.addEventListener('mouseleave', () => {
                             if (!isDisabled) {
-                                button.style.opacity = '1';
-                                button.style.transform = 'scale(1)';
+                                button.style.backgroundColor = 'transparent';
+                                const icon = button.querySelector('ion-icon');
+                                if (icon) {
+                                    icon.style.transform = 'scale(1)';
+                                }
                             }
                         });
                     }
@@ -320,9 +329,11 @@ let context = {CONTEXT};
 
                 // Aplicar variables CSS directamente al div de AG Grid
                 if (isDark) {
-                    gridDiv.style.setProperty('--ag-background-color', '#1f2937');
-                    gridDiv.style.setProperty('--ag-header-background-color', '#111827');
-                    gridDiv.style.setProperty('--ag-odd-row-background-color', '#1f2937');
+                    // Tema oscuro - mismo fondo para todas las filas
+                    const bgColor = '#1f2937';
+                    gridDiv.style.setProperty('--ag-background-color', bgColor);
+                    gridDiv.style.setProperty('--ag-header-background-color', bgColor);
+                    gridDiv.style.setProperty('--ag-odd-row-background-color', bgColor);
                     gridDiv.style.setProperty('--ag-row-hover-color', '#374151');
                     gridDiv.style.setProperty('--ag-selected-row-background-color', 'rgba(59, 130, 246, 0.2)');
                     gridDiv.style.setProperty('--ag-border-color', '#374151');
@@ -331,10 +342,11 @@ let context = {CONTEXT};
                     gridDiv.style.setProperty('--ag-secondary-foreground-color', '#9ca3af');
                     gridDiv.style.setProperty('--ag-input-border-color', '#4b5563');
                 } else {
-                    // Aplicar valores de tema claro explícitamente
-                    gridDiv.style.setProperty('--ag-background-color', '#ffffff');
-                    gridDiv.style.setProperty('--ag-header-background-color', '#f9fafb');
-                    gridDiv.style.setProperty('--ag-odd-row-background-color', '#ffffff');
+                    // Tema claro - mismo fondo para todas las filas
+                    const bgColor = '#ffffff';
+                    gridDiv.style.setProperty('--ag-background-color', bgColor);
+                    gridDiv.style.setProperty('--ag-header-background-color', bgColor);
+                    gridDiv.style.setProperty('--ag-odd-row-background-color', bgColor);
                     gridDiv.style.setProperty('--ag-row-hover-color', '#f3f4f6');
                     gridDiv.style.setProperty('--ag-selected-row-background-color', 'rgba(59, 130, 246, 0.1)');
                     gridDiv.style.setProperty('--ag-border-color', '#e5e7eb');
