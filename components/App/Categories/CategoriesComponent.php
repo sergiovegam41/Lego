@@ -23,7 +23,7 @@ class CategoriesComponent extends CoreComponent
             new ColumnDto(
                 field: "id",
                 headerName: "ID",
-                width: DimensionValue::px(80),
+                width: DimensionValue::px(100),
                 sortable: true,
                 filter: true,
                 filterType: "number"
@@ -54,7 +54,7 @@ class CategoriesComponent extends CoreComponent
             new ColumnDto(
                 field: "description",
                 headerName: "Descripción",
-                width: DimensionValue::px(999),
+                width: DimensionValue::flex(1),
                 sortable: false,
                 filter: false
             )

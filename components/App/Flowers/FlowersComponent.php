@@ -23,7 +23,7 @@ class FlowersComponent extends CoreComponent
             new ColumnDto(
                 field: "id",
                 headerName: "ID",
-                width: DimensionValue::px(80),
+                width: DimensionValue::px(100),
                 sortable: true,
                 filter: true,
                 filterType: "number"
@@ -71,7 +71,7 @@ class FlowersComponent extends CoreComponent
             new ColumnDto(
                 field: "is_active",
                 headerName: "Estado",
-                width: DimensionValue::px(999),
+                width: DimensionValue::flex(1),
                 sortable: true,
                 filter: true,
                 cellRenderer: 'params => params.value ? \'<span style="color: #10b981; font-weight: 500;">Activo</span>\' : \'<span style="color: #ef4444; font-weight: 500;">Inactivo</span>\''
