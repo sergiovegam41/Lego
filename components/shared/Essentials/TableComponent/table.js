@@ -329,14 +329,14 @@ let context = {CONTEXT};
 
                 // Aplicar variables CSS directamente al div de AG Grid
                 if (isDark) {
-                    // Tema oscuro - mismo fondo para todas las filas
-                    const bgColor = '#1f2937';
+                    // Tema oscuro - mismo fondo para todas las filas (transparente para heredar del contenedor)
+                    const bgColor = 'transparent';
                     gridDiv.style.setProperty('--ag-background-color', bgColor);
                     gridDiv.style.setProperty('--ag-header-background-color', bgColor);
                     gridDiv.style.setProperty('--ag-odd-row-background-color', bgColor);
-                    gridDiv.style.setProperty('--ag-row-hover-color', '#374151');
+                    gridDiv.style.setProperty('--ag-row-hover-color', 'rgba(255, 255, 255, 0.05)');
                     gridDiv.style.setProperty('--ag-selected-row-background-color', 'rgba(59, 130, 246, 0.2)');
-                    gridDiv.style.setProperty('--ag-border-color', '#374151');
+                    gridDiv.style.setProperty('--ag-border-color', 'rgba(255, 255, 255, 0.1)');
                     gridDiv.style.setProperty('--ag-header-foreground-color', '#f3f4f6');
                     gridDiv.style.setProperty('--ag-foreground-color', '#e5e7eb');
                     gridDiv.style.setProperty('--ag-secondary-foreground-color', '#9ca3af');
@@ -355,6 +355,10 @@ let context = {CONTEXT};
                     gridDiv.style.setProperty('--ag-secondary-foreground-color', '#6b7280');
                     gridDiv.style.setProperty('--ag-input-border-color', '#d1d5db');
                 }
+
+                // Quitar sombra de la tabla
+                gridDiv.style.boxShadow = 'none';
+                gridDiv.style.setProperty('--ag-wrapper-border-radius', '0px');
             }
 
             console.log('[LEGO Table] Tema sincronizado:', isDark ? 'dark' : 'light');

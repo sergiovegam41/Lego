@@ -38,8 +38,8 @@ html {
 
 html, html.dark {
     /* Dark mode as default state */
-    --bg-body: #18191a;
-    --bg-sidebar: #242526;
+    --bg-body: #181A1B;
+    --bg-sidebar: #1E2021;
     --bg-surface: #3a3b3c;
     --bg-surface-secondary: #2d2e2f;
     --bg-surface-hover: #404040;
@@ -53,10 +53,10 @@ html, html.dark {
     --text-on-focus: #ffffff;
     --text-disabled: #808080;
 
-    --border-light: #404040;
-    --border-medium: #5a5a5a;
-    --border-dark: #6a6b6c;
-    --border-primary: #7a7b7c;
+    --border-light: #363B3D;
+    --border-medium: #363B3D;
+    --border-dark: #363B3D;
+    --border-primary: #363B3D;
     --border-focus: #3ba1ff;
 
     --accent-primary: #3ba1ff;

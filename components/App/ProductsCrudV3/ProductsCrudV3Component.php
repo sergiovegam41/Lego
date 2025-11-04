@@ -46,7 +46,7 @@ class ProductsCrudV3Component extends CoreComponent
             new ColumnDto(
                 field: "id",
                 headerName: "ID",
-                width: DimensionValue::px(80),
+                width: DimensionValue::px(100),
                 sortable: true,
                 filter: true,
                 filterType: "number"

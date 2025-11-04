@@ -150,7 +150,7 @@ body.dark .sidebar header .toggle{
 .sidebar header .toggle{
     position: absolute;
     top: 50%;
-    background: var(--color-neutral-850) !important;
+    background: #1E2021 !important;
     color: var(--color-white) !important;
     right: var(--toggle-offset);
     transform: translateY(-50%) rotate(180deg);
