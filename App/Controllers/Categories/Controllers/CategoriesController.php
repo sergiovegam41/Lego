@@ -306,17 +306,33 @@ class CategoriesController extends CoreController
                 return;
             }
 
-            // Eliminar imagen de MinIO si existe
-            if ($category->image_url) {
-                try {
-                    $storage = new StorageService();
-                    // Extraer la key de la URL
-                    $key = parse_url($category->image_url, PHP_URL_PATH);
-                    $key = ltrim($key, '/');
-                    $storage->delete($key);
-                } catch (\Exception $e) {
-                    error_log("Error al eliminar imagen de categoría: " . $e->getMessage());
+            // Eliminar todas las imágenes asociadas usando FileService
+            try {
+                $fileAssociations = $this->fileService->getEntityFiles('Category', $category->id);
+                $storage = new StorageService();
+
+                if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                    foreach ($fileAssociations as $assoc) {
+                        if ($assoc && isset($assoc->file)) {
+                            try {
+                                // Extraer la key de la URL
+                                $key = parse_url($assoc->file->url, PHP_URL_PATH);
+                                $key = ltrim($key, '/');
+                                $storage->delete($key);
+
+                                // Eliminar el registro del archivo
+                                $assoc->file->delete();
+                            } catch (\Exception $e) {
+                                error_log("Error al eliminar imagen de categoría: " . $e->getMessage());
+                            }
+                        }
+                    }
                 }
+
+                // Eliminar asociaciones de archivos
+                \App\Models\EntityFileAssociation::forEntity('Category', $category->id)->delete();
+            } catch (\Exception $e) {
+                error_log("Error al eliminar imágenes de categoría {$category->id}: " . $e->getMessage());
             }
 
             $categoryName = $category->name;

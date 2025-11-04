@@ -19,10 +19,18 @@ tableManager.onReady(() => {
     console.log('[Flowers] Tabla lista');
 });
 
-// Función global de refresh para compatibilidad
-window.legoTable_flowers_table_refresh = function() {
+// La función global de refresh ya es creada por TableComponent
+// Simplemente creamos un alias en tableManager para facilitar su uso
+tableManager.refreshData = function() {
     console.log('[Flowers] Refrescando tabla...');
-    tableManager.refreshData();
+    const refreshFn = window.legoTable_flowers_table_refresh;
+    if (refreshFn && typeof refreshFn === 'function') {
+        refreshFn();
+    } else if (tableManager.api) {
+        tableManager.api.refreshInfiniteCache();
+    } else {
+        console.warn('[Flowers] No se pudo refrescar la tabla');
+    }
 };
 
 window.handleEditFlower = function(rowData, tableId) {

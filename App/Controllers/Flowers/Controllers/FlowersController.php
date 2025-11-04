@@ -319,23 +319,37 @@ class FlowersController extends CoreController
                 return;
             }
 
-            // Eliminar todas las imágenes asociadas de MinIO
-            $images = $flower->images;
-            $storage = new StorageService();
+            // Eliminar todas las imágenes asociadas usando FileService
+            try {
+                $fileAssociations = $this->fileService->getEntityFiles('Flower', $flower->id);
+                $storage = new StorageService();
 
-            foreach ($images as $image) {
-                try {
-                    // Extraer la key de la URL
-                    $key = parse_url($image->image_url, PHP_URL_PATH);
-                    $key = ltrim($key, '/');
-                    $storage->delete($key);
-                } catch (\Exception $e) {
-                    error_log("Error al eliminar imagen de flor: " . $e->getMessage());
+                if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                    foreach ($fileAssociations as $assoc) {
+                        if ($assoc && isset($assoc->file)) {
+                            try {
+                                // Extraer la key de la URL
+                                $key = parse_url($assoc->file->url, PHP_URL_PATH);
+                                $key = ltrim($key, '/');
+                                $storage->delete($key);
+
+                                // Eliminar el registro del archivo
+                                $assoc->file->delete();
+                            } catch (\Exception $e) {
+                                error_log("Error al eliminar imagen de flor: " . $e->getMessage());
+                            }
+                        }
+                    }
                 }
+
+                // Eliminar asociaciones de archivos
+                \App\Models\EntityFileAssociation::forEntity('Flower', $flower->id)->delete();
+            } catch (\Exception $e) {
+                error_log("Error al eliminar imágenes de flor {$flower->id}: " . $e->getMessage());
             }
 
             $flowerName = $flower->name;
-            $flower->delete(); // Las imágenes se eliminan en cascada
+            $flower->delete();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
