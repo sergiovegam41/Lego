@@ -29,6 +29,7 @@ $capsule->addConnection([
     'charset'   => 'utf8',
     'prefix'    => '',
     'schema'    => 'public',
+    'sslmode'   => 'require',
 ]);
 
 // Hace que el ORM esté disponible globalmente
@@ -183,7 +184,7 @@ function consultar($transaccion)
     $username = $_ENV['DB_USERNAME'];
     $password = $_ENV['DB_PASSWORD'];
 
-    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
@@ -218,7 +219,7 @@ function consultarSinError($transaccion)
     $username = $_ENV['DB_USERNAME'];
     $password = $_ENV['DB_PASSWORD'];
 
-    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
@@ -340,7 +341,7 @@ function consultarError($transaccion)
     $username = $_ENV['DB_USERNAME'];
     $password = $_ENV['DB_PASSWORD'];
 
-    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
@@ -373,7 +374,7 @@ function insertar($transaccion)
 {
     global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE;sslmode=require";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -408,7 +409,7 @@ function insertarSinError($transaccion)
 {
     global $DB_USERNAME, $DB_DATABASE, $DB_PASSWORD, $DB_PORT, $DB_HOST;
 
-       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE";
+       $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE;sslmode=require";
 
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -447,7 +448,7 @@ function insertar_traer_id($transaccion, $secuencia, $registrar = true)
     $username = $_ENV['DB_USERNAME'];
     $password = $_ENV['DB_PASSWORD'];
 
-    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname}";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
     $opciones = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_EMULATE_PREPARES => false,
