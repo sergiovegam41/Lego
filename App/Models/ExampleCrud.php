@@ -7,40 +7,41 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Core\Attributes\ApiGetResource;
 
 /**
- * Product Model
+ * ExampleCrud Model
  *
  * FILOSOFÍA LEGO:
- * Modelo Eloquent para la tabla products.
- * Exposición de API de solo LECTURA para TableComponent.
+ * Modelo de ejemplo/template para demostrar CRUD completo.
+ * Este modelo sirve como referencia para construir otros CRUDs en el framework.
  *
  * API AUTOMÁTICO GET-ONLY:
  * Este modelo expone automáticamente endpoints de lectura para tablas:
- * - GET /api/get/products        → Listar con paginación, filtros, búsqueda
- * - GET /api/get/products/{id}   → Obtener por ID
+ * - GET /api/get/example-crud        → Listar con paginación, filtros, búsqueda
+ * - GET /api/get/example-crud/{id}   → Obtener por ID
  *
  * PROPÓSITO:
  * - Alimentar TableComponent con datos
  * - Paginación server-side
  * - Filtros y búsqueda globales
  * - Sin operaciones de escritura (solo lectura)
- * - Evita colisión con App/Controllers/Products/Controllers/ProductsController.php
+ * - Template/ejemplo para construir otros CRUDs
  *
  * CAMPOS:
  * - id: PK auto-increment
- * - name: Nombre del producto
+ * - name: Nombre del registro
+ * - sku: Código único (Stock Keeping Unit)
  * - description: Descripción
  * - price: Precio decimal
  * - stock: Cantidad en inventario
- * - category: Categoría del producto
+ * - min_stock: Stock mínimo para alertas
+ * - category: Categoría
  * - image_url: URL de imagen (opcional)
  * - is_active: Estado activo/inactivo
  * - created_at: Fecha de creación
  * - updated_at: Fecha de actualización
  *
  * CONFIGURACIÓN API GET:
- * - endpoint: Ruta SIN /api/get (ej: 'products' o 'catalog/items')
+ * - endpoint: Ruta SIN /api/get (ej: 'example-crud')
  *   El prefijo /api/get se agrega automáticamente
- *   Si se omite, auto-genera: 'products'
  * - pagination: 'offset' (page/limit) | 'cursor' | 'page'
  * - perPage: Elementos por página (1-100, default: 20)
  * - sortable: Campos permitidos para ordenar
@@ -48,19 +49,19 @@ use Core\Attributes\ApiGetResource;
  * - searchable: Campos donde buscar con ?search=texto
  */
 #[ApiGetResource(
-    endpoint: 'products',  // Opcional: Personaliza (sin /api/get, se agrega automáticamente)
+    endpoint: 'example-crud',
     pagination: 'offset',
     perPage: 20,
-    sortable: ['id', 'name', 'description', 'price', 'stock', 'category', 'created_at'],
-    filterable: ['id', 'name', 'description', 'price', 'stock', 'category', 'is_active'],
+    sortable: ['id', 'name', 'sku', 'description', 'price', 'stock', 'category', 'created_at'],
+    filterable: ['id', 'name', 'sku', 'description', 'price', 'stock', 'category', 'is_active'],
     searchable: ['name', 'description', 'sku']
 )]
-class Product extends Model
+class ExampleCrud extends Model
 {
     /**
      * La tabla asociada al modelo
      */
-    protected $table = 'products';
+    protected $table = 'example_crud';
 
     /**
      * Los atributos que se pueden asignar masivamente
@@ -83,6 +84,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
+        'min_stock' => 'integer',
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
@@ -98,11 +100,12 @@ class Product extends Model
      */
     protected $attributes = [
         'is_active' => true,
-        'stock' => 0
+        'stock' => 0,
+        'min_stock' => 5
     ];
 
     /**
-     * Scope: Solo productos activos
+     * Scope: Solo registros activos
      */
     public function scopeActive($query)
     {
@@ -126,6 +129,14 @@ class Product extends Model
     }
 
     /**
+     * Scope: Stock bajo (menor que min_stock)
+     */
+    public function scopeLowStock($query)
+    {
+        return $query->whereRaw('stock < min_stock');
+    }
+
+    /**
      * Accessor: Formato de precio
      */
     public function getPriceFormattedAttribute()
@@ -146,17 +157,25 @@ class Product extends Model
      */
     public function getAvailabilityAttribute()
     {
-        if ($this->stock > 10) return 'En Stock';
-        if ($this->stock > 0) return 'Pocas Unidades';
+        if ($this->stock > $this->min_stock) return 'En Stock';
+        if ($this->stock > 0) return 'Stock Bajo';
         return 'Agotado';
     }
 
     /**
-     * Relación: Un producto tiene múltiples imágenes
+     * Accessor: Alerta de stock bajo
+     */
+    public function getIsLowStockAttribute(): bool
+    {
+        return $this->stock < $this->min_stock;
+    }
+
+    /**
+     * Relación: Un registro tiene múltiples imágenes
      */
     public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class)->orderBy('display_order');
+        return $this->hasMany(ExampleCrudImage::class)->orderBy('display_order');
     }
 
     /**
@@ -164,7 +183,7 @@ class Product extends Model
      */
     public function primaryImage()
     {
-        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+        return $this->hasOne(ExampleCrudImage::class)->where('is_primary', true);
     }
 
     /**

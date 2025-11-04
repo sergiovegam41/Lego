@@ -1,8 +1,8 @@
 /**
- * Product Form - Estilos compartidos (Create/Edit)
+ * Example Form - Estilos compartidos (Create/Edit)
  *
  * FILOSOFÍA LEGO:
- * Estilos reutilizables para formularios de producto.
+ * Estilos reutilizables para formularios de registro.
  * Mantiene "las mismas distancias" entre Create y Edit.
  *
  * THEMING CORRECTO:
@@ -14,7 +14,7 @@
    CONTAINER
    ═══════════════════════════════════════════════════════════════ */
 
-.product-form {
+.example-form {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg, 24px);
@@ -29,7 +29,7 @@
    HEADER
    ═══════════════════════════════════════════════════════════════ */
 
-.product-form__header {
+.example-form__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,14 +37,14 @@
     border-bottom: 1px solid var(--border-default);
 }
 
-.product-form__title {
+.example-form__title {
     font-size: 24px;
     font-weight: 600;
     margin: 0;
     color: var(--text-primary);
 }
 
-.product-form__close {
+.example-form__close {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,17 +63,17 @@
     transition: all 0.15s ease;
 }
 
-.product-form__close:hover {
+.example-form__close:hover {
     background: var(--bg-hover);
     border-color: var(--border-hover);
     color: var(--text-primary);
 }
 
-.product-form__close:active {
+.example-form__close:active {
     transform: scale(0.95);
 }
 
-.product-form__close-btn {
+.example-form__close-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,7 +90,7 @@
     transition: all 0.15s ease;
 }
 
-.product-form__close-btn:hover {
+.example-form__close-btn:hover {
     background: var(--bg-surface-secondary);
     border-color: var(--border-hover);
     color: var(--text-primary);
@@ -100,24 +100,24 @@
    FORMULARIO
    ═══════════════════════════════════════════════════════════════ */
 
-.product-form__form {
+.example-form__form {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: var(--space-lg, 24px);
 }
 
-.product-form__grid {
+.example-form__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md, 16px);
 }
 
-.product-form__field {
+.example-form__field {
     /* Campo normal - 1 columna */
 }
 
-.product-form__field--full {
+.example-form__field--full {
     grid-column: 1 / -1;
 }
 
@@ -125,7 +125,7 @@
    ACCIONES
    ═══════════════════════════════════════════════════════════════ */
 
-.product-form__actions {
+.example-form__actions {
     display: flex;
     gap: var(--space-sm, 8px);
     justify-content: flex-end;
@@ -133,7 +133,7 @@
     border-top: 1px solid var(--border-default);
 }
 
-.product-form__button {
+.example-form__button {
     padding: var(--space-sm, 8px) var(--space-lg, 24px);
     border: none;
     border-radius: 6px;
@@ -143,35 +143,35 @@
     transition: all 0.2s ease;
 }
 
-.product-form__button--primary {
+.example-form__button--primary {
     background: var(--color-primary);
     color: white;
 }
 
-.product-form__button--primary:hover {
+.example-form__button--primary:hover {
     background: var(--color-primary-hover);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.product-form__button--primary:active {
+.example-form__button--primary:active {
     transform: translateY(0);
 }
 
-.product-form__button--primary:disabled {
+.example-form__button--primary:disabled {
     background: var(--bg-disabled);
     color: var(--text-disabled);
     cursor: not-allowed;
     transform: none;
 }
 
-.product-form__button--secondary {
+.example-form__button--secondary {
     background: transparent;
     border: 1px solid var(--border-default);
     color: var(--text-primary);
 }
 
-.product-form__button--secondary:hover {
+.example-form__button--secondary:hover {
     background: var(--bg-surface-secondary);
     border-color: var(--border-hover);
 }
@@ -180,7 +180,7 @@
    LOADING STATE
    ═══════════════════════════════════════════════════════════════ */
 
-.product-form--loading {
+.example-form--loading {
     opacity: 0.6;
     pointer-events: none;
 }
@@ -189,7 +189,7 @@
    THEMING - LIGHT MODE
    ═══════════════════════════════════════════════════════════════ */
 
-html.light .product-form {
+html.light .example-form {
     --bg-surface: #ffffff;
     --bg-surface-secondary: #f5f5f5;
     --bg-disabled: #e0e0e0;
@@ -209,7 +209,7 @@ html.light .product-form {
    THEMING - DARK MODE
    ═══════════════════════════════════════════════════════════════ */
 
-html.dark .product-form {
+html.dark .example-form {
     --bg-surface: #1a1a1a;
     --bg-surface-secondary: #2a2a2a;
     --bg-disabled: #404040;
@@ -230,19 +230,19 @@ html.dark .product-form {
    ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-    .product-form__grid {
+    .example-form__grid {
         grid-template-columns: 1fr;
     }
 
-    .product-form__field--full {
+    .example-form__field--full {
         grid-column: 1;
     }
 
-    .product-form__actions {
+    .example-form__actions {
         flex-direction: column-reverse;
     }
 
-    .product-form__button {
+    .example-form__button {
         width: 100%;
     }
 }

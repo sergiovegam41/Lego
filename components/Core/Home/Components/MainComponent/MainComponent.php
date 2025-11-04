@@ -96,27 +96,21 @@ class MainComponent extends CoreComponent
                 ),
                 new MenuItemDto(
                     id: "10",
-                    name: "Products CRUD",
+                    name: "Example CRUD",
                     url: null,
                     iconName: "cube-outline",
                     childs: [
                         new MenuItemDto(
                             id: "10-1",
                             name: "Tabla",
-                            url: $HOST_NAME . '/component/products-crud-v3',
+                            url: $HOST_NAME . '/component/example-crud',
                             iconName: "grid-outline"
                         ),
                         new MenuItemDto(
                             id: "10-2",
                             name: "Crear",
-                            url: $HOST_NAME . '/component/products-crud-v3/create',
+                            url: $HOST_NAME . '/component/example-crud/create',
                             iconName: "add-circle-outline"
-                        ),
-                        new MenuItemDto(
-                            id: "10-3",
-                            name: "Table Demo (Model-Driven) ✨",
-                            url: $HOST_NAME . '/component/products-table-demo',
-                            iconName: "flash-outline"
                         )
                     ]
                 )

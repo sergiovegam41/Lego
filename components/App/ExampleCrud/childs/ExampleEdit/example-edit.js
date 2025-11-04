@@ -1,21 +1,21 @@
 /**
- * Product Edit - Lógica de edición
+ * Example Edit - Lógica de edición
  *
  * FILOSOFÍA LEGO:
  * Formulario de edición con carga de datos y validación.
- * Mantiene "las mismas distancias" que ProductCreate.
+ * Mantiene "las mismas distancias" que ExampleCreate.
  *
  * MEJORAS vs V1/V2:
  * ✅ Usa fetch para GET y PUT (sin ApiClient para evitar imports)
- * ✅ Carga datos del producto al iniciar
+ * ✅ Carga datos del registro al iniciar
  * ✅ Usa LegoSelect.setValue() sin .click() hack
  * ✅ Validación antes de actualizar
  */
 
-console.log('[ProductEdit] Script cargado');
+console.log('[ExampleEdit] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
-// VALIDACIÓN (copiada de product-create.js)
+// VALIDACIÓN (copiada de example-create.js)
 // ═══════════════════════════════════════════════════════════════════
 
 function validateForm(formData) {
@@ -59,7 +59,7 @@ function showValidationErrors(errors) {
 
     // Mostrar nuevos errores
     Object.entries(errors).forEach(([field, message]) => {
-        const input = document.getElementById(`product-${field}`);
+        const input = document.getElementById(`example-${field}`);
         if (input) {
             const container = input.closest('.lego-input, .lego-select, .lego-textarea');
             if (container) {
@@ -86,31 +86,31 @@ function showValidationErrors(errors) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CARGAR DATOS DEL PRODUCTO
+// CARGAR DATOS DEL REGISTRO
 // ═══════════════════════════════════════════════════════════════════
 
-async function loadProductData(productId) {
+async function loadRecordData(recordId) {
     try {
-        console.log('[ProductEdit] Cargando producto:', productId);
+        console.log('[ExampleEdit] Cargando registro:', recordId);
 
         // Usar endpoint legacy con query param
-        const response = await fetch(`/api/products/get?id=${productId}`);
+        const response = await fetch(`/api/example-crud/get?id=${recordId}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.msj || 'Error al cargar producto');
+            throw new Error(result.msj || 'Error al cargar registro');
         }
 
-        console.log('[ProductEdit] Producto cargado:', result.data);
+        console.log('[ExampleEdit] Registro cargado:', result.data);
         return result.data;
 
     } catch (error) {
-        console.error('[ProductEdit] Error cargando producto:', error);
+        console.error('[ExampleEdit] Error cargando registro:', error);
 
         if (window.AlertService) {
-            window.AlertService.error('Error', error.message || 'Error al cargar producto');
+            window.AlertService.error('Error', error.message || 'Error al cargar registro');
         } else {
-            alert('Error cargando producto: ' + error.message);
+            alert('Error cargando registro: ' + error.message);
         }
 
         throw error;
@@ -121,60 +121,60 @@ async function loadProductData(productId) {
 // POBLAR FORMULARIO CON DATOS
 // ═══════════════════════════════════════════════════════════════════
 
-function populateForm(product, activeModuleContainer) {
-    console.log('[ProductEdit] Poblando formulario con:', product);
+function populateForm(record, activeModuleContainer) {
+    console.log('[ExampleEdit] Poblando formulario con:', record);
 
     // Poblar inputs DENTRO del módulo activo
-    const nameInput = activeModuleContainer.querySelector('#product-name');
-    const descriptionTextarea = activeModuleContainer.querySelector('#product-description');
-    const priceInput = activeModuleContainer.querySelector('#product-price');
-    const stockInput = activeModuleContainer.querySelector('#product-stock');
+    const nameInput = activeModuleContainer.querySelector('#example-name');
+    const descriptionTextarea = activeModuleContainer.querySelector('#example-description');
+    const priceInput = activeModuleContainer.querySelector('#example-price');
+    const stockInput = activeModuleContainer.querySelector('#example-stock');
 
-    if (nameInput) nameInput.value = product.name || '';
-    if (descriptionTextarea) descriptionTextarea.value = product.description || '';
-    if (priceInput) priceInput.value = product.price || '';
-    if (stockInput) stockInput.value = product.stock || '';
+    if (nameInput) nameInput.value = record.name || '';
+    if (descriptionTextarea) descriptionTextarea.value = record.description || '';
+    if (priceInput) priceInput.value = record.price || '';
+    if (stockInput) stockInput.value = record.stock || '';
 
     // Poblar select usando LegoSelect API (con retry para asegurar que esté listo)
-    if (product.category) {
+    if (record.category) {
         const setCategory = () => {
             if (window.LegoSelect) {
-                console.log('[ProductEdit] Seteando categoría:', product.category);
-                window.LegoSelect.setValue('product-category', product.category);
+                console.log('[ExampleEdit] Seteando categoría:', record.category);
+                window.LegoSelect.setValue('example-category', record.category);
             } else {
-                console.warn('[ProductEdit] LegoSelect no disponible, reintentando...');
+                console.warn('[ExampleEdit] LegoSelect no disponible, reintentando...');
                 setTimeout(setCategory, 100);
             }
         };
         setCategory();
     }
 
-    console.log('[ProductEdit] Formulario poblado correctamente');
+    console.log('[ExampleEdit] Formulario poblado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ACTUALIZAR PRODUCTO
+// ACTUALIZAR REGISTRO
 // ═══════════════════════════════════════════════════════════════════
 
-async function updateProduct(productId, formData) {
+async function updateRecord(recordId, formData) {
     try {
         // Validar antes de enviar
         const validation = validateForm(formData);
         if (!validation.isValid) {
-            console.error('[ProductEdit] Validación fallida:', validation.errors);
+            console.error('[ExampleEdit] Validación fallida:', validation.errors);
             showValidationErrors(validation.errors);
             return null;
         }
 
-        console.log('[ProductEdit] Actualizando producto:', productId, formData);
+        console.log('[ExampleEdit] Actualizando registro:', recordId, formData);
 
-        const response = await fetch('/api/products/update', {
+        const response = await fetch('/api/example-crud/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: productId,
+                id: recordId,
                 ...formData
             })
         });
@@ -182,19 +182,19 @@ async function updateProduct(productId, formData) {
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.msj || 'Error al actualizar producto');
+            throw new Error(result.msj || 'Error al actualizar registro');
         }
 
-        console.log('[ProductEdit] Producto actualizado:', result.data);
+        console.log('[ExampleEdit] Registro actualizado:', result.data);
         return result.data;
 
     } catch (error) {
-        console.error('[ProductEdit] Error actualizando producto:', error);
+        console.error('[ExampleEdit] Error actualizando registro:', error);
 
         if (window.AlertService) {
-            window.AlertService.error('Error', error.message || 'Error al actualizar producto');
+            window.AlertService.error('Error', error.message || 'Error al actualizar registro');
         } else {
-            alert('Error actualizando producto: ' + error.message);
+            alert('Error actualizando registro: ' + error.message);
         }
 
         throw error;
@@ -207,30 +207,30 @@ async function updateProduct(productId, formData) {
 
 function closeModule() {
     if (!window.moduleStore) {
-        console.error('[ProductEdit] ModuleStore no disponible');
+        console.error('[ExampleEdit] ModuleStore no disponible');
         return;
     }
 
     const currentModule = window.moduleStore.getActiveModule();
     if (currentModule && window.lego && window.lego.closeModule) {
         window.lego.closeModule(currentModule);
-        console.log('[ProductEdit] Módulo cerrado');
+        console.log('[ExampleEdit] Módulo cerrado');
     }
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// RECARGAR TABLA DE PRODUCTOS
+// RECARGAR TABLA DE REGISTROS
 // ═══════════════════════════════════════════════════════════════════
 
-function reloadProductsTable() {
+function reloadExampleCrudTable() {
     // Recargar la tabla usando la función global de refresh
-    const refreshFn = window.legoTable_products_table_v3_refresh;
+    const refreshFn = window.legoTable_example_crud_table_refresh;
 
     if (refreshFn) {
-        console.log('[ProductEdit] Recargando tabla de productos...');
+        console.log('[ExampleEdit] Recargando tabla de registros...');
         refreshFn();
     } else {
-        console.warn('[ProductEdit] Función de recarga de tabla no encontrada');
+        console.warn('[ExampleEdit] Función de recarga de tabla no encontrada');
     }
 }
 
@@ -238,12 +238,12 @@ function reloadProductsTable() {
 // CARGAR IMÁGENES EN FILEPOND
 // ═══════════════════════════════════════════════════════════════════
 
-function loadProductImages(images) {
-    console.log('[ProductEdit] Cargando imágenes en FilePond:', images);
+function loadRecordImages(images) {
+    console.log('[ExampleEdit] Cargando imágenes en FilePond:', images);
 
     // Esperar a que FilePond esté listo
     const waitForFilePond = setInterval(() => {
-        const pond = window.FilePondComponent?.getInstance('product-images');
+        const pond = window.FilePondComponent?.getInstance('example-images');
 
         if (pond) {
             clearInterval(waitForFilePond);
@@ -264,9 +264,9 @@ function loadProductImages(images) {
                         imageId: image.id   // ID para referencia adicional
                     }
                 }).then(file => {
-                    console.log('[ProductEdit] Imagen agregada a FilePond con ID:', image.id);
+                    console.log('[ExampleEdit] Imagen agregada a FilePond con ID:', image.id);
                 }).catch(error => {
-                    console.error('[ProductEdit] Error agregando imagen a FilePond:', error);
+                    console.error('[ExampleEdit] Error agregando imagen a FilePond:', error);
                 });
             });
         }
@@ -283,65 +283,65 @@ function loadProductImages(images) {
 // ═══════════════════════════════════════════════════════════════════
 
 async function initializeForm() {
-    console.log('[ProductEdit] Inicializando formulario...');
+    console.log('[ExampleEdit] Inicializando formulario...');
 
     // IMPORTANTE: Buscar el container dentro del módulo activo SOLAMENTE
     const activeModuleId = window.moduleStore?.getActiveModule();
     if (!activeModuleId) {
-        console.error('[ProductEdit] No hay módulo activo');
+        console.error('[ExampleEdit] No hay módulo activo');
         return;
     }
 
     const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
     if (!activeModuleContainer) {
-        console.error('[ProductEdit] No se encontró container del módulo activo:', activeModuleId);
+        console.error('[ExampleEdit] No se encontró container del módulo activo:', activeModuleId);
         return;
     }
 
     // Buscar el formulario DENTRO del módulo activo
-    const container = activeModuleContainer.querySelector('.product-form[data-product-id]');
-    console.log('[ProductEdit] Container encontrado:', container);
-    console.log('[ProductEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
+    const container = activeModuleContainer.querySelector('.example-form[data-example-id]');
+    console.log('[ExampleEdit] Container encontrado:', container);
+    console.log('[ExampleEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
 
-    const productId = container?.getAttribute('data-product-id');
-    console.log('[ProductEdit] Product ID extraído:', productId);
+    const recordId = container?.getAttribute('data-example-id');
+    console.log('[ExampleEdit] Record ID extraído:', recordId);
 
-    if (!productId) {
-        console.error('[ProductEdit] No se encontró ID de producto en el container');
+    if (!recordId) {
+        console.error('[ExampleEdit] No se encontró ID de registro en el container');
         return;
     }
 
     // Buscar elementos del form DENTRO del módulo activo
-    const form = activeModuleContainer.querySelector('#product-edit-form');
-    const submitBtn = activeModuleContainer.querySelector('#product-form-submit-btn');
-    const cancelBtn = activeModuleContainer.querySelector('#product-form-cancel-btn');
-    const loading = activeModuleContainer.querySelector('#product-form-loading');
+    const form = activeModuleContainer.querySelector('#example-edit-form');
+    const submitBtn = activeModuleContainer.querySelector('#example-form-submit-btn');
+    const cancelBtn = activeModuleContainer.querySelector('#example-form-cancel-btn');
+    const loading = activeModuleContainer.querySelector('#example-form-loading');
 
     if (!form || !loading) {
-        console.warn('[ProductEdit] Elementos no encontrados aún, esperando...');
+        console.warn('[ExampleEdit] Elementos no encontrados aún, esperando...');
         return;
     }
 
-    // Cargar datos del producto
+    // Cargar datos del registro
     try {
-        const product = await loadProductData(productId);
+        const record = await loadRecordData(recordId);
 
         // Ocultar loading, mostrar form
         loading.style.display = 'none';
         form.style.display = 'flex';
 
         // Poblar formulario (pasando el container del módulo activo)
-        populateForm(product, activeModuleContainer);
+        populateForm(record, activeModuleContainer);
 
         // Cargar imágenes en FilePond si existen
-        if (product.images && product.images.length > 0) {
-            loadProductImages(product.images);
+        if (record.images && record.images.length > 0) {
+            loadRecordImages(record.images);
         }
 
     } catch (error) {
-        console.error('[ProductEdit] Error en inicialización:', error);
+        console.error('[ExampleEdit] Error en inicialización:', error);
         if (loading) {
-            loading.textContent = 'Error cargando producto';
+            loading.textContent = 'Error cargando registro';
             loading.style.color = 'red';
         }
         return;
@@ -351,7 +351,7 @@ async function initializeForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ProductEdit] Enviando formulario...');
+        console.log('[ExampleEdit] Enviando formulario...');
 
         // Deshabilitar botón mientras se envía
         submitBtn.disabled = true;
@@ -360,34 +360,34 @@ async function initializeForm() {
         try {
             // Recoger datos del formulario desde el módulo activo
             const formData = {
-                name: activeModuleContainer.querySelector('#product-name')?.value || '',
-                description: activeModuleContainer.querySelector('#product-description')?.value || '',
-                price: parseFloat(activeModuleContainer.querySelector('#product-price')?.value || 0),
-                stock: parseInt(activeModuleContainer.querySelector('#product-stock')?.value || 0),
-                category: window.LegoSelect?.getValue('product-category') || ''
+                name: activeModuleContainer.querySelector('#example-name')?.value || '',
+                description: activeModuleContainer.querySelector('#example-description')?.value || '',
+                price: parseFloat(activeModuleContainer.querySelector('#example-price')?.value || 0),
+                stock: parseInt(activeModuleContainer.querySelector('#example-stock')?.value || 0),
+                category: window.LegoSelect?.getValue('example-category') || ''
             };
 
             // Obtener IDs de imágenes de FilePond
-            const imageIds = window.FilePondComponent?.getImageIds('product-images') || [];
+            const imageIds = window.FilePondComponent?.getImageIds('example-images') || [];
             if (imageIds.length > 0) {
                 formData.image_ids = imageIds;
             }
 
-            console.log('[ProductEdit] Datos del formulario:', formData);
+            console.log('[ExampleEdit] Datos del formulario:', formData);
 
-            // Actualizar producto
-            const updatedProduct = await updateProduct(productId, formData);
+            // Actualizar registro
+            const updatedRecord = await updateRecord(recordId, formData);
 
-            if (updatedProduct) {
+            if (updatedRecord) {
                 // Éxito
                 if (window.AlertService) {
-                    window.AlertService.success('Éxito', 'Producto actualizado correctamente');
+                    window.AlertService.success('Éxito', 'Registro actualizado correctamente');
                 } else {
-                    alert('Producto actualizado correctamente');
+                    alert('Registro actualizado correctamente');
                 }
 
                 // Recargar tabla
-                reloadProductsTable();
+                reloadExampleCrudTable();
 
                 // Cerrar automáticamente el formulario después de un breve delay
                 setTimeout(() => {
@@ -398,7 +398,7 @@ async function initializeForm() {
             }
 
         } catch (error) {
-            console.error('[ProductEdit] Error:', error);
+            console.error('[ExampleEdit] Error:', error);
         } finally {
             // Re-habilitar botón
             submitBtn.disabled = false;
@@ -413,7 +413,7 @@ async function initializeForm() {
         });
     }
 
-    console.log('[ProductEdit] Formulario inicializado correctamente');
+    console.log('[ExampleEdit] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -430,10 +430,10 @@ function tryInitialize() {
     if (!activeModuleId) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ProductEdit] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
+            console.log(`[ExampleEdit] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
-            console.error('[ProductEdit] ModuleStore no disponible después de 2 segundos');
+            console.error('[ExampleEdit] ModuleStore no disponible después de 2 segundos');
         }
         return;
     }
@@ -444,27 +444,27 @@ function tryInitialize() {
     if (!activeModuleContainer) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ProductEdit] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
+            console.log(`[ExampleEdit] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
-            console.error('[ProductEdit] Container del módulo activo no encontrado después de 2 segundos');
+            console.error('[ExampleEdit] Container del módulo activo no encontrado después de 2 segundos');
         }
         return;
     }
 
     // Buscar el contenedor específico del edit form DENTRO del módulo activo
-    const container = activeModuleContainer.querySelector('.product-form[data-product-id]');
-    const form = activeModuleContainer.querySelector('#product-edit-form');
+    const container = activeModuleContainer.querySelector('.example-form[data-example-id]');
+    const form = activeModuleContainer.querySelector('#example-edit-form');
 
     if (container && form) {
-        console.log('[ProductEdit] Elementos encontrados en módulo activo, inicializando...');
+        console.log('[ExampleEdit] Elementos encontrados en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ProductEdit] Elementos no encontrados en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
+        console.log(`[ExampleEdit] Elementos no encontrados en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
-        console.error('[ProductEdit] No se pudieron encontrar los elementos después de 2 segundos');
+        console.error('[ExampleEdit] No se pudieron encontrar los elementos después de 2 segundos');
     }
 }
 

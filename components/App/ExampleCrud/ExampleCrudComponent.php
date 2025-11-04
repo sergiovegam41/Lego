@@ -1,5 +1,5 @@
 <?php
-namespace Components\App\ProductsCrudV3;
+namespace Components\App\ExampleCrud;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
@@ -9,16 +9,17 @@ use Components\Shared\Essentials\TableComponent\Dtos\ColumnDto;
 use Components\Shared\Essentials\TableComponent\Collections\RowActionsCollection;
 use Components\Shared\Essentials\TableComponent\Dtos\RowActionDto;
 use Core\Types\DimensionValue;
-use App\Models\Product;
+use App\Models\ExampleCrud;
 
 /**
- * ProductsCrudV3Component - Vista de tabla (CRUD V3)
+ * ExampleCrudComponent - Vista de tabla (CRUD de Ejemplo)
  *
  * FILOSOFÍA LEGO:
- * Componente enfocado ÚNICAMENTE en mostrar la tabla de productos.
- * No contiene lógica de formularios - separación de responsabilidades.
+ * Componente de ejemplo/template que demuestra CRUD completo.
+ * Enfocado ÚNICAMENTE en mostrar la tabla - separación de responsabilidades.
+ * Sirve como referencia para construir otros CRUDs en el framework.
  *
- * MEJORAS vs V1/V2:
+ * CARACTERÍSTICAS:
  * ✅ Model-driven con server-side pagination automática
  * ✅ RowActions integradas (edit, delete con callbacks)
  * ✅ Anchos con DimensionValue (proporciones consistentes)
@@ -27,17 +28,17 @@ use App\Models\Product;
  * ✅ Theming correcto (html.dark, no @media)
  * ✅ Separación clara: 1 componente = 1 responsabilidad
  *
- * NUEVO EN V3 (Model-Driven):
- * - Pasa Product::class y todo se configura automáticamente
- * - Server-side pagination desde /api/get/products
+ * MODEL-DRIVEN:
+ * - Pasa ExampleCrud::class y todo se configura automáticamente
+ * - Server-side pagination desde /api/get/example-crud
  * - RowActions con callbacks personalizados (handleEdit, handleDelete)
- * - Sin necesidad de cargar productos en PHP (lazy loading)
+ * - Sin necesidad de cargar datos en PHP (lazy loading)
  */
-#[ApiComponent('/products-crud-v3', methods: ['GET'])]
-class ProductsCrudV3Component extends CoreComponent
+#[ApiComponent('/example-crud', methods: ['GET'])]
+class ExampleCrudComponent extends CoreComponent
 {
-    protected $CSS_PATHS = ["./products-crud-v3.css"];
-    protected $JS_PATHS = ["./products-crud-v3.js"];
+    protected $CSS_PATHS = ["./example-crud.css"];
+    protected $JS_PATHS = ["./example-crud.js"];
 
     protected function component(): string
     {
@@ -55,6 +56,14 @@ class ProductsCrudV3Component extends CoreComponent
                 field: "name",
                 headerName: "Nombre",
                 width: DimensionValue::px(200),
+                sortable: true,
+                filter: true,
+                filterType: "text"
+            ),
+            new ColumnDto(
+                field: "sku",
+                headerName: "SKU",
+                width: DimensionValue::px(120),
                 sortable: true,
                 filter: true,
                 filterType: "text"
@@ -98,53 +107,53 @@ class ProductsCrudV3Component extends CoreComponent
                 id: "edit",
                 label: "Editar",
                 icon: "create-outline",
-                callback: "handleEditProduct",
+                callback: "handleEditRecord",
                 variant: "primary",
-                tooltip: "Editar producto"
+                tooltip: "Editar registro"
             ),
             new RowActionDto(
                 id: "delete",
                 label: "Eliminar",
                 icon: "trash-outline",
-                callback: "handleDeleteProduct",
+                callback: "handleDeleteRecord",
                 variant: "danger",
                 confirm: true,
-                confirmMessage: "¿Estás seguro de eliminar este producto?",
-                tooltip: "Eliminar producto"
+                confirmMessage: "¿Estás seguro de eliminar este registro?",
+                tooltip: "Eliminar registro"
             )
         );
 
         // ✨ MAGIA: Tabla model-driven con server-side pagination
         $table = new TableComponent(
-            id: "products-table-v3",
-            model: Product::class,  // ← Auto-configura API y paginación
+            id: "example-crud-table",
+            model: ExampleCrud::class,  // ← Auto-configura API y paginación
             columns: $columns,
-            rowActions: $actions,   // ← Acciones integradas
+            rowActions: $actions,       // ← Acciones integradas
             height: "600px",
-            pagination: true,       // Server-side automático
+            pagination: true,           // Server-side automático
             rowSelection: "multiple"
         );
 
         return <<<HTML
-        <div class="products-crud-v3">
+        <div class="example-crud">
             <!-- Header con botón crear -->
-            <div class="products-crud-v3__header">
-                <h1 class="products-crud-v3__title">Productos</h1>
+            <div class="example-crud__header">
+                <h1 class="example-crud__title">Example CRUD</h1>
                 <button
-                    class="products-crud-v3__create-btn"
-                    id="products-crud-v3-create-btn"
+                    class="example-crud__create-btn"
+                    id="example-crud-create-btn"
                     type="button"
-                    onclick="openModule('products-crud-v3-create', '/component/products-crud-v3/create', 'Crear Producto', null)"
+                    onclick="openModule('example-crud-create', '/component/example-crud/create', 'Crear Registro', null)"
                 >
-                    <svg class="products-crud-v3__create-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <svg class="example-crud__create-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    Crear Producto
+                    Crear Registro
                 </button>
             </div>
 
-            <!-- Tabla de productos -->
-            <div class="products-crud-v3__table">
+            <!-- Tabla de registros -->
+            <div class="example-crud__table">
                 {$table->render()}
             </div>
         </div>

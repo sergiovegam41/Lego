@@ -50,7 +50,7 @@
 namespace Routes;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
-use App\Controllers\Products\Controllers\ProductsController;
+use App\Controllers\ExampleCrud\Controllers\ExampleCrudController;
 use App\Controllers\ComponentsController;
 use Core\Controllers\CoreController;
 use Core\Routing\ApiCrudRouter;

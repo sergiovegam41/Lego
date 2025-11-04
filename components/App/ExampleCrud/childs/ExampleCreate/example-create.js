@@ -1,5 +1,5 @@
 /**
- * Product Create - Lógica de creación
+ * Example Create - Lógica de creación
  *
  * FILOSOFÍA LEGO:
  * Formulario con validación client-side y manejo de errores robusto.
@@ -12,7 +12,7 @@
  * ✅ Usa window.LegoSelect sin .click() hacks
  */
 
-console.log('[ProductCreate] Script cargado');
+console.log('[ExampleCreate] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
 // VALIDACIÓN CLIENT-SIDE
@@ -51,18 +51,18 @@ function validateForm(formData) {
 // CREAR PRODUCTO
 // ═══════════════════════════════════════════════════════════════════
 
-async function createProduct(formData) {
+async function createRecord(formData) {
     try {
         // Validar antes de enviar
         const validation = validateForm(formData);
         if (!validation.isValid) {
-            console.error('[ProductCreate] Validación fallida:', validation.errors);
+            console.error('[ExampleCreate] Validación fallida:', validation.errors);
             showValidationErrors(validation.errors);
             return null;
         }
 
         // Enviar con fetch (legacy endpoint)
-        const response = await fetch('/api/products/create', {
+        const response = await fetch('/api/example-crud/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -73,20 +73,20 @@ async function createProduct(formData) {
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.msj || 'Error al crear producto');
+            throw new Error(result.msj || 'Error al crear registro');
         }
 
-        console.log('[ProductCreate] Producto creado:', result.data);
+        console.log('[ExampleCreate] Registro creado:', result.data);
         return result.data;
 
     } catch (error) {
-        console.error('[ProductCreate] Error creando producto:', error);
+        console.error('[ExampleCreate] Error creando registro:', error);
 
         // Usar AlertService si está disponible
         if (window.AlertService) {
-            window.AlertService.error('Error', error.message || 'Error al crear producto');
+            window.AlertService.error('Error', error.message || 'Error al crear registro');
         } else {
-            alert('Error creando producto: ' + error.message);
+            alert('Error creando registro: ' + error.message);
         }
 
         throw error;
@@ -109,7 +109,7 @@ function showValidationErrors(errors) {
 
     // Mostrar nuevos errores
     Object.entries(errors).forEach(([field, message]) => {
-        const input = document.getElementById(`product-${field}`);
+        const input = document.getElementById(`example-${field}`);
         if (input) {
             const container = input.closest('.lego-input, .lego-select, .lego-textarea');
             if (container) {
@@ -140,13 +140,13 @@ function showValidationErrors(errors) {
 // ═══════════════════════════════════════════════════════════════════
 
 function clearForm() {
-    console.log('[ProductCreate] Limpiando formulario...');
+    console.log('[ExampleCreate] Limpiando formulario...');
 
     // Limpiar campos de texto
-    const nameInput = document.getElementById('product-name');
-    const descriptionInput = document.getElementById('product-description');
-    const priceInput = document.getElementById('product-price');
-    const stockInput = document.getElementById('product-stock');
+    const nameInput = document.getElementById('example-name');
+    const descriptionInput = document.getElementById('example-description');
+    const priceInput = document.getElementById('example-price');
+    const stockInput = document.getElementById('example-stock');
 
     if (nameInput) nameInput.value = '';
     if (descriptionInput) descriptionInput.value = '';
@@ -155,7 +155,7 @@ function clearForm() {
 
     // Limpiar select usando LegoSelect
     if (window.LegoSelect) {
-        window.LegoSelect.setValue('product-category', '');
+        window.LegoSelect.setValue('example-category', '');
     }
 
     // Limpiar errores de validación
@@ -167,7 +167,7 @@ function clearForm() {
         el.classList.remove('lego-input--error', 'lego-select--error', 'lego-textarea--error');
     });
 
-    console.log('[ProductCreate] Formulario limpiado');
+    console.log('[ExampleCreate] Formulario limpiado');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -176,14 +176,14 @@ function clearForm() {
 
 function closeModule() {
     if (!window.moduleStore) {
-        console.error('[ProductCreate] ModuleStore no disponible');
+        console.error('[ExampleCreate] ModuleStore no disponible');
         return;
     }
 
     const currentModule = window.moduleStore.getActiveModule();
     if (currentModule && window.lego && window.lego.closeModule) {
         window.lego.closeModule(currentModule);
-        console.log('[ProductCreate] Módulo cerrado');
+        console.log('[ExampleCreate] Módulo cerrado');
     }
 }
 
@@ -191,15 +191,15 @@ function closeModule() {
 // RECARGAR TABLA DE PRODUCTOS
 // ═══════════════════════════════════════════════════════════════════
 
-function reloadProductsTable() {
+function reloadExampleCrudTable() {
     // Recargar la tabla usando la función global de refresh
-    const refreshFn = window.legoTable_products_table_v3_refresh;
+    const refreshFn = window.legoTable_example_crud_table_refresh;
 
     if (refreshFn) {
-        console.log('[ProductCreate] Recargando tabla de productos...');
+        console.log('[ExampleCreate] Recargando tabla de registros...');
         refreshFn();
     } else {
-        console.warn('[ProductCreate] Función de recarga de tabla no encontrada');
+        console.warn('[ExampleCreate] Función de recarga de tabla no encontrada');
     }
 }
 
@@ -208,28 +208,28 @@ function reloadProductsTable() {
 // ═══════════════════════════════════════════════════════════════════
 
 function initializeForm() {
-    console.log('[ProductCreate] Inicializando formulario...');
+    console.log('[ExampleCreate] Inicializando formulario...');
 
     // IMPORTANTE: Buscar elementos SOLO dentro del módulo activo
     const activeModuleId = window.moduleStore?.getActiveModule();
     if (!activeModuleId) {
-        console.error('[ProductCreate] No hay módulo activo');
+        console.error('[ExampleCreate] No hay módulo activo');
         return;
     }
 
     const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
     if (!activeModuleContainer) {
-        console.error('[ProductCreate] No se encontró container del módulo activo:', activeModuleId);
+        console.error('[ExampleCreate] No se encontró container del módulo activo:', activeModuleId);
         return;
     }
 
     // Buscar elementos DENTRO del módulo activo
-    const form = activeModuleContainer.querySelector('#product-create-form');
-    const submitBtn = activeModuleContainer.querySelector('#product-form-submit-btn');
-    const cancelBtn = activeModuleContainer.querySelector('#product-form-cancel-btn');
+    const form = activeModuleContainer.querySelector('#example-create-form');
+    const submitBtn = activeModuleContainer.querySelector('#example-form-submit-btn');
+    const cancelBtn = activeModuleContainer.querySelector('#example-form-cancel-btn');
 
     if (!form) {
-        console.warn('[ProductCreate] Formulario no encontrado en módulo activo, esperando...');
+        console.warn('[ExampleCreate] Formulario no encontrado en módulo activo, esperando...');
         return;
     }
 
@@ -237,7 +237,7 @@ function initializeForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ProductCreate] Enviando formulario...');
+        console.log('[ExampleCreate] Enviando formulario...');
 
         // Deshabilitar botón mientras se envía
         submitBtn.disabled = true;
@@ -246,34 +246,34 @@ function initializeForm() {
         try {
             // Recoger datos del formulario desde el módulo activo
             const formData = {
-                name: activeModuleContainer.querySelector('#product-name')?.value || '',
-                description: activeModuleContainer.querySelector('#product-description')?.value || '',
-                price: parseFloat(activeModuleContainer.querySelector('#product-price')?.value || 0),
-                stock: parseInt(activeModuleContainer.querySelector('#product-stock')?.value || 0),
-                category: window.LegoSelect?.getValue('product-category') || ''
+                name: activeModuleContainer.querySelector('#example-name')?.value || '',
+                description: activeModuleContainer.querySelector('#example-description')?.value || '',
+                price: parseFloat(activeModuleContainer.querySelector('#example-price')?.value || 0),
+                stock: parseInt(activeModuleContainer.querySelector('#example-stock')?.value || 0),
+                category: window.LegoSelect?.getValue('example-category') || ''
             };
 
             // Obtener IDs de imágenes de FilePond
-            const imageIds = window.FilePondComponent?.getImageIds('product-images') || [];
+            const imageIds = window.FilePondComponent?.getImageIds('example-images') || [];
             if (imageIds.length > 0) {
                 formData.image_ids = imageIds;
             }
 
-            console.log('[ProductCreate] Datos del formulario:', formData);
+            console.log('[ExampleCreate] Datos del formulario:', formData);
 
-            // Crear producto
-            const newProduct = await createProduct(formData);
+            // Crear registro
+            const newRecord = await createRecord(formData);
 
-            if (newProduct) {
+            if (newRecord) {
                 // Éxito - mostrar mensaje
                 if (window.AlertService) {
-                    window.AlertService.success('Éxito', 'Producto creado correctamente');
+                    window.AlertService.success('Éxito', 'Registro creado correctamente');
                 } else {
-                    alert('Producto creado correctamente');
+                    alert('Registro creado correctamente');
                 }
 
                 // Recargar tabla
-                reloadProductsTable();
+                reloadExampleCrudTable();
 
                 // Cerrar automáticamente el formulario después de un breve delay
                 setTimeout(() => {
@@ -284,11 +284,11 @@ function initializeForm() {
             }
 
         } catch (error) {
-            console.error('[ProductCreate] Error:', error);
+            console.error('[ExampleCreate] Error:', error);
         } finally {
             // Re-habilitar botón
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Crear Producto';
+            submitBtn.textContent = 'Crear Registro';
         }
     });
 
@@ -299,7 +299,7 @@ function initializeForm() {
         });
     }
 
-    console.log('[ProductCreate] Formulario inicializado correctamente');
+    console.log('[ExampleCreate] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -318,10 +318,10 @@ function tryInitialize() {
     if (!activeModuleId) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ProductCreate] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
+            console.log(`[ExampleCreate] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
-            console.error('[ProductCreate] ModuleStore no disponible después de 2 segundos');
+            console.error('[ExampleCreate] ModuleStore no disponible después de 2 segundos');
         }
         return;
     }
@@ -332,26 +332,26 @@ function tryInitialize() {
     if (!activeModuleContainer) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ProductCreate] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
+            console.log(`[ExampleCreate] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
-            console.error('[ProductCreate] Container del módulo activo no encontrado después de 2 segundos');
+            console.error('[ExampleCreate] Container del módulo activo no encontrado después de 2 segundos');
         }
         return;
     }
 
     // Buscar el formulario DENTRO del módulo activo
-    const form = activeModuleContainer.querySelector('#product-create-form');
+    const form = activeModuleContainer.querySelector('#example-create-form');
 
     if (form) {
-        console.log('[ProductCreate] Formulario encontrado en módulo activo, inicializando...');
+        console.log('[ExampleCreate] Formulario encontrado en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ProductCreate] Formulario no encontrado en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
+        console.log(`[ExampleCreate] Formulario no encontrado en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
-        console.error('[ProductCreate] No se pudo encontrar el formulario después de 2 segundos');
+        console.error('[ExampleCreate] No se pudo encontrar el formulario después de 2 segundos');
     }
 }
 

@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * ProductImage Model
+ * ExampleCrudImage Model
  *
  * FILOSOFÍA LEGO:
- * Modelo Eloquent para gestionar imágenes de productos.
- * Relación 1:N con Product (un producto tiene múltiples imágenes).
+ * Modelo Eloquent para gestionar imágenes de registros example_crud.
+ * Relación 1:N con ExampleCrud (un registro tiene múltiples imágenes).
+ * Este modelo sirve como template/ejemplo para implementar sistemas de imágenes.
  *
  * CAMPOS:
  * - id: PK auto-increment
- * - product_id: FK a products
+ * - example_crud_id: FK a example_crud
  * - url: URL completa de la imagen en MinIO
  * - key: Key/path en MinIO (para eliminación)
  * - original_name: Nombre original del archivo
@@ -25,18 +26,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - created_at: Fecha de creación
  * - updated_at: Fecha de actualización
  */
-class ProductImage extends Model
+class ExampleCrudImage extends Model
 {
     /**
      * La tabla asociada al modelo
      */
-    protected $table = 'product_images';
+    protected $table = 'example_crud_images';
 
     /**
      * Los atributos que se pueden asignar masivamente
      */
     protected $fillable = [
-        'product_id',
+        'example_crud_id',
         'url',
         'key',
         'original_name',
@@ -50,7 +51,7 @@ class ProductImage extends Model
      * Los atributos que deben ser cast a tipos nativos
      */
     protected $casts = [
-        'product_id' => 'integer',
+        'example_crud_id' => 'integer',
         'size' => 'integer',
         'display_order' => 'integer',
         'is_primary' => 'boolean',
@@ -67,11 +68,11 @@ class ProductImage extends Model
     ];
 
     /**
-     * Relación: Una imagen pertenece a un producto
+     * Relación: Una imagen pertenece a un registro example_crud
      */
-    public function product(): BelongsTo
+    public function exampleCrud(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(ExampleCrud::class);
     }
 
     /**

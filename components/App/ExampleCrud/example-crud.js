@@ -1,5 +1,5 @@
 /**
- * ProductsCrudV3 - Lógica de tabla (REFACTORIZADO)
+ * ExampleCrudV3 - Lógica de tabla (REFACTORIZADO)
  *
  * FILOSOFÍA LEGO:
  * Lógica limpia usando módulos, TableManager y ApiClient.
@@ -17,33 +17,33 @@
  * "Las distancias importan" - misma arquitectura que otros componentes
  */
 
-console.log('[ProductsCrudV3] Inicializando...');
+console.log('[ExampleCrud] Inicializando...');
 
 // ═══════════════════════════════════════════════════════════════════
 // CALLBACKS PARA ROW ACTIONS
 // ═══════════════════════════════════════════════════════════════════
 
 /**
- * Callback para editar producto
+ * Callback para editar registro
  * Se ejecuta cuando el usuario hace clic en el botón "Editar"
  */
-window.handleEditProduct = function(rowData, tableId) {
-    console.log('[ProductsCrudV3] Editar producto:', rowData);
+window.handleEditRecord = function(rowData, tableId) {
+    console.log('[ExampleCrud] Editar registro:', rowData);
 
-    // Abrir módulo de edición con el ID del producto
+    // Abrir módulo de edición con el ID del registro
     openEditModule(rowData.id);
 };
 
 /**
- * Callback para eliminar producto
+ * Callback para eliminar registro
  * Se ejecuta cuando el usuario hace clic en el botón "Eliminar" y confirma
  */
-window.handleDeleteProduct = async function(rowData, tableId) {
-    console.log('[ProductsCrudV3] Eliminar producto:', rowData);
+window.handleDeleteRecord = async function(rowData, tableId) {
+    console.log('[ExampleCrud] Eliminar registro:', rowData);
 
     try {
         // Hacer fetch al endpoint de eliminación
-        const response = await fetch('/api/products/delete', {
+        const response = await fetch('/api/example-crud/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -54,36 +54,36 @@ window.handleDeleteProduct = async function(rowData, tableId) {
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.msj || 'Error al eliminar producto');
+            throw new Error(result.msj || 'Error al eliminar registro');
         }
 
         // Mostrar mensaje de éxito
         if (window.lego && window.lego.alert) {
             await window.lego.alert.success({
                 title: 'Eliminado',
-                text: result.msj || 'Producto eliminado correctamente'
+                text: result.msj || 'Registro eliminado correctamente'
             });
         }
 
         // Recargar SOLO el módulo actual (LEGO way)
         if (window.legoWindowManager) {
-            console.log('[ProductsCrudV3] Recargando módulo activo...');
+            console.log('[ExampleCrud] Recargando módulo activo...');
             window.legoWindowManager.reloadActive();
         } else {
-            console.warn('[ProductsCrudV3] legoWindowManager no disponible, recargando página');
+            console.warn('[ExampleCrud] legoWindowManager no disponible, recargando página');
             window.location.reload();
         }
 
     } catch (error) {
-        console.error('[ProductsCrudV3] Error eliminando producto:', error);
+        console.error('[ExampleCrud] Error eliminando registro:', error);
 
         if (window.lego && window.lego.alert) {
             await window.lego.alert.error({
                 title: 'Error',
-                text: error.message || 'Error al eliminar producto'
+                text: error.message || 'Error al eliminar registro'
             });
         } else {
-            alert('Error al eliminar producto: ' + error.message);
+            alert('Error al eliminar registro: ' + error.message);
         }
     }
 };
@@ -92,14 +92,14 @@ window.handleDeleteProduct = async function(rowData, tableId) {
 // CREAR INSTANCIA DE TableManager
 // ═══════════════════════════════════════════════════════════════════
 
-const tableManager = new TableManager('products-table-v3');
+const tableManager = new TableManager('example-crud-table');
 
 // ═══════════════════════════════════════════════════════════════════
 // CUANDO LA TABLA ESTÉ LISTA
 // ═══════════════════════════════════════════════════════════════════
 
 tableManager.onReady(() => {
-    console.log('[ProductsCrudV3] Tabla lista y configurada desde PHP');
+    console.log('[ExampleCrud] Tabla lista y configurada desde PHP');
     // La tabla ya viene completamente configurada desde PHP con:
     // - Columnas con anchos porcentuales
     // - cellRenderer inline para acciones
@@ -112,54 +112,54 @@ tableManager.onReady(() => {
 // ═══════════════════════════════════════════════════════════════════
 
 /**
- * Abrir módulo de crear producto
+ * Abrir módulo de crear registro
  *
  * IMPORTANTE: NO usar window.location.href
  * El sistema usa pestañas dinámicas con ModuleStore
  */
 function openCreateModule() {
     if (!window.legoWindowManager) {
-        console.error('[ProductsCrudV3] legoWindowManager no disponible');
+        console.error('[ExampleCrud] legoWindowManager no disponible');
         return;
     }
 
-    const moduleId = 'products-crud-v3-create';
-    const moduleUrl = '/component/products-crud-v3/create';
+    const moduleId = 'example-crud-create';
+    const moduleUrl = '/component/example-crud/create';
 
     // Abrir con ítem de menú dinámico
-    // parentMenuId: '10' es el grupo "Products CRUD" (padre conceptual correcto)
+    // parentMenuId: '10' es el grupo "Example CRUD" (padre conceptual correcto)
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '10', // ID del grupo "Products CRUD" en el menú
-        label: 'Nuevo Producto',
+        parentMenuId: '10', // ID del grupo "Example CRUD" en el menú
+        label: 'Nuevo Registro',
         url: moduleUrl,
         icon: 'add-circle-outline'
     });
 
-    console.log('[ProductsCrudV3] Abriendo módulo crear con menú dinámico');
+    console.log('[ExampleCrud] Abriendo módulo crear con menú dinámico');
 }
 
 /**
- * Abrir módulo de editar producto
+ * Abrir módulo de editar registro
  *
  * OPCIÓN 2: Ventana de edición reutilizable única
- * Solo existe UNA ventana "Editar Producto" que reemplaza su contenido
- * cuando se edita un producto diferente.
+ * Solo existe UNA ventana "Editar Registro" que reemplaza su contenido
+ * cuando se edita un registro diferente.
  */
-function openEditModule(productId, productData) {
+function openEditModule(recordId, recordData) {
     if (!window.legoWindowManager || !window.moduleStore) {
-        console.error('[ProductsCrudV3] legoWindowManager o moduleStore no disponible');
+        console.error('[ExampleCrud] legoWindowManager o moduleStore no disponible');
         return;
     }
 
     // FIJO: Solo una ventana de edición reutilizable
-    const moduleId = 'products-crud-v3-edit';
-    const moduleUrl = `/component/products-crud-v3/edit?id=${productId}`;
+    const moduleId = 'example-crud-edit';
+    const moduleUrl = `/component/example-crud/edit?id=${recordId}`;
 
     // Verificar si ya existe una ventana de edición abierta
     const modules = window.moduleStore.getModules();
     if (modules[moduleId]) {
-        console.log('[ProductsCrudV3] Ventana de edición ya existe, recargando con producto:', productId);
+        console.log('[ExampleCrud] Ventana de edición ya existe, recargando con registro:', recordId);
 
         // Obtener el container del módulo
         const container = document.getElementById(`module-${moduleId}`);
@@ -174,7 +174,7 @@ function openEditModule(productId, productData) {
                 window.legoWindowManager.updateBreadcrumbFromActiveModule();
             }
 
-            // Recargar el contenido del módulo con nuevo producto
+            // Recargar el contenido del módulo con nuevo registro
             fetch(moduleUrl)
                 .then(res => res.text())
                 .then(html => {
@@ -192,27 +192,27 @@ function openEditModule(productId, productData) {
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
 
-                    console.log('[ProductsCrudV3] Contenido recargado para producto:', productId);
+                    console.log('[ExampleCrud] Contenido recargado para registro:', recordId);
                 })
                 .catch(err => {
-                    console.error('[ProductsCrudV3] Error recargando contenido:', err);
+                    console.error('[ExampleCrud] Error recargando contenido:', err);
                 });
         }
         return;
     }
 
     // Abrir con ítem de menú dinámico (primera vez)
-    // parentMenuId: '10' es el grupo "Products CRUD" (padre conceptual correcto)
-    console.log('[ProductsCrudV3] Abriendo ventana de edición para producto:', productId);
+    // parentMenuId: '10' es el grupo "Example CRUD" (padre conceptual correcto)
+    console.log('[ExampleCrud] Abriendo ventana de edición para registro:', recordId);
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '10', // ID del grupo "Products CRUD" en el menú
-        label: 'Editar Producto',
+        parentMenuId: '10', // ID del grupo "Example CRUD" en el menú
+        label: 'Editar Registro',
         url: moduleUrl,
         icon: 'create-outline'
     });
 
-    console.log('[ProductsCrudV3] Módulo editar abierto con menú dinámico');
+    console.log('[ExampleCrud] Módulo editar abierto con menú dinámico');
 }
 
 /**
@@ -220,81 +220,81 @@ function openEditModule(productId, productData) {
  */
 function closeCurrentModule() {
     if (!window.moduleStore) {
-        console.error('[ProductsCrudV3] ModuleStore no disponible');
+        console.error('[ExampleCrud] ModuleStore no disponible');
         return;
     }
 
     const currentModule = window.moduleStore.getActiveModule();
     if (currentModule && window.lego && window.lego.closeModule) {
         window.lego.closeModule(currentModule);
-        console.log('[ProductsCrudV3] Módulo cerrado:', currentModule);
+        console.log('[ExampleCrud] Módulo cerrado:', currentModule);
     }
 }
 
 /**
- * Editar producto (llamado desde botón de acciones)
+ * Editar registro (llamado desde botón de acciones)
  */
-function editProduct(productId) {
-    console.log('[ProductsCrudV3] Editar producto:', productId);
-    openEditModule(productId);
+function editRecord(recordId) {
+    console.log('[ExampleCrud] Editar registro:', recordId);
+    openEditModule(recordId);
 }
 
 /**
- * Eliminar producto (llamado desde botón de acciones)
+ * Eliminar registro (llamado desde botón de acciones)
  */
-async function deleteProduct(productId) {
-    console.log('[ProductsCrudV3] Solicitud de eliminar producto:', productId);
+async function deleteRecord(recordId) {
+    console.log('[ExampleCrud] Solicitud de eliminar registro:', recordId);
 
     // Confirmar con el usuario
     const confirmed = window.AlertService
         ? await window.AlertService.confirm(
-            '¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.',
-            '¿Eliminar producto?',
+            '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
+            '¿Eliminar registro?',
             'Sí, eliminar',
             'Cancelar'
         )
-        : confirm('¿Estás seguro de que deseas eliminar este producto?');
+        : confirm('¿Estás seguro de que deseas eliminar este registro?');
 
     if (!confirmed) {
-        console.log('[ProductsCrudV3] Eliminación cancelada por el usuario');
+        console.log('[ExampleCrud] Eliminación cancelada por el usuario');
         return;
     }
 
     try {
-        const response = await fetch('/api/products/delete', {
+        const response = await fetch('/api/example-crud/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: productId })
+            body: JSON.stringify({ id: recordId })
         });
 
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-            throw new Error(result.msj || 'Error al eliminar producto');
+            throw new Error(result.msj || 'Error al eliminar registro');
         }
 
         // Éxito
         if (window.AlertService) {
-            window.AlertService.success('Éxito', 'Producto eliminado correctamente');
+            window.AlertService.success('Éxito', 'Registro eliminado correctamente');
         } else {
-            alert('Producto eliminado correctamente');
+            alert('Registro eliminado correctamente');
         }
 
         // Recargar tabla
-        const tableManager = new TableManager('products-table-v3');
+        const tableManager = new TableManager('example-crud-table');
         tableManager.onReady(() => {
             window.legoWindowManager?.reloadActive();
         });
 
     } catch (error) {
-        console.error('[ProductsCrudV3] Error eliminando producto:', error);
+        console.error('[ExampleCrud] Error eliminando registro:', error);
 
         if (window.AlertService) {
-            window.AlertService.error('Error', error.message || 'Error al eliminar producto');
+            window.AlertService.error('Error', error.message || 'Error al eliminar registro');
         } else {
-            alert('Error eliminando producto: ' + error.message);
+            alert('Error eliminando registro: ' + error.message);
         }
     }
 }
@@ -306,11 +306,11 @@ async function deleteProduct(productId) {
 window.openCreateModule = openCreateModule;
 window.openEditModule = openEditModule;
 window.closeCurrentModule = closeCurrentModule;
-window.editProduct = editProduct;
-window.deleteProduct = deleteProduct;
+window.editRecord = editRecord;
+window.deleteRecord = deleteRecord;
 
 // ═══════════════════════════════════════════════════════════════════
 // INICIALIZACIÓN
 // ═══════════════════════════════════════════════════════════════════
 
-console.log('[ProductsCrudV3] Sistema listo');
+console.log('[ExampleCrud] Sistema listo');

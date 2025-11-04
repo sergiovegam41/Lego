@@ -1,42 +1,46 @@
 <?php
 
-namespace App\Controllers\Products\Controllers;
+namespace App\Controllers\ExampleCrud\Controllers;
 
 use Core\Controllers\CoreController;
 use Core\Response;
 use Core\Models\ResponseDTO;
 use Core\Models\StatusCodes;
-use App\Models\Product;
-use App\Models\ProductImage;
+use App\Models\ExampleCrud;
+use App\Models\ExampleCrudImage;
 use App\Models\EntityFile;
 use Core\Services\Storage\StorageService;
 use Core\Services\File\FileService;
 
 /**
- * ProductsController - API REST para productos
+ * ExampleCrudController - API REST para example_crud
  *
- * ENDPOINTS REST (ProductsCrudV3):
- * GET    /api/products                   - Listar todos los productos
- * GET    /api/products/{id}              - Obtener un producto por ID
- * POST   /api/products                   - Crear nuevo producto
- * PUT    /api/products/{id}              - Actualizar producto
- * DELETE /api/products/{id}              - Eliminar producto
+ * FILOSOFÍA LEGO:
+ * Controlador de ejemplo/template que demuestra implementación completa de CRUD.
+ * Sirve como referencia para construir otros controladores en el framework.
  *
- * ENDPOINTS LEGACY (ProductsCrud V1/V2):
- * GET    /api/products/list              - Listar todos (LEGACY)
- * GET    /api/products/get               - Obtener por ID (LEGACY)
- * POST   /api/products/create            - Crear (LEGACY)
- * POST   /api/products/update            - Actualizar (LEGACY)
- * POST   /api/products/delete            - Eliminar (LEGACY)
- * POST   /api/products/upload_image      - Subir imagen
- * POST   /api/products/delete_image      - Eliminar imagen
- * POST   /api/products/reorder_images    - Reordenar imágenes
- * POST   /api/products/set_primary       - Marcar imagen como principal
+ * ENDPOINTS REST:
+ * GET    /api/example-crud              - Listar todos los registros
+ * GET    /api/example-crud/{id}         - Obtener un registro por ID
+ * POST   /api/example-crud              - Crear nuevo registro
+ * PUT    /api/example-crud/{id}         - Actualizar registro
+ * DELETE /api/example-crud/{id}         - Eliminar registro
+ *
+ * ENDPOINTS LEGACY (compatibilidad):
+ * GET    /api/example-crud/list         - Listar todos (LEGACY)
+ * GET    /api/example-crud/get          - Obtener por ID (LEGACY)
+ * POST   /api/example-crud/create       - Crear (LEGACY)
+ * POST   /api/example-crud/update       - Actualizar (LEGACY)
+ * POST   /api/example-crud/delete       - Eliminar (LEGACY)
+ * POST   /api/example-crud/upload_image - Subir imagen
+ * POST   /api/example-crud/delete_image - Eliminar imagen
+ * POST   /api/example-crud/reorder_images - Reordenar imágenes
+ * POST   /api/example-crud/set_primary  - Marcar imagen como principal
  */
-class ProductsController extends CoreController
+class ExampleCrudController extends CoreController
 {
 
-    const ROUTE = 'products';
+    const ROUTE = 'example-crud';
     private FileService $fileService;
 
     public function __construct($accion)
@@ -55,31 +59,31 @@ class ProductsController extends CoreController
     }
 
     /**
-     * GET /api/products/list
-     * Lista todos los productos
+     * GET /api/example-crud/list
+     * Lista todos los registros
      */
     public function list()
     {
         try {
-            $products = Product::orderBy('created_at', 'desc')->get()->toArray();
+            $records = ExampleCrud::orderBy('created_at', 'desc')->get()->toArray();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
-                'Productos obtenidos correctamente',
-                $products
+                'Registros obtenidos correctamente',
+                $records
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
-                'Error al obtener productos: ' . $e->getMessage(),
+                'Error al obtener registros: ' . $e->getMessage(),
                 null
             ));
         }
     }
 
     /**
-     * GET /api/products/get?id=1
-     * Obtiene un producto por ID (incluye imágenes vía entity_files)
+     * GET /api/example-crud/get?id=1
+     * Obtiene un registro por ID (incluye imágenes vía entity_files)
      */
     public function get()
     {
@@ -90,30 +94,30 @@ class ProductsController extends CoreController
             if (!$id) {
                 Response::json(StatusCodes::HTTP_BAD_REQUEST, (array)new ResponseDTO(
                     false,
-                    'ID de producto requerido',
+                    'ID de registro requerido',
                     null
                 ));
                 return;
             }
 
-            $product = Product::find($id);
+            $record = ExampleCrud::find($id);
 
-            if (!$product) {
+            if (!$record) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
                     false,
-                    'Producto no encontrado',
+                    'Registro no encontrado',
                     null
                 ));
                 return;
             }
 
-            $productData = $product->toArray();
+            $recordData = $record->toArray();
 
             // Obtener archivos asociados usando FileService (OPCIÓN B: entity_files)
-            $fileAssociations = $this->fileService->getEntityFiles('Product', $id);
+            $fileAssociations = $this->fileService->getEntityFiles('ExampleCrud', $id);
 
             // Formatear imágenes
-            $productData['images'] = $fileAssociations->map(function($assoc) {
+            $recordData['images'] = $fileAssociations->map(function($assoc) {
                 $file = $assoc->file;
                 return [
                     'id' => $file->id,
@@ -131,21 +135,21 @@ class ProductsController extends CoreController
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
-                'Producto obtenido correctamente',
-                $productData
+                'Registro obtenido correctamente',
+                $recordData
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
-                'Error al obtener producto: ' . $e->getMessage(),
+                'Error al obtener registro: ' . $e->getMessage(),
                 null
             ));
         }
     }
 
     /**
-     * POST /api/products/create
-     * Crea un nuevo producto
+     * POST /api/example-crud/create
+     * Crea un nuevo registro
      */
     public function create()
     {
@@ -162,11 +166,13 @@ class ProductsController extends CoreController
                 return;
             }
 
-            $product = Product::create([
+            $record = ExampleCrud::create([
                 'name' => $data['name'],
+                'sku' => $data['sku'] ?? null,
                 'description' => $data['description'] ?? null,
                 'price' => $data['price'] ?? 0,
                 'stock' => $data['stock'] ?? 0,
+                'min_stock' => $data['min_stock'] ?? 5,
                 'category' => $data['category'] ?? null,
                 'image_url' => $data['image_url'] ?? null,
                 'is_active' => $data['is_active'] ?? true
@@ -175,11 +181,11 @@ class ProductsController extends CoreController
             // Asociar imágenes usando OPCIÓN B: entity_files (polimórfica)
             if (!empty($data['image_ids']) && is_array($data['image_ids'])) {
                 foreach ($data['image_ids'] as $index => $imageId) {
-                    // Usar FileService para asociar el archivo a la entidad Product
+                    // Usar FileService para asociar el archivo a la entidad ExampleCrud
                     $this->fileService->associateFileToEntity(
                         $imageId,
-                        'Product',
-                        $product->id,
+                        'ExampleCrud',
+                        $record->id,
                         $index,
                         ['is_primary' => $index === 0] // Primera imagen es la principal
                     );
@@ -188,21 +194,21 @@ class ProductsController extends CoreController
 
             Response::json(StatusCodes::HTTP_CREATED, (array)new ResponseDTO(
                 true,
-                'Producto creado correctamente',
-                $product->fresh()->toArray()
+                'Registro creado correctamente',
+                $record->fresh()->toArray()
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
-                'Error al crear producto: ' . $e->getMessage(),
+                'Error al crear registro: ' . $e->getMessage(),
                 null
             ));
         }
     }
 
     /**
-     * POST /api/products/update
-     * Actualiza un producto existente
+     * POST /api/example-crud/update
+     * Actualiza un registro existente
      */
     public function update()
     {
@@ -212,46 +218,46 @@ class ProductsController extends CoreController
             if (empty($data['id'])) {
                 Response::json(StatusCodes::HTTP_BAD_REQUEST, (array)new ResponseDTO(
                     false,
-                    'ID de producto requerido',
+                    'ID de registro requerido',
                     null
                 ));
                 return;
             }
 
-            $product = Product::find($data['id']);
+            $record = ExampleCrud::find($data['id']);
 
-            if (!$product) {
+            if (!$record) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
                     false,
-                    'Producto no encontrado',
+                    'Registro no encontrado',
                     null
                 ));
                 return;
             }
 
-            $product->update([
-                'name' => $data['name'] ?? $product->name,
-                'sku' => $data['sku'] ?? $product->sku,
-                'description' => $data['description'] ?? $product->description,
-                'price' => $data['price'] ?? $product->price,
-                'stock' => $data['stock'] ?? $product->stock,
-                'min_stock' => $data['min_stock'] ?? $product->min_stock,
-                'category' => $data['category'] ?? $product->category,
-                'image_url' => $data['image_url'] ?? $product->image_url,
-                'is_active' => isset($data['is_active']) ? $data['is_active'] : $product->is_active
+            $record->update([
+                'name' => $data['name'] ?? $record->name,
+                'sku' => $data['sku'] ?? $record->sku,
+                'description' => $data['description'] ?? $record->description,
+                'price' => $data['price'] ?? $record->price,
+                'stock' => $data['stock'] ?? $record->stock,
+                'min_stock' => $data['min_stock'] ?? $record->min_stock,
+                'category' => $data['category'] ?? $record->category,
+                'image_url' => $data['image_url'] ?? $record->image_url,
+                'is_active' => isset($data['is_active']) ? $data['is_active'] : $record->is_active
             ]);
 
             // Actualizar asociación de imágenes usando OPCIÓN B: entity_files
             if (isset($data['image_ids']) && is_array($data['image_ids'])) {
-                // Eliminar todas las asociaciones actuales de este producto
-                \App\Models\EntityFileAssociation::forEntity('Product', $product->id)->delete();
+                // Eliminar todas las asociaciones actuales de este registro
+                \App\Models\EntityFileAssociation::forEntity('ExampleCrud', $record->id)->delete();
 
                 // Crear nuevas asociaciones
                 foreach ($data['image_ids'] as $index => $imageId) {
                     $this->fileService->associateFileToEntity(
                         $imageId,
-                        'Product',
-                        $product->id,
+                        'ExampleCrud',
+                        $record->id,
                         $index,
                         ['is_primary' => $index === 0]
                     );
@@ -260,21 +266,21 @@ class ProductsController extends CoreController
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
-                'Producto actualizado correctamente',
-                $product->fresh()->toArray()
+                'Registro actualizado correctamente',
+                $record->fresh()->toArray()
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
-                'Error al actualizar producto: ' . $e->getMessage(),
+                'Error al actualizar registro: ' . $e->getMessage(),
                 null
             ));
         }
     }
 
     /**
-     * POST /api/products/delete
-     * Elimina un producto
+     * POST /api/example-crud/delete
+     * Elimina un registro
      */
     public function delete()
     {
@@ -284,43 +290,43 @@ class ProductsController extends CoreController
             if (empty($data['id'])) {
                 Response::json(StatusCodes::HTTP_BAD_REQUEST, (array)new ResponseDTO(
                     false,
-                    'ID de producto requerido',
+                    'ID de registro requerido',
                     null
                 ));
                 return;
             }
 
-            $product = Product::find($data['id']);
+            $record = ExampleCrud::find($data['id']);
 
-            if (!$product) {
+            if (!$record) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
                     false,
-                    'Producto no encontrado',
+                    'Registro no encontrado',
                     null
                 ));
                 return;
             }
 
-            $productName = $product->name;
-            $product->delete();
+            $recordName = $record->name;
+            $record->delete();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
-                "Producto '{$productName}' eliminado correctamente",
+                "Registro '{$recordName}' eliminado correctamente",
                 null
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
-                'Error al eliminar producto: ' . $e->getMessage(),
+                'Error al eliminar registro: ' . $e->getMessage(),
                 null
             ));
         }
     }
 
     /**
-     * POST /api/products/upload_image
-     * Sube una imagen de producto a MinIO
+     * POST /api/example-crud/upload_image
+     * Sube una imagen de registro a MinIO
      */
     public function upload_image()
     {
@@ -336,7 +342,7 @@ class ProductsController extends CoreController
             }
 
             $file = $_FILES['file'];
-            $productId = $_POST['product_id'] ?? null;
+            $recordId = $_POST['example_crud_id'] ?? null;
 
             // Validar errores de carga
             if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -374,13 +380,13 @@ class ProductsController extends CoreController
                 return;
             }
 
-            // Validar que el producto existe (si se proporciona ID)
-            if ($productId) {
-                $product = Product::find($productId);
-                if (!$product) {
+            // Validar que el registro existe (si se proporciona ID)
+            if ($recordId) {
+                $record = ExampleCrud::find($recordId);
+                if (!$record) {
                     Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
                         false,
-                        'Producto no encontrado',
+                        'Registro no encontrado',
                         null
                     ));
                     return;
@@ -389,33 +395,33 @@ class ProductsController extends CoreController
 
             // Generar nombre único para el archivo
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = uniqid('product_', true) . '.' . $extension;
+            $filename = uniqid('example-crud_', true) . '.' . $extension;
 
             // Subir a MinIO usando StorageService
             // Firma: upload(array $file, ?string $customName, string $path): string
             $storage = new StorageService();
-            $url = $storage->upload($file, $filename, 'products/images/');
+            $url = $storage->upload($file, $filename, 'example-crud/images/');
 
             // Construir la key para referencia
-            $key = 'products/images/' . $filename;
+            $key = 'example-crud/images/' . $filename;
 
-            // SIEMPRE guardar en BD (con o sin product_id)
-            // Si no hay product_id, se guarda con NULL para asociar después
+            // SIEMPRE guardar en BD (con o sin example_crud_id)
+            // Si no hay example_crud_id, se guarda con NULL para asociar después
 
             $maxOrder = 0;
             $isPrimary = false;
 
-            if ($productId) {
+            if ($recordId) {
                 // Determinar el orden (último + 1)
-                $maxOrder = ProductImage::where('product_id', $productId)->max('display_order') ?? -1;
+                $maxOrder = ExampleCrudImage::where('example_crud_id', $recordId)->max('display_order') ?? -1;
                 $maxOrder++;
 
                 // Determinar si es la primera imagen (será primary)
-                $isPrimary = ProductImage::where('product_id', $productId)->count() === 0;
+                $isPrimary = ExampleCrudImage::where('example_crud_id', $recordId)->count() === 0;
             }
 
-            $productImage = ProductImage::create([
-                'product_id' => $productId, // Puede ser NULL
+            $image = ExampleCrudImage::create([
+                'example_crud_id' => $recordId, // Puede ser NULL
                 'url' => $url,
                 'key' => $key,
                 'original_name' => $file['name'],
@@ -427,7 +433,7 @@ class ProductsController extends CoreController
 
             // FilePond espera solo el ID del archivo como texto plano
             header('Content-Type: text/plain');
-            echo $productImage->id;
+            echo $image->id;
             exit();
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
@@ -439,8 +445,8 @@ class ProductsController extends CoreController
     }
 
     /**
-     * POST /api/products/delete_image
-     * Elimina una imagen de producto
+     * POST /api/example-crud/delete_image
+     * Elimina una imagen de registro
      */
     public function delete_image()
     {
@@ -459,10 +465,10 @@ class ProductsController extends CoreController
 
             // Buscar por ID numérico o por URL
             if (is_numeric($imageIdentifier)) {
-                $image = ProductImage::find($imageIdentifier);
+                $image = ExampleCrudImage::find($imageIdentifier);
             } else {
                 // Si es una URL, buscar por el campo 'url'
-                $image = ProductImage::where('url', $imageIdentifier)->first();
+                $image = ExampleCrudImage::where('url', $imageIdentifier)->first();
             }
 
             if (!$image) {
@@ -485,7 +491,7 @@ class ProductsController extends CoreController
 
             // Si era primary, marcar la siguiente como primary
             if ($image->is_primary) {
-                $nextImage = ProductImage::where('product_id', $image->product_id)
+                $nextImage = ExampleCrudImage::where('example_crud_id', $image->example_crud_id)
                     ->where('id', '!=', $image->id)
                     ->orderBy('display_order')
                     ->first();
@@ -513,8 +519,8 @@ class ProductsController extends CoreController
     }
 
     /**
-     * POST /api/products/reorder_images
-     * Reordena las imágenes de un producto
+     * POST /api/example-crud/reorder_images
+     * Reordena las imágenes de un registro
      */
     public function reorder_images()
     {
@@ -537,7 +543,7 @@ class ProductsController extends CoreController
                 $order = $imageData['order'] ?? null;
 
                 if ($imageId !== null && $order !== null) {
-                    ProductImage::where('id', $imageId)->update(['order' => $order]);
+                    ExampleCrudImage::where('id', $imageId)->update(['display_order' => $order]);
                 }
             }
 
@@ -556,7 +562,7 @@ class ProductsController extends CoreController
     }
 
     /**
-     * POST /api/products/set_primary
+     * POST /api/example-crud/set_primary
      * Marca una imagen como principal
      */
     public function set_primary()
@@ -574,7 +580,7 @@ class ProductsController extends CoreController
                 return;
             }
 
-            $image = ProductImage::find($imageId);
+            $image = ExampleCrudImage::find($imageId);
 
             if (!$image) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
@@ -585,8 +591,8 @@ class ProductsController extends CoreController
                 return;
             }
 
-            // Desmarcar todas las imágenes del producto como primary
-            ProductImage::where('product_id', $image->product_id)
+            // Desmarcar todas las imágenes del registro como primary
+            ExampleCrudImage::where('example_crud_id', $image->example_crud_id)
                 ->update(['is_primary' => false]);
 
             // Marcar esta imagen como primary

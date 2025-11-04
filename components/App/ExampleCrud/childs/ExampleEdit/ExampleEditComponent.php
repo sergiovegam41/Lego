@@ -1,5 +1,5 @@
 <?php
-namespace Components\App\ProductsCrudV3\Childs\ProductEdit;
+namespace Components\App\ExampleCrud\Childs\ExampleEdit;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
@@ -9,67 +9,67 @@ use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
 use Components\Shared\Forms\FilePondComponent\FilePondComponent;
 
 /**
- * ProductEditComponent - Formulario de edición (CRUD V3)
+ * ExampleEditComponent - Formulario de edición (CRUD V3)
  *
  * FILOSOFÍA LEGO:
- * Componente dedicado ÚNICAMENTE a editar productos.
- * Mantiene "las mismas distancias" que ProductCreate.
+ * Componente dedicado ÚNICAMENTE a editar registros.
+ * Mantiene "las mismas distancias" que ExampleCreate.
  *
  * MEJORAS vs V1/V2:
  * ✅ Componente separado (no modal, no child page)
  * ✅ Navegación con módulos
- * ✅ Datos pre-cargados del producto
+ * ✅ Datos pre-cargados del registro
  * ✅ Usa ApiClient para fetch y update
  *
  * CONSISTENCIA DIMENSIONAL:
- * Formulario idéntico a ProductCreate,
+ * Formulario idéntico a ExampleCreate,
  * solo difiere en valores iniciales y endpoint.
  */
-#[ApiComponent('/products-crud-v3/edit', methods: ['GET'])]
-class ProductEditComponent extends CoreComponent
+#[ApiComponent('/example-crud/edit', methods: ['GET'])]
+class ExampleEditComponent extends CoreComponent
 {
-    protected $CSS_PATHS = ["./product-form.css"];
-    protected $JS_PATHS = ["./product-edit.js"];
+    protected $CSS_PATHS = ["./example-form.css"];
+    protected $JS_PATHS = ["./example-edit.js"];
 
     public function __construct(array $params = [])
     {
-        // Obtener ID del producto desde parámetros o query string
+        // Obtener ID del registro desde parámetros o query string
         // Intentar obtener de múltiples fuentes
         $id = $params['id'] ?? $_GET['id'] ?? $_REQUEST['id'] ?? null;
 
         // Convertir a int si es string numérico
         if ($id !== null) {
-            $this->productId = is_numeric($id) ? (int)$id : null;
+            $this->exampleId = is_numeric($id) ? (int)$id : null;
         }
 
         // Debug log
-        error_log('[ProductEditComponent] Constructor - params: ' . json_encode($params));
-        error_log('[ProductEditComponent] Constructor - $_GET: ' . json_encode($_GET));
-        error_log('[ProductEditComponent] Constructor - productId: ' . ($this->productId ?? 'NULL'));
+        error_log('[ExampleEditComponent] Constructor - params: ' . json_encode($params));
+        error_log('[ExampleEditComponent] Constructor - $_GET: ' . json_encode($_GET));
+        error_log('[ExampleEditComponent] Constructor - exampleId: ' . ($this->exampleId ?? 'NULL'));
     }
 
-    private ?int $productId = null;
+    private ?int $exampleId = null;
 
     protected function component(): string
     {
-        // Obtener product ID con múltiples fallbacks
-        $productId = $this->productId
+        // Obtener example ID con múltiples fallbacks
+        $exampleId = $this->exampleId
             ?? (isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null)
             ?? (isset($_REQUEST['id']) && is_numeric($_REQUEST['id']) ? (int)$_REQUEST['id'] : null);
 
-        error_log('[ProductEditComponent] component() - productId final: ' . ($productId ?? 'NULL'));
+        error_log('[ExampleEditComponent] component() - exampleId final: ' . ($exampleId ?? 'NULL'));
 
-        if (!$productId) {
+        if (!$exampleId) {
             return <<<HTML
-            <div class="product-form">
-                <div class="product-form__error">
+            <div class="example-form">
+                <div class="example-form__error">
                     <h2>Error</h2>
-                    <p>ID de producto no especificado</p>
+                    <p>ID de registro no especificado</p>
                     <p style="font-size: 12px; color: #666;">
                         Debug: \$_GET = " . htmlspecialchars(json_encode($_GET)) . "
                     </p>
                     <p style="font-size: 12px; color: #666;">
-                        Debug: \$this->productId = " . htmlspecialchars($this->productId ?? 'NULL') . "
+                        Debug: \$this->exampleId = " . htmlspecialchars($this->exampleId ?? 'NULL') . "
                     </p>
                 </div>
             </div>
@@ -86,21 +86,21 @@ class ProductEditComponent extends CoreComponent
         ];
 
         $nameInput = new InputTextComponent(
-            id: "product-name",
-            label: "Nombre del Producto",
+            id: "example-name",
+            label: "Nombre del Registro",
             placeholder: "Ej: Laptop Dell XPS 15",
             required: true
         );
 
         $descriptionTextarea = new TextAreaComponent(
-            id: "product-description",
+            id: "example-description",
             label: "Descripción",
-            placeholder: "Descripción detallada del producto...",
+            placeholder: "Descripción detallada del registro...",
             rows: 4
         );
 
         $priceInput = new InputTextComponent(
-            id: "product-price",
+            id: "example-price",
             label: "Precio",
             type: "number",
             placeholder: "0.00",
@@ -108,7 +108,7 @@ class ProductEditComponent extends CoreComponent
         );
 
         $stockInput = new InputTextComponent(
-            id: "product-stock",
+            id: "example-stock",
             label: "Stock",
             type: "number",
             placeholder: "0",
@@ -116,7 +116,7 @@ class ProductEditComponent extends CoreComponent
         );
 
         $categorySelect = new SelectComponent(
-            id: "product-category",
+            id: "example-category",
             label: "Categoría",
             options: $categories,
             required: true,
@@ -124,9 +124,9 @@ class ProductEditComponent extends CoreComponent
         );
 
         $filePondImages = new FilePondComponent(
-            id: "product-images",
-            label: "Imágenes del Producto",
-            path: "products/images/", // Ruta en MinIO
+            id: "example-images",
+            label: "Imágenes del Registro",
+            path: "example-crud/images/", // Ruta en MinIO
             maxFiles: 5,
             allowReorder: true,
             allowMultiple: true,
@@ -134,64 +134,64 @@ class ProductEditComponent extends CoreComponent
         );
 
         return <<<HTML
-        <div class="product-form" data-product-id="{$productId}">
+        <div class="example-form" data-example-id="{$exampleId}">
             <!-- Header -->
-            <div class="product-form__header">
-                <h1 class="product-form__title">Editar Producto</h1>
+            <div class="example-form__header">
+                <h1 class="example-form__title">Editar Registro</h1>
             </div>
 
             <!-- Loading state (mientras carga datos) -->
-            <div class="product-form__loading" id="product-form-loading">
-                Cargando producto...
+            <div class="example-form__loading" id="example-form-loading">
+                Cargando registro...
             </div>
 
             <!-- Formulario (oculto hasta que carguen datos) -->
-            <form class="product-form__form" id="product-edit-form" style="display: none;">
-                <div class="product-form__grid">
+            <form class="example-form__form" id="example-edit-form" style="display: none;">
+                <div class="example-form__grid">
                     <!-- Nombre -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$nameInput->render()}
                     </div>
 
                     <!-- Descripción -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$descriptionTextarea->render()}
                     </div>
 
                     <!-- Precio -->
-                    <div class="product-form__field">
+                    <div class="example-form__field">
                         {$priceInput->render()}
                     </div>
 
                     <!-- Stock -->
-                    <div class="product-form__field">
+                    <div class="example-form__field">
                         {$stockInput->render()}
                     </div>
 
                     <!-- Categoría -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$categorySelect->render()}
                     </div>
 
                     <!-- Imágenes -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$filePondImages->render()}
                     </div>
                 </div>
 
                 <!-- Acciones -->
-                <div class="product-form__actions">
+                <div class="example-form__actions">
                     <button
                         type="button"
-                        class="product-form__button product-form__button--secondary"
-                        id="product-form-cancel-btn"
+                        class="example-form__button example-form__button--secondary"
+                        id="example-form-cancel-btn"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        class="product-form__button product-form__button--primary"
-                        id="product-form-submit-btn"
+                        class="example-form__button example-form__button--primary"
+                        id="example-form-submit-btn"
                     >
                         Guardar Cambios
                     </button>

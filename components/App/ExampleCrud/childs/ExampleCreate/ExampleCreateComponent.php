@@ -1,5 +1,5 @@
 <?php
-namespace Components\App\ProductsCrudV3\Childs\ProductCreate;
+namespace Components\App\ExampleCrud\Childs\ExampleCreate;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
@@ -9,10 +9,10 @@ use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
 use Components\Shared\Forms\FilePondComponent\FilePondComponent;
 
 /**
- * ProductCreateComponent - Formulario de creación (CRUD V3)
+ * ExampleCreateComponent - Formulario de creación (CRUD V3)
  *
  * FILOSOFÍA LEGO:
- * Componente dedicado ÚNICAMENTE a crear productos.
+ * Componente dedicado ÚNICAMENTE a crear registros.
  * No contiene tabla - separación de responsabilidades.
  *
  * MEJORAS vs V1/V2:
@@ -23,14 +23,14 @@ use Components\Shared\Forms\FilePondComponent\FilePondComponent;
  * ✅ ApiClient con manejo de errores
  *
  * CONSISTENCIA DIMENSIONAL:
- * Formulario usa misma estructura que ProductEdit
+ * Formulario usa misma estructura que ExampleEdit
  * manteniendo "las mismas distancias" visuales.
  */
-#[ApiComponent('/products-crud-v3/create', methods: ['GET'])]
-class ProductCreateComponent extends CoreComponent
+#[ApiComponent('/example-crud/create', methods: ['GET'])]
+class ExampleCreateComponent extends CoreComponent
 {
-    protected $CSS_PATHS = ["./product-form.css"];
-    protected $JS_PATHS = ["./product-create.js"];
+    protected $CSS_PATHS = ["./example-form.css"];
+    protected $JS_PATHS = ["./example-create.js"];
 
     protected function component(): string
     {
@@ -44,21 +44,21 @@ class ProductCreateComponent extends CoreComponent
         ];
 
         $nameInput = new InputTextComponent(
-            id: "product-name",
-            label: "Nombre del Producto",
+            id: "example-name",
+            label: "Nombre del Registro",
             placeholder: "Ej: Laptop Dell XPS 15",
             required: true
         );
 
         $descriptionTextarea = new TextAreaComponent(
-            id: "product-description",
+            id: "example-description",
             label: "Descripción",
-            placeholder: "Descripción detallada del producto...",
+            placeholder: "Descripción detallada del registro...",
             rows: 4
         );
 
         $priceInput = new InputTextComponent(
-            id: "product-price",
+            id: "example-price",
             label: "Precio",
             type: "number",
             placeholder: "0.00",
@@ -66,7 +66,7 @@ class ProductCreateComponent extends CoreComponent
         );
 
         $stockInput = new InputTextComponent(
-            id: "product-stock",
+            id: "example-stock",
             label: "Stock",
             type: "number",
             placeholder: "0",
@@ -74,7 +74,7 @@ class ProductCreateComponent extends CoreComponent
         );
 
         $categorySelect = new SelectComponent(
-            id: "product-category",
+            id: "example-category",
             label: "Categoría",
             options: $categories,
             required: true,
@@ -82,9 +82,9 @@ class ProductCreateComponent extends CoreComponent
         );
 
         $filePondImages = new FilePondComponent(
-            id: "product-images",
-            label: "Imágenes del Producto",
-            path: "products/images/", // Ruta en MinIO
+            id: "example-images",
+            label: "Imágenes del Registro",
+            path: "example-crud/images/", // Ruta en MinIO
             maxFiles: 5,
             allowReorder: true,
             allowMultiple: true,
@@ -92,61 +92,61 @@ class ProductCreateComponent extends CoreComponent
         );
 
         return <<<HTML
-        <div class="product-form">
+        <div class="example-form">
             <!-- Header -->
-            <div class="product-form__header">
-                <h1 class="product-form__title">Crear Producto</h1>
+            <div class="example-form__header">
+                <h1 class="example-form__title">Crear Registro</h1>
             </div>
 
             <!-- Formulario -->
-            <form class="product-form__form" id="product-create-form" onsubmit="return false;">
-                <div class="product-form__grid">
+            <form class="example-form__form" id="example-create-form" onsubmit="return false;">
+                <div class="example-form__grid">
                     <!-- Nombre -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$nameInput->render()}
                     </div>
 
                     <!-- Descripción -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$descriptionTextarea->render()}
                     </div>
 
                     <!-- Precio -->
-                    <div class="product-form__field">
+                    <div class="example-form__field">
                         {$priceInput->render()}
                     </div>
 
                     <!-- Stock -->
-                    <div class="product-form__field">
+                    <div class="example-form__field">
                         {$stockInput->render()}
                     </div>
 
                     <!-- Categoría -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$categorySelect->render()}
                     </div>
 
                     <!-- Imágenes -->
-                    <div class="product-form__field product-form__field--full">
+                    <div class="example-form__field example-form__field--full">
                         {$filePondImages->render()}
                     </div>
                 </div>
 
                 <!-- Acciones -->
-                <div class="product-form__actions">
+                <div class="example-form__actions">
                     <button
                         type="button"
-                        class="product-form__button product-form__button--secondary"
-                        id="product-form-cancel-btn"
+                        class="example-form__button example-form__button--secondary"
+                        id="example-form-cancel-btn"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        class="product-form__button product-form__button--primary"
-                        id="product-form-submit-btn"
+                        class="example-form__button example-form__button--primary"
+                        id="example-form-submit-btn"
                     >
-                        Crear Producto
+                        Crear Registro
                     </button>
                 </div>
             </form>
