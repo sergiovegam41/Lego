@@ -417,6 +417,28 @@ let context = {CONTEXT};
                 }
             },
 
+            // Overlay personalizado para "sin datos"
+            overlayNoRowsTemplate: `
+                <div style="padding: 40px; text-align: center; color: #6b7280;">
+                    <ion-icon name="folder-open-outline" style="font-size: 48px; color: #d1d5db; margin-bottom: 16px;"></ion-icon>
+                    <div style="font-size: 16px; font-weight: 500; margin-bottom: 8px;">
+                        ${gridOptions.noRowsOverlayComponentParams?.message || 'No hay datos disponibles'}
+                    </div>
+                    <div style="font-size: 14px; color: #9ca3af;">
+                        Aún no se han agregado registros
+                    </div>
+                </div>
+            `,
+
+            // Overlay personalizado para "cargando"
+            overlayLoadingTemplate: `
+                <div style="padding: 40px; text-align: center;">
+                    <div class="ag-custom-loading-cell" style="padding-left: 10px;">
+                        <i class="fas fa-spinner fa-pulse"></i> Cargando datos...
+                    </div>
+                </div>
+            `,
+
             // Localización en español
             localeText: {
                 // Paginación

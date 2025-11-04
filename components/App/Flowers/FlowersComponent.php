@@ -71,7 +71,7 @@ class FlowersComponent extends CoreComponent
             new ColumnDto(
                 field: "is_active",
                 headerName: "Estado",
-                width: DimensionValue::px(100),
+                width: DimensionValue::px(999),
                 sortable: true,
                 filter: true,
                 cellRenderer: 'params => params.value ? \'<span style="color: #10b981; font-weight: 500;">Activo</span>\' : \'<span style="color: #ef4444; font-weight: 500;">Inactivo</span>\''
@@ -105,7 +105,8 @@ class FlowersComponent extends CoreComponent
             rowActions: $actions,
             height: "600px",
             pagination: true,
-            rowSelection: "multiple"
+            rowSelection: "multiple",
+            noRowsMessage: "No hay flores registradas"
         );
 
         return <<<HTML

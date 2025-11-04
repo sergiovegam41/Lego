@@ -54,7 +54,7 @@ class CategoriesComponent extends CoreComponent
             new ColumnDto(
                 field: "description",
                 headerName: "Descripción",
-                width: DimensionValue::px(300),
+                width: DimensionValue::px(999),
                 sortable: false,
                 filter: false
             )
@@ -87,7 +87,8 @@ class CategoriesComponent extends CoreComponent
             rowActions: $actions,
             height: "600px",
             pagination: true,
-            rowSelection: "multiple"
+            rowSelection: "multiple",
+            noRowsMessage: "No hay categorías registradas"
         );
 
         return <<<HTML
