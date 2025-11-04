@@ -1,0 +1,53 @@
+/* Categories - Main Table Styles */
+
+.categories {
+    padding: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.categories__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.categories__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.categories__create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--accent-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.categories__create-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.categories__create-btn ion-icon {
+    font-size: 20px;
+}
+
+.categories__table {
+    flex: 1;
+    overflow: hidden;
+}

@@ -1,0 +1,51 @@
+/* Flowers Component Styles */
+
+.flowers {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.flowers__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.flowers__title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.flowers__create-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.flowers__create-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.flowers__create-btn ion-icon {
+    font-size: 20px;
+}
+
+.flowers__table {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

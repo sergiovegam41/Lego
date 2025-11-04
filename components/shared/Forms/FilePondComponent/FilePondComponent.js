@@ -286,30 +286,51 @@ function updateImageIds(componentId) {
     const hiddenInput = document.getElementById(`${componentId}-image-ids`);
 
     if (!container || !container._filePondInstance) {
+        console.warn('[FilePondComponent] No se encontró container o instancia de FilePond para:', componentId);
         return;
     }
 
     const pond = container._filePondInstance;
     const files = pond.getFiles();
 
+    console.log('[FilePondComponent] Actualizando IDs para:', componentId, 'Archivos:', files.length);
+
     // Extraer los IDs de TODAS las fuentes posibles
     const imageIds = files
         .map(file => {
+            console.log('[FilePondComponent] Procesando archivo:', {
+                filename: file.filename,
+                serverId: file.serverId,
+                source: file.source,
+                status: file.status
+            });
+
             // Intentar obtener el ID de múltiples fuentes:
 
             // 1. Primero intentar serverId (imágenes recién subidas)
-            if (file.serverId && !file.serverId.startsWith('http')) {
-                return file.serverId;
+            if (file.serverId) {
+                // Convertir a string para poder usar startsWith
+                const serverIdStr = String(file.serverId);
+                if (!serverIdStr.startsWith('http')) {
+                    console.log('[FilePondComponent] ID extraído de serverId:', file.serverId);
+                    return file.serverId;
+                }
             }
 
-            // 2. Intentar source si es un número
-            if (file.source && !file.source.startsWith('http')) {
-                return file.source;
+            // 2. Intentar source si es un número o string (pero no URL)
+            if (file.source) {
+                const sourceStr = String(file.source);
+                // Si source no es un objeto File y no es una URL, es probablemente un ID
+                if (typeof file.source !== 'object' && !sourceStr.startsWith('http') && !sourceStr.startsWith('blob')) {
+                    console.log('[FilePondComponent] ID extraído de source:', file.source);
+                    return file.source;
+                }
             }
 
             // 3. Intentar metadata.imageId (imágenes cargadas de BD)
             const metadata = file.getMetadata();
             if (metadata && metadata.imageId) {
+                console.log('[FilePondComponent] ID extraído de metadata:', metadata.imageId);
                 return metadata.imageId.toString();
             }
 
@@ -324,6 +345,9 @@ function updateImageIds(componentId) {
 
     if (hiddenInput) {
         hiddenInput.value = JSON.stringify(imageIds);
+        console.log('[FilePondComponent] Hidden input actualizado con IDs:', imageIds);
+    } else {
+        console.warn('[FilePondComponent] No se encontró hidden input:', `${componentId}-image-ids`);
     }
 
     console.log('[FilePondComponent] IDs actualizados:', imageIds);

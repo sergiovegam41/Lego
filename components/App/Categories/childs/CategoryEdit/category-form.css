@@ -1,0 +1,85 @@
+/* Category Form - Shared styles for Create and Edit */
+
+.category-form {
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.category-form__header {
+    margin-bottom: 24px;
+}
+
+.category-form__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.category-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.category-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.category-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.category-form__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+.category-form__button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-form__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.category-form__button--secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.category-form__button--secondary:hover:not(:disabled) {
+    background: var(--bg-hover);
+}
+
+.category-form__button--primary {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.category-form__button--primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.category-form__loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}

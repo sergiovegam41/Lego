@@ -1,0 +1,123 @@
+/* Flower Form - Shared styles for Create and Edit */
+
+.flower-form {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.flower-form__header {
+    margin-bottom: 24px;
+}
+
+.flower-form__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.flower-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.flower-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.flower-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.flower-form__label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.flower-form__editor {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    min-height: 200px;
+}
+
+.flower-form__editor .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--border-light);
+    border-radius: 8px 8px 0 0;
+    background: var(--bg-secondary);
+}
+
+.flower-form__editor .ql-container {
+    border: none;
+    font-size: 14px;
+    min-height: 150px;
+}
+
+.flower-form__editor .ql-editor {
+    min-height: 150px;
+    color: var(--text-primary);
+}
+
+.flower-form__editor .ql-editor.ql-blank::before {
+    color: var(--text-secondary);
+    font-style: normal;
+}
+
+.flower-form__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+.flower-form__button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.flower-form__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.flower-form__button--secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.flower-form__button--secondary:hover:not(:disabled) {
+    background: var(--bg-hover);
+}
+
+.flower-form__button--primary {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.flower-form__button--primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.flower-form__loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}
