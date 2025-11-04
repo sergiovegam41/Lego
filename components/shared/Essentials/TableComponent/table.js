@@ -598,8 +598,18 @@ let context = {CONTEXT};
             fullGridOptions.infiniteInitialRowCount = 1000;
             fullGridOptions.maxBlocksInCache = 10;
 
+            // Guardar el onGridReady original
+            const originalOnGridReady = fullGridOptions.onGridReady;
+
             // Crear datasource para cargar datos desde API
-            fullGridOptions.onGridReady = function(params) {
+            fullGridOptions.onGridReady = function(gridReadyParams) {
+                // Ejecutar el onGridReady original primero
+                if (originalOnGridReady) {
+                    originalOnGridReady(gridReadyParams);
+                }
+
+                const gridApiRef = gridReadyParams.api;
+
                 const dataSource = {
                     rowCount: null,
                     getRows: function(params) {
@@ -663,7 +673,9 @@ let context = {CONTEXT};
                                     // Mostrar overlay si no hay datos
                                     if (data.data.length === 0 && params.startRow === 0) {
                                         setTimeout(() => {
-                                            params.api.showNoRowsOverlay();
+                                            if (gridApiRef && gridApiRef.showNoRowsOverlay) {
+                                                gridApiRef.showNoRowsOverlay();
+                                            }
                                         }, 100);
                                     }
                                 } else {
@@ -678,7 +690,7 @@ let context = {CONTEXT};
                     }
                 };
 
-                params.api.setGridOption('datasource', dataSource);
+                gridReadyParams.api.setGridOption('datasource', dataSource);
             };
         }
 
