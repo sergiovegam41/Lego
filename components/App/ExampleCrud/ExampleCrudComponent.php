@@ -117,8 +117,7 @@ class ExampleCrudComponent extends CoreComponent
                 icon: "trash-outline",
                 callback: "handleDeleteRecord",
                 variant: "danger",
-                confirm: true,
-                confirmMessage: "¿Estás seguro de eliminar este registro?",
+                confirm: false, // Desactivado: usamos ConfirmationService en el callback
                 tooltip: "Eliminar registro"
             )
         );

@@ -116,7 +116,7 @@ class MenuComponent extends CoreComponent
 
                 <div class="bottom-content">
                     <li class="">
-                        <a href="{$this->getLogoutUrl()}">
+                        <a href="#" id="sidebar-logout-btn" onclick="event.preventDefault(); handleLogout();">
                             <ion-icon class ='icon'  name="log-out-outline"></ion-icon>
                             <span class="text nav-text">Logout</span>
                         </a>

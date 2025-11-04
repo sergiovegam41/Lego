@@ -39,7 +39,18 @@ window.handleEditRecord = function(rowData, tableId) {
  * Se ejecuta cuando el usuario hace clic en el botón "Eliminar" y confirma
  */
 window.handleDeleteRecord = async function(rowData, tableId) {
-    console.log('[ExampleCrud] Eliminar registro:', rowData);
+    console.log('[ExampleCrud] Solicitud de eliminar registro:', rowData);
+
+    // Confirmar eliminación usando ConfirmationService
+    const itemName = `<strong>${rowData.name || 'ID: ' + rowData.id}</strong>`;
+    const confirmed = window.ConfirmationService
+        ? await window.ConfirmationService.delete(itemName)
+        : confirm('¿Estás seguro de que deseas eliminar este registro?');
+
+    if (!confirmed) {
+        console.log('[ExampleCrud] Eliminación cancelada por el usuario');
+        return;
+    }
 
     try {
         // Hacer fetch al endpoint de eliminación
@@ -58,11 +69,8 @@ window.handleDeleteRecord = async function(rowData, tableId) {
         }
 
         // Mostrar mensaje de éxito
-        if (window.lego && window.lego.alert) {
-            await window.lego.alert.success({
-                title: 'Eliminado',
-                text: result.msj || 'Registro eliminado correctamente'
-            });
+        if (window.AlertService) {
+            await window.AlertService.success(result.msj || 'Registro eliminado correctamente');
         }
 
         // Recargar SOLO el módulo actual (LEGO way)
@@ -77,11 +85,8 @@ window.handleDeleteRecord = async function(rowData, tableId) {
     } catch (error) {
         console.error('[ExampleCrud] Error eliminando registro:', error);
 
-        if (window.lego && window.lego.alert) {
-            await window.lego.alert.error({
-                title: 'Error',
-                text: error.message || 'Error al eliminar registro'
-            });
+        if (window.AlertService) {
+            await window.AlertService.error(error.message || 'Error al eliminar registro');
         } else {
             alert('Error al eliminar registro: ' + error.message);
         }
@@ -240,19 +245,14 @@ function editRecord(recordId) {
 }
 
 /**
- * Eliminar registro (llamado desde botón de acciones)
+ * Eliminar registro (llamado desde botón de acciones - LEGACY)
  */
 async function deleteRecord(recordId) {
     console.log('[ExampleCrud] Solicitud de eliminar registro:', recordId);
 
-    // Confirmar con el usuario
-    const confirmed = window.AlertService
-        ? await window.AlertService.confirm(
-            '¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.',
-            '¿Eliminar registro?',
-            'Sí, eliminar',
-            'Cancelar'
-        )
+    // Confirmar eliminación usando ConfirmationService
+    const confirmed = window.ConfirmationService
+        ? await window.ConfirmationService.delete(`registro <strong>#${recordId}</strong>`)
         : confirm('¿Estás seguro de que deseas eliminar este registro?');
 
     if (!confirmed) {
@@ -277,22 +277,21 @@ async function deleteRecord(recordId) {
 
         // Éxito
         if (window.AlertService) {
-            window.AlertService.success('Éxito', 'Registro eliminado correctamente');
+            await window.AlertService.success('Registro eliminado correctamente');
         } else {
             alert('Registro eliminado correctamente');
         }
 
         // Recargar tabla
-        const tableManager = new TableManager('example-crud-table');
-        tableManager.onReady(() => {
-            window.legoWindowManager?.reloadActive();
-        });
+        if (window.legoWindowManager) {
+            window.legoWindowManager.reloadActive();
+        }
 
     } catch (error) {
         console.error('[ExampleCrud] Error eliminando registro:', error);
 
         if (window.AlertService) {
-            window.AlertService.error('Error', error.message || 'Error al eliminar registro');
+            await window.AlertService.error(error.message || 'Error al eliminar registro');
         } else {
             alert('Error eliminando registro: ' + error.message);
         }

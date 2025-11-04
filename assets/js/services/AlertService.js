@@ -22,27 +22,58 @@ class AlertService {
             await this.loadSweetAlert2();
         }
 
-        // Configuración global
+        // Detectar tema inicial
+        this.updateDefaultConfig();
+
+        // Suscribirse a cambios de tema para actualizar modales abiertos
+        if (window.themeManager) {
+            window.themeManager.subscribe((theme) => {
+                this.updateModalTheme(theme);
+                this.updateDefaultConfig();
+            });
+            console.log('[AlertService] Suscrito a cambios de tema');
+        }
+    }
+
+    /**
+     * Detectar si el tema actual es oscuro
+     */
+    static isDarkTheme() {
+        return document.documentElement.classList.contains('dark');
+    }
+
+    /**
+     * Actualizar configuración por defecto según el tema actual
+     */
+    static updateDefaultConfig() {
+        const isDark = this.isDarkTheme();
+
         this.defaultConfig = {
             confirmButtonColor: 'var(--accent-primary, #3b82f6)',
             cancelButtonColor: 'var(--text-secondary, #6b7280)',
+            background: isDark ? 'var(--bg-surface, #1f2937)' : '#ffffff',
+            color: isDark ? 'var(--text-primary, #f3f4f6)' : '#333333',
             customClass: {
+                container: isDark ? 'swal2-dark-theme' : '',
                 popup: 'lego-alert-popup',
                 title: 'lego-alert-title',
                 htmlContainer: 'lego-alert-content',
                 confirmButton: 'lego-alert-btn lego-alert-btn--confirm',
                 cancelButton: 'lego-alert-btn lego-alert-btn--cancel',
                 denyButton: 'lego-alert-btn lego-alert-btn--deny'
+            },
+            didOpen: (popup) => {
+                // Aplicar tema al abrir
+                const container = document.querySelector('.swal2-container');
+                if (container) {
+                    if (isDark) {
+                        container.classList.add('swal2-dark-theme');
+                    } else {
+                        container.classList.remove('swal2-dark-theme');
+                    }
+                }
             }
         };
-
-        // Suscribirse a cambios de tema para actualizar modales abiertos
-        if (window.themeManager) {
-            window.themeManager.subscribe((theme) => {
-                this.updateModalTheme(theme);
-            });
-            console.log('[AlertService] Suscrito a cambios de tema');
-        }
     }
 
     /**

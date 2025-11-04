@@ -136,6 +136,7 @@ class MainComponent extends CoreComponent
           <link rel="stylesheet" href="./assets/css/core/base.css">
           <link rel="stylesheet" href="./assets/css/core/windows-manager.css">
           <link rel="stylesheet" href="./assets/css/core/alert-service.css">
+          <link rel="stylesheet" href="./assets/css/core/confirmation-service.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
 
           <!-- FilePond CSS -->
@@ -149,6 +150,9 @@ class MainComponent extends CoreComponent
 
           <!-- Alert Service -->
           <script src="./assets/js/services/AlertService.js"></script>
+
+          <!-- Confirmation Service -->
+          <script src="./assets/js/services/ConfirmationService.js"></script>
 
           <!-- LEGO Modular Services (Bloques) -->
           <script src="./assets/js/core/services/ApiClient.js"></script>

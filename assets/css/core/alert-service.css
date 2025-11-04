@@ -166,37 +166,50 @@
 
 /* ===== Dark Theme Support ===== */
 .swal2-dark-theme .swal2-popup {
-    background: var(--bg-surface, #1f2937) !important;
-    color: var(--text-primary, #f3f4f6) !important;
+    background: var(--bg-surface, #2d2e2f) !important;
+    color: var(--text-primary, #ffffff) !important;
 }
 
 .swal2-dark-theme .lego-alert-popup {
-    background: var(--bg-surface, #1f2937) !important;
+    background: var(--bg-surface, #2d2e2f) !important;
+}
+
+/* Dark theme - sin backdrop oscuro */
+.swal2-dark-theme.swal2-container {
+    background: transparent !important;
 }
 
 .swal2-dark-theme .lego-alert-title {
-    color: var(--text-primary, #f3f4f6) !important;
+    color: var(--text-primary, #ffffff) !important;
 }
 
 .swal2-dark-theme .lego-alert-content {
-    color: var(--text-secondary, #9ca3af) !important;
+    color: var(--text-secondary, #dddddd) !important;
+}
+
+.swal2-dark-theme .swal2-title {
+    color: var(--text-primary, #ffffff) !important;
+}
+
+.swal2-dark-theme .swal2-html-container {
+    color: var(--text-secondary, #dddddd) !important;
 }
 
 .swal2-dark-theme .lego-alert-btn--cancel {
-    background: var(--bg-surface-hover, #374151) !important;
-    color: var(--text-primary, #f3f4f6) !important;
-    border: 1px solid var(--border-light, #4b5563) !important;
+    background: var(--bg-surface-hover, #404040) !important;
+    color: var(--text-primary, #ffffff) !important;
+    border: 1px solid var(--border-light, #363B3D) !important;
 }
 
 .swal2-dark-theme .lego-alert-btn--cancel:hover {
-    background: var(--bg-surface, #4b5563) !important;
+    background: var(--bg-surface, #4a4b4c) !important;
 }
 
 .swal2-dark-theme .swal2-input,
 .swal2-dark-theme .swal2-textarea {
-    background: var(--bg-surface-hover, #374151) !important;
-    color: var(--text-primary, #f3f4f6) !important;
-    border-color: var(--border-light, #4b5563) !important;
+    background: var(--bg-input, #2d2e2f) !important;
+    color: var(--text-primary, #ffffff) !important;
+    border-color: var(--border-light, #363B3D) !important;
 }
 
 .swal2-dark-theme .swal2-input:focus,
@@ -206,15 +219,21 @@
 }
 
 .swal2-dark-theme .lego-progress__bar {
-    background: var(--bg-surface-hover, #374151) !important;
+    background: var(--bg-surface-hover, #404040) !important;
 }
 
 .swal2-dark-theme .swal2-close {
-    color: var(--text-primary, #f3f4f6) !important;
+    color: var(--text-primary, #ffffff) !important;
 }
 
 .swal2-dark-theme .swal2-close:hover {
-    color: var(--text-secondary, #9ca3af) !important;
+    color: var(--text-secondary, #dddddd) !important;
+}
+
+/* Toast en dark theme */
+.swal2-dark-theme.swal2-toast {
+    background: var(--bg-surface, #2d2e2f) !important;
+    color: var(--text-primary, #ffffff) !important;
 }
 
 /* Dark theme for HTML content inside modals */
@@ -242,11 +261,23 @@
 .swal2-dark-theme .lego-input-text__field,
 .swal2-dark-theme .lego-textarea__field,
 .swal2-dark-theme .lego-select__native {
-    background: var(--bg-surface-hover, #374151) !important;
-    color: var(--text-primary, #f3f4f6) !important;
-    border-color: var(--border-light, #4b5563) !important;
+    background: var(--bg-input, #2d2e2f) !important;
+    color: var(--text-primary, #ffffff) !important;
+    border-color: var(--border-light, #363B3D) !important;
 }
 
 .swal2-dark-theme .lego-checkbox__description {
-    color: var(--text-secondary, #9ca3af) !important;
+    color: var(--text-secondary, #dddddd) !important;
+}
+
+.swal2-dark-theme .lego-input-text__label,
+.swal2-dark-theme .lego-textarea__label,
+.swal2-dark-theme .lego-select__label,
+.swal2-dark-theme .lego-checkbox__label {
+    color: var(--text-primary, #ffffff) !important;
+}
+
+.swal2-dark-theme .lego-input-text__help,
+.swal2-dark-theme .lego-textarea__help {
+    color: var(--text-secondary, #dddddd) !important;
 }

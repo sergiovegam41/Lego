@@ -1,0 +1,120 @@
+/**
+ * ConfirmationService Styles
+ *
+ * FILOSOFÍA LEGO:
+ * Estilos específicos para modales de confirmación que complementan alert-service.css
+ */
+
+/* ===== Confirmation Content ===== */
+.lego-confirmation {
+    text-align: center;
+    padding: var(--space-md, 1rem) 0;
+}
+
+.lego-confirmation__message {
+    font-size: var(--font-size-base, 1rem);
+    color: var(--text-primary, #333);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm, 0.5rem);
+}
+
+.lego-confirmation__description {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-secondary, #666);
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* ===== Confirmation Popup Specific ===== */
+.lego-confirmation-popup {
+    /* Hereda estilos de lego-alert-popup */
+}
+
+/* Posicionamiento personalizado para confirmaciones */
+.swal2-container.swal2-top {
+    padding-top: 25vh !important; /* Entre centro (50vh) y top (0vh) */
+}
+
+/* ===== Variant Buttons ===== */
+.lego-alert-btn--primary {
+    background: var(--accent-primary, #3b82f6) !important;
+    color: #ffffff !important;
+}
+
+.lego-alert-btn--primary:hover {
+    background: var(--accent-primary-dark, #2563eb) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.lego-alert-btn--warning {
+    background: #f59e0b !important;
+    color: #ffffff !important;
+}
+
+.lego-alert-btn--warning:hover {
+    background: #d97706 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.lego-alert-btn--danger {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.lego-alert-btn--danger:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.lego-alert-btn--info {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.lego-alert-btn--info:hover {
+    background: #2563eb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ===== Dark Theme Support ===== */
+.swal2-dark-theme .lego-confirmation__message {
+    color: var(--text-primary, #f3f4f6);
+}
+
+.swal2-dark-theme .lego-confirmation__description {
+    color: var(--text-secondary, #9ca3af);
+}
+
+/* Mantener colores de botones de confirmación en dark theme */
+.swal2-dark-theme .lego-alert-btn--primary,
+.swal2-dark-theme .lego-alert-btn--warning,
+.swal2-dark-theme .lego-alert-btn--danger,
+.swal2-dark-theme .lego-alert-btn--info {
+    /* Los colores se mantienen iguales que en light theme */
+    /* Solo cambia el botón de cancelar (ya definido en alert-service.css) */
+}
+
+/* ===== Input Confirmations ===== */
+.lego-confirmation-popup .swal2-input {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .lego-confirmation {
+        padding: var(--space-sm, 0.5rem) 0;
+    }
+
+    .lego-confirmation__message {
+        font-size: var(--font-size-sm, 0.875rem);
+    }
+
+    .lego-confirmation__description {
+        font-size: var(--font-size-xs, 0.75rem);
+    }
+}

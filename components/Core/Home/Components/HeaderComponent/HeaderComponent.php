@@ -98,6 +98,22 @@ class HeaderComponent extends CoreComponent
                     <div class="user-avatar">
                         <ion-icon name="person-circle-outline"></ion-icon>
                     </div>
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="user-dropdown__item" id="user-profile-btn">
+                            <ion-icon name="person-outline"></ion-icon>
+                            <span>Mi Perfil</span>
+                        </div>
+                        <div class="user-dropdown__item" id="user-settings-btn">
+                            <ion-icon name="settings-outline"></ion-icon>
+                            <span>Configuración</span>
+                        </div>
+                        <div class="user-dropdown__divider"></div>
+                        <div class="user-dropdown__item user-dropdown__item--logout" id="logout-btn">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                            <span>Cerrar sesión</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>

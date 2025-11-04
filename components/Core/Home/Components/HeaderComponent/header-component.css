@@ -72,9 +72,12 @@
 }
 
 .user-info {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
 }
 
 .user-avatar {
@@ -197,6 +200,70 @@ body.dark .theme-toggle-header .sun {
 body.dark .theme-toggle-header .moon {
     opacity: 0;
     transform: rotate(-90deg);
+}
+
+/* User Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    min-width: 200px;
+    padding: var(--space-xs);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--transition-fast);
+    z-index: 1000;
+}
+
+.user-info.active .user-dropdown,
+.user-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-button);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.user-dropdown__item:hover {
+    background: var(--bg-surface-hover);
+}
+
+.user-dropdown__item ion-icon {
+    font-size: var(--icon-size-md);
+    color: var(--text-secondary);
+}
+
+.user-dropdown__item--logout {
+    color: var(--error);
+}
+
+.user-dropdown__item--logout ion-icon {
+    color: var(--error);
+}
+
+.user-dropdown__item--logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.user-dropdown__divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: var(--space-xs) 0;
 }
 
 /* Responsive */
