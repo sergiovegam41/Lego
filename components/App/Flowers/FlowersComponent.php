@@ -31,7 +31,7 @@ class FlowersComponent extends CoreComponent
             new ColumnDto(
                 field: "primary_image",
                 headerName: "Imagen",
-                width: DimensionValue::px(100),
+                width: DimensionValue::px(200),
                 sortable: false,
                 filter: false,
                 cellRenderer: 'params => {
