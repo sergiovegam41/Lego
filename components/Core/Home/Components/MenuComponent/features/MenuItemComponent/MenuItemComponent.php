@@ -77,7 +77,7 @@ class MenuItemComponent extends CoreComponent
             }
 
             return <<<HTML
-            <div class="custom-menu-section ">
+            <div class="custom-menu-section" data-menu-item-id="{$id}">
                 <div class="custom-menu-title level-{$levelAux}" onclick="toggleSubMenu(this)">
                     <ion-icon name="{$iconName}" class="icon_menu icon_menu_parent"></ion-icon>
                     <p class="text_menu_option" >{$name}</p>

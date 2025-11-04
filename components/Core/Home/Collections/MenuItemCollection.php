@@ -103,4 +103,16 @@ class MenuItemCollection implements \IteratorAggregate, \Countable
     {
         return new MenuItemCollection(...array_filter($this->items, $callback));
     }
+
+    /**
+     * Convierte la colección completa a JSON
+     * Útil para pasar la estructura del menú a JavaScript
+     *
+     * @return string JSON string de la estructura del menú
+     */
+    public function toJson(): string
+    {
+        $menuArray = array_map(fn($item) => $item->toArray(), $this->items);
+        return json_encode($menuArray, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
 }

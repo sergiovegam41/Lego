@@ -59,9 +59,16 @@ class MenuComponent extends CoreComponent
 
     protected function component(): string
     {
+        // Pasar la estructura completa del menú a JavaScript como fuente de verdad
+        // Esto permite que window.lego.menu tenga acceso a la jerarquía completa
+        // sin depender del DOM para construir breadcrumbs y otras features
+
+        // Convertir a array (NO a JSON string) porque CoreComponent lo codificará después
+        $menuStructureArray = array_map(fn($item) => $item->toArray(), iterator_to_array($this->options));
+
         $this->JS_PATHS_WITH_ARG[] = [
             new ScriptCoreDTO("./menu-component.js", [
-                "message" => "hello word desde menu component "
+                "menuStructure" => $menuStructureArray
             ])
         ];
 

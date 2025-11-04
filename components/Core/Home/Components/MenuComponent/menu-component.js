@@ -1,3 +1,29 @@
+// ═══════════════════════════════════════════════════════════════════
+// INICIALIZAR ESTRUCTURA DEL MENÚ EN WINDOW.LEGO
+// ═══════════════════════════════════════════════════════════════════
+
+// Este script recibe la estructura del menú desde PHP via ScriptCoreDTO
+// y la almacena en window.lego.menu como fuente de verdad única
+
+// El argumento 'arg' es pasado automáticamente por loadModulesWithArguments
+// y contiene { menuStructure: [...] } donde menuStructure ya es un array de objetos
+if (typeof arg !== 'undefined' && arg.menuStructure) {
+    // Inicializar window.lego si no existe
+    window.lego = window.lego || {};
+
+    // menuStructure ya viene como array/objeto desde PHP (json_encode lo convirtió automáticamente)
+    window.lego.menu = arg.menuStructure;
+
+    console.log('[MenuComponent] Estructura del menú cargada en window.lego.menu:', window.lego.menu);
+} else {
+    console.warn('[MenuComponent] No se recibió estructura del menú. arg:', typeof arg !== 'undefined' ? arg : 'undefined');
+    window.lego = window.lego || {};
+    window.lego.menu = [];
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIDEBAR RESIZE FUNCTIONALITY
+// ═══════════════════════════════════════════════════════════════════
 
 let sidebarResizing = false;
         let resizeStartX = 0;

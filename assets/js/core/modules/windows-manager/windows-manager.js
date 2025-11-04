@@ -391,7 +391,66 @@ if (typeof window.legoWindowManager === 'undefined') {
                 });
             }
 
+            // IMPORTANTE: También agregar el ítem dinámico a window.lego.menu
+            // para que el breadcrumb funcione correctamente
+            this._addDynamicItemToMenuStructure(moduleId, parentMenuId, label, url, itemIcon);
+
             console.log('Dynamic menu item added:', moduleId);
+        },
+
+        /**
+         * Agregar ítem dinámico a window.lego.menu
+         * Esto mantiene la estructura del menú sincronizada con el DOM
+         *
+         * @param {string} moduleId - ID del módulo dinámico
+         * @param {string} parentMenuId - ID del menú padre
+         * @param {string} label - Texto a mostrar
+         * @param {string} url - URL del módulo
+         * @param {string} iconName - Nombre del ícono
+         * @private
+         */
+        _addDynamicItemToMenuStructure: function(moduleId, parentMenuId, label, url, iconName) {
+            if (!window.lego || !window.lego.menu || !Array.isArray(window.lego.menu)) {
+                console.warn('[WindowManager] window.lego.menu no disponible, no se puede agregar ítem dinámico');
+                return;
+            }
+
+            // Buscar el padre recursivamente
+            const findParentAndAdd = (items, targetParentId) => {
+                for (const item of items) {
+                    if (item.id === targetParentId) {
+                        // Verificar si el ítem dinámico ya existe
+                        const exists = item.childs.some(child => child.id === moduleId);
+                        if (!exists) {
+                            // Agregar el ítem dinámico como hijo
+                            item.childs.push({
+                                id: moduleId,
+                                name: label,
+                                url: url,
+                                iconName: iconName,
+                                level: (item.level || 0) + 1,
+                                childs: [],
+                                isDynamic: true // Marcar como dinámico para poder removerlo después
+                            });
+                            console.log(`[WindowManager] Ítem dinámico "${moduleId}" agregado a window.lego.menu bajo "${targetParentId}"`);
+                        }
+                        return true;
+                    }
+
+                    // Buscar recursivamente en los hijos
+                    if (item.childs && item.childs.length > 0) {
+                        if (findParentAndAdd(item.childs, targetParentId)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            const found = findParentAndAdd(window.lego.menu, parentMenuId);
+            if (!found) {
+                console.warn(`[WindowManager] No se encontró el padre "${parentMenuId}" en window.lego.menu`);
+            }
         },
 
         /**
@@ -412,8 +471,47 @@ if (typeof window.legoWindowManager === 'undefined') {
                     submenu.remove();
                 }
 
+                // También remover de window.lego.menu
+                this._removeDynamicItemFromMenuStructure(moduleId);
+
                 console.log('Dynamic menu item removed:', moduleId);
             }
+        },
+
+        /**
+         * Remover ítem dinámico de window.lego.menu
+         *
+         * @param {string} moduleId - ID del módulo dinámico a remover
+         * @private
+         */
+        _removeDynamicItemFromMenuStructure: function(moduleId) {
+            if (!window.lego || !window.lego.menu || !Array.isArray(window.lego.menu)) {
+                return;
+            }
+
+            // Buscar y remover recursivamente
+            const removeFromChildren = (items) => {
+                for (const item of items) {
+                    if (item.childs && item.childs.length > 0) {
+                        // Filtrar para remover el ítem dinámico
+                        const initialLength = item.childs.length;
+                        item.childs = item.childs.filter(child => child.id !== moduleId);
+
+                        if (item.childs.length < initialLength) {
+                            console.log(`[WindowManager] Ítem dinámico "${moduleId}" removido de window.lego.menu`);
+                            return true;
+                        }
+
+                        // Continuar buscando recursivamente
+                        if (removeFromChildren(item.childs)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            removeFromChildren(window.lego.menu);
         },
 
         /**
@@ -443,6 +541,10 @@ if (typeof window.legoWindowManager === 'undefined') {
 
         /**
          * Update breadcrumb based on currently active module
+         *
+         * FUENTE DE VERDAD: window.lego.menu (NO el DOM)
+         * Usa la estructura JSON del menú pasada desde PHP para construir breadcrumbs
+         * de manera confiable sin depender de la estructura DOM que puede cambiar.
          */
         updateBreadcrumbFromActiveModule: function() {
             if (!window.moduleStore || !window.moduleStore.activeModule) {
@@ -453,6 +555,70 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             const activeId = window.moduleStore.activeModule;
 
+            // Verificar que tengamos la estructura del menú disponible
+            if (!window.lego || !window.lego.menu || !Array.isArray(window.lego.menu)) {
+                console.warn('[WindowManager] window.lego.menu no disponible, usando fallback DOM');
+                this._updateBreadcrumbFromDOM(activeId);
+                return;
+            }
+
+            // Buscar el ítem en la estructura del menú (recursivamente)
+            const breadcrumbItems = this._buildBreadcrumbFromMenuStructure(activeId, window.lego.menu);
+
+            if (breadcrumbItems.length === 0) {
+                // Si no se encuentra en la estructura JSON, intentar con DOM (fallback para ítems dinámicos)
+                this._updateBreadcrumbFromDOM(activeId);
+            } else {
+                this.updateBreadcrumb(breadcrumbItems);
+            }
+        },
+
+        /**
+         * Construye breadcrumb desde la estructura JSON del menú
+         * Busca recursivamente el ítem activo y construye el path de padres
+         *
+         * @param {string} targetId - ID del módulo a buscar
+         * @param {Array} menuItems - Array de items del menú
+         * @param {Array} parentChain - Cadena de padres acumulada (para recursión)
+         * @returns {Array} Array de breadcrumb items { label, href }
+         */
+        _buildBreadcrumbFromMenuStructure: function(targetId, menuItems, parentChain = []) {
+            for (const item of menuItems) {
+                // Si encontramos el ítem que buscamos
+                if (item.id === targetId) {
+                    // Retornar la cadena de padres + el ítem actual
+                    return [
+                        ...parentChain,
+                        { label: item.name, href: '#' }
+                    ];
+                }
+
+                // Si el ítem tiene hijos, buscar recursivamente
+                if (item.childs && item.childs.length > 0) {
+                    const result = this._buildBreadcrumbFromMenuStructure(
+                        targetId,
+                        item.childs,
+                        [...parentChain, { label: item.name, href: '#' }]
+                    );
+
+                    if (result.length > 0) {
+                        return result;
+                    }
+                }
+            }
+
+            // No encontrado en este nivel
+            return [];
+        },
+
+        /**
+         * Fallback: Construir breadcrumb desde el DOM (método legacy)
+         * Se usa cuando window.lego.menu no está disponible o para ítems dinámicos
+         *
+         * @param {string} activeId - ID del módulo activo
+         * @private
+         */
+        _updateBreadcrumbFromDOM: function(activeId) {
             // Find the menu item in the DOM
             const menuItem = document.querySelector(`[data-menu-item-id="${activeId}"]`);
 

@@ -210,12 +210,26 @@ function reloadProductsTable() {
 function initializeForm() {
     console.log('[ProductCreate] Inicializando formulario...');
 
-    const form = document.getElementById('product-create-form');
-    const submitBtn = document.getElementById('product-form-submit-btn');
-    const cancelBtn = document.getElementById('product-form-cancel-btn');
+    // IMPORTANTE: Buscar elementos SOLO dentro del módulo activo
+    const activeModuleId = window.moduleStore?.getActiveModule();
+    if (!activeModuleId) {
+        console.error('[ProductCreate] No hay módulo activo');
+        return;
+    }
+
+    const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
+    if (!activeModuleContainer) {
+        console.error('[ProductCreate] No se encontró container del módulo activo:', activeModuleId);
+        return;
+    }
+
+    // Buscar elementos DENTRO del módulo activo
+    const form = activeModuleContainer.querySelector('#product-create-form');
+    const submitBtn = activeModuleContainer.querySelector('#product-form-submit-btn');
+    const cancelBtn = activeModuleContainer.querySelector('#product-form-cancel-btn');
 
     if (!form) {
-        console.warn('[ProductCreate] Formulario no encontrado, esperando...');
+        console.warn('[ProductCreate] Formulario no encontrado en módulo activo, esperando...');
         return;
     }
 
@@ -230,12 +244,12 @@ function initializeForm() {
         submitBtn.textContent = 'Creando...';
 
         try {
-            // Recoger datos del formulario
+            // Recoger datos del formulario desde el módulo activo
             const formData = {
-                name: document.getElementById('product-name')?.value || '',
-                description: document.getElementById('product-description')?.value || '',
-                price: parseFloat(document.getElementById('product-price')?.value || 0),
-                stock: parseInt(document.getElementById('product-stock')?.value || 0),
+                name: activeModuleContainer.querySelector('#product-name')?.value || '',
+                description: activeModuleContainer.querySelector('#product-description')?.value || '',
+                price: parseFloat(activeModuleContainer.querySelector('#product-price')?.value || 0),
+                stock: parseInt(activeModuleContainer.querySelector('#product-stock')?.value || 0),
                 category: window.LegoSelect?.getValue('product-category') || ''
             };
 
@@ -298,14 +312,43 @@ let attempts = 0;
 const maxAttempts = 40; // 40 * 50ms = 2 segundos
 
 function tryInitialize() {
-    const form = document.getElementById('product-create-form');
+    // IMPORTANTE: Buscar el módulo activo PRIMERO para evitar conflictos con otros módulos
+    const activeModuleId = window.moduleStore?.getActiveModule();
+
+    if (!activeModuleId) {
+        if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`[ProductCreate] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
+            setTimeout(tryInitialize, 50);
+        } else {
+            console.error('[ProductCreate] ModuleStore no disponible después de 2 segundos');
+        }
+        return;
+    }
+
+    // Buscar elementos SOLO dentro del módulo activo
+    const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
+
+    if (!activeModuleContainer) {
+        if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`[ProductCreate] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
+            setTimeout(tryInitialize, 50);
+        } else {
+            console.error('[ProductCreate] Container del módulo activo no encontrado después de 2 segundos');
+        }
+        return;
+    }
+
+    // Buscar el formulario DENTRO del módulo activo
+    const form = activeModuleContainer.querySelector('#product-create-form');
 
     if (form) {
-        console.log('[ProductCreate] Formulario encontrado, inicializando...');
+        console.log('[ProductCreate] Formulario encontrado en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ProductCreate] Formulario no encontrado, reintentando... (${attempts}/${maxAttempts})`);
+        console.log(`[ProductCreate] Formulario no encontrado en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
         console.error('[ProductCreate] No se pudo encontrar el formulario después de 2 segundos');

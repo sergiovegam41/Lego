@@ -127,10 +127,10 @@ function openCreateModule() {
     const moduleUrl = '/component/products-crud-v3/create';
 
     // Abrir con ítem de menú dinámico
-    console.log('[ProductsCrudV3] DEBUG - Intentando crear ítem dinámico con parentMenuId: 10-1');
+    // parentMenuId: '10' es el grupo "Products CRUD" (padre conceptual correcto)
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '10-1', // ID del ítem "Tabla" en el menú (MenuItemDto id)
+        parentMenuId: '10', // ID del grupo "Products CRUD" en el menú
         label: 'Nuevo Producto',
         url: moduleUrl,
         icon: 'add-circle-outline'
@@ -169,6 +169,11 @@ function openEditModule(productId, productData) {
             container.classList.add('active');
             window.moduleStore._openModule(moduleId, modules[moduleId].component);
 
+            // Actualizar breadcrumb para el módulo activo
+            if (window.legoWindowManager) {
+                window.legoWindowManager.updateBreadcrumbFromActiveModule();
+            }
+
             // Recargar el contenido del módulo con nuevo producto
             fetch(moduleUrl)
                 .then(res => res.text())
@@ -197,10 +202,11 @@ function openEditModule(productId, productData) {
     }
 
     // Abrir con ítem de menú dinámico (primera vez)
+    // parentMenuId: '10' es el grupo "Products CRUD" (padre conceptual correcto)
     console.log('[ProductsCrudV3] Abriendo ventana de edición para producto:', productId);
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '10-1', // ID del ítem "Tabla" en el menú (MenuItemDto id)
+        parentMenuId: '10', // ID del grupo "Products CRUD" en el menú
         label: 'Editar Producto',
         url: moduleUrl,
         icon: 'create-outline'

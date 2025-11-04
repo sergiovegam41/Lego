@@ -121,14 +121,14 @@ async function loadProductData(productId) {
 // POBLAR FORMULARIO CON DATOS
 // ═══════════════════════════════════════════════════════════════════
 
-function populateForm(product) {
+function populateForm(product, activeModuleContainer) {
     console.log('[ProductEdit] Poblando formulario con:', product);
 
-    // Poblar inputs
-    const nameInput = document.getElementById('product-name');
-    const descriptionTextarea = document.getElementById('product-description');
-    const priceInput = document.getElementById('product-price');
-    const stockInput = document.getElementById('product-stock');
+    // Poblar inputs DENTRO del módulo activo
+    const nameInput = activeModuleContainer.querySelector('#product-name');
+    const descriptionTextarea = activeModuleContainer.querySelector('#product-description');
+    const priceInput = activeModuleContainer.querySelector('#product-price');
+    const stockInput = activeModuleContainer.querySelector('#product-stock');
 
     if (nameInput) nameInput.value = product.name || '';
     if (descriptionTextarea) descriptionTextarea.value = product.description || '';
@@ -330,8 +330,8 @@ async function initializeForm() {
         loading.style.display = 'none';
         form.style.display = 'flex';
 
-        // Poblar formulario
-        populateForm(product);
+        // Poblar formulario (pasando el container del módulo activo)
+        populateForm(product, activeModuleContainer);
 
         // Cargar imágenes en FilePond si existen
         if (product.images && product.images.length > 0) {
@@ -358,12 +358,12 @@ async function initializeForm() {
         submitBtn.textContent = 'Guardando...';
 
         try {
-            // Recoger datos del formulario
+            // Recoger datos del formulario desde el módulo activo
             const formData = {
-                name: document.getElementById('product-name')?.value || '',
-                description: document.getElementById('product-description')?.value || '',
-                price: parseFloat(document.getElementById('product-price')?.value || 0),
-                stock: parseInt(document.getElementById('product-stock')?.value || 0),
+                name: activeModuleContainer.querySelector('#product-name')?.value || '',
+                description: activeModuleContainer.querySelector('#product-description')?.value || '',
+                price: parseFloat(activeModuleContainer.querySelector('#product-price')?.value || 0),
+                stock: parseInt(activeModuleContainer.querySelector('#product-stock')?.value || 0),
                 category: window.LegoSelect?.getValue('product-category') || ''
             };
 
@@ -424,16 +424,44 @@ let attempts = 0;
 const maxAttempts = 40; // 40 * 50ms = 2 segundos
 
 function tryInitialize() {
-    // IMPORTANTE: Buscar el contenedor específico del edit form (con data-product-id)
-    const container = document.querySelector('.product-form[data-product-id]');
-    const form = document.getElementById('product-edit-form');
+    // IMPORTANTE: Buscar el módulo activo PRIMERO para evitar conflictos con otros módulos
+    const activeModuleId = window.moduleStore?.getActiveModule();
+
+    if (!activeModuleId) {
+        if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`[ProductEdit] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
+            setTimeout(tryInitialize, 50);
+        } else {
+            console.error('[ProductEdit] ModuleStore no disponible después de 2 segundos');
+        }
+        return;
+    }
+
+    // Buscar elementos SOLO dentro del módulo activo
+    const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
+
+    if (!activeModuleContainer) {
+        if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`[ProductEdit] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
+            setTimeout(tryInitialize, 50);
+        } else {
+            console.error('[ProductEdit] Container del módulo activo no encontrado después de 2 segundos');
+        }
+        return;
+    }
+
+    // Buscar el contenedor específico del edit form DENTRO del módulo activo
+    const container = activeModuleContainer.querySelector('.product-form[data-product-id]');
+    const form = activeModuleContainer.querySelector('#product-edit-form');
 
     if (container && form) {
-        console.log('[ProductEdit] Elementos encontrados, inicializando...');
+        console.log('[ProductEdit] Elementos encontrados en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ProductEdit] Elementos no encontrados, reintentando... (${attempts}/${maxAttempts})`);
+        console.log(`[ProductEdit] Elementos no encontrados en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
         console.error('[ProductEdit] No se pudieron encontrar los elementos después de 2 segundos');

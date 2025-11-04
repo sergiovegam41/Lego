@@ -1,23 +1,25 @@
 export function activeMenu() {
-        addEventForToggle();
-        
-        // Add click handlers for parent menu items
-        document.querySelectorAll('.menu-parent').forEach(parent => {
-            parent.querySelector('a').addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
 
-                // Toggle active class
-                parent.classList.toggle('active');
+    addEventForToggle();
+    
+    // Add click handlers for parent menu items
+    document.querySelectorAll('.menu-parent').forEach(parent => {
+        parent.querySelector('a').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-                // Close other open menus
-                document.querySelectorAll('.menu-parent.active').forEach(item => {
-                    if (item !== parent) {
-                        item.classList.remove('active');
-                    }
-                });
+            // Toggle active class
+            parent.classList.toggle('active');
+
+            // Close other open menus
+            document.querySelectorAll('.menu-parent.active').forEach(item => {
+                if (item !== parent) {
+                    item.classList.remove('active');
+                }
             });
         });
+    });
+    
 }
 
 function addEventForToggle() {
