@@ -127,6 +127,7 @@ class AlertService {
             timer: 3000,
             timerProgressBar: true,
             showConfirmButton: false,
+            showCloseButton: true,
             toast: true,
             position: 'top-end',
             ...this.defaultConfig
@@ -144,6 +145,7 @@ class AlertService {
             timer: 5000,
             timerProgressBar: true,
             showConfirmButton: true,
+            showCloseButton: true,
             toast: true,
             position: 'top-end',
             ...this.defaultConfig
@@ -161,6 +163,7 @@ class AlertService {
             timer: 4000,
             timerProgressBar: true,
             showConfirmButton: false,
+            showCloseButton: true,
             toast: true,
             position: 'top-end',
             ...this.defaultConfig
@@ -178,6 +181,7 @@ class AlertService {
             timer: 3000,
             timerProgressBar: true,
             showConfirmButton: false,
+            showCloseButton: true,
             toast: true,
             position: 'top-end',
             ...this.defaultConfig
