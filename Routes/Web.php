@@ -73,15 +73,19 @@ Flight::route('GET /', function () {
  * Sirve archivos desde MinIO a través del backend
  * Ejemplo: /storage/lego-uploads/categories/images/file.jpg
  */
-Flight::route('GET /storage/@path+', function ($path) {
+Flight::route('GET /storage/*', function () {
+    // Obtener el path del REQUEST_URI
+    $requestUri = $_SERVER['REQUEST_URI'];
+    $path = substr($requestUri, strlen('/storage/'));
+
     // Log para debugging
-    error_log('[STORAGE ROUTE] Route matched! Path: ' . print_r($path, true));
+    error_log('[STORAGE ROUTE] Route matched! Path: ' . $path);
 
     try {
         $storageService = new \Core\Services\Storage\StorageService();
 
-        // La ruta viene como array, unirla
-        $fullPath = is_array($path) ? implode('/', $path) : $path;
+        // Limpiar el path (remover query string si existe)
+        $fullPath = parse_url($path, PHP_URL_PATH);
         error_log('[STORAGE ROUTE] Full path: ' . $fullPath);
 
         // Remover el bucket del path si está presente (ej: lego-uploads/...)
