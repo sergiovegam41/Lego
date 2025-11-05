@@ -74,11 +74,15 @@ Flight::route('GET /', function () {
  * Ejemplo: /storage/lego-uploads/categories/images/file.jpg
  */
 Flight::route('GET /storage/@path+', function ($path) {
+    // Log para debugging
+    error_log('[STORAGE ROUTE] Route matched! Path: ' . print_r($path, true));
+
     try {
         $storageService = new \Core\Services\Storage\StorageService();
 
         // La ruta viene como array, unirla
         $fullPath = is_array($path) ? implode('/', $path) : $path;
+        error_log('[STORAGE ROUTE] Full path: ' . $fullPath);
 
         // Remover el bucket del path si está presente (ej: lego-uploads/...)
         // porque StorageService ya maneja el bucket internamente
@@ -86,15 +90,19 @@ Flight::route('GET /storage/@path+', function ($path) {
         if (strpos($fullPath, $bucket . '/') === 0) {
             $fullPath = substr($fullPath, strlen($bucket) + 1);
         }
+        error_log('[STORAGE ROUTE] Clean path: ' . $fullPath);
 
         // Obtener el contenido del archivo de MinIO
         $fileContent = $storageService->getContent($fullPath);
 
         if (!$fileContent) {
+            error_log('[STORAGE ROUTE] File not found: ' . $fullPath);
             http_response_code(404);
             echo '404 - File not found';
             return;
         }
+
+        error_log('[STORAGE ROUTE] File found, size: ' . strlen($fileContent));
 
         // Detectar tipo MIME
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
@@ -117,6 +125,7 @@ Flight::route('GET /storage/@path+', function ($path) {
         echo $fileContent;
 
     } catch (\Exception $e) {
+        error_log('[STORAGE ROUTE] Exception: ' . $e->getMessage());
         http_response_code(500);
         echo '500 - Error: ' . $e->getMessage();
     }
