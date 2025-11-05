@@ -1,5 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
-# Build version: 2025-11-05-07 (analyze:all command integrated)
+# Build version: 2025-11-05-08 (MongoDB and Redis env vars configured)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
