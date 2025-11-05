@@ -35,6 +35,19 @@ $capsule->addConnection([
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
+// Registrar el driver de MongoDB para Laravel MongoDB
+$capsule->getDatabaseManager()->extend('mongodb', function($config, $name) {
+    $config['name'] = $name;
+    return new \MongoDB\Laravel\Connection($config);
+});
+
+// Configurar la conexión a MongoDB Cloud (Atlas)
+$capsule->addConnection([
+    'driver'   => 'mongodb',
+    'dsn'      => $_ENV['MONGO_CLOUD_DSN'] ?? '',
+    'database' => $_ENV['MONGO_CLOUD_DATABASE'] ?? 'Analysis',
+], 'mongodb');
+
 // Configurar el Paginator para paginación de Eloquent
 Paginator::currentPathResolver(function () {
     return strtok($_SERVER['REQUEST_URI'], '?');

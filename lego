@@ -9,6 +9,9 @@ if (php_sapi_name() !== 'cli') {
     exit("This script can only be executed from the command line.\n");
 }
 
+// Load bootstrap to initialize database connections
+require __DIR__ . '/Core/bootstrap.php';
+
 /**
  * Lego Framework CLI
  *

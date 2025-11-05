@@ -42,6 +42,10 @@ if (!window.lego.components) {
 activeMenu()
 generateMenuLinks()
 
+// Auto-load Inicio component on page load
+setTimeout(() => {
+    _openModule('inicio-module', '/component/inicio');
+}, 100);
 
 
 /*

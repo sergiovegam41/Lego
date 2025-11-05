@@ -1,6 +1,6 @@
 {
     "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController",
     "example-crud": "\\App\\Controllers\\ExampleCrud\\Controllers\\ExampleCrudController",
-    "storage": "\\App\\Controllers\\Storage\\Controllers\\StorageController",
-    "files": "\\App\\Controllers\\Files\\Controllers\\FilesController"
+    "files": "\\App\\Controllers\\Files\\Controllers\\FilesController",
+    "storage": "\\App\\Controllers\\Storage\\Controllers\\StorageController"
 }

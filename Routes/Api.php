@@ -169,6 +169,69 @@ Flight::route('GET /components/list', function() {
 });
 
 /**
+ * ========================================
+ * MONGODB TEST ROUTES
+ * ========================================
+ * Rutas de prueba para validar conexión con MongoDB Atlas
+ */
+Flight::route('GET /mongo/test', function() {
+    $controller = new \App\Controllers\MongoTestController();
+    $controller->test();
+});
+
+Flight::route('GET /mongo/matches', function() {
+    $controller = new \App\Controllers\MongoTestController();
+    $controller->getMatches();
+});
+
+Flight::route('GET /mongo/stadiums', function() {
+    $controller = new \App\Controllers\MongoTestController();
+    $controller->getStadiums();
+});
+
+Flight::route('GET /mongo/debug', function() {
+    $controller = new \App\Controllers\MongoTestController();
+    $controller->debug();
+});
+
+/**
+ * ========================================
+ * ANALYSIS API ROUTES
+ * ========================================
+ * Endpoints para acceder a datos estadísticos procesados y cacheados
+ * Los datos son generados por comandos CLI y cacheados en Redis
+ */
+Flight::route('GET /analysis/partidos', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getPartidos();
+});
+
+Flight::route('GET /analysis/estadios', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getEstadios();
+});
+
+Flight::route('GET /analysis/barras', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getBarras();
+});
+
+Flight::route('GET /analysis/jugadores', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getJugadores();
+});
+
+Flight::route('GET /analysis/mapa', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getMapa();
+});
+
+Flight::route('GET /analysis/status', function() {
+    $controller = new \App\Controllers\AnalysisController();
+    $controller->getStatus();
+});
+
+/**
  * Rutas dinámicas de controladores (LEGACY para V1/V2)
  * Se mapean automáticamente desde App/Controllers/
  */
