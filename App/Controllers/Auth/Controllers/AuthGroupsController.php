@@ -9,10 +9,6 @@ use App\Controllers\Auth\Providers\AuthGroupsProvider;
 
 use Core\Controllers\CoreController;
 use Core\Models\StatusCodes;
-// Forzar carga manual si autoloader falla
-if (!class_exists('Core\\Providers\\Request')) {
-  require_once __DIR__ . '/../../../../Core/Providers/Request.php';
-}
 use Core\Providers\Request;
 use Core\Response;
 
