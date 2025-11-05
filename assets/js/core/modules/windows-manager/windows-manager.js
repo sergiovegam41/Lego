@@ -80,6 +80,8 @@ async function renderModule(id, url, content) {
         container.id = `module-${id}`;
         container.className = 'module-container';
 
+        // Iniciar con opacidad 0 para efecto fade-in
+        container.style.opacity = '0';
 
         // Usar insertAdjacentHTML en lugar de innerHTML para ejecutar scripts
         container.insertAdjacentHTML('beforeend', dataResp);
@@ -103,7 +105,22 @@ async function renderModule(id, url, content) {
         });
 
         document.getElementById('home-page').appendChild(container);
+
+        // Trigger fade-in después de un breve delay para asegurar que el CSS se cargó
+        setTimeout(() => {
+            container.style.transition = 'opacity 0.3s ease-in-out';
+            container.style.opacity = '1';
+        }, 50);
+    } else {
+        // Si el módulo ya existe, aplicar fade cuando se reactive
+        container.style.opacity = '0';
+        setTimeout(() => {
+            container.style.transition = 'opacity 0.2s ease-in-out';
+            container.style.opacity = '1';
+        }, 10);
     }
+
+    // Ocultar otros módulos
     document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
     container.classList.add('active');
 }
