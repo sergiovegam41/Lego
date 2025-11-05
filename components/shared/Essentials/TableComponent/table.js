@@ -25,6 +25,11 @@ let context = {CONTEXT};
     } = config;
 
     console.log('[LEGO Table] Inicializando tabla:', id);
+    console.log('[LEGO Table] Config recibido:', {
+        serverSide: config.serverSide,
+        rowDataLength: rowData?.length,
+        rowDataSample: rowData?.slice(0, 2)
+    });
 
     // Cargar AG Grid desde CDN si no está cargado
     function loadAGGrid() {
@@ -596,7 +601,7 @@ let context = {CONTEXT};
             fullGridOptions.cacheBlockSize = config.apiConfig.perPage;
             fullGridOptions.cacheOverflowSize = 2;
             fullGridOptions.maxConcurrentDatasourceRequests = 1;
-            fullGridOptions.infiniteInitialRowCount = 1000;
+            fullGridOptions.infiniteInitialRowCount = 0; // No mostrar filas placeholder
             fullGridOptions.maxBlocksInCache = 10;
 
             // Guardar el onGridReady original
