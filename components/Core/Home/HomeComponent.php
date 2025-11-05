@@ -31,7 +31,7 @@ class HomeComponent extends CoreComponent
             </div>
 
             <div class="dashboard-grid">
-                <div class="dashboard-card" data-url="{$HOST_NAME}/component/flowers">
+                <div class="dashboard-card" data-module-id="flowers" data-module-url="{$HOST_NAME}/component/flowers">
                     <div class="card-icon" style="background: rgba(147, 51, 234, 0.1); color: #9333ea;">
                         <ion-icon name="flower-outline"></ion-icon>
                     </div>
@@ -41,7 +41,7 @@ class HomeComponent extends CoreComponent
                     </div>
                 </div>
 
-                <div class="dashboard-card" data-url="{$HOST_NAME}/component/categories">
+                <div class="dashboard-card" data-module-id="categories" data-module-url="{$HOST_NAME}/component/categories">
                     <div class="card-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
                         <ion-icon name="folder-outline"></ion-icon>
                     </div>
@@ -51,7 +51,7 @@ class HomeComponent extends CoreComponent
                     </div>
                 </div>
 
-                <div class="dashboard-card" data-url="{$HOST_NAME}/component/featured-products">
+                <div class="dashboard-card" data-module-id="featured-products" data-module-url="{$HOST_NAME}/component/featured-products">
                     <div class="card-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;">
                         <ion-icon name="star-outline"></ion-icon>
                     </div>
@@ -61,7 +61,7 @@ class HomeComponent extends CoreComponent
                     </div>
                 </div>
 
-                <div class="dashboard-card" data-url="{$HOST_NAME}/component/testimonials">
+                <div class="dashboard-card" data-module-id="testimonials" data-module-url="{$HOST_NAME}/component/testimonials">
                     <div class="card-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
                         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
                     </div>
@@ -75,22 +75,22 @@ class HomeComponent extends CoreComponent
             <div class="quick-actions">
                 <h2>Accesos Rápidos</h2>
                 <div class="actions-grid">
-                    <a href="{$HOST_NAME}/component/flowers/create" class="action-button action-primary">
+                    <button class="action-button action-primary" data-module-id="flowers-create" data-module-url="{$HOST_NAME}/component/flowers/create">
                         <ion-icon name="add-circle-outline"></ion-icon>
                         <span>Nueva Flor</span>
-                    </a>
-                    <a href="{$HOST_NAME}/component/categories/create" class="action-button action-secondary">
+                    </button>
+                    <button class="action-button action-secondary" data-module-id="categories-create" data-module-url="{$HOST_NAME}/component/categories/create">
                         <ion-icon name="add-circle-outline"></ion-icon>
                         <span>Nueva Categoría</span>
-                    </a>
-                    <a href="{$HOST_NAME}/component/featured-products/create" class="action-button action-accent">
+                    </button>
+                    <button class="action-button action-accent" data-module-id="featured-products-create" data-module-url="{$HOST_NAME}/component/featured-products/create">
                         <ion-icon name="star-outline"></ion-icon>
                         <span>Destacar Producto</span>
-                    </a>
-                    <a href="{$HOST_NAME}/component/testimonials/create" class="action-button action-success">
+                    </button>
+                    <button class="action-button action-success" data-module-id="testimonials-create" data-module-url="{$HOST_NAME}/component/testimonials/create">
                         <ion-icon name="chatbubble-outline"></ion-icon>
                         <span>Nuevo Testimonio</span>
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

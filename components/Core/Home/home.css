@@ -102,6 +102,9 @@
     transition: var(--transition-normal);
     border: var(--border-width) solid transparent;
     box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    background: transparent;
+    font-family: inherit;
 }
 
 .action-button ion-icon {
