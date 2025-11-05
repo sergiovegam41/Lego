@@ -1,5 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
-# Build version: 2025-11-05-04 (all directories lowercase for Linux compatibility)
+# Build version: 2025-11-05-05 (HOST_NAME environment variable configured)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
