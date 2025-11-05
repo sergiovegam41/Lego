@@ -49,6 +49,14 @@ RUN mkdir -p /var/www/html/storage/logs \
 # Copiar el código del proyecto al contenedor
 COPY --chown=appuser:appuser . .
 
+# DEBUG: Listar archivos copiados para diagnosticar el problema
+RUN echo "=== FILES IN /var/www/html ===" && \
+    ls -la /var/www/html/ | head -20 && \
+    echo "=== CHECKING Core/ ===" && \
+    ls -la /var/www/html/Core/ 2>&1 | head -10 || echo "Core NOT FOUND" && \
+    echo "=== CHECKING Core/Providers/ ===" && \
+    ls -la /var/www/html/Core/Providers/ 2>&1 || echo "Core/Providers NOT FOUND"
+
 # Instalar dependencias de Composer ANTES de cambiar a appuser
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
