@@ -21,10 +21,10 @@
           "Components\\":"Components/"
         },
         "files": [
-          "Components/shared/Forms/Forms.php",
-          "Components/shared/Essentials/Essentials.php",
-          "Components/shared/Buttons/Buttons.php",
-          "Components/shared/Navigation/Navigation.php"
+          "Components/Shared/Forms/Forms.php",
+          "Components/Shared/Essentials/Essentials.php",
+          "Components/Shared/Buttons/Buttons.php",
+          "Components/Shared/Navigation/Navigation.php"
         ]
       },
     "scripts": {
