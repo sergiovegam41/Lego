@@ -57,5 +57,28 @@ else
     echo "[Entrypoint] Lego ya está inicializado, omitiendo init..."
 fi
 
+# Ejecutar comandos de análisis en background si no se han ejecutado
+ANALYSIS_FLAG="/var/www/html/storage/.analysis-initialized"
+if [ ! -f "$ANALYSIS_FLAG" ]; then
+    echo "[Entrypoint] Ejecutando comandos de análisis en background..."
+    {
+        sleep 5  # Esperar a que PHP-FPM esté completamente iniciado
+        echo "[Analysis] Iniciando análisis de estadios..."
+        php lego analyze:estadios 2>&1 || true
+        echo "[Analysis] Iniciando análisis de partidos..."
+        php lego analyze:partidos 2>&1 || true
+        echo "[Analysis] Iniciando análisis de jugadores..."
+        php lego analyze:jugadores 2>&1 || true
+        echo "[Analysis] Iniciando análisis de mapa..."
+        php lego analyze:mapa 2>&1 || true
+        echo "[Analysis] Iniciando análisis de barras..."
+        php lego analyze:barras 2>&1 || true
+        touch "$ANALYSIS_FLAG"
+        echo "[Analysis] Comandos de análisis completados"
+    } &
+else
+    echo "[Entrypoint] Análisis ya ejecutado, omitiendo..."
+fi
+
 echo "[Entrypoint] Iniciando PHP-FPM..."
 exec php-fpm
