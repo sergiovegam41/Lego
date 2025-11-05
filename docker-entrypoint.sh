@@ -29,7 +29,7 @@ fi
 
 # Siempre instalar/actualizar dependencias de Composer
 echo "[Entrypoint] Instalando/actualizando dependencias de Composer..."
-composer install --no-interaction --optimize-autoloader --no-dev --classmap-authoritative
+composer install --no-interaction --optimize-autoloader --no-dev
 
 # Establecer permisos correctos
 echo "[Entrypoint] Estableciendo permisos..."
