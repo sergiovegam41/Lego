@@ -15,8 +15,9 @@ services:
     container_name: app
     networks:
       - lego-network
-    user: "${UID:-1000}:${GID:-1000}"
     restart: unless-stopped
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
 
   webserver:
     image: nginx:alpine
@@ -33,15 +34,7 @@ services:
       app:
         condition: service_started
 
-  init-permissions:
-    image: alpine
-    volumes:
-      - ..:/var/www/html
-    command: sh -c "mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/framework/cache /var/www/html/bootstrap/cache && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true"
-    networks:
-      - lego-network
-    depends_on:
-      - app
+  # init-permissions ya no es necesario porque docker-entrypoint.sh lo maneja
 
 networks:
   lego-network:

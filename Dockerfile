@@ -56,11 +56,15 @@ RUN chown -R appuser:appuser /var/www/html /home/appuser/.composer \
     && chmod -R 775 /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/public
 
+# Copiar el entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Cambiar al usuario appuser
 USER appuser
 
 # Exponer el puerto que usará PHP-FPM
 EXPOSE 9000
 
-# Instalar dependencias y ejecutar PHP-FPM
-CMD composer install --no-cache && composer dump-autoload && find "$PWD" -type f -exec chmod 644 {} \; && find "$PWD" -type d -exec chmod 755 {} \; && php-fpm
+# Usar entrypoint para manejar composer install y permisos
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
