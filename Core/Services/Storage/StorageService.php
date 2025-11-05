@@ -85,6 +85,17 @@ class StorageService
     }
 
     /**
+     * Obtiene el contenido de un archivo
+     *
+     * @param string $filePath Ruta del archivo en el bucket
+     * @return string Contenido del archivo
+     */
+    public function getContent(string $filePath): string
+    {
+        return $this->client->getObject($this->config->getBucket(), $filePath);
+    }
+
+    /**
      * Elimina un archivo
      *
      * @param string $filePath Ruta del archivo en el bucket

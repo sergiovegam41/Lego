@@ -80,8 +80,15 @@ Flight::route('GET /storage/@path+', function ($path) {
         // La ruta viene como array, unirla
         $fullPath = is_array($path) ? implode('/', $path) : $path;
 
-        // Obtener el archivo de MinIO
-        $fileContent = $storageService->get($fullPath);
+        // Remover el bucket del path si está presente (ej: lego-uploads/...)
+        // porque StorageService ya maneja el bucket internamente
+        $bucket = $storageService->getConfig()->getBucket();
+        if (strpos($fullPath, $bucket . '/') === 0) {
+            $fullPath = substr($fullPath, strlen($bucket) + 1);
+        }
+
+        // Obtener el contenido del archivo de MinIO
+        $fileContent = $storageService->getContent($fullPath);
 
         if (!$fileContent) {
             http_response_code(404);
