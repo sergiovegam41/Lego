@@ -100,8 +100,16 @@ En Dokploy, puedes crear un **servicio independiente** para cada archivo `docker
    - Servicio 6: n8n (opcional) → `dokploy/docker-compose.n8n.yml`
 
 3. **Variables de entorno:**
-   - Cada servicio debe tener acceso al archivo `.env` del proyecto
-   - O configurar las variables de entorno en Dokploy directamente
+
+   **⚠️ IMPORTANTE**: El `.env` no está en el repositorio por seguridad.
+
+   **Opción A (Recomendada)**: Configurar en Dokploy directamente
+   - En la configuración del servicio App, agregar las variables de entorno necesarias
+   - Ver sección "Variables de Entorno Importantes" más abajo
+
+   **Opción B**: El entrypoint crea `.env` desde `.env.example` automáticamente
+   - Asegúrate de que `.env.example` tenga valores por defecto
+   - Luego actualiza las variables sensibles vía Dokploy
 
 ### ⚠️ IMPORTANTE: Rutas Relativas
 
@@ -116,6 +124,40 @@ Los archivos `docker-compose` en esta carpeta usan **rutas relativas** (`..`) po
 3. Las rutas `..` apuntan correctamente a: `/path/to/repo/`
 
 ## Variables de Entorno Importantes
+
+### App (LEGO Framework)
+```env
+# Database PostgreSQL
+DB_CONNECTION=pgsql
+DB_HOST=lego-postgres-db
+DB_PORT=5432
+DB_DATABASE=lego-postgresql-db
+DB_USERNAME=lego
+DB_PASSWORD=1224
+
+# MongoDB
+MONGO_DB_HOST=lego-mongo-db
+MONGO_DB_PORT=27017
+MONGO_DB_USERNAME=lego
+MONGO_DB_PASSWORD=1224
+MONGO_DB_DATABASE=lego-analytics
+
+# Redis
+REDIS_HOST=lego-redis
+REDIS_PORT=6379
+REDIS_PASSWORD=1224
+
+# MinIO (Opcional)
+MINIO_ENDPOINT=lego-minio
+MINIO_PORT=9000
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin123
+
+# App Config
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://tu-dominio.com
+```
 
 ### PostgreSQL
 ```env
@@ -155,12 +197,6 @@ N8N_PORT=5678
 N8N_PROTOCOL=https
 NODE_ENV=production
 GENERIC_TIMEZONE=America/Mexico_City
-```
-
-### App
-```env
-UID=1000
-GID=1000
 ```
 
 ## Verificar Conectividad
