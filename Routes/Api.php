@@ -59,6 +59,25 @@ use Flight;
 
 /**
  * ========================================
+ * FLOWERS PUBLIC API
+ * ========================================
+ * Public endpoints for browsing and searching flowers
+ * IMPORTANTE: Debe ir ANTES de ApiCrudRouter para tener prioridad
+ * Ver: Core/Routes/FlowersPublicRoutes.php
+ */
+require __DIR__ . '/../Core/Routes/FlowersPublicRoutes.php';
+
+/**
+ * ========================================
+ * LANDING PAGE API
+ * ========================================
+ * Endpoint agregado para obtener todos los datos de la landing page
+ * Ver: Core/Routes/LandingRoutes.php
+ */
+require __DIR__ . '/../Core/Routes/LandingRoutes.php';
+
+/**
+ * ========================================
  * AUTO-GET ROUTES (Table-Driven API)
  * ========================================
  * Rutas GET de solo lectura generadas automáticamente desde modelos con #[ApiGetResource].

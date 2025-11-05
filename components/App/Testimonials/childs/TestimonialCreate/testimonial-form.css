@@ -1,0 +1,122 @@
+/* Testimonial Form - Shared styles for Create and Edit */
+
+.testimonial-form {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.testimonial-form__header {
+    margin-bottom: 24px;
+}
+
+.testimonial-form__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.testimonial-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.testimonial-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.testimonial-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.testimonial-form__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+.testimonial-form__button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.testimonial-form__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.testimonial-form__button--secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.testimonial-form__button--secondary:hover:not(:disabled) {
+    background: var(--bg-hover);
+}
+
+.testimonial-form__button--primary {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.testimonial-form__button--primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.testimonial-form__loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.testimonial-form__error {
+    padding: 20px;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: 8px;
+    color: var(--error-text);
+}
+
+.testimonial-form__error h2 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.testimonial-form__error p {
+    margin: 0;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .testimonial-form {
+        padding: 16px;
+    }
+
+    .testimonial-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonial-form__actions {
+        flex-direction: column;
+    }
+
+    .testimonial-form__button {
+        width: 100%;
+        justify-content: center;
+    }
+}

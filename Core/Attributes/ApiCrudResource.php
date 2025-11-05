@@ -96,17 +96,17 @@ class ApiCrudResource
     }
 
     /**
-     * Obtener endpoint completo con prefijo /api
+     * Obtener endpoint SIN prefijo /api (para uso en Routes/Api.php)
      *
      * @param string $modelClass Nombre completo de la clase
-     * @return string Endpoint completo (ej: '/api/products')
+     * @return string Endpoint sin /api (ej: '/products')
      */
     public function getEndpoint(string $modelClass): string
     {
-        // Si endpoint está definido, agregar prefijo /api
+        // Si endpoint está definido, usarlo directamente
         if ($this->endpoint !== null) {
             $path = ltrim($this->endpoint, '/');
-            return "/api/{$path}";
+            return "/{$path}";
         }
 
         // Auto-generar desde nombre del modelo
@@ -117,7 +117,7 @@ class ApiCrudResource
         $plural = $this->pluralize($shortName);
         $kebab = $this->toKebabCase($plural);
 
-        return "/api/{$kebab}";
+        return "/{$kebab}";
     }
 
     /**

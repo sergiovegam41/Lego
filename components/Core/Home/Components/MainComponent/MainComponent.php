@@ -89,6 +89,46 @@ class MainComponent extends CoreComponent
                             iconName: "add-circle-outline"
                         )
                     ]
+                ),
+                new MenuItemDto(
+                    id: "4",
+                    name: "Testimonios",
+                    url: null,
+                    iconName: "chatbubble-ellipses-outline",
+                    childs: [
+                        new MenuItemDto(
+                            id: "4-1",
+                            name: "Ver Testimonios",
+                            url: $HOST_NAME . '/component/testimonials',
+                            iconName: "list-outline"
+                        ),
+                        new MenuItemDto(
+                            id: "4-2",
+                            name: "Crear Testimonio",
+                            url: $HOST_NAME . '/component/testimonials/create',
+                            iconName: "add-circle-outline"
+                        )
+                    ]
+                ),
+                new MenuItemDto(
+                    id: "5",
+                    name: "Productos Destacados",
+                    url: null,
+                    iconName: "star-outline",
+                    childs: [
+                        new MenuItemDto(
+                            id: "5-1",
+                            name: "Ver Productos Destacados",
+                            url: $HOST_NAME . '/component/featured-products',
+                            iconName: "list-outline"
+                        ),
+                        new MenuItemDto(
+                            id: "5-2",
+                            name: "Agregar Producto Destacado",
+                            url: $HOST_NAME . '/component/featured-products/create',
+                            iconName: "add-circle-outline"
+                        )
+                    ]
                 )
             ),
             title: "Florería",

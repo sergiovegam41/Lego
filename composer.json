@@ -24,7 +24,9 @@
           "Components\\App\\":"components/App/",
           "Components\\App\\Flowers\\Childs\\":"components/App/Flowers/childs/",
           "Components\\App\\Categories\\Childs\\":"components/App/Categories/childs/",
-          "Components\\App\\ExampleCrud\\Childs\\":"components/App/ExampleCrud/childs/"
+          "Components\\App\\ExampleCrud\\Childs\\":"components/App/ExampleCrud/childs/",
+          "Components\\App\\Testimonials\\Childs\\":"components/App/Testimonials/childs/",
+          "Components\\App\\FeaturedProducts\\Childs\\":"components/App/FeaturedProducts/childs/"
         },
         "files": [
           "components/shared/Forms/Forms.php",
