@@ -1,0 +1,27 @@
+# ================================================
+# LEGO Framework - MongoDB
+# ================================================
+# Base de datos MongoDB para almacenamiento de documentos
+# Red: lego-network (externa)
+
+services:
+  mongodb:
+    image: mongo
+    container_name: lego-mongo-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME:-lego}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD:-1224}
+    ports:
+      - "${MONGO_DB_PORT:-27017}:27017"
+    volumes:
+      - lego-mongo-data:/data/db
+    networks:
+      - lego-network
+
+networks:
+  lego-network:
+    external: true
+
+volumes:
+  lego-mongo-data:

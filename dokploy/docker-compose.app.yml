@@ -1,0 +1,43 @@
+# ================================================
+# LEGO Framework - App + Webserver
+# ================================================
+# Servicio principal de la aplicación PHP con Nginx
+# Red: lego-network (externa)
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    container_name: lego-php
+    networks:
+      - lego-network
+    user: "${UID:-1000}:${GID:-1000}"
+
+  webserver:
+    image: nginx:alpine
+    volumes:
+      - .:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    container_name: lego-nginx
+    networks:
+      - lego-network
+    depends_on:
+      - app
+
+  init-permissions:
+    image: alpine
+    volumes:
+      - .:/var/www/html
+    command: sh -c "chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && chown -R www-data:www-data /var/www/html"
+    depends_on:
+      - app
+
+networks:
+  lego-network:
+    external: true
