@@ -13,8 +13,7 @@ mkdir -p /var/www/html/storage/logs \
     /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/framework/cache \
-    /var/www/html/bootstrap/cache \
-    /var/www/html/vendor
+    /var/www/html/bootstrap/cache
 
 # Verificar si existe .env, si no, crear desde .env.example o variables de entorno
 if [ ! -f "/var/www/html/.env" ]; then
@@ -28,15 +27,9 @@ if [ ! -f "/var/www/html/.env" ]; then
     fi
 fi
 
-# Instalar dependencias de Composer si no existen
-if [ ! -d "/var/www/html/vendor" ] || [ -z "$(ls -A /var/www/html/vendor 2>/dev/null)" ]; then
-    echo "[Entrypoint] Instalando dependencias de Composer..."
-    composer install --no-interaction --optimize-autoloader --no-dev
-else
-    echo "[Entrypoint] Vendor existe, regenerando autoloader..."
-    # Forzar regeneración completa del autoloader para evitar problemas de caché
-    composer dump-autoload --optimize --no-dev --classmap-authoritative
-fi
+# Siempre instalar/actualizar dependencias de Composer
+echo "[Entrypoint] Instalando/actualizando dependencias de Composer..."
+composer install --no-interaction --optimize-autoloader --no-dev --classmap-authoritative
 
 # Establecer permisos correctos
 echo "[Entrypoint] Estableciendo permisos..."
