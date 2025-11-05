@@ -98,12 +98,26 @@ function initializeForm() {
                             if (button) {
                                 button.click();
 
-                                // Refrescar tabla después de que se abra el módulo
-                                setTimeout(() => {
-                                    if (window.legoWindowManager) {
-                                        window.legoWindowManager.reloadActive();
+                                // Esperar a que la tabla esté lista y refrescarla
+                                let attempts = 0;
+                                const maxAttempts = 20;
+                                const checkAndRefresh = () => {
+                                    const refreshFn = window.legoTable_categories_table_refresh;
+                                    if (refreshFn && typeof refreshFn === 'function') {
+                                        console.log('[CategoryCreate] Refrescando tabla...');
+                                        refreshFn();
+                                    } else if (attempts < maxAttempts) {
+                                        attempts++;
+                                        setTimeout(checkAndRefresh, 100);
+                                    } else {
+                                        console.warn('[CategoryCreate] No se pudo refrescar tabla (timeout)');
+                                        // Fallback: reload complete module
+                                        if (window.legoWindowManager) {
+                                            window.legoWindowManager.reloadActive();
+                                        }
                                     }
-                                }, 300);
+                                };
+                                setTimeout(checkAndRefresh, 200);
                             }
                         }
                     }, 100);

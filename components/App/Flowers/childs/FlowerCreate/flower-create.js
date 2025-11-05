@@ -100,11 +100,22 @@ function initializeForm() {
                             if (button) {
                                 button.click();
 
-                                // Refrescar tabla después de que se abra el módulo
-                                setTimeout(() => {
+                                // Esperar a que la tabla esté lista y refrescarla
+                                let attempts = 0;
+                                const maxAttempts = 20;
+                                const checkAndRefresh = () => {
                                     const refreshFn = window.legoTable_flowers_table_refresh;
-                                    if (refreshFn) refreshFn();
-                                }, 300);
+                                    if (refreshFn && typeof refreshFn === 'function') {
+                                        console.log('[FlowerCreate] Refrescando tabla...');
+                                        refreshFn();
+                                    } else if (attempts < maxAttempts) {
+                                        attempts++;
+                                        setTimeout(checkAndRefresh, 100);
+                                    } else {
+                                        console.warn('[FlowerCreate] No se pudo refrescar tabla (timeout)');
+                                    }
+                                };
+                                setTimeout(checkAndRefresh, 200);
                             }
                         }
                     }, 100);
