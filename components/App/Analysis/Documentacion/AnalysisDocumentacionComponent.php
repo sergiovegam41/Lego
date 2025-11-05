@@ -19,13 +19,13 @@ class AnalysisDocumentacionComponent extends CoreComponent
                 <h1 class="analysis-documentacion__title">Documentación</h1>
 
                 <div class="analysis-documentacion__grid">
-                    <!-- Manual de Metodología de Análisis -->
-                    <div class="analysis-documentacion__card" onclick="window.open('https://docs.google.com/document/d/1c0FvGH4Xv02uwj4mdyNywdsWE5IebCylKVBOcXN9v_Q/edit', '_blank')">
+                    <!-- ABP -->
+                    <div class="analysis-documentacion__card" onclick="window.open('https://docs.google.com/document/d/1_7y6Gj3b0hYy3blNysYG78nyhKIm5y-HAx2-6z4IRe8/edit?tab=t.0', '_blank')">
                         <div class="analysis-documentacion__icon">
                             <ion-icon name="document-text-outline"></ion-icon>
                         </div>
-                        <p class="analysis-documentacion__doc-title">MANUAL DE METODOLOGIA DE ANALISIS</p>
-                        <a href="https://docs.google.com/document/d/1c0FvGH4Xv02uwj4mdyNywdsWE5IebCylKVBOcXN9v_Q/edit" target="_blank" class="analysis-documentacion__link">
+                        <p class="analysis-documentacion__doc-title">ABP</p>
+                        <a href="https://docs.google.com/document/d/1_7y6Gj3b0hYy3blNysYG78nyhKIm5y-HAx2-6z4IRe8/edit?tab=t.0" target="_blank" class="analysis-documentacion__link">
                             Ver documento
                         </a>
                     </div>

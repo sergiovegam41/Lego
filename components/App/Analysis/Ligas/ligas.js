@@ -144,12 +144,21 @@ function transformDataForChart(dataObject) {
 }
 
 /**
+ * Obtener el color de texto según el tema actual
+ */
+function getTextColor() {
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    return isDark ? '#e0e0e0' : '#333333';
+}
+
+/**
  * Dibujar el gráfico Donut Chart
  */
 function drawDonutChart(chartData) {
     console.log('[Ligas] Dibujando gráfico...');
 
     const data = google.visualization.arrayToDataTable(chartData);
+    const textColor = getTextColor();
 
     const options = {
         title: '',
@@ -159,7 +168,8 @@ function drawDonutChart(chartData) {
             position: 'right',
             alignment: 'center',
             textStyle: {
-                fontSize: 12
+                fontSize: 12,
+                color: textColor
             }
         },
         chartArea: {
@@ -168,7 +178,13 @@ function drawDonutChart(chartData) {
         },
         pieSliceText: 'percentage',
         pieSliceTextStyle: {
-            fontSize: 11
+            fontSize: 11,
+            color: textColor
+        },
+        tooltip: {
+            textStyle: {
+                color: textColor
+            }
         },
         // Colores personalizados (opcional)
         colors: [
@@ -186,6 +202,10 @@ function drawDonutChart(chartData) {
 
     const chart = new google.visualization.PieChart(chartContainer);
     chart.draw(data, options);
+
+    // Guardar referencia para redibujar en cambio de tema
+    window.ligasChartData = chartData;
+    window.ligasChart = chart;
 
     console.log('[Ligas] Gráfico dibujado exitosamente');
 }
@@ -234,6 +254,32 @@ function showError(message) {
         `;
     }
 }
+
+/**
+ * Listener para cambios de tema
+ */
+function setupThemeListener() {
+    // Observar cambios en la clase del html
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                console.log('[Ligas] Tema cambiado, redibujando gráfico...');
+                // Redibujar el gráfico con los nuevos colores
+                if (window.ligasChartData && window.ligasChart) {
+                    drawDonutChart(window.ligasChartData);
+                }
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+}
+
+// Inicializar listener de tema
+setupThemeListener();
 
 // Exportar funciones para testing (opcional)
 if (typeof module !== 'undefined' && module.exports) {

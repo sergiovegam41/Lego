@@ -19,39 +19,39 @@ class AnalysisIntegrantesComponent extends CoreComponent
                 <h1 class="analysis-integrantes__title">Integrantes</h1>
 
                 <div class="analysis-integrantes__grid">
-                    <!-- Sergio Vega -->
+                    <!-- Sergio Luis Vega Martínez -->
                     <div class="analysis-integrantes__card">
                         <div class="analysis-integrantes__avatar">
                             <ion-icon name="person-circle-outline"></ion-icon>
                         </div>
-                        <p class="analysis-integrantes__name">Sergio Vega</p>
+                        <p class="analysis-integrantes__name">Sergio Luis Vega Martínez</p>
                         <strong><p class="analysis-integrantes__role">Developer</p></strong>
                     </div>
 
-                    <!-- Justin Hernandez -->
+                    <!-- Justin Hernández -->
                     <div class="analysis-integrantes__card">
                         <div class="analysis-integrantes__avatar">
                             <ion-icon name="person-circle-outline"></ion-icon>
                         </div>
-                        <p class="analysis-integrantes__name">Justin Hernandez</p>
+                        <p class="analysis-integrantes__name">Justin Hernández</p>
                         <strong><p class="analysis-integrantes__role">Developer</p></strong>
                     </div>
 
-                    <!-- Julio Bonifacio -->
+                    <!-- Julio Bonifacio Martínez -->
                     <div class="analysis-integrantes__card">
                         <div class="analysis-integrantes__avatar">
                             <ion-icon name="person-circle-outline"></ion-icon>
                         </div>
-                        <p class="analysis-integrantes__name">Julio Bonifacio</p>
+                        <p class="analysis-integrantes__name">Julio Bonifacio Martínez</p>
                         <strong><p class="analysis-integrantes__role">Developer</p></strong>
                     </div>
 
-                    <!-- Andres Rodrigez -->
+                    <!-- Andrés David Rodríguez Camargo -->
                     <div class="analysis-integrantes__card">
                         <div class="analysis-integrantes__avatar">
                             <ion-icon name="person-circle-outline"></ion-icon>
                         </div>
-                        <p class="analysis-integrantes__name">Andres Rodrigez</p>
+                        <p class="analysis-integrantes__name">Andrés David Rodríguez Camargo</p>
                         <strong><p class="analysis-integrantes__role">Developer</p></strong>
                     </div>
                 </div>

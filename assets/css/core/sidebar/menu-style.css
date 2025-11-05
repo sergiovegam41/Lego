@@ -689,6 +689,8 @@ hr{
 /* Active state - only color, no background */
 .menu_item_openable.menu-state--active .custom-button {
     color: var(--accent-primary);
+    outline: none;
+    border: none;
 }
 
 .menu_item_openable.menu-state--active .custom-button p,

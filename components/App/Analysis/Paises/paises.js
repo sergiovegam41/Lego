@@ -118,22 +118,49 @@ function transformDataForChart(dataObject) {
 }
 
 /**
+ * Obtener el color de texto según el tema actual
+ */
+function getTextColor() {
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    return isDark ? '#e0e0e0' : '#333333';
+}
+
+/**
+ * Obtener colores de regiones según el tema actual
+ */
+function getRegionColors() {
+    const isDark = document.documentElement.classList.contains('dark-theme');
+    return isDark ? '#424242' : '#f5f5f5';
+}
+
+/**
  * Dibujar el gráfico GeoChart (mapa mundial)
  */
 function drawGeoChart(chartData) {
     console.log('[Países] Dibujando gráfico...');
 
     const data = google.visualization.arrayToDataTable(chartData);
+    const textColor = getTextColor();
+    const regionColor = getRegionColors();
 
     const options = {
         backgroundColor: 'transparent',
         colorAxis: {
             colors: ['#E8F5E9', '#66BB6A', '#2E7D32']
         },
-        datalessRegionColor: '#f5f5f5',
-        defaultColor: '#f5f5f5',
+        datalessRegionColor: regionColor,
+        defaultColor: regionColor,
         legend: {
-            numberFormat: 'decimal'
+            numberFormat: 'decimal',
+            textStyle: {
+                color: textColor,
+                fontSize: 12
+            }
+        },
+        tooltip: {
+            textStyle: {
+                color: textColor
+            }
         }
     };
 
@@ -146,6 +173,10 @@ function drawGeoChart(chartData) {
 
     const chart = new google.visualization.GeoChart(chartContainer);
     chart.draw(data, options);
+
+    // Guardar referencia para redibujar en cambio de tema
+    window.paisesChartData = chartData;
+    window.paisesChart = chart;
 
     console.log('[Países] Gráfico dibujado exitosamente');
 }
@@ -194,6 +225,32 @@ function showError(message) {
         `;
     }
 }
+
+/**
+ * Listener para cambios de tema
+ */
+function setupThemeListener() {
+    // Observar cambios en la clase del html
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                console.log('[Países] Tema cambiado, redibujando gráfico...');
+                // Redibujar el gráfico con los nuevos colores
+                if (window.paisesChartData && window.paisesChart) {
+                    drawGeoChart(window.paisesChartData);
+                }
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+}
+
+// Inicializar listener de tema
+setupThemeListener();
 
 // Exportar funciones para testing (opcional)
 if (typeof module !== 'undefined' && module.exports) {
