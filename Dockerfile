@@ -1,5 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
-# Build version: 2025-11-05-11 (Fix PSR-4 autoloader for Core\Providers)
+# Build version: 2025-11-05-12 (Fix PSR-4 autoloader for App Components childs/)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
