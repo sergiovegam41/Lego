@@ -2,8 +2,6 @@
 
 namespace Core\Bootstrap;
 
-use Components\Shared\Buttons\IconButtonComponent\IconButtonComponent;
-
 /**
  * RegisterDynamicComponents - Registro centralizado de componentes dinámicos
  *
@@ -20,15 +18,22 @@ class RegisterDynamicComponents
      * Registrar todos los componentes dinámicos
      *
      * NOTA: Se crean instancias temporales para activar el auto-registro.
+     * Solo instancia componentes que existen para evitar errores en ambientes de producción.
      */
     public static function register(): void
     {
-        // IconButtonComponent
-        new IconButtonComponent();
+        // IconButtonComponent - Only register if class exists
+        if (class_exists('Components\Shared\Buttons\IconButtonComponent\IconButtonComponent')) {
+            new \Components\Shared\Buttons\IconButtonComponent\IconButtonComponent();
+        }
 
         // Agregar aquí nuevos componentes dinámicos en el futuro:
-        // new StatusBadgeComponent();
-        // new UserAvatarComponent();
+        // if (class_exists('StatusBadgeComponent')) {
+        //     new StatusBadgeComponent();
+        // }
+        // if (class_exists('UserAvatarComponent')) {
+        //     new UserAvatarComponent();
+        // }
         // etc.
 
         // Log en desarrollo
