@@ -4,8 +4,8 @@
  * Uso: php database/run_migration.php
  */
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../Core/bootstrap.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../Core/bootstrap.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
