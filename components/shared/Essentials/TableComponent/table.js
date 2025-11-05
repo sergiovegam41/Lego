@@ -397,7 +397,8 @@ let context = {CONTEXT};
         // Configuración completa de AG Grid
         const fullGridOptions = {
             columnDefs: processedColumnDefs,
-            rowData: rowData,
+            // Solo agregar rowData si NO es modo server-side
+            ...(config.serverSide ? {} : { rowData: rowData }),
             ...gridOptions,
 
             // Habilitar selección y copia de texto
