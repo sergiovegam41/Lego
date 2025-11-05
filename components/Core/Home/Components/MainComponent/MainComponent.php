@@ -171,7 +171,7 @@ class MainComponent extends CoreComponent
           <script src="./assets/js/services/ConfirmationService.js"></script>
 
           <!-- LEGO Modular Services (Bloques) -->
-          <script src="./assets/js/core/services/ApiClient.js"></script>
+          <script src="./assets/js/core/api/ApiClient.js"></script>
           <script src="./assets/js/core/services/StateManager.js"></script>
           <script src="./assets/js/core/services/ValidationEngine.js"></script>
           <script src="./assets/js/core/services/TableManager.js"></script>
