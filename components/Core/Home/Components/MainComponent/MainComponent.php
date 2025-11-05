@@ -45,9 +45,9 @@ class MainComponent extends CoreComponent
         $MenuComponent = (new MenuComponent(
             options: new MenuItemCollection(
                 new MenuItemDto(
-                    id: "1",
+                    id: "inicio",
                     name: "Inicio",
-                    url: $HOST_NAME . '/admin',
+                    url: $HOST_NAME . '/component/inicio',
                     iconName: "home-outline"
                 ),
                 new MenuItemDto(
@@ -171,7 +171,7 @@ class MainComponent extends CoreComponent
           <script src="./assets/js/services/ConfirmationService.js"></script>
 
           <!-- LEGO Modular Services (Bloques) -->
-          <script src="./assets/js/core/api/ApiClient.js"></script>
+          <!-- Los servicios modulares se cargan bajo demanda desde los componentes -->
           <script src="./assets/js/core/services/StateManager.js"></script>
           <script src="./assets/js/core/services/ValidationEngine.js"></script>
           <script src="./assets/js/core/services/TableManager.js"></script>

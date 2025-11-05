@@ -42,6 +42,28 @@ if (!window.lego.components) {
 activeMenu()
 generateMenuLinks()
 
+// Auto-load dashboard on /admin page if no module is active
+setTimeout(() => {
+  console.log('[Lego] Checking for auto-load dashboard...');
+  console.log('[Lego] Current path:', window.location.pathname);
+  console.log('[Lego] moduleStore:', window.moduleStore);
+  console.log('[Lego] activeModule:', window.moduleStore?.getActiveModule());
+
+  // Only auto-load on /admin route and if no module is active
+  if (window.location.pathname === '/admin' &&
+      window.moduleStore &&
+      !window.moduleStore.getActiveModule() &&
+      window.openModule) {
+    console.log('[Lego] Auto-loading inicio module...');
+    const HOST_NAME = window.location.origin;
+    window.openModule('inicio', `${HOST_NAME}/component/inicio`, 'Inicio', {
+      url: `${HOST_NAME}/component/inicio`,
+      name: 'Inicio'
+    });
+  } else {
+    console.log('[Lego] Skipping auto-load');
+  }
+}, 500); // Wait 500ms to ensure everything is initialized
 
 
 /*
