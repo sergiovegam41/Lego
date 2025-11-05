@@ -7,5 +7,14 @@
     },
     {
         "sql": "migrations/20251027_seed_products_table.sql"
+    },
+    {
+        "sql": "migrations/20250105_create_heroes_table.sql"
+    },
+    {
+        "sql": "migrations/20250105_create_testimonials_table.sql"
+    },
+    {
+        "sql": "migrations/20250105_create_featured_products_table.sql"
     }
 ]
