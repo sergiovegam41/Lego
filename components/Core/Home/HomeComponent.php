@@ -72,7 +72,7 @@ class HomeComponent extends CoreComponent
                 </div>
             </div>
 
-            <div class="quick-actions">
+            <!-- <div class="quick-actions">
                 <h2>Accesos Rápidos</h2>
                 <div class="actions-grid">
                     <button class="action-button action-primary" data-module-id="flowers-create" data-module-url="{$HOST_NAME}/component/flowers/create">
@@ -92,7 +92,7 @@ class HomeComponent extends CoreComponent
                         <span>Nuevo Testimonio</span>
                     </button>
                 </div>
-            </div>
+            </div> -->
         </div>
         HTML;
     }
