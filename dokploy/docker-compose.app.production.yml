@@ -33,6 +33,8 @@ services:
     networks:
       - lego-network
     restart: unless-stopped
+    expose:
+      - "80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.lego.rule=Host(`analytics.ondeploy.space`)"
