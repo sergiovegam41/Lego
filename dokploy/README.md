@@ -8,11 +8,19 @@ Todos los servicios comparten la red **`lego-network`** como red externa, permit
 
 ## Servicios Disponibles
 
-### 1. App + Webserver (`docker-compose.app.yml`)
-- **Servicio principal** de la aplicación LEGO (PHP)
-- **Nginx** como servidor web
-- Permisos automáticos con `init-permissions`
+### 1. App + Webserver
+
+**Para desarrollo local (`docker-compose.app.yml`):**
+- Monta el código como volumen bind (cambios en tiempo real)
+- Requiere permisos de escritura en el host
 - **Puerto:** 8080
+
+**Para producción (`docker-compose.app.production.yml`):**
+- Usa volumen nombrado compartido entre app y webserver
+- El código está empaquetado en la imagen Docker
+- No requiere permisos especiales del host
+- **Puerto:** 8080
+- **⚠️ USAR ESTA VERSIÓN EN DOKPLOY**
 
 ### 2. PostgreSQL (`docker-compose.postgres.yml`)
 - Base de datos **PostgreSQL**
@@ -88,7 +96,7 @@ En Dokploy, puedes crear un **servicio independiente** para cada archivo `docker
    - Servicio 2: MongoDB → `dokploy/docker-compose.mongodb.yml`
    - Servicio 3: Redis → `dokploy/docker-compose.redis.yml`
    - Servicio 4: MinIO → `dokploy/docker-compose.minio.yml`
-   - Servicio 5: App → `dokploy/docker-compose.app.yml`
+   - Servicio 5: App → **`dokploy/docker-compose.app.production.yml`** ⚠️ IMPORTANTE: Usar versión production
    - Servicio 6: n8n (opcional) → `dokploy/docker-compose.n8n.yml`
 
 3. **Variables de entorno:**

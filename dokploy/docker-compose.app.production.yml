@@ -1,0 +1,45 @@
+# ================================================
+# LEGO Framework - App + Webserver (PRODUCTION)
+# ================================================
+# Servicio principal de la aplicación PHP con Nginx
+# Red: lego-network (externa)
+#
+# IMPORTANTE: Esta versión usa volúmenes nombrados compartidos.
+# El código está en la imagen, los contenedores comparten archivos estáticos.
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    working_dir: /var/www/html
+    container_name: app
+    networks:
+      - lego-network
+    restart: unless-stopped
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+    volumes:
+      - app-code:/var/www/html
+
+  webserver:
+    image: nginx:alpine
+    volumes:
+      - app-code:/var/www/html:ro
+      - ../nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+    container_name: webserver
+    networks:
+      - lego-network
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+
+networks:
+  lego-network:
+    external: true
+
+volumes:
+  app-code:
