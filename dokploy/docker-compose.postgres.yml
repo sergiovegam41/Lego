@@ -16,7 +16,7 @@ services:
       POSTGRES_MULTIPLE_DATABASES: "${N8N_DB_DATABASE:-n8n}"
     volumes:
       - lego-postgres-db-data:/var/lib/postgresql/data
-      - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+      - ../docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:

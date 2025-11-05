@@ -95,6 +95,18 @@ En Dokploy, puedes crear un **servicio independiente** para cada archivo `docker
    - Cada servicio debe tener acceso al archivo `.env` del proyecto
    - O configurar las variables de entorno en Dokploy directamente
 
+### ⚠️ IMPORTANTE: Rutas Relativas
+
+Los archivos `docker-compose` en esta carpeta usan **rutas relativas** (`..`) porque asumen que:
+- El repositorio se clona en el servidor
+- Los archivos compose están en `dokploy/`
+- Los archivos del proyecto (Dockerfile, nginx.conf, etc.) están en la raíz (`../`)
+
+**En Dokploy, esto funciona automáticamente** porque:
+1. Dokploy clona el repo completo: `/path/to/repo/`
+2. Los compose están en: `/path/to/repo/dokploy/`
+3. Las rutas `..` apuntan correctamente a: `/path/to/repo/`
+
 ## Variables de Entorno Importantes
 
 ### PostgreSQL
