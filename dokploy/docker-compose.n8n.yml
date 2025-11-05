@@ -1,0 +1,39 @@
+# ================================================
+# LEGO Framework - n8n
+# ================================================
+# Plataforma de automatización de workflows
+# Red: lego-network (externa)
+# Requiere: PostgreSQL (docker-compose.postgres.yml)
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: lego-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_HOST=${DOMAIN_NAME:-domain.example.com}
+      - N8N_PORT=${N8N_PORT:-5678}
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-https}
+      - NODE_ENV=${NODE_ENV:-production}
+      - WEBHOOK_URL=https://${DOMAIN_NAME:-domain.example.com}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_DISABLE_X_FRAME_OPTIONS=true
+
+    labels:
+      - traefik.http.middlewares.n8n-gzip.compress=true
+      - traefik.http.middlewares.n8n-gzip.compress.excludedcontenttypes=text/event-stream
+      - traefik.http.routers.n8n-https.rule=Host(`${N8N_HOST:-domain.example.com}`)
+      - traefik.http.routers.n8n-https.middlewares=n8n-gzip@docker
+    volumes:
+      - n8n-data:/home/node/.n8n
+    networks:
+      - lego-network
+
+networks:
+  lego-network:
+    external: true
+
+volumes:
+  n8n-data:

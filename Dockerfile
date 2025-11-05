@@ -1,4 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
+# Build version: 2025-11-05-09 (Production-ready with case-sensitivity fixes)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
@@ -49,6 +50,9 @@ RUN mkdir -p /var/www/html/storage/logs \
 # Copiar el código del proyecto al contenedor
 COPY --chown=appuser:appuser . .
 
+# Instalar dependencias de Composer ANTES de cambiar a appuser
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
 # Establecer permisos
 RUN chown -R appuser:appuser /var/www/html /home/appuser/.composer \
     && chmod -R 755 /var/www/html \
@@ -56,11 +60,15 @@ RUN chown -R appuser:appuser /var/www/html /home/appuser/.composer \
     && chmod -R 775 /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/public
 
+# Copiar el entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Cambiar al usuario appuser
 USER appuser
 
 # Exponer el puerto que usará PHP-FPM
 EXPOSE 9000
 
-# Instalar dependencias y ejecutar PHP-FPM
-CMD composer install --no-cache && composer dump-autoload && find "$PWD" -type f -exec chmod 644 {} \; && find "$PWD" -type d -exec chmod 755 {} \; && php-fpm
+# Usar entrypoint para manejar composer install y permisos
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

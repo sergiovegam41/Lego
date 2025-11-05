@@ -1,0 +1,58 @@
+# ================================================
+# LEGO Framework - App + Webserver (PRODUCTION)
+# ================================================
+# Servicio principal de la aplicación PHP con Nginx
+# Red: lego-network (externa)
+#
+# IMPORTANTE: Esta versión NO usa volúmenes para el código.
+# El código está empaquetado en la imagen Docker.
+# Solo se persisten storage y cache.
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    working_dir: /var/www/html
+    container_name: app
+    networks:
+      - lego-network
+    restart: unless-stopped
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+      # IMPORTANT: Set this in Dokploy environment variables
+      - HOST_NAME=${HOST_NAME}
+    volumes:
+      # Solo persistir directorios que cambian en runtime
+      - app-storage:/var/www/html/storage
+      - app-cache:/var/www/html/bootstrap/cache
+
+  webserver:
+    build:
+      context: ..
+      dockerfile: Dockerfile.nginx
+    container_name: webserver
+    networks:
+      - lego-network
+    restart: unless-stopped
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      # IMPORTANT: Configure the domain in Dokploy or replace manually
+      - "traefik.http.routers.lego.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.lego.entrypoints=websecure"
+      - "traefik.http.routers.lego.tls=true"
+      - "traefik.http.routers.lego.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lego.loadbalancer.server.port=80"
+    depends_on:
+      app:
+        condition: service_started
+
+networks:
+  lego-network:
+    external: true
+
+volumes:
+  app-storage:
+  app-cache:

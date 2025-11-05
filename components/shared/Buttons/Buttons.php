@@ -7,7 +7,8 @@
  */
 
 // IconButton
-if (!class_exists('Components\Shared\Buttons\Buttons\IconButton')) {
+// NOTA: Solo crear alias si la clase fuente existe para evitar warnings
+if (!class_exists('Components\Shared\Buttons\Buttons\IconButton') && class_exists(\Components\Shared\Buttons\IconButtonComponent\IconButtonComponent::class)) {
     class_alias(
         \Components\Shared\Buttons\IconButtonComponent\IconButtonComponent::class,
         'Components\Shared\Buttons\Buttons\IconButton'

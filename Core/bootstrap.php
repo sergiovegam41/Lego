@@ -1,4 +1,10 @@
 <?php
+// Prevent multiple inclusions
+if (defined('LEGO_BOOTSTRAP_LOADED')) {
+    return;
+}
+define('LEGO_BOOTSTRAP_LOADED', true);
+
 // Configure error reporting - Hide deprecation warnings in production
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 

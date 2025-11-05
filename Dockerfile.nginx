@@ -1,0 +1,26 @@
+# ================================================
+# LEGO Framework - Nginx Dockerfile for Production
+# ================================================
+# This Dockerfile builds an nginx container with the application code
+# embedded, allowing it to serve static files and proxy to PHP-FPM
+
+FROM nginx:alpine
+
+# Install basic tools
+RUN apk add --no-cache bash
+
+# Copy application code
+COPY . /var/www/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Set proper permissions
+RUN chown -R nginx:nginx /var/www/html && \
+    chmod -R 755 /var/www/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,47 @@
+# ================================================
+# LEGO Framework - PostgreSQL + pgAdmin
+# ================================================
+# Base de datos PostgreSQL con interfaz de administración
+# Red: lego-network (externa)
+
+services:
+  db:
+    image: postgres:latest
+    container_name: lego-postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-lego-postgresql-db}
+      POSTGRES_USER: ${DB_USERNAME:-lego}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-1224}
+      POSTGRES_MULTIPLE_DATABASES: "${N8N_DB_DATABASE:-n8n}"
+    volumes:
+      - lego-postgres-db-data:/var/lib/postgresql/data
+      - ../docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - lego-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-lego}"]
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: lego-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-8081}:80"
+    networks:
+      - lego-network
+    depends_on:
+      - db
+
+networks:
+  lego-network:
+    external: true
+
+volumes:
+  lego-postgres-db-data:
