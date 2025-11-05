@@ -33,8 +33,9 @@ if [ ! -d "/var/www/html/vendor" ] || [ -z "$(ls -A /var/www/html/vendor 2>/dev/
     echo "[Entrypoint] Instalando dependencias de Composer..."
     composer install --no-interaction --optimize-autoloader --no-dev
 else
-    echo "[Entrypoint] Dependencias ya instaladas, ejecutando dump-autoload..."
-    composer dump-autoload --optimize --no-dev
+    echo "[Entrypoint] Vendor existe, regenerando autoloader..."
+    # Forzar regeneración completa del autoloader para evitar problemas de caché
+    composer dump-autoload --optimize --no-dev --classmap-authoritative
 fi
 
 # Establecer permisos correctos
