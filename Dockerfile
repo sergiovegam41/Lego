@@ -1,5 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
-# Build version: 2025-11-05-09 (Production-ready with case-sensitivity fixes)
+# Build version: 2025-11-05-10 (Fix RegisterDynamicComponents with class_exists)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
