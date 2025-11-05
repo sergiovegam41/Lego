@@ -49,6 +49,16 @@ class InitCommand extends CoreCommand
 
         $this->line("");
 
+        // Execute all analysis commands
+        $this->info("📊 Executing analysis commands...");
+        $analyzeAllCommand = new AnalyzeAllCommand($this->arguments);
+        if (!$analyzeAllCommand->execute()) {
+            $this->warning("⚠️  Some analysis commands failed (MongoDB may not be running or no data available)");
+            // No marcamos como error ya que puede no haber datos aún
+        }
+
+        $this->line("");
+
         // Final status
         if ($success) {
             $this->success("✅ Lego Framework initialized successfully!");
