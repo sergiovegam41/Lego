@@ -4,8 +4,9 @@
 # Servicio principal de la aplicación PHP con Nginx
 # Red: lego-network (externa)
 #
-# IMPORTANTE: Esta versión usa volúmenes nombrados compartidos.
-# El código está en la imagen, los contenedores comparten archivos estáticos.
+# IMPORTANTE: Esta versión NO usa volúmenes para el código.
+# El código está empaquetado en la imagen Docker.
+# Solo se persisten storage y cache.
 
 services:
   app:
@@ -20,19 +21,23 @@ services:
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     volumes:
-      - app-code:/var/www/html
+      # Solo persistir directorios que cambian en runtime
+      - app-storage:/var/www/html/storage
+      - app-cache:/var/www/html/bootstrap/cache
 
   webserver:
     image: nginx:alpine
-    volumes:
-      - app-code:/var/www/html:ro
-      - ../nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    ports:
-      - "8080:80"
     container_name: webserver
     networks:
       - lego-network
     restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ../nginx.conf:/etc/nginx/http.d/default.conf:ro
+    volumes_from:
+      # Compartir todo el filesystem de app (read-only)
+      - app:ro
     depends_on:
       app:
         condition: service_started
@@ -42,4 +47,5 @@ networks:
     external: true
 
 volumes:
-  app-code:
+  app-storage:
+  app-cache:
