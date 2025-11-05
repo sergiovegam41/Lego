@@ -68,3 +68,50 @@ Flight::route('GET /', function () {
     LegoHelpers::redirect('admin');
 });
 
+/**
+ * Proxy para archivos de MinIO
+ * Sirve archivos desde MinIO a través del backend
+ * Ejemplo: /storage/lego-uploads/categories/images/file.jpg
+ */
+Flight::route('GET /storage/@path+', function ($path) {
+    try {
+        $storageService = new \Core\Services\Storage\StorageService();
+
+        // La ruta viene como array, unirla
+        $fullPath = is_array($path) ? implode('/', $path) : $path;
+
+        // Obtener el archivo de MinIO
+        $fileContent = $storageService->get($fullPath);
+
+        if (!$fileContent) {
+            http_response_code(404);
+            echo '404 - File not found';
+            return;
+        }
+
+        // Detectar tipo MIME
+        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'svg' => 'image/svg+xml',
+            'pdf' => 'application/pdf',
+        ];
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
+        // Headers para caché
+        header('Content-Type: ' . $mimeType);
+        header('Cache-Control: public, max-age=31536000, immutable');
+        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
+
+        echo $fileContent;
+
+    } catch (\Exception $e) {
+        http_response_code(500);
+        echo '500 - Error: ' . $e->getMessage();
+    }
+});
+

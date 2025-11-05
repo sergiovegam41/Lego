@@ -66,8 +66,17 @@ class StorageConfig
     {
         // En desarrollo, usar localhost. En producción, usar el dominio real
         $publicHost = env('MINIO_PUBLIC_HOST', 'localhost');
-        $protocol = $this->useSSL ? 'https' : 'http';
-        return "{$protocol}://{$publicHost}:{$this->port}";
+        $publicPort = env('MINIO_PUBLIC_PORT', $this->port);
+        $publicUseSSL = env('MINIO_PUBLIC_USE_SSL', 'false') === 'true';
+        $protocol = $publicUseSSL ? 'https' : 'http';
+
+        // Si el puerto es estándar (80 para HTTP, 443 para HTTPS), omitirlo
+        $portSuffix = '';
+        if (!(($protocol === 'http' && $publicPort == '80') || ($protocol === 'https' && $publicPort == '443'))) {
+            $portSuffix = ":{$publicPort}";
+        }
+
+        return "{$protocol}://{$publicHost}{$portSuffix}";
     }
 
     /**
@@ -75,11 +84,13 @@ class StorageConfig
      */
     public function getPublicUrl(string $path): string
     {
-        $endpoint = $this->getPublicEndpoint();
+        // Usar el proxy del backend para servir archivos
+        // Esto evita problemas de CORS y acceso directo a MinIO
+        $hostName = env('HOST_NAME', 'http://localhost');
         $bucket = $this->bucket;
         $cleanPath = ltrim($path, '/');
 
-        return "{$endpoint}/{$bucket}/{$cleanPath}";
+        return "{$hostName}/storage/{$bucket}/{$cleanPath}";
     }
 
     // Getters
