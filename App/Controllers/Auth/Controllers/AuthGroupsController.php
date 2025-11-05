@@ -21,13 +21,6 @@ class AuthGroupsController extends CoreController
 
   public function __construct($group, $accion)
   {
-    // Debug: verificar si la clase existe
-    if (!class_exists('Core\Providers\Request')) {
-      error_log("Request class not found. Checking file existence:");
-      error_log("File exists: " . (file_exists(__DIR__ . '/../../../Core/Providers/Request.php') ? 'YES' : 'NO'));
-      error_log("Autoload files: " . print_r(get_included_files(), true));
-    }
-
     $request = new Request();
     $this->getMethod(new AuthRequestDTO(auth_grup_name: $group, request: $request, auth_accion: $accion ), $accion);
   }

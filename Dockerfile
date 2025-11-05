@@ -49,6 +49,9 @@ RUN mkdir -p /var/www/html/storage/logs \
 # Copiar el código del proyecto al contenedor
 COPY --chown=appuser:appuser . .
 
+# Instalar dependencias de Composer ANTES de cambiar a appuser
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
 # Establecer permisos
 RUN chown -R appuser:appuser /var/www/html /home/appuser/.composer \
     && chmod -R 755 /var/www/html \

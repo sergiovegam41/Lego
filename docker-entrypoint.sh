@@ -27,9 +27,14 @@ if [ ! -f "/var/www/html/.env" ]; then
     fi
 fi
 
-# Siempre instalar/actualizar dependencias de Composer
-echo "[Entrypoint] Instalando/actualizando dependencias de Composer..."
-composer install --no-interaction --optimize-autoloader --no-dev
+# Verificar autoloader de Composer (las dependencias ya están instaladas en la imagen)
+if [ -f "/var/www/html/vendor/autoload.php" ]; then
+    echo "[Entrypoint] Vendor autoload encontrado, regenerando para volúmenes montados..."
+    composer dump-autoload --optimize --no-dev
+else
+    echo "[Entrypoint] Vendor no encontrado, instalando dependencias..."
+    composer install --no-interaction --optimize-autoloader --no-dev
+fi
 
 # Establecer permisos correctos
 echo "[Entrypoint] Estableciendo permisos..."
