@@ -20,7 +20,8 @@
           "Core\\Providers\\": "Core/providers/",
           "public\\":"public/",
           "components\\":"components/",
-          "Components\\":"components/"
+          "Components\\":"components/",
+          "Components\\Shared\\":"components/shared/"
         },
         "files": [
           "components/shared/Forms/Forms.php",
