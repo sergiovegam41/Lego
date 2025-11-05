@@ -34,23 +34,30 @@ services:
     container_name: webserver
     networks:
       - lego-network
+      - dokploy-network
     restart: unless-stopped
     expose:
       - "80"
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
       # IMPORTANT: Configure the domain in Dokploy or replace manually
       - "traefik.http.routers.lego.rule=Host(`${DOMAIN_NAME}`)"
       - "traefik.http.routers.lego.entrypoints=websecure"
       - "traefik.http.routers.lego.tls=true"
       - "traefik.http.routers.lego.tls.certresolver=letsencrypt"
       - "traefik.http.services.lego.loadbalancer.server.port=80"
+      # Override Dokploy's auto-generated labels
+      - "traefik.http.services.florafresh-backend-kuxl8j-5-websecure.loadbalancer.server.port=80"
+      - "traefik.http.services.florafresh-backend-kuxl8j-5-web.loadbalancer.server.port=80"
     depends_on:
       app:
         condition: service_started
 
 networks:
   lego-network:
+    external: true
+  dokploy-network:
     external: true
 
 volumes:
