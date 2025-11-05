@@ -194,7 +194,8 @@ class TableComponent extends CoreComponent {
             'id' => $this->id,
             'jsId' => $jsId,
             'columnDefs' => $columnDefs,
-            'rowData' => $this->rowData,
+            // Solo pasar rowData si NO es modo server-side
+            'rowData' => $this->serverSide ? [] : $this->rowData,
             'gridOptions' => $gridOptions,
             'callbacks' => $this->buildCallbacks(),
             'serverSide' => $this->serverSide,
