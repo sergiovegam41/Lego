@@ -18,13 +18,13 @@
           "App\\": "App/",
           "Core\\": "Core/",
           "public\\":"public/",
-          "Components\\":"Components/"
+          "components\\":"components/"
         },
         "files": [
-          "Components/Shared/Forms/Forms.php",
-          "Components/Shared/Essentials/Essentials.php",
-          "Components/Shared/Buttons/Buttons.php",
-          "Components/Shared/Navigation/Navigation.php"
+          "components/shared/Forms/Forms.php",
+          "components/shared/Essentials/Essentials.php",
+          "components/shared/Buttons/Buttons.php",
+          "components/shared/Navigation/Navigation.php"
         ]
       },
     "scripts": {

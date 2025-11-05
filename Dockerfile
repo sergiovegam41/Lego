@@ -1,5 +1,5 @@
 # Utiliza la imagen oficial de PHP con FPM
-# Build version: 2025-11-05-03 (case-sensitive fix: Components/Shared + Providers)
+# Build version: 2025-11-05-04 (all directories lowercase for Linux compatibility)
 FROM php:8.3-fpm
 
 # Instala dependencias del sistema necesarias
