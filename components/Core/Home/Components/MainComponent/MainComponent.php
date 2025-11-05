@@ -59,13 +59,13 @@ class MainComponent extends CoreComponent
                         new MenuItemDto(
                             id: "2-1",
                             name: "Ver Categorías",
-                            url: $HOST_NAME . '/categories',
+                            url: $HOST_NAME . '/component/categories',
                             iconName: "list-outline"
                         ),
                         new MenuItemDto(
                             id: "2-2",
                             name: "Crear Categoría",
-                            url: $HOST_NAME . '/categories/create',
+                            url: $HOST_NAME . '/component/categories/create',
                             iconName: "add-circle-outline"
                         )
                     ]
@@ -79,13 +79,13 @@ class MainComponent extends CoreComponent
                         new MenuItemDto(
                             id: "3-1",
                             name: "Ver Flores",
-                            url: $HOST_NAME . '/flowers',
+                            url: $HOST_NAME . '/component/flowers',
                             iconName: "list-outline"
                         ),
                         new MenuItemDto(
                             id: "3-2",
                             name: "Crear Flor",
-                            url: $HOST_NAME . '/flowers/create',
+                            url: $HOST_NAME . '/component/flowers/create',
                             iconName: "add-circle-outline"
                         )
                     ]
