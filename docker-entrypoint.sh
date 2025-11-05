@@ -29,8 +29,8 @@ fi
 
 # Verificar autoloader de Composer (las dependencias ya están instaladas en la imagen)
 if [ -f "/var/www/html/vendor/autoload.php" ]; then
-    echo "[Entrypoint] Vendor autoload encontrado, regenerando para volúmenes montados..."
-    composer dump-autoload --optimize --no-dev
+    echo "[Entrypoint] Vendor autoload encontrado, usando el de la imagen..."
+    # NO regenerar autoloader - usar el que viene con la imagen
 else
     echo "[Entrypoint] Vendor no encontrado, instalando dependencias..."
     composer install --no-interaction --optimize-autoloader --no-dev
