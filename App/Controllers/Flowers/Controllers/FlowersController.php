@@ -279,10 +279,22 @@ class FlowersController extends CoreController
                 error_log("[FlowersController] Total de asociaciones creadas: {$associatedCount}");
             }
 
+            // Construir respuesta manual para evitar problemas de serialización
+            $flowerData = [
+                'id' => $flower->id,
+                'name' => $flower->name,
+                'description' => $flower->description,
+                'price' => $flower->price,
+                'category_id' => $flower->category_id,
+                'is_active' => $flower->is_active,
+                'created_at' => $flower->created_at,
+                'updated_at' => $flower->updated_at
+            ];
+
             Response::json(StatusCodes::HTTP_CREATED, (array)new ResponseDTO(
                 true,
                 'Flor creada correctamente',
-                $flower->fresh()->load('category')->toArray()
+                $flowerData
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
@@ -370,10 +382,22 @@ class FlowersController extends CoreController
                 error_log("[FlowersController] Total de asociaciones creadas: {$associatedCount}");
             }
 
+            // Construir respuesta manual para evitar problemas de serialización
+            $flowerData = [
+                'id' => $flower->id,
+                'name' => $flower->name,
+                'description' => $flower->description,
+                'price' => $flower->price,
+                'category_id' => $flower->category_id,
+                'is_active' => $flower->is_active,
+                'created_at' => $flower->created_at,
+                'updated_at' => $flower->updated_at
+            ];
+
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
                 'Flor actualizada correctamente',
-                $flower->fresh()->load('category')->toArray()
+                $flowerData
             ));
         } catch (\Exception $e) {
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
