@@ -38,7 +38,7 @@ Flight::route('GET /landing', function () {
         }
 
         // 2. Popular Products (Featured Products with specific tags)
-        $featuredProducts = FeaturedProduct::with(['product.images'])
+        $featuredProducts = FeaturedProduct::with(['product'])
             ->where('is_active', true)
             ->whereIn('tag', ['most-popular', 'best-seller'])
             ->orderBy('sort_order', 'asc')
@@ -50,7 +50,6 @@ Flight::route('GET /landing', function () {
             if (!$featured->product) continue;
 
             $product = $featured->product;
-            $firstImage = $product->images->first();
 
             $popularProductsData[] = [
                 'id' => 'prod-' . str_pad($product->id, 3, '0', STR_PAD_LEFT),
@@ -58,7 +57,8 @@ Flight::route('GET /landing', function () {
                 'description' => $product->description ?? 'Hermoso arreglo floral',
                 'price' => (float) $product->price,
                 'currency' => 'USD',
-                'image' => $firstImage ? $firstImage->url : null,
+                'image' => $product->primary_image,
+                'images' => $product->all_images,
                 'tag' => $featured->tag === 'best-seller' ? 'Más Vendido' : null,
                 'available' => $product->is_active
             ];
@@ -67,7 +67,7 @@ Flight::route('GET /landing', function () {
         // 3. Categories
         $categories = Category::where('is_active', true)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'description']);
+            ->get();
 
         $categoriesData = [];
         foreach ($categories as $category) {
@@ -75,7 +75,9 @@ Flight::route('GET /landing', function () {
                 'id' => 'cat-' . str_pad($category->id, 3, '0', STR_PAD_LEFT),
                 'name' => $category->name,
                 'description' => $category->description,
-                'slug' => strtolower(str_replace(' ', '-', $category->name))
+                'slug' => strtolower(str_replace(' ', '-', $category->name)),
+                'image' => $category->primary_image,
+                'images' => $category->all_images
             ];
         }
 

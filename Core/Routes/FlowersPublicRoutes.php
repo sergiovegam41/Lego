@@ -56,7 +56,7 @@ Flight::route('GET /flowers-catalog', function () {
             : 'asc';
 
         // Build query
-        $query = Flower::with(['category', 'images'])
+        $query = Flower::with(['category'])
             ->where('is_active', true);
 
         // Apply category filter
@@ -84,12 +84,14 @@ Flight::route('GET /flowers-catalog', function () {
         // Format response
         $flowersData = [];
         foreach ($flowers as $flower) {
+            // Usar los atributos computados del modelo que obtienen las imágenes de FileService
+            $allImages = $flower->all_images;
             $images = [];
-            foreach ($flower->images as $image) {
+            foreach ($allImages as $image) {
                 $images[] = [
-                    'id' => $image->id,
-                    'url' => $image->url,
-                    'thumbnail' => $image->thumbnail ?? $image->url
+                    'url' => $image['url'],
+                    'original_name' => $image['original_name'],
+                    'is_primary' => $image['is_primary']
                 ];
             }
 
@@ -104,7 +106,7 @@ Flight::route('GET /flowers-catalog', function () {
                     'name' => $flower->category->name
                 ] : null,
                 'images' => $images,
-                'main_image' => !empty($images) ? $images[0]['url'] : null,
+                'main_image' => $flower->primary_image,
                 'available' => $flower->is_active
             ];
         }
@@ -170,7 +172,7 @@ Flight::route('GET /flower-detail/@id', function ($id) {
             return;
         }
 
-        $flower = Flower::with(['category', 'images'])
+        $flower = Flower::with(['category'])
             ->where('id', (int)$id)
             ->where('is_active', true)
             ->first();
@@ -183,13 +185,14 @@ Flight::route('GET /flower-detail/@id', function ($id) {
             return;
         }
 
-        // Format images
+        // Format images usando los atributos computados del modelo
+        $allImages = $flower->all_images;
         $images = [];
-        foreach ($flower->images as $image) {
+        foreach ($allImages as $image) {
             $images[] = [
-                'id' => $image->id,
-                'url' => $image->url,
-                'thumbnail' => $image->thumbnail ?? $image->url
+                'url' => $image['url'],
+                'original_name' => $image['original_name'],
+                'is_primary' => $image['is_primary']
             ];
         }
 
@@ -209,7 +212,7 @@ Flight::route('GET /flower-detail/@id', function ($id) {
                     'description' => $flower->category->description
                 ] : null,
                 'images' => $images,
-                'main_image' => !empty($images) ? $images[0]['url'] : null,
+                'main_image' => $flower->primary_image,
                 'available' => $flower->is_active,
                 'created_at' => $flower->created_at,
                 'updated_at' => $flower->updated_at
