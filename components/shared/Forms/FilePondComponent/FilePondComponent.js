@@ -247,7 +247,7 @@ async function initializeFilePond() {
 
             // Cargar imágenes iniciales (si existen)
             files: config.initialImages.map(img => ({
-                source: img.id || img.url,
+                source: img.url, // IMPORTANTE: Usar URL para que fetch() funcione
                 options: {
                     type: 'local',
                     file: {
@@ -256,7 +256,8 @@ async function initializeFilePond() {
                         type: img.mime_type
                     },
                     metadata: {
-                        poster: img.url
+                        poster: img.url,
+                        imageId: img.id // Guardar el ID en metadata para recuperarlo después
                     }
                 }
             }))
@@ -266,6 +267,13 @@ async function initializeFilePond() {
         container._filePondInstance = pond;
 
         // Actualizar hidden input con IDs cuando cambien los archivos
+        pond.on('addfile', (error, file) => {
+            if (!error) {
+                // Actualizar IDs cuando se agregue un archivo (incluyendo iniciales)
+                updateImageIds(config.id);
+            }
+        });
+
         pond.on('processfile', (error, file) => {
             if (!error) {
                 updateImageIds(config.id);
@@ -275,6 +283,13 @@ async function initializeFilePond() {
         pond.on('removefile', () => {
             updateImageIds(config.id);
         });
+
+        // Actualizar IDs iniciales después de cargar las imágenes
+        if (config.initialImages && config.initialImages.length > 0) {
+            setTimeout(() => {
+                updateImageIds(config.id);
+            }, 500);
+        }
 
         console.log('[FilePondComponent] FilePond inicializado:', config.id);
     });
@@ -307,7 +322,14 @@ function updateImageIds(componentId) {
 
             // Intentar obtener el ID de múltiples fuentes:
 
-            // 1. Primero intentar serverId (imágenes recién subidas)
+            // 1. PRIORIDAD: metadata.imageId (imágenes cargadas desde BD con initialImages)
+            const metadata = file.getMetadata();
+            if (metadata && metadata.imageId) {
+                console.log('[FilePondComponent] ID extraído de metadata.imageId:', metadata.imageId);
+                return metadata.imageId.toString();
+            }
+
+            // 2. serverId (imágenes recién subidas)
             if (file.serverId) {
                 // Convertir a string para poder usar startsWith
                 const serverIdStr = String(file.serverId);
@@ -317,7 +339,7 @@ function updateImageIds(componentId) {
                 }
             }
 
-            // 2. Intentar source si es un número o string (pero no URL)
+            // 3. source si es un número o string (pero no URL)
             if (file.source) {
                 const sourceStr = String(file.source);
                 // Si source no es un objeto File y no es una URL, es probablemente un ID
@@ -325,13 +347,6 @@ function updateImageIds(componentId) {
                     console.log('[FilePondComponent] ID extraído de source:', file.source);
                     return file.source;
                 }
-            }
-
-            // 3. Intentar metadata.imageId (imágenes cargadas de BD)
-            const metadata = file.getMetadata();
-            if (metadata && metadata.imageId) {
-                console.log('[FilePondComponent] ID extraído de metadata:', metadata.imageId);
-                return metadata.imageId.toString();
             }
 
             // 4. Si serverId es una URL, intentar extraer el ID del filename
