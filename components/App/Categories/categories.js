@@ -139,7 +139,7 @@ function openEditCategoryModule(categoryId) {
     // Si no existe, crear nueva ventana
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '2-1',
+        parentMenuId: '2',
         label: 'Editar Categoría',
         url: moduleUrl,
         icon: 'create-outline'

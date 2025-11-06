@@ -147,7 +147,7 @@ function openEditFlowerModule(flowerId) {
     // Si no existe, crear nueva ventana
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '3-1',
+        parentMenuId: '3',
         label: 'Editar Flor',
         url: moduleUrl,
         icon: 'create-outline'
