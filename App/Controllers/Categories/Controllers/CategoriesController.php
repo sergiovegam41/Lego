@@ -51,15 +51,53 @@ class CategoriesController extends CoreController
         try {
             $categories = Category::withCount('flowers')
                 ->orderBy('created_at', 'desc')
-                ->get()
-                ->toArray();
+                ->get();
+
+            // Construir respuesta manualmente incluyendo imágenes
+            $categoriesData = $categories->map(function($category) {
+                $data = [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'description' => $category->description,
+                    'image_url' => $category->image_url,
+                    'is_active' => $category->is_active,
+                    'flowers_count' => $category->flowers_count ?? 0,
+                    'created_at' => $category->created_at,
+                    'updated_at' => $category->updated_at,
+                    'primary_image' => null
+                ];
+
+                // Intentar cargar imagen principal para la tabla
+                try {
+                    $fileAssociations = $this->fileService->getEntityFiles('Category', $category->id);
+                    if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                        $primaryAssoc = $fileAssociations->firstWhere('is_primary', true);
+                        if ($primaryAssoc && isset($primaryAssoc->file)) {
+                            $data['primary_image'] = $primaryAssoc->file->url;
+                        } else {
+                            // Si no hay principal, usar la primera
+                            $firstAssoc = $fileAssociations->first();
+                            if ($firstAssoc && isset($firstAssoc->file)) {
+                                $data['primary_image'] = $firstAssoc->file->url;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log("[CategoriesController] Error loading image for category {$category->id}: " . $e->getMessage());
+                }
+
+                return $data;
+            })->toArray();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
                 'Categorías obtenidas correctamente',
-                $categories
+                $categoriesData
             ));
         } catch (\Exception $e) {
+            error_log("[CategoriesController] Error in list(): " . $e->getMessage());
+            error_log("[CategoriesController] Stack trace: " . $e->getTraceAsString());
+
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
                 'Error al obtener categorías: ' . $e->getMessage(),
@@ -86,7 +124,7 @@ class CategoriesController extends CoreController
                 return;
             }
 
-            $category = Category::with('flowers')->find($id);
+            $category = Category::find($id);
 
             if (!$category) {
                 Response::json(StatusCodes::HTTP_NOT_FOUND, (array)new ResponseDTO(
@@ -97,38 +135,43 @@ class CategoriesController extends CoreController
                 return;
             }
 
-            // Obtener datos de la categoría sin appends para evitar errores
-            $categoryData = $category->makeHidden(['primary_image'])->toArray();
+            // Construir respuesta manualmente para evitar problemas de serialización
+            $categoryData = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'description' => $category->description,
+                'image_url' => $category->image_url,
+                'is_active' => $category->is_active,
+                'created_at' => $category->created_at,
+                'updated_at' => $category->updated_at,
+                'images' => []
+            ];
 
             // Cargar imágenes asociadas usando FileService
-            $categoryData['images'] = [];
             try {
-                if (class_exists('Core\Services\File\FileService')) {
-                    $fileService = new FileService();
-                    $fileAssociations = $fileService->getEntityFiles('Category', $id);
+                $fileAssociations = $this->fileService->getEntityFiles('Category', $id);
 
-                    if ($fileAssociations && !$fileAssociations->isEmpty()) {
-                        // Formatear imágenes
-                        $categoryData['images'] = $fileAssociations->map(function($assoc) {
-                            if (!$assoc || !isset($assoc->file)) {
-                                return null;
-                            }
-                            $file = $assoc->file;
-                            return [
-                                'id' => $file->id ?? null,
-                                'url' => $file->url ?? null,
-                                'original_name' => $file->original_name ?? 'image.jpg',
-                                'size' => $file->size ?? 0,
-                                'mime_type' => $file->mime_type ?? 'image/jpeg',
-                                'is_primary' => ($assoc->metadata['is_primary'] ?? false) === true
-                            ];
-                        })->filter()->values()->toArray();
-                    }
+                if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                    // Formatear imágenes
+                    $categoryData['images'] = $fileAssociations->map(function($assoc) {
+                        if (!$assoc || !isset($assoc->file)) {
+                            return null;
+                        }
+                        $file = $assoc->file;
+                        return [
+                            'id' => $file->id ?? null,
+                            'url' => $file->url ?? null,
+                            'original_name' => $file->original_name ?? 'image.jpg',
+                            'size' => $file->size ?? 0,
+                            'mime_type' => $file->mime_type ?? 'image/jpeg',
+                            'is_primary' => ($assoc->metadata['is_primary'] ?? false) === true
+                        ];
+                    })->filter()->values()->toArray();
                 }
             } catch (\Exception $e) {
                 // Si hay error cargando imágenes, usar array vacío
-                error_log("Error loading images for category {$id}: " . $e->getMessage());
-                error_log("Stack trace: " . $e->getTraceAsString());
+                error_log("[CategoriesController] Error loading images for category {$id}: " . $e->getMessage());
+                error_log("[CategoriesController] Stack trace: " . $e->getTraceAsString());
                 $categoryData['images'] = [];
             }
 
@@ -138,6 +181,9 @@ class CategoriesController extends CoreController
                 $categoryData
             ));
         } catch (\Exception $e) {
+            error_log("[CategoriesController] Error in get(): " . $e->getMessage());
+            error_log("[CategoriesController] Stack trace: " . $e->getTraceAsString());
+
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
                 'Error al obtener categoría: ' . $e->getMessage(),
