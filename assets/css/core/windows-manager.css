@@ -59,7 +59,7 @@ body {
   /* Fade-in animation for modules */
   .module-container.module-fade-in {
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
   }
   .module-container.module-visible {
     opacity: 1 !important;

@@ -344,13 +344,14 @@ if (typeof window.legoWindowManager === 'undefined') {
             }
 
             // Get parent's submenu or create insertion point
-            let submenu = parentMenuItem.parentElement.querySelector('.custom-submenu');
+            // parentMenuItem is the .custom-menu-section, so search directly within it
+            let submenu = parentMenuItem.querySelector('.custom-submenu');
             if (!submenu) {
                 // If parent doesn't have a submenu, create one
                 submenu = document.createElement('div');
                 submenu.className = 'custom-submenu';
                 submenu.style.display = 'block'; // Ensure it's visible
-                parentMenuItem.parentElement.appendChild(submenu);
+                parentMenuItem.appendChild(submenu);
             }
 
             // Determine icon to use

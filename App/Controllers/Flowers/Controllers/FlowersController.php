@@ -102,7 +102,7 @@ class FlowersController extends CoreController
             }
 
             // Obtener datos de la flor sin appends para evitar errores
-            $flowerData = $flower->makeHidden(['primary_image'])->toArray();
+            $flowerData = $flower->makeHidden(['primary_image', 'all_images'])->toArray();
 
             // Cargar imágenes asociadas usando FileService
             $flowerData['images'] = [];
