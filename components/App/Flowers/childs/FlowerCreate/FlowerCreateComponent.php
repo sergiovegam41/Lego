@@ -62,6 +62,7 @@ class FlowerCreateComponent extends CoreComponent
             label: "Imágenes de la Flor",
             path: "flowers/images/",
             maxFiles: 10,
+            maxFileSize: 26214400, // 25MB para imágenes HD
             allowReorder: true,
             allowMultiple: true,
             required: false

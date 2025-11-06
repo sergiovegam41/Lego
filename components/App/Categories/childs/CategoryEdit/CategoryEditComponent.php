@@ -85,6 +85,7 @@ class CategoryEditComponent extends CoreComponent
             label: "Imagen de la Categoría",
             path: "categories/images/",
             maxFiles: 1,
+            maxFileSize: 26214400, // 25MB para imágenes HD
             allowReorder: false,
             allowMultiple: false,
             required: false,
