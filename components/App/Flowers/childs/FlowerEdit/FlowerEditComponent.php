@@ -133,7 +133,7 @@ class FlowerEditComponent extends CoreComponent
             </div>
 
             <div class="flower-form__loading" id="flower-form-loading">
-                Cargando flor...
+                🌸 Cargando información de la flor...
             </div>
 
             <form class="flower-form__form" id="flower-edit-form" style="display: none;">

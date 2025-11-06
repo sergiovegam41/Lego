@@ -104,7 +104,7 @@ class FeaturedProductEditComponent extends CoreComponent
             </div>
 
             <div class="featured-product-form__loading" id="featured-product-form-loading">
-                Cargando producto destacado...
+                ⭐ Cargando arreglo floral destacado...
             </div>
 
             <form id="featured-product-edit-form" class="featured-product-form__form" style="display: none;">

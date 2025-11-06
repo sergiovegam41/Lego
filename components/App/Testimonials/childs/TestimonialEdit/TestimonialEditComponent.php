@@ -60,7 +60,7 @@ class TestimonialEditComponent extends CoreComponent
             </div>
 
             <div class="testimonial-form__loading" id="testimonial-form-loading">
-                Cargando testimonio...
+                💬 Cargando testimonio de cliente...
             </div>
 
             <form class="testimonial-form__form" id="testimonial-edit-form" style="display: none;">

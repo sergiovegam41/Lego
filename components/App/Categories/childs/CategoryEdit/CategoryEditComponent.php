@@ -99,7 +99,7 @@ class CategoryEditComponent extends CoreComponent
             </div>
 
             <div class="category-form__loading" id="category-form-loading">
-                Cargando categoría...
+                🌺 Cargando categoría de flores...
             </div>
 
             <form class="category-form__form" id="category-edit-form" style="display: none;">
