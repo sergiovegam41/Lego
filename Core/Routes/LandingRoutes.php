@@ -37,10 +37,10 @@ Flight::route('GET /landing', function () {
             ];
         }
 
-        // 2. Popular Products (Featured Products with specific tags)
+        // 2. Popular Products (All Featured Products, tag is optional)
+        // IMPORTANTE: No filtrar por tag, mostrar todos los productos destacados activos
         $featuredProducts = FeaturedProduct::with(['product'])
             ->where('is_active', true)
-            ->whereIn('tag', ['most-popular', 'best-seller'])
             ->orderBy('sort_order', 'asc')
             ->limit(6)
             ->get();
@@ -59,7 +59,7 @@ Flight::route('GET /landing', function () {
                 'currency' => 'USD',
                 'image' => $product->primary_image,
                 'images' => $product->all_images,
-                'tag' => $featured->tag === 'best-seller' ? 'Más Vendido' : null,
+                'tag' => $featured->tag ? (FeaturedProduct::getAvailableTags()[$featured->tag] ?? $featured->tag) : null,
                 'available' => $product->is_active
             ];
         }

@@ -72,10 +72,10 @@ class FeaturedProductEditComponent extends CoreComponent
 
         $tagSelect = new SelectComponent(
             id: "featured-product-tag",
-            label: "Tag/Etiqueta",
+            label: "Tag/Etiqueta (Opcional)",
             options: $tagOptions,
-            placeholder: "Selecciona un tag",
-            required: true,
+            placeholder: "Selecciona un tag (opcional)",
+            required: false,
             searchable: false
         );
 

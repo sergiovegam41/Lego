@@ -56,14 +56,20 @@ async function initializeForm() {
         console.log('[FeaturedProductEdit] Featured product data:', featuredProductData);
 
         // Populate form using activeModuleContainer
-        const productIdInput = activeModuleContainer.querySelector('#featured-product-product-id');
-        const tagInput = activeModuleContainer.querySelector('#featured-product-tag');
         const descriptionInput = activeModuleContainer.querySelector('#featured-product-description');
         const sortOrderInput = activeModuleContainer.querySelector('#featured-product-sort-order');
         const isActiveInput = activeModuleContainer.querySelector('#featured-product-is-active');
 
-        if (productIdInput) productIdInput.value = featuredProductData.product_id || '';
-        if (tagInput) tagInput.value = featuredProductData.tag || '';
+        // Set select values using LegoSelect API
+        if (window.LegoSelect) {
+            if (featuredProductData.product_id) {
+                window.LegoSelect.setValue('featured-product-product-id', featuredProductData.product_id.toString());
+            }
+            if (featuredProductData.tag) {
+                window.LegoSelect.setValue('featured-product-tag', featuredProductData.tag);
+            }
+        }
+
         if (descriptionInput) descriptionInput.value = featuredProductData.description || '';
         if (sortOrderInput) sortOrderInput.value = featuredProductData.sort_order || '0';
         if (isActiveInput) isActiveInput.checked = featuredProductData.is_active ?? true;
@@ -78,30 +84,24 @@ async function initializeForm() {
             e.stopPropagation();
             console.log('[FeaturedProductEdit] Form submitted');
 
-            // Get form data using activeModuleContainer
-            const productIdInput = activeModuleContainer.querySelector('#featured-product-product-id');
-            const tagInput = activeModuleContainer.querySelector('#featured-product-tag');
+            // Get form data using LegoSelect API and activeModuleContainer
             const descriptionInput = activeModuleContainer.querySelector('#featured-product-description');
             const sortOrderInput = activeModuleContainer.querySelector('#featured-product-sort-order');
             const isActiveInput = activeModuleContainer.querySelector('#featured-product-is-active');
 
-            if (!productIdInput || !tagInput) {
-                console.error('[FeaturedProductEdit] Required form fields not found');
-                return;
-            }
-
-            const productId = productIdInput.value.trim();
-            const tag = tagInput.value.trim();
+            // Get select values using LegoSelect API
+            const productId = window.LegoSelect?.getValue('featured-product-product-id') || '';
+            const tag = window.LegoSelect?.getValue('featured-product-tag') || '';
             const description = descriptionInput?.value.trim() || '';
             const sortOrder = parseInt(sortOrderInput?.value || '0');
             const isActive = isActiveInput?.checked ?? true;
 
-            // Validation
-            if (!productId || !tag) {
+            // Validation - tag is now optional
+            if (!productId) {
                 if (window.AlertService) {
-                    window.AlertService.error('Campos requeridos', 'Por favor completa todos los campos obligatorios');
+                    window.AlertService.error('Campo requerido', 'Por favor selecciona un producto');
                 } else {
-                    alert('Por favor completa todos los campos obligatorios');
+                    alert('Por favor selecciona un producto');
                 }
                 return;
             }
