@@ -55,15 +55,54 @@ class FlowersController extends CoreController
         try {
             $flowers = Flower::with('category')
                 ->orderBy('created_at', 'desc')
-                ->get()
-                ->toArray();
+                ->get();
+
+            // Construir respuesta manualmente incluyendo imágenes
+            $flowersData = $flowers->map(function($flower) {
+                $data = [
+                    'id' => $flower->id,
+                    'name' => $flower->name,
+                    'description' => $flower->description,
+                    'price' => $flower->price,
+                    'category_id' => $flower->category_id,
+                    'category_name' => $flower->category?->name,
+                    'is_active' => $flower->is_active,
+                    'created_at' => $flower->created_at,
+                    'updated_at' => $flower->updated_at,
+                    'primary_image' => null
+                ];
+
+                // Intentar cargar imagen principal para la tabla
+                try {
+                    $fileAssociations = $this->fileService->getEntityFiles('Flower', $flower->id);
+                    if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                        $primaryAssoc = $fileAssociations->firstWhere('is_primary', true);
+                        if ($primaryAssoc && isset($primaryAssoc->file)) {
+                            $data['primary_image'] = $primaryAssoc->file->url;
+                        } else {
+                            // Si no hay principal, usar la primera
+                            $firstAssoc = $fileAssociations->first();
+                            if ($firstAssoc && isset($firstAssoc->file)) {
+                                $data['primary_image'] = $firstAssoc->file->url;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log("[FlowersController] Error loading image for flower {$flower->id}: " . $e->getMessage());
+                }
+
+                return $data;
+            })->toArray();
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
                 true,
                 'Flores obtenidas correctamente',
-                $flowers
+                $flowersData
             ));
         } catch (\Exception $e) {
+            error_log("[FlowersController] Error in list(): " . $e->getMessage());
+            error_log("[FlowersController] Stack trace: " . $e->getTraceAsString());
+
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
                 'Error al obtener flores: ' . $e->getMessage(),
@@ -101,38 +140,45 @@ class FlowersController extends CoreController
                 return;
             }
 
-            // Obtener datos de la flor sin appends para evitar errores
-            $flowerData = $flower->makeHidden(['primary_image', 'all_images'])->toArray();
+            // Construir respuesta manualmente para evitar problemas de serialización
+            $flowerData = [
+                'id' => $flower->id,
+                'name' => $flower->name,
+                'description' => $flower->description,
+                'price' => $flower->price,
+                'category_id' => $flower->category_id,
+                'category_name' => $flower->category?->name,
+                'is_active' => $flower->is_active,
+                'created_at' => $flower->created_at,
+                'updated_at' => $flower->updated_at,
+                'images' => []
+            ];
 
             // Cargar imágenes asociadas usando FileService
-            $flowerData['images'] = [];
             try {
-                if (class_exists('Core\Services\File\FileService')) {
-                    $fileService = new FileService();
-                    $fileAssociations = $fileService->getEntityFiles('Flower', $id);
+                $fileAssociations = $this->fileService->getEntityFiles('Flower', $id);
 
-                    if ($fileAssociations && !$fileAssociations->isEmpty()) {
-                        // Formatear imágenes
-                        $flowerData['images'] = $fileAssociations->map(function($assoc) {
-                            if (!$assoc || !isset($assoc->file)) {
-                                return null;
-                            }
-                            $file = $assoc->file;
-                            return [
-                                'id' => $file->id ?? null,
-                                'url' => $file->url ?? null,
-                                'original_name' => $file->original_name ?? 'image.jpg',
-                                'size' => $file->size ?? 0,
-                                'mime_type' => $file->mime_type ?? 'image/jpeg',
-                                'is_primary' => ($assoc->metadata['is_primary'] ?? false) === true
-                            ];
-                        })->filter()->values()->toArray();
-                    }
+                if ($fileAssociations && !$fileAssociations->isEmpty()) {
+                    // Formatear imágenes
+                    $flowerData['images'] = $fileAssociations->map(function($assoc) {
+                        if (!$assoc || !isset($assoc->file)) {
+                            return null;
+                        }
+                        $file = $assoc->file;
+                        return [
+                            'id' => $file->id ?? null,
+                            'url' => $file->url ?? null,
+                            'original_name' => $file->original_name ?? 'image.jpg',
+                            'size' => $file->size ?? 0,
+                            'mime_type' => $file->mime_type ?? 'image/jpeg',
+                            'is_primary' => ($assoc->metadata['is_primary'] ?? false) === true
+                        ];
+                    })->filter()->values()->toArray();
                 }
             } catch (\Exception $e) {
                 // Si hay error cargando imágenes, usar array vacío
-                error_log("Error loading images for flower {$id}: " . $e->getMessage());
-                error_log("Stack trace: " . $e->getTraceAsString());
+                error_log("[FlowersController] Error loading images for flower {$id}: " . $e->getMessage());
+                error_log("[FlowersController] Stack trace: " . $e->getTraceAsString());
                 $flowerData['images'] = [];
             }
 
@@ -142,6 +188,9 @@ class FlowersController extends CoreController
                 $flowerData
             ));
         } catch (\Exception $e) {
+            error_log("[FlowersController] Error in get(): " . $e->getMessage());
+            error_log("[FlowersController] Stack trace: " . $e->getTraceAsString());
+
             Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
                 false,
                 'Error al obtener flor: ' . $e->getMessage(),
