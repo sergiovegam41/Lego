@@ -130,8 +130,23 @@ async function initializeFilePond() {
             // CRÍTICO: Eventos de ciclo de vida para retener archivos
             onprocessfile: (error, file) => {
                 if (!error) {
-                    console.log('[FilePondComponent] Archivo procesado, marcando como permanente:', file.serverId);
-                    // Marcar el archivo como "permanente" para que no se elimine
+                    console.log('[FilePondComponent] Archivo procesado exitosamente:', {
+                        filename: file.filename,
+                        serverId: file.serverId,
+                        status: file.status
+                    });
+
+                    // IMPORTANTE: Guardar el serverId en metadata ANTES de que FilePond lo elimine
+                    // El serverId es el ID del archivo retornado por el servidor
+                    if (file.serverId && !file.getMetadata().imageId) {
+                        file.setMetadata('imageId', file.serverId);
+                        console.log('[FilePondComponent] imageId guardado en metadata:', file.serverId);
+                    }
+
+                    // Forzar actualización de IDs inmediatamente
+                    setTimeout(() => {
+                        updateImageIds(config.id);
+                    }, 100);
                 }
             },
 
@@ -205,12 +220,12 @@ async function initializeFilePond() {
                 },
 
                 // Revert (cancelar upload antes de guardar)
-                // IMPORTANTE: Configurar revert para evitar eliminación automática
-                // En nuestro flujo, los archivos se suben inmediatamente y se guardan en BD
-                // No necesitamos revertir, así que retornamos éxito sin hacer nada
+                // IMPORTANTE: Con allowRevert: false, esto NO debería llamarse
+                // Pero lo configuramos por si acaso
                 revert: (uniqueFileId, load, error) => {
-                    console.log('[FilePondComponent] revert() llamado para:', uniqueFileId);
-                    // No hacemos nada, solo confirmamos
+                    console.warn('[FilePondComponent] ⚠️ revert() llamado inesperadamente para:', uniqueFileId);
+                    console.warn('[FilePondComponent] ⚠️ Esto NO debería pasar con allowRevert: false');
+                    // No hacemos nada, solo confirmamos para evitar errores
                     load();
                 },
 
@@ -322,6 +337,7 @@ async function initializeFilePond() {
         // Actualizar hidden input con IDs cuando cambien los archivos
         pond.on('addfile', (error, file) => {
             if (!error) {
+                console.log('[FilePondComponent] Evento addfile:', file.filename);
                 // Actualizar IDs cuando se agregue un archivo (incluyendo iniciales)
                 updateImageIds(config.id);
             }
@@ -329,11 +345,17 @@ async function initializeFilePond() {
 
         pond.on('processfile', (error, file) => {
             if (!error) {
+                console.log('[FilePondComponent] Evento processfile:', file.filename);
                 updateImageIds(config.id);
             }
         });
 
-        pond.on('removefile', () => {
+        pond.on('removefile', (error, file) => {
+            console.warn('[FilePondComponent] ⚠️ Evento removefile:', {
+                filename: file.filename,
+                serverId: file.serverId,
+                status: file.status
+            });
             updateImageIds(config.id);
         });
 
