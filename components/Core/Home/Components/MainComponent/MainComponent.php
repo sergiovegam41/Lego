@@ -131,7 +131,7 @@ class MainComponent extends CoreComponent
                     ]
                 )
             ),
-            title: "Florería",
+            title: "FloraFresh",
             subtitle: "Sistema de Gestión",
             icon: "menu-outline",
             searchable: true,

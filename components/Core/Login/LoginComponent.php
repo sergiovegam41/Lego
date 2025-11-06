@@ -32,14 +32,14 @@ class LoginComponent extends CoreComponent
                 <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>LEGO Framework</title>
+                <title>FloraFresh - Sistema de Gestión Floral</title>
                 <script src="https://cdn.tailwindcss.com"></script>
 
 
                 <meta charset="UTF-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Login</title> 
+                <title>Login - FloraFresh</title> 
                 <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
                 <link rel="stylesheet" href="./assets/css/core/base.css">
                 
@@ -85,37 +85,38 @@ class LoginComponent extends CoreComponent
                     <div class="relative hidden w-1/2 blue-gradient bg-blue-500 p-10 text-white md:block">
                     <div class="grid-pattern"></div>
                     <div class="relative z-10">
-                        <h1 class="text-3xl font-bold">LEGO Framework</h1>
-                        <h2 class="text-xl opacity-90 mb-16">Administrative System</h2>
-                        
+                        <h1 class="text-3xl font-bold">FloraFresh</h1>
+                        <h2 class="text-xl opacity-90 mb-16">Sistema de Gestión Floral</h2>
+
                         <p class="my-12 text-lg opacity-90">
-                        A powerful and flexible framework for building scalable administrative systems with an intuitive user interface.
+                        Gestiona tu florería de manera eficiente con nuestro sistema integral para el control de inventario, catálogo de productos y ventas.
                         </p>
-                        
+
                         <div class="space-y-6 mt-12">
                         <div class="flex items-start gap-4">
                             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-white">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                <path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                                <path d="M12 16a7 7 0 0 0 7-7V8h2a2 2 0 0 1 2 2v3a9 9 0 0 1-18 0v-3a2 2 0 0 1 2-2h2v1a7 7 0 0 0 7 7Z"></path>
                             </svg>
                             </div>
                             <div>
-                            <h3 class="font-medium">Modular Architecture</h3>
-                            <p class="text-sm opacity-80">Build and customize as you need</p>
+                            <h3 class="font-medium">Catálogo de Flores</h3>
+                            <p class="text-sm opacity-80">Administra tu inventario de productos florales</p>
                             </div>
                         </div>
-                        
+
                         <div class="flex items-start gap-4">
                             <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-white">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+                                <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+                                <path d="M12 3v6"></path>
                             </svg>
                             </div>
                             <div>
-                            <h3 class="font-medium">Enterprise-grade Security</h3>
-                            <p class="text-sm opacity-80">Advanced protection for your data</p>
+                            <h3 class="font-medium">Gestión Completa</h3>
+                            <p class="text-sm opacity-80">Controla categorías, productos destacados y testimonios</p>
                             </div>
                         </div>
                         </div>
@@ -147,30 +148,30 @@ class LoginComponent extends CoreComponent
                         </button>
                         
                     <div class="max-w-sm mx-auto">
-                        <h2 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Welcome back</h2>
-                        <p class="text-sm mb-6" style="color: var(--text-secondary);">Please enter your credentials to sign in</p>
+                        <h2 class="text-xl font-bold mb-2" style="color: var(--text-primary);">Bienvenido de vuelta</h2>
+                        <p class="text-sm mb-6" style="color: var(--text-secondary);">Ingresa tus credenciales para acceder al sistema</p>
                         
                         <form>
                         <div class="space-y-4">
                             <div>
                             <label for="email" class="block text-sm font-medium mb-1" style="color: var(--text-primary);">
-                                Email address
+                                Correo electrónico
                             </label>
                             <input
                                 id="email"
                                 type="email"
-                                placeholder="user@example.com"
+                                placeholder="usuario@ejemplo.com"
                                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 transition-colors duration-200" style="border-color: var(--border-light); background-color: var(--bg-surface); color: var(--text-primary); --tw-ring-color: var(--accent-primary);"
                             />
                             </div>
-                            
+
                             <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label for="password" class="block text-sm font-medium" style="color: var(--text-primary);">
-                                Password
+                                Contraseña
                                 </label>
                                 <a href="#" class="text-sm hover:opacity-80" style="color: var(--accent-primary);">
-                                Forgot password?
+                                ¿Olvidaste tu contraseña?
                                 </a>
                             </div>
                             <div class="relative">
@@ -204,14 +205,14 @@ class LoginComponent extends CoreComponent
                                 class="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                             />
                             <label for="remember-me" class="ml-2 block text-sm" style="color: var(--text-primary);">
-                                Remember me
+                                Recordarme
                             </label>
                             </div>
-                            
+
                             <button
                             id="submit-button"
                             class="w-full flex justify-center items-center gap-2 py-2.5 px-4 bg-blue-400 hover:bg-blue-500 text-white font-medium rounded-md transition-colors" >
-                            Sign in
+                            Iniciar sesión
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -219,11 +220,11 @@ class LoginComponent extends CoreComponent
                             </button>
                         </div>
                         </form>
-                        
+
                         <div class="mt-6 text-center text-sm" style="color: var(--text-secondary);">
-                        Don't have an account?
+                        ¿No tienes una cuenta?
                         <a href="#" class="hover:opacity-80" style="color: var(--accent-primary);">
-                            Contact administrator
+                            Contactar administrador
                         </a>
                         </div>
                     </div>
