@@ -111,6 +111,8 @@ async function initializeFilePond() {
         }
 
         console.log('[FilePondComponent] Configurando FilePond:', config.id);
+        console.log('[FilePondComponent] Initial images from config:', config.initialImages);
+        console.log('[FilePondComponent] Config completo:', config);
 
         // Crear instancia de FilePond
         const pond = FilePond.create(inputElement, {
@@ -119,6 +121,11 @@ async function initializeFilePond() {
             maxFiles: config.maxFiles || 5,
             maxFileSize: config.maxFileSize || '5MB',
             acceptedFileTypes: config.acceptedFileTypes || ['image/*'],
+
+            // IMPORTANTE: NO remover archivos automáticamente después de upload
+            instantUpload: true, // Subir inmediatamente
+            allowRemove: true, // Permitir eliminación manual
+            allowRevert: false, // No permitir revert automático
 
             // Reordenamiento
             allowReorder: config.allowReorder !== false,

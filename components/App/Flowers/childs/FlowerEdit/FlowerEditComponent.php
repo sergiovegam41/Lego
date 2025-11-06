@@ -47,6 +47,9 @@ class FlowerEditComponent extends CoreComponent
                 $fileService = new \Core\Services\File\FileService();
                 $fileAssociations = $fileService->getEntityFiles('Flower', $flowerId);
 
+                error_log("[FlowerEditComponent] Loading images for flower {$flowerId}");
+                error_log("[FlowerEditComponent] File associations count: " . ($fileAssociations ? $fileAssociations->count() : 0));
+
                 if ($fileAssociations && !$fileAssociations->isEmpty()) {
                     $initialImages = $fileAssociations->map(function($assoc) {
                         if (!$assoc || !isset($assoc->file)) {
@@ -61,10 +64,13 @@ class FlowerEditComponent extends CoreComponent
                             'mime_type' => $file->mime_type ?? 'image/jpeg'
                         ];
                     })->filter()->values()->toArray();
+
+                    error_log("[FlowerEditComponent] Initial images prepared: " . json_encode($initialImages));
                 }
             }
         } catch (\Exception $e) {
-            error_log("Error loading images for flower {$flowerId}: " . $e->getMessage());
+            error_log("[FlowerEditComponent] Error loading images for flower {$flowerId}: " . $e->getMessage());
+            error_log("[FlowerEditComponent] Stack trace: " . $e->getTraceAsString());
         }
 
         // Load categories from database

@@ -16,7 +16,6 @@ abstract class AbstractAuthCoreContract  {
      
     }
 
-   
     abstract public function login(AuthRequestDTO $request): ResponseDTO;
 
     abstract public function refresh_token(AuthRequestDTO $request): ResponseDTO;
