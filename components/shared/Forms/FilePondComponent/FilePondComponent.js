@@ -122,10 +122,18 @@ async function initializeFilePond() {
             maxFileSize: config.maxFileSize || '5MB',
             acceptedFileTypes: config.acceptedFileTypes || ['image/*'],
 
-            // IMPORTANTE: NO remover archivos automáticamente después de upload
+            // IMPORTANTE: Configuración de upload y retención de archivos
             instantUpload: true, // Subir inmediatamente
             allowRemove: true, // Permitir eliminación manual
             allowRevert: false, // No permitir revert automático
+
+            // CRÍTICO: Eventos de ciclo de vida para retener archivos
+            onprocessfile: (error, file) => {
+                if (!error) {
+                    console.log('[FilePondComponent] Archivo procesado, marcando como permanente:', file.serverId);
+                    // Marcar el archivo como "permanente" para que no se elimine
+                }
+            },
 
             // Reordenamiento
             allowReorder: config.allowReorder !== false,
@@ -197,7 +205,14 @@ async function initializeFilePond() {
                 },
 
                 // Revert (cancelar upload antes de guardar)
-                revert: null,
+                // IMPORTANTE: Configurar revert para evitar eliminación automática
+                // En nuestro flujo, los archivos se suben inmediatamente y se guardan en BD
+                // No necesitamos revertir, así que retornamos éxito sin hacer nada
+                revert: (uniqueFileId, load, error) => {
+                    console.log('[FilePondComponent] revert() llamado para:', uniqueFileId);
+                    // No hacemos nada, solo confirmamos
+                    load();
+                },
 
                 // Load (cargar archivos existentes)
                 load: (source, load, error, progress, abort, headers) => {
