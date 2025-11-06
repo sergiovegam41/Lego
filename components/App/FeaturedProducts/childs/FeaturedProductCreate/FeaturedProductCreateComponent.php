@@ -37,6 +37,9 @@ class FeaturedProductCreateComponent extends CoreComponent
             return ['value' => $key, 'label' => $label];
         }, array_keys($tags), array_values($tags));
 
+        // Agregar opción "Ninguno" al inicio
+        array_unshift($tagOptions, ['value' => '', 'label' => 'Ninguno']);
+
         // Crear componentes del formulario usando los componentes compartidos
         $productSelect = new SelectComponent(
             id: "featured-product-product-id",
