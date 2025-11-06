@@ -228,20 +228,51 @@ async function initializeFilePond() {
 
                 // Remove (eliminar archivo ya subido - UNIVERSAL)
                 remove: (source, load, error) => {
+                    console.log('[FilePondComponent] remove() - source:', source);
+
+                    // IMPORTANTE: source puede ser:
+                    // 1. ID del archivo (número/string) - para archivos recién subidos
+                    // 2. URL completa - para archivos cargados desde initialImages
+                    // Necesitamos encontrar el file_id correcto
+
+                    let fileId = null;
+
+                    // Si source es una URL, buscar el file en pond y extraer su metadata.imageId
+                    if (typeof source === 'string' && source.startsWith('http')) {
+                        console.log('[FilePondComponent] source es URL, buscando file_id en metadata');
+                        const files = pond.getFiles();
+                        const file = files.find(f => f.source === source);
+
+                        if (file && file.getMetadata && file.getMetadata().imageId) {
+                            fileId = file.getMetadata().imageId;
+                            console.log('[FilePondComponent] file_id extraído de metadata:', fileId);
+                        } else {
+                            console.error('[FilePondComponent] No se encontró file_id en metadata para URL:', source);
+                            error('No se puede eliminar: ID no encontrado');
+                            return;
+                        }
+                    } else {
+                        // source ya es el file_id (archivos recién subidos)
+                        fileId = source;
+                        console.log('[FilePondComponent] file_id directo:', fileId);
+                    }
+
                     fetch('/api/files/delete', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            file_id: source
+                            file_id: fileId
                         })
                     })
                     .then(response => response.json())
                     .then(result => {
                         if (result.success) {
+                            console.log('[FilePondComponent] Archivo eliminado exitosamente:', fileId);
                             load();
                         } else {
+                            console.error('[FilePondComponent] Error del servidor:', result.msj);
                             error(result.msj || 'Error al eliminar');
                         }
                     })
