@@ -65,8 +65,8 @@ body {
     opacity: 1 !important;
   }
 
-  /* Overlay blanco para transiciones suaves entre módulos */
+  /* Background que se adapta al tema para transiciones suaves entre módulos */
   #home-page {
     position: relative;
-    background: var(--bg-primary, #ffffff);
+    background-color: var(--bg-primary);
   }
