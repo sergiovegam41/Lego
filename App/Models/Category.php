@@ -41,10 +41,9 @@ class Category extends Model
         'updated_at' => 'datetime'
     ];
 
-    // IMPORTANTE: No incluir 'primary_image' y 'all_images' en $appends
-    // porque causan queries adicionales y pueden romper el API CRUD.
-    // En su lugar, estos atributos se acceden explícitamente cuando se necesitan.
-    protected $appends = [];
+    // IMPORTANTE: primary_image se incluye en appends para la tabla
+    // Se usa caché para evitar queries múltiples
+    protected $appends = ['primary_image'];
 
     /**
      * Get all flowers belonging to this category
