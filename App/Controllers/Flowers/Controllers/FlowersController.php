@@ -197,15 +197,37 @@ class FlowersController extends CoreController
 
             // Asociar imágenes usando FileService (patrón polimórfico)
             if (!empty($data['image_ids']) && is_array($data['image_ids'])) {
+                error_log("[FlowersController] Creando flor con imágenes. Total: " . count($data['image_ids']));
+                error_log("[FlowersController] IDs recibidos: " . json_encode($data['image_ids']));
+
                 foreach ($data['image_ids'] as $index => $imageId) {
-                    $this->fileService->associateFileToEntity(
-                        $imageId,
-                        'Flower',
-                        $flower->id,
-                        $index,
-                        ['is_primary' => $index === 0]
-                    );
+                    try {
+                        // Validar que el imageId sea válido
+                        if (empty($imageId) || !is_numeric($imageId)) {
+                            error_log("[FlowersController] ID de imagen inválido en índice {$index}: " . var_export($imageId, true));
+                            continue;
+                        }
+
+                        error_log("[FlowersController] Asociando imagen {$imageId} en posición {$index}");
+
+                        $this->fileService->associateFileToEntity(
+                            (int)$imageId,
+                            'Flower',
+                            $flower->id,
+                            $index,
+                            ['is_primary' => $index === 0]
+                        );
+
+                        error_log("[FlowersController] Imagen {$imageId} asociada correctamente");
+                    } catch (\Exception $e) {
+                        error_log("[FlowersController] Error al asociar imagen {$imageId}: " . $e->getMessage());
+                        error_log("[FlowersController] Stack trace: " . $e->getTraceAsString());
+                    }
                 }
+
+                // Verificar cuántas asociaciones se crearon
+                $associatedCount = \App\Models\EntityFileAssociation::forEntity('Flower', $flower->id)->count();
+                error_log("[FlowersController] Total de asociaciones creadas: {$associatedCount}");
             }
 
             Response::json(StatusCodes::HTTP_CREATED, (array)new ResponseDTO(
@@ -261,19 +283,42 @@ class FlowersController extends CoreController
 
             // Actualizar imágenes usando FileService (patrón polimórfico)
             if (isset($data['image_ids']) && is_array($data['image_ids'])) {
+                error_log("[FlowersController] Actualizando imágenes. Total recibidas: " . count($data['image_ids']));
+                error_log("[FlowersController] IDs recibidos: " . json_encode($data['image_ids']));
+
                 // Eliminar todas las asociaciones actuales
-                \App\Models\EntityFileAssociation::forEntity('Flower', $flower->id)->delete();
+                $deletedCount = \App\Models\EntityFileAssociation::forEntity('Flower', $flower->id)->delete();
+                error_log("[FlowersController] Asociaciones eliminadas: {$deletedCount}");
 
                 // Crear nuevas asociaciones con el orden correcto
                 foreach ($data['image_ids'] as $index => $imageId) {
-                    $this->fileService->associateFileToEntity(
-                        $imageId,
-                        'Flower',
-                        $flower->id,
-                        $index,
-                        ['is_primary' => $index === 0]
-                    );
+                    try {
+                        // Validar que el imageId sea válido
+                        if (empty($imageId) || !is_numeric($imageId)) {
+                            error_log("[FlowersController] ID de imagen inválido en índice {$index}: " . var_export($imageId, true));
+                            continue;
+                        }
+
+                        error_log("[FlowersController] Asociando imagen {$imageId} en posición {$index}");
+
+                        $this->fileService->associateFileToEntity(
+                            (int)$imageId,
+                            'Flower',
+                            $flower->id,
+                            $index,
+                            ['is_primary' => $index === 0]
+                        );
+
+                        error_log("[FlowersController] Imagen {$imageId} asociada correctamente");
+                    } catch (\Exception $e) {
+                        error_log("[FlowersController] Error al asociar imagen {$imageId}: " . $e->getMessage());
+                        error_log("[FlowersController] Stack trace: " . $e->getTraceAsString());
+                    }
                 }
+
+                // Verificar cuántas asociaciones se crearon
+                $associatedCount = \App\Models\EntityFileAssociation::forEntity('Flower', $flower->id)->count();
+                error_log("[FlowersController] Total de asociaciones creadas: {$associatedCount}");
             }
 
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
