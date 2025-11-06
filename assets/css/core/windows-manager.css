@@ -51,11 +51,18 @@ body {
   }
   .module-container {
     display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
   }
   .module-container.active {
     display: block;
+  }
+
+  /* Fade-in animation for modules */
+  .module-container.module-fade-in {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .module-container.module-visible {
+    opacity: 1 !important;
   }
 
   /* Overlay blanco para transiciones suaves entre módulos */

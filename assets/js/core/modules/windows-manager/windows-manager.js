@@ -78,10 +78,7 @@ async function renderModule(id, url, content) {
 
         container = document.createElement('div');
         container.id = `module-${id}`;
-        container.className = 'module-container';
-
-        // Iniciar con opacidad 0 para efecto fade-in
-        container.style.opacity = '0';
+        container.className = 'module-container module-fade-in';
 
         // Usar insertAdjacentHTML en lugar de innerHTML para ejecutar scripts
         container.insertAdjacentHTML('beforeend', dataResp);
@@ -108,15 +105,13 @@ async function renderModule(id, url, content) {
 
         // Trigger fade-in después de un breve delay para asegurar que el CSS se cargó
         setTimeout(() => {
-            container.style.transition = 'opacity 0.3s ease-in-out';
-            container.style.opacity = '1';
+            container.classList.add('module-visible');
         }, 50);
     } else {
         // Si el módulo ya existe, aplicar fade cuando se reactive
-        container.style.opacity = '0';
+        container.classList.remove('module-visible');
         setTimeout(() => {
-            container.style.transition = 'opacity 0.2s ease-in-out';
-            container.style.opacity = '1';
+            container.classList.add('module-visible');
         }, 10);
     }
 
