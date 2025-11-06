@@ -541,23 +541,48 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             console.log('[WindowManager] openModuleWithMenu called with:', { moduleId, url, label });
 
-            // Check if a static menu item with the same URL already exists
-            // Try multiple selectors to be more robust
-            let existingStaticItem = document.querySelector(`[moduleUrl="${url}"]`);
-
-            // If not found, try with data-module-url
-            if (!existingStaticItem) {
-                existingStaticItem = document.querySelector(`[data-module-url="${url}"]`);
+            // Extract pathname from URL for comparison (ignore hostname/protocol differences)
+            let urlPathname;
+            try {
+                const urlObj = new URL(url, window.location.origin);
+                urlPathname = urlObj.pathname;
+            } catch (e) {
+                // If URL parsing fails, use the URL as-is
+                urlPathname = url;
             }
 
-            console.log('[WindowManager] Existing static item search result:', existingStaticItem);
+            console.log('[WindowManager] Looking for static item with pathname:', urlPathname);
 
-            if (existingStaticItem && !existingStaticItem.hasAttribute('data-dynamic-item')) {
+            // Check if a static menu item with the same URL pathname already exists
+            // Compare by pathname to handle hostname/protocol differences
+            let existingStaticItem = null;
+            const allMenuItems = document.querySelectorAll('[moduleUrl]');
+
+            for (const item of allMenuItems) {
+                if (item.hasAttribute('data-dynamic-item')) continue; // Skip dynamic items
+
+                const itemUrl = item.getAttribute('moduleUrl');
+                let itemPathname;
+                try {
+                    const itemUrlObj = new URL(itemUrl, window.location.origin);
+                    itemPathname = itemUrlObj.pathname;
+                } catch (e) {
+                    itemPathname = itemUrl;
+                }
+
+                if (itemPathname === urlPathname) {
+                    existingStaticItem = item;
+                    console.log('[WindowManager] Found matching static item:', item);
+                    break;
+                }
+            }
+
+            if (existingStaticItem) {
                 // Static item exists - use it instead of creating dynamic one
                 const existingId = existingStaticItem.getAttribute('moduleId') ||
                                    existingStaticItem.getAttribute('data-module-id') ||
                                    existingStaticItem.getAttribute('data-menu-item-id');
-                console.log(`[WindowManager] Static menu item found for URL ${url}, using ID: ${existingId}`);
+                console.log(`[WindowManager] Static menu item found for pathname ${urlPathname}, using ID: ${existingId}`);
                 openModule(existingId, url, label, { url, name: label });
                 return;
             }
