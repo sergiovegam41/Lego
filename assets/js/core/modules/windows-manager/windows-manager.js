@@ -539,15 +539,30 @@ if (typeof window.legoWindowManager === 'undefined') {
         openModuleWithMenu: function(config) {
             const { moduleId, parentMenuId, label, url, icon } = config;
 
+            console.log('[WindowManager] openModuleWithMenu called with:', { moduleId, url, label });
+
             // Check if a static menu item with the same URL already exists
-            const existingStaticItem = document.querySelector(`[moduleUrl="${url}"]`);
+            // Try multiple selectors to be more robust
+            let existingStaticItem = document.querySelector(`[moduleUrl="${url}"]`);
+
+            // If not found, try with data-module-url
+            if (!existingStaticItem) {
+                existingStaticItem = document.querySelector(`[data-module-url="${url}"]`);
+            }
+
+            console.log('[WindowManager] Existing static item search result:', existingStaticItem);
+
             if (existingStaticItem && !existingStaticItem.hasAttribute('data-dynamic-item')) {
                 // Static item exists - use it instead of creating dynamic one
-                const existingId = existingStaticItem.getAttribute('moduleId') || existingStaticItem.getAttribute('data-menu-item-id');
+                const existingId = existingStaticItem.getAttribute('moduleId') ||
+                                   existingStaticItem.getAttribute('data-module-id') ||
+                                   existingStaticItem.getAttribute('data-menu-item-id');
                 console.log(`[WindowManager] Static menu item found for URL ${url}, using ID: ${existingId}`);
                 openModule(existingId, url, label, { url, name: label });
                 return;
             }
+
+            console.log('[WindowManager] No static item found, creating dynamic menu item');
 
             // No static item found - add dynamic menu item
             this.addDynamicMenuItem({
