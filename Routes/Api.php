@@ -59,6 +59,33 @@ use Flight;
 
 /**
  * ========================================
+ * CORS CONFIGURATION
+ * ========================================
+ * Permite solicitudes JavaScript desde cualquier origen para la API pública
+ * Necesario para que el frontend pueda consumir la API desde diferentes dominios
+ */
+Flight::before('start', function() {
+    // Permitir cualquier origen
+    header('Access-Control-Allow-Origin: *');
+
+    // Métodos HTTP permitidos
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+
+    // Headers permitidos en las solicitudes
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+    // Cache de preflight requests (24 horas)
+    header('Access-Control-Max-Age: 86400');
+
+    // Si es una solicitud OPTIONS (preflight), responder inmediatamente
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
+});
+
+/**
+ * ========================================
  * FLOWERS PUBLIC API
  * ========================================
  * Public endpoints for browsing and searching flowers
