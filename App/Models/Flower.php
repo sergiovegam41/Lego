@@ -45,9 +45,10 @@ class Flower extends Model
         'updated_at' => 'datetime'
     ];
 
-    // IMPORTANTE: primary_image se incluye en appends para la tabla
+    // IMPORTANTE: primary_image y all_images se incluyen en appends para la tabla
+    // all_images es necesario para el ImageCarousel modal
     // Se usa caché para evitar queries múltiples
-    protected $appends = ['category_name', 'primary_image'];
+    protected $appends = ['category_name', 'primary_image', 'all_images'];
 
     /**
      * Get the category this flower belongs to
