@@ -78,6 +78,31 @@ require __DIR__ . '/../Core/Routes/LandingRoutes.php';
 
 /**
  * ========================================
+ * AUTHENTICATION ROUTES
+ * ========================================
+ * Rutas de autenticación modular
+ * Patrón: /auth/{group}/{action}
+ * Grupos: admin, api, [extensibles]
+ */
+Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
+
+/**
+ * ========================================
+ * DYNAMIC CONTROLLER ROUTES (LEGACY)
+ * ========================================
+ * Rutas dinámicas de controladores mapeadas desde routeMap.json
+ * IMPORTANTE: Debe ir ANTES de ApiCrudRouter para tener prioridad sobre rutas auto-generadas
+ * Patrón: /api/{controller}/{action}
+ * Ejemplos: /api/categories/get?id=7, /api/flowers/list
+ */
+$dynamicRoutes = CoreController::getMymapControllers();
+
+foreach ($dynamicRoutes as $keyRoutes => $valRoutes) {
+    Flight::route("POST|GET /$keyRoutes/@accion", fn ($accion) => new $valRoutes($accion));
+}
+
+/**
+ * ========================================
  * AUTO-GET ROUTES (Table-Driven API)
  * ========================================
  * Rutas GET de solo lectura generadas automáticamente desde modelos con #[ApiGetResource].
@@ -100,16 +125,6 @@ ApiGetRouter::registerRoutes();
  * Endpoints: GET, POST, PUT, DELETE /api/{resource}
  */
 ApiCrudRouter::registerRoutes();
-
-/**
- * ========================================
- * AUTHENTICATION ROUTES
- * ========================================
- * Rutas de autenticación modular
- * Patrón: /auth/{group}/{action}
- * Grupos: admin, api, [extensibles]
- */
-Flight::route('POST|GET /auth/@group/@accion', fn ($group, $accion) => new AuthGroupsController($group, $accion));
 
 /**
  * ========================================
@@ -186,13 +201,3 @@ Flight::route('GET /components/list', function() {
     $controller = new ComponentsController();
     $controller->list();
 });
-
-/**
- * Rutas dinámicas de controladores (LEGACY para V1/V2)
- * Se mapean automáticamente desde App/Controllers/
- */
-$dynamicRoutes = CoreController::getMymapControllers();
-
-foreach ($dynamicRoutes as $keyRoutes => $valRoutes) {
-    Flight::route("POST|GET /$keyRoutes/@accion", fn ($accion) => new $valRoutes($accion));
-}
