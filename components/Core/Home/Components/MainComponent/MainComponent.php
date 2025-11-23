@@ -52,62 +52,18 @@ class MainComponent extends CoreComponent
                 ),
                 new MenuItemDto(
                     id: "2",
-                    name: "Tablero",
-                    url: $HOST_NAME . '/tablero',
-                    iconName: "grid-outline"
-                ),
-                new MenuItemDto(
-                    id: "3",
-                    name: "Actividades recientes",
-                    url: $HOST_NAME . '/actividades',
-                    iconName: "time-outline"
-                ),
-                new MenuItemDto(
-                    id: "4",
-                    name: "Configuración",
-                    url: "#",
-                    iconName: "settings-outline",
-                    childs: [
-                        new MenuItemDto(
-                            id: "5",
-                            name: "Reportes",
-                            url: $HOST_NAME . '/reportes',
-                            iconName: "stats-chart-outline"
-                        )
-                    ]
-                ),
-                new MenuItemDto(
-                    id: "6",
-                    name: "Automatización",
-                    url: $HOST_NAME . '/component/automation',
-                    iconName: "flash-outline"
-                ),
-                new MenuItemDto(
-                    id: "8",
-                    name: "Forms Showcase",
-                    url: $HOST_NAME . '/component/forms-showcase',
-                    iconName: "create-outline"
-                ),
-                new MenuItemDto(
-                    id: "9",
-                    name: "Table Showcase",
-                    url: $HOST_NAME . '/component/table-showcase',
-                    iconName: "grid-outline"
-                ),
-                new MenuItemDto(
-                    id: "10",
                     name: "Example CRUD",
                     url: null,
                     iconName: "cube-outline",
                     childs: [
                         new MenuItemDto(
-                            id: "10-1",
+                            id: "2-1",
                             name: "Tabla",
                             url: $HOST_NAME . '/component/example-crud',
                             iconName: "grid-outline"
                         ),
                         new MenuItemDto(
-                            id: "10-2",
+                            id: "2-2",
                             name: "Crear",
                             url: $HOST_NAME . '/component/example-crud/create',
                             iconName: "add-circle-outline"
