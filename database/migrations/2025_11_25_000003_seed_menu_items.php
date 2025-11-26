@@ -48,16 +48,6 @@ return new class {
                     'level' => 1
                 ]
             ]
-        ],
-        [
-            'id' => 'todo',
-            'parent_id' => null,
-            'label' => 'TODO List',
-            'index_label' => 'Ver',
-            'route' => '/component/todo',
-            'icon' => 'checkbox-outline',
-            'display_order' => 2,
-            'level' => 0
         ]
     ];
     
