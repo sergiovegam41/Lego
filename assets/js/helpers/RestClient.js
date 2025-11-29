@@ -1,37 +1,23 @@
 /**
- * RestClient - Cliente HTTP estandarizado para APIs REST
+ * @deprecated DEPRECATED - Usar ApiClient en su lugar
  *
- * FILOSOFÍA LEGO:
- * Cliente que abstrae las llamadas HTTP y maneja errores de forma consistente.
- * Proporciona métodos convenientes para operaciones CRUD siguiendo convenciones REST.
+ * RestClient ha sido reemplazado por ApiClient (assets/js/core/api/ApiClient.js).
+ * Este archivo se mantiene por compatibilidad pero será eliminado en futuras versiones.
  *
- * CARACTERÍSTICAS:
- * - Métodos para operaciones CRUD (list, get, create, update, delete)
- * - Manejo automático de errores HTTP
- * - Soporte para diferentes métodos HTTP (GET, POST, PUT, DELETE)
- * - Fallback automático si el servidor no soporta ciertos métodos
- * - Headers consistentes
- * - Parsing automático de JSON
+ * MIGRACIÓN:
+ * 
+ * ANTES (RestClient):
+ * const api = new RestClient('/api/products');
+ * const products = await api.list();
+ * await api.create({ name: 'Product' });
+ * 
+ * AHORA (ApiClient):
+ * const api = new ApiClient({ baseURL: '/api/products' });
+ * const products = await api.get('/list');
+ * await api.post('/create', { name: 'Product' });
  *
- * EJEMPLO DE USO:
- * ```javascript
- * const productsApi = new RestClient('/api/products');
- *
- * // Listar
- * const products = await productsApi.list();
- *
- * // Obtener uno
- * const product = await productsApi.get(1);
- *
- * // Crear
- * const newProduct = await productsApi.create({ name: 'Laptop', price: 1000 });
- *
- * // Actualizar
- * const updated = await productsApi.update(1, { price: 900 });
- *
- * // Eliminar
- * await productsApi.delete(1);
- * ```
+ * O usar la instancia global:
+ * const products = await window.api.get('/api/products/list');
  */
 
 class RestClient {
@@ -40,6 +26,7 @@ class RestClient {
      * @param {Object} options - Opciones adicionales
      */
     constructor(baseUrl, options = {}) {
+        console.warn('[RestClient] DEPRECATED: Usar ApiClient en su lugar');
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
         this.options = {
             headers: {
@@ -53,8 +40,7 @@ class RestClient {
     }
 
     /**
-     * GET /list - Obtener listado completo
-     * @returns {Promise<Object>} Respuesta del servidor
+     * @deprecated Usar ApiClient.get('/list')
      */
     async list(params = {}) {
         const queryString = new URLSearchParams(params).toString();
@@ -63,42 +49,32 @@ class RestClient {
     }
 
     /**
-     * GET /get?id={id} - Obtener un registro por ID
-     * @param {number|string} id - ID del registro
-     * @returns {Promise<Object>} Respuesta del servidor
+     * @deprecated Usar ApiClient.get('/get?id=X')
      */
     async get(id) {
         return this.request('GET', `/get?id=${id}`);
     }
 
     /**
-     * POST /create - Crear nuevo registro
-     * @param {Object} data - Datos del registro
-     * @returns {Promise<Object>} Respuesta del servidor
+     * @deprecated Usar ApiClient.post('/create', data)
      */
     async create(data) {
         return this.request('POST', '/create', data);
     }
 
     /**
-     * PUT /update (fallback a POST) - Actualizar registro
-     * @param {number|string} id - ID del registro (opcional si viene en data)
-     * @param {Object} data - Datos a actualizar
-     * @returns {Promise<Object>} Respuesta del servidor
+     * @deprecated Usar ApiClient.put('/update', data)
      */
     async update(id, data = null) {
-        // Si solo se pasa un objeto, asumimos que trae el ID
         if (typeof id === 'object' && data === null) {
             data = id;
         } else {
             data = { id, ...data };
         }
 
-        // Intentar PUT primero, fallback a POST
         try {
             return await this.request('PUT', '/update', data);
         } catch (error) {
-            // Si es 405 Method Not Allowed, intentar con POST
             if (error.status === 405) {
                 console.warn('[RestClient] PUT not allowed, falling back to POST');
                 return this.request('POST', '/update', data);
@@ -108,18 +84,14 @@ class RestClient {
     }
 
     /**
-     * DELETE /delete (fallback a POST) - Eliminar registro
-     * @param {number|string} id - ID del registro
-     * @returns {Promise<Object>} Respuesta del servidor
+     * @deprecated Usar ApiClient.delete('/delete')
      */
     async delete(id) {
         const data = typeof id === 'object' ? id : { id };
 
-        // Intentar DELETE primero, fallback a POST
         try {
             return await this.request('DELETE', '/delete', data);
         } catch (error) {
-            // Si es 405 Method Not Allowed, intentar con POST
             if (error.status === 405) {
                 console.warn('[RestClient] DELETE not allowed, falling back to POST');
                 return this.request('POST', '/delete', data);
@@ -130,10 +102,6 @@ class RestClient {
 
     /**
      * Realizar petición HTTP genérica
-     * @param {string} method - Método HTTP (GET, POST, PUT, DELETE)
-     * @param {string} endpoint - Endpoint relativo (ej: '/list')
-     * @param {Object} data - Datos a enviar (opcional)
-     * @returns {Promise<Object>} Respuesta parseada
      */
     async request(method, endpoint, data = null) {
         const url = this.baseUrl + endpoint;
@@ -143,7 +111,6 @@ class RestClient {
             headers: { ...this.options.headers }
         };
 
-        // Solo agregar body si no es GET
         if (data && method.toUpperCase() !== 'GET') {
             config.body = JSON.stringify(data);
         }
@@ -151,7 +118,6 @@ class RestClient {
         try {
             console.log(`[RestClient] ${method} ${url}`, data || '');
 
-            // Timeout handling
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), this.options.timeout);
             config.signal = controller.signal;
@@ -159,21 +125,18 @@ class RestClient {
             const response = await fetch(url, config);
             clearTimeout(timeoutId);
 
-            // Intentar parsear como JSON
             let result;
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 result = await response.json();
             } else {
                 const text = await response.text();
-                // Si el servidor devolvió texto plano en lugar de JSON
                 if (!response.ok) {
                     throw new Error(text);
                 }
                 result = { success: response.ok, data: text };
             }
 
-            // Si la respuesta no es OK, lanzar error
             if (!response.ok) {
                 const error = new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
                 error.status = response.status;
@@ -187,12 +150,10 @@ class RestClient {
         } catch (error) {
             console.error(`[RestClient] Error en ${method} ${url}:`, error);
 
-            // Manejar errores de red
             if (error.name === 'AbortError') {
                 error.message = `Request timeout (${this.options.timeout}ms)`;
             }
 
-            // Callback de error personalizado
             if (this.options.onError) {
                 this.options.onError(error, { method, endpoint, data });
             }
@@ -202,14 +163,9 @@ class RestClient {
     }
 
     /**
-     * Realizar petición personalizada a cualquier endpoint
-     * @param {string} method - Método HTTP
-     * @param {string} endpoint - Endpoint (puede ser completo o relativo)
-     * @param {Object} data - Datos
-     * @returns {Promise<Object>}
+     * @deprecated Usar ApiClient.request()
      */
     async custom(method, endpoint, data = null) {
-        // Si el endpoint no empieza con /, es relativo
         if (!endpoint.startsWith('/')) {
             endpoint = '/' + endpoint;
         }

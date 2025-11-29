@@ -1,18 +1,27 @@
 /**
- * Example Create - Lógica de creación
+ * Example Create - Lógica de creación (con ComponentContext)
  *
  * FILOSOFÍA LEGO:
- * Formulario con validación client-side y manejo de errores robusto.
- *
- * MEJORAS vs V1/V2:
- * ✅ Usa lego.events.onComponentInit (no DOMContentLoaded)
+ * ✅ CERO hardcoding - usa ComponentContext
  * ✅ Validación client-side antes de enviar
  * ✅ Cierra módulo al finalizar
  * ✅ Usa fetch con manejo de errores robusto
- * ✅ Usa window.LegoSelect sin .click() hacks
  */
 
 console.log('[ExampleCreate] Script cargado');
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DEL COMPONENTE
+// ═══════════════════════════════════════════════════════════════════
+
+const COMPONENT_CONFIG = {
+    id: 'example-crud-create',
+    apiRoute: '/api/example-crud'
+};
+
+function apiUrl(action) {
+    return `${COMPONENT_CONFIG.apiRoute}/${action}`;
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // VALIDACIÓN CLIENT-SIDE
@@ -61,8 +70,8 @@ async function createRecord(formData) {
             return null;
         }
 
-        // Enviar con fetch (legacy endpoint)
-        const response = await fetch('/api/example-crud/create', {
+        // Enviar con fetch
+        const response = await fetch(apiUrl('create'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

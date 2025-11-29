@@ -1,18 +1,31 @@
 /**
- * Example Edit - Lógica de edición
+ * Example Edit - Lógica de edición (con ComponentContext)
  *
  * FILOSOFÍA LEGO:
- * Formulario de edición con carga de datos y validación.
- * Mantiene "las mismas distancias" que ExampleCreate.
- *
- * MEJORAS vs V1/V2:
- * ✅ Usa fetch para GET y PUT (sin ApiClient para evitar imports)
+ * ✅ CERO hardcoding - usa ComponentContext
  * ✅ Carga datos del registro al iniciar
  * ✅ Usa LegoSelect.setValue() sin .click() hack
  * ✅ Validación antes de actualizar
  */
 
 console.log('[ExampleEdit] Script cargado');
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DEL COMPONENTE
+// ═══════════════════════════════════════════════════════════════════
+
+const COMPONENT_CONFIG = {
+    id: 'example-crud-edit',
+    apiRoute: '/api/example-crud'
+};
+
+function apiUrl(action, params = null) {
+    let url = `${COMPONENT_CONFIG.apiRoute}/${action}`;
+    if (params && Object.keys(params).length > 0) {
+        url += '?' + new URLSearchParams(params).toString();
+    }
+    return url;
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // VALIDACIÓN (copiada de example-create.js)
@@ -93,8 +106,8 @@ async function loadRecordData(recordId) {
     try {
         console.log('[ExampleEdit] Cargando registro:', recordId);
 
-        // Usar endpoint legacy con query param
-        const response = await fetch(`/api/example-crud/get?id=${recordId}`);
+        // Usar apiUrl()
+        const response = await fetch(apiUrl('get', { id: recordId }));
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -168,7 +181,8 @@ async function updateRecord(recordId, formData) {
 
         console.log('[ExampleEdit] Actualizando registro:', recordId, formData);
 
-        const response = await fetch('/api/example-crud/update', {
+        // Usar apiUrl()
+        const response = await fetch(apiUrl('update'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -298,6 +312,13 @@ async function initializeForm() {
         return;
     }
 
+    // Verificar si estamos en estado "sin contexto" (empty state)
+    const emptyState = activeModuleContainer.querySelector('.example-form--no-context');
+    if (emptyState) {
+        console.log('[ExampleEdit] Modo sin contexto detectado, no hay registro para cargar');
+        return; // No hay nada que hacer - el PHP ya muestra el mensaje adecuado
+    }
+
     // Buscar el formulario DENTRO del módulo activo
     const container = activeModuleContainer.querySelector('.example-form[data-example-id]');
     console.log('[ExampleEdit] Container encontrado:', container);
@@ -307,7 +328,7 @@ async function initializeForm() {
     console.log('[ExampleEdit] Record ID extraído:', recordId);
 
     if (!recordId) {
-        console.error('[ExampleEdit] No se encontró ID de registro en el container');
+        console.log('[ExampleEdit] No hay ID de registro - estado sin contexto');
         return;
     }
 
@@ -450,6 +471,13 @@ function tryInitialize() {
             console.error('[ExampleEdit] Container del módulo activo no encontrado después de 2 segundos');
         }
         return;
+    }
+
+    // Verificar si es estado sin contexto (empty state) - no hay nada que inicializar
+    const emptyState = activeModuleContainer.querySelector('.example-form--no-context');
+    if (emptyState) {
+        console.log('[ExampleEdit] Modo sin contexto detectado, inicialización no necesaria');
+        return; // Nada que hacer
     }
 
     // Buscar el contenedor específico del edit form DENTRO del módulo activo

@@ -15,7 +15,7 @@
  * SOLUCIÓN:
  * - Configuración declarativa
  * - Manejo automático de errores y loading
- * - Integración con AlertService y TableHelper
+ * - Integración con AlertService y TableManager
  * - Hooks para customización
  *
  * EJEMPLO DE USO:
@@ -32,16 +32,20 @@
  * // window.editProduct(id)
  * // window.deleteProduct(id)
  * ```
+ *
+ * DEPENDENCIAS:
+ * - AlertService (servicios UI)
+ * - TableManager (gestión de tablas AG Grid)
  */
 
 class CrudManager {
     /**
      * @param {Object} config - Configuración del CRUD
      * @param {string} config.endpoint - Endpoint base del API (ej: '/api/products')
-     * @param {string} config.formPath - Ruta del componente formulario (ej: '/component/products-crud/product-form')
+     * @param {string} config.formPath - Ruta del componente formulario
      * @param {string} config.tableId - ID de la tabla asociada
      * @param {string} config.entityName - Nombre de la entidad (ej: 'Producto')
-     * @param {string} config.prefix - Prefijo para funciones globales (default: entityName en minúsculas)
+     * @param {string} config.prefix - Prefijo para funciones globales
      * @param {string} config.modalWidth - Ancho del modal (default: '700px')
      * @param {Function} config.onBeforeCreate - Hook antes de crear
      * @param {Function} config.onAfterCreate - Hook después de crear
@@ -62,8 +66,8 @@ class CrudManager {
             ...config
         };
 
-        // Crear cliente REST
-        this.api = new RestClient(this.config.endpoint);
+        // Endpoint base para peticiones
+        this.baseUrl = this.config.endpoint;
 
         console.log('[CrudManager] Inicializado para:', this.config.entityName);
     }
@@ -81,12 +85,63 @@ class CrudManager {
     }
 
     /**
+     * Realizar petición HTTP usando fetch nativo
+     * (Independiente de ApiClient/RestClient para evitar dependencias circulares)
+     */
+    async request(method, endpoint, data = null) {
+        const url = this.baseUrl + endpoint;
+        
+        const config = {
+            method: method.toUpperCase(),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        if (data && method.toUpperCase() !== 'GET') {
+            config.body = JSON.stringify(data);
+        }
+
+        try {
+            console.log(`[CrudManager] ${method} ${url}`, data || '');
+            const response = await fetch(url, config);
+            
+            let result;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                if (!response.ok) {
+                    // Crear error con status y response para manejo consistente
+                    const error = new Error(text || `HTTP ${response.status}`);
+                    error.status = response.status;
+                    error.response = { message: text, success: false };
+                    throw error;
+                }
+                result = { success: response.ok, data: text };
+            }
+
+            if (!response.ok) {
+                const error = new Error(result.message || `HTTP ${response.status}`);
+                error.status = response.status;
+                error.response = result;
+                throw error;
+            }
+
+            return result;
+        } catch (error) {
+            console.error(`[CrudManager] Error en ${method} ${url}:`, error);
+            throw error;
+        }
+    }
+
+    /**
      * Crear nuevo registro
      */
     async create() {
         console.log(`[CrudManager] Iniciando creación de ${this.config.entityName}`);
 
-        // Hook antes de abrir formulario
         if (this.config.onBeforeCreate) {
             const shouldContinue = await this.config.onBeforeCreate();
             if (shouldContinue === false) {
@@ -95,7 +150,6 @@ class CrudManager {
             }
         }
 
-        // Cargar formulario
         const result = await AlertService.componentModal(this.config.formPath, {
             title: `➕ Nuevo ${this.config.entityName}`,
             confirmButtonText: 'Crear',
@@ -115,7 +169,6 @@ class CrudManager {
     async edit(id) {
         console.log(`[CrudManager] Iniciando edición de ${this.config.entityName} #${id}`);
 
-        // Hook antes de abrir formulario
         if (this.config.onBeforeEdit) {
             const shouldContinue = await this.config.onBeforeEdit(id);
             if (shouldContinue === false) {
@@ -124,7 +177,6 @@ class CrudManager {
             }
         }
 
-        // Cargar formulario con datos
         const result = await AlertService.componentModal(this.config.formPath, {
             title: `✏️ Editar ${this.config.entityName} #${id}`,
             confirmButtonText: 'Guardar Cambios',
@@ -146,7 +198,6 @@ class CrudManager {
     async delete(id) {
         console.log(`[CrudManager] Iniciando eliminación de ${this.config.entityName} #${id}`);
 
-        // Hook antes de confirmar
         if (this.config.onBeforeDelete) {
             const shouldContinue = await this.config.onBeforeDelete(id);
             if (shouldContinue === false) {
@@ -155,7 +206,6 @@ class CrudManager {
             }
         }
 
-        // Confirmar eliminación
         const confirmed = await AlertService.confirmDelete(`${this.config.entityName} #${id}`);
 
         if (confirmed) {
@@ -172,32 +222,25 @@ class CrudManager {
         const loading = AlertService.loading(this.getLoadingMessage(action));
 
         try {
-            // Transformar datos si hay hook
             if (this.config.transformData) {
                 data = this.config.transformData(data, action);
             }
 
-            // Realizar petición según la acción
             let result;
             if (action === 'create') {
-                result = await this.api.create(data);
+                result = await this.request('POST', '/create', data);
             } else if (action === 'update') {
-                result = await this.api.update(data);
+                result = await this.request('POST', '/update', data);
             } else if (action === 'delete') {
-                result = await this.api.delete(data.id);
+                result = await this.request('POST', '/delete', data);
             }
 
             loading();
 
-            // Verificar éxito
             if (result.success) {
-                // Recargar tabla PRIMERO (para feedback inmediato)
                 await this.reloadTable();
-
-                // Mostrar mensaje de éxito
                 AlertService.success(result.message || this.getSuccessMessage(action));
 
-                // Hook después de la operación
                 const hookName = `onAfter${this.capitalize(action)}`;
                 if (this.config[hookName]) {
                     await this.config[hookName](result.data, result);
@@ -212,7 +255,6 @@ class CrudManager {
             loading();
             console.error(`[CrudManager] Error en ${action}:`, error);
 
-            // Mensaje de error más descriptivo
             let errorMessage = 'Error de conexión';
             if (error.message) {
                 errorMessage = error.message;
@@ -234,31 +276,30 @@ class CrudManager {
     }
 
     /**
-     * Recargar datos de la tabla
+     * Recargar datos de la tabla usando TableManager
      */
     async reloadTable() {
         console.log(`[CrudManager] Recargando tabla: ${this.config.tableId}`);
 
-        // Si hay hook personalizado, usarlo
         if (this.config.onReload) {
-            const table = await TableHelper.waitForTable(this.config.tableId);
+            // Hook personalizado usa TableManager
+            const table = await TableManager.waitForTable(this.config.tableId);
             await this.config.onReload(table);
             return;
         }
 
-        // Reload por defecto: obtener lista y actualizar tabla
         try {
-            const response = await this.api.list();
+            const response = await this.request('GET', '/list');
 
             if (response.success && response.data) {
                 let data = response.data;
 
-                // Formatear datos si hay hook
                 if (this.config.formatTableData) {
                     data = this.config.formatTableData(data);
                 }
 
-                await TableHelper.setTableData(this.config.tableId, data);
+                // Usar TableManager (consolidado desde TableHelper)
+                await TableManager.setTableData(this.config.tableId, data);
             }
         } catch (error) {
             console.error('[CrudManager] Error al recargar tabla:', error);
@@ -298,14 +339,12 @@ class CrudManager {
 
     /**
      * Exponer métodos CRUD como funciones globales
-     * Crea: window.createX(), window.editX(id), window.deleteX(id)
      * @returns {CrudManager} this para encadenar
      */
     expose() {
         const prefix = this.config.prefix || this.config.entityName.toLowerCase();
         const capitalizedPrefix = this.capitalize(prefix);
 
-        // Crear funciones globales
         window[`create${capitalizedPrefix}`] = () => this.create();
         window[`edit${capitalizedPrefix}`] = (id) => this.edit(id);
         window[`delete${capitalizedPrefix}`] = (id) => this.delete(id);

@@ -27,7 +27,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - icon: Icono de Ionicons (ej: 'flower-outline')
  * - display_order: Orden de aparición
  * - level: Nivel en jerarquía (0 = raíz, 1 = hijo, etc.)
- * - is_visible: Si se muestra en el menú
+ * - is_visible: Si se muestra en el menú lateral por defecto
+ * - is_dynamic: Si es una opción dinámica/fantasma (requiere contexto)
+ *
+ * TIPOS DE ITEMS:
+ * 1. NORMAL (visible=true, dynamic=false): En menú + buscable
+ * 2. OCULTO (visible=false, dynamic=false): Solo buscable
+ * 3. DINÁMICO (visible=false, dynamic=true): Solo por activación con contexto
  */
 class MenuItem extends Model
 {
@@ -55,7 +61,8 @@ class MenuItem extends Model
         'icon',
         'display_order',
         'level',
-        'is_visible'
+        'is_visible',
+        'is_dynamic'
     ];
 
     /**
@@ -65,6 +72,7 @@ class MenuItem extends Model
         'display_order' => 'integer',
         'level' => 'integer',
         'is_visible' => 'boolean',
+        'is_dynamic' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -76,6 +84,7 @@ class MenuItem extends Model
         'display_order' => 0,
         'level' => 0,
         'is_visible' => true,
+        'is_dynamic' => false,
         'icon' => 'ellipse-outline'
     ];
 
@@ -106,11 +115,46 @@ class MenuItem extends Model
     }
 
     /**
-     * Scope: Solo items visibles
+     * Scope: Solo items visibles en el menú lateral
+     * Excluye items con is_visible=false Y items dinámicos
      */
     public function scopeVisible($query)
     {
-        return $query->where('is_visible', true);
+        return $query->where('is_visible', true)
+                     ->where(function($q) {
+                         // Incluir items donde is_dynamic es false o no existe (compatibilidad)
+                         $q->where('is_dynamic', false)
+                           ->orWhereNull('is_dynamic');
+                     });
+    }
+
+    /**
+     * Scope: Items buscables (no dinámicos)
+     * Los items dinámicos no aparecen en búsquedas porque requieren contexto
+     */
+    public function scopeSearchable($query)
+    {
+        return $query->where(function($q) {
+            $q->where('is_dynamic', false)
+              ->orWhereNull('is_dynamic');
+        });
+    }
+
+    /**
+     * Scope: Solo items dinámicos (requieren contexto para activarse)
+     */
+    public function scopeDynamic($query)
+    {
+        return $query->where('is_dynamic', true);
+    }
+
+    /**
+     * Scope: Todos los items independientemente de visibilidad
+     * Útil para búsquedas que incluyen items ocultos pero no dinámicos
+     */
+    public function scopeForSearch($query)
+    {
+        return $query->searchable(); // Excluye dinámicos, incluye todo lo demás
     }
 
     /**

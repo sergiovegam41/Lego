@@ -161,7 +161,8 @@ html.light .example-crud {
    ═══════════════════════════════════════════════════════════════ */
 
 html.dark .example-crud {
-    --bg-surface: #1a1a1a;
+    /* Usar variables globales del tema para consistencia */
+    --bg-surface: var(--bg-body, #181A1B);
     --bg-surface-secondary: #2a2a2a;
     --text-primary: #f5f5f5;
     --border-default: #404040;

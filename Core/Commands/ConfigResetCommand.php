@@ -3,6 +3,7 @@
 namespace Core\Commands;
 
 use App\Models\MenuItem;
+use Core\Config\MenuStructure;
 
 /**
  * ConfigResetCommand - Reset Lego configuration to defaults
@@ -17,54 +18,6 @@ class ConfigResetCommand extends CoreCommand
     protected string $name = 'config:reset';
     protected string $description = 'Reset Lego configuration to defaults';
     protected string $signature = 'config:reset [--menu] [--force]';
-
-    /**
-     * Definición jerárquica del menú (misma que en seed)
-     */
-    private const MENU_STRUCTURE = [
-        [
-            'id' => 'inicio',
-            'parent_id' => null,
-            'label' => 'Inicio',
-            'index_label' => 'Inicio',
-            'route' => '/component/inicio',
-            'icon' => 'home-outline',
-            'display_order' => 0,
-            'level' => 0
-        ],
-        [
-            'id' => 'example-crud',
-            'parent_id' => null,
-            'label' => 'Example CRUD',
-            'index_label' => 'Ver',
-            'route' => '/component/example-crud',
-            'icon' => 'cube-outline',
-            'display_order' => 1,
-            'level' => 0,
-            'children' => [
-                [
-                    'id' => 'example-crud-create',
-                    'parent_id' => 'example-crud',
-                    'label' => 'Crear',
-                    'index_label' => 'Crear',
-                    'route' => '/component/example-crud/create',
-                    'icon' => 'add-circle-outline',
-                    'display_order' => 1,
-                    'level' => 1
-                ]
-            ]
-        ],
-        [
-            'id' => 'todo',
-            'parent_id' => null,
-            'label' => 'TODO List',
-            'index_label' => 'Ver',
-            'route' => '/component/todo',
-            'icon' => 'checkbox-outline',
-            'display_order' => 2,
-            'level' => 0
-        ]
-    ];
 
     public function execute(): bool
     {
@@ -126,7 +79,9 @@ class ConfigResetCommand extends CoreCommand
                     'route' => $item['route'],
                     'icon' => $item['icon'],
                     'display_order' => $item['display_order'],
-                    'level' => $item['level']
+                    'level' => $item['level'],
+                    'is_visible' => $item['is_visible'] ?? true,
+                    'is_dynamic' => $item['is_dynamic'] ?? false
                 ]);
                 
                 // Mostrar jerarquía visualmente
@@ -141,18 +96,16 @@ class ConfigResetCommand extends CoreCommand
                 }
             };
             
-            // Insertar todos los items desde la estructura
-            foreach (self::MENU_STRUCTURE as $item) {
+            // Insertar todos los items desde la fuente única (MenuStructure)
+            foreach (MenuStructure::get() as $item) {
                 $insertItem($item);
             }
             
             $this->success("\n  ✅ Menú reseteado correctamente");
             $this->line("\n  Estructura del menú:");
-            $this->line("    - Inicio");
-            $this->line("    - Example CRUD");
-            $this->line("      - Ver");
-            $this->line("      - Crear");
-            $this->line("    - TODO List");
+            foreach (MenuStructure::getSummary() as $line) {
+                $this->line("    " . $line);
+            }
             
             return true;
             

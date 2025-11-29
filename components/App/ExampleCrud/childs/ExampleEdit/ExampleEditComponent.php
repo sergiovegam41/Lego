@@ -60,19 +60,33 @@ class ExampleEditComponent extends CoreComponent
         error_log('[ExampleEditComponent] component() - exampleId final: ' . ($exampleId ?? 'NULL'));
 
         if (!$exampleId) {
+            // Sin contexto: redirigir automáticamente a la lista
+            // Este caso no debería ocurrir si el menú está correctamente configurado
+            // (is_dynamic=true para la opción "Editar")
             return <<<HTML
-            <div class="example-form">
-                <div class="example-form__error">
-                    <h2>Error</h2>
-                    <p>ID de registro no especificado</p>
-                    <p style="font-size: 12px; color: #666;">
-                        Debug: \$_GET = " . htmlspecialchars(json_encode($_GET)) . "
-                    </p>
-                    <p style="font-size: 12px; color: #666;">
-                        Debug: \$this->exampleId = " . htmlspecialchars($this->exampleId ?? 'NULL') . "
-                    </p>
+            <div class="example-form example-form--no-context">
+                <div class="example-form__empty-state">
+                    <ion-icon name="information-circle-outline" class="example-form__empty-icon"></ion-icon>
+                    <h2>Selecciona un registro</h2>
+                    <p>Para editar un registro, primero debes seleccionarlo desde la tabla.</p>
+                    <button 
+                        type="button" 
+                        class="example-form__button example-form__button--primary"
+                        onclick="window.legoWindowManager?.closeCurrentWindow() || history.back()"
+                    >
+                        <ion-icon name="arrow-back-outline"></ion-icon>
+                        Volver a la lista
+                    </button>
                 </div>
             </div>
+            <script>
+                // Auto-redirigir después de 3 segundos si el usuario no hace nada
+                setTimeout(() => {
+                    if (window.legoWindowManager) {
+                        window.legoWindowManager.closeCurrentWindow();
+                    }
+                }, 3000);
+            </script>
             HTML;
         }
 

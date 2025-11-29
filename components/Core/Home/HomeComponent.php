@@ -13,6 +13,14 @@ class HomeComponent extends CoreComponent
 
     protected $CSS_PATHS = ["./home.css"];
 
+    /**
+     * Constructor vacío intencional.
+     * 
+     * RAZÓN ARQUITECTÓNICA:
+     * HomeComponent es la página de inicio/dashboard que se carga via #[ApiComponent].
+     * Es un entry point del router sin parámetros requeridos.
+     * Si en el futuro necesita personalización, agregar parámetros opcionales.
+     */
     public function __construct() {}
 
     protected function component(): string

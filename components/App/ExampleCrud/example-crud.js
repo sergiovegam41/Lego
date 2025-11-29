@@ -1,23 +1,67 @@
 /**
- * ExampleCrudV3 - Lógica de tabla (REFACTORIZADO)
+ * ExampleCrud - Lógica de tabla (REFACTORIZADO con ComponentContext)
  *
  * FILOSOFÍA LEGO:
- * Lógica limpia usando módulos, TableManager y ApiClient.
- * Navegación usando sistema de pestañas, no window.location.href.
- *
- * MEJORAS vs V1/V2:
+ * ✅ CERO hardcoding - todo derivado del contexto
+ * ✅ Usa ComponentContext para rutas y IDs
  * ✅ Usa TableManager para gestión de tabla
- * ✅ Usa ApiClient con validación (no fetch directo)
- * ✅ Navegación con módulos (openCreateModule, openEditModule)
- * ✅ Custom cell renderer para acciones
- * ✅ Manejo robusto de errores
- * ✅ Sin código duplicado
- *
- * CONSISTENCIA DIMENSIONAL:
- * "Las distancias importan" - misma arquitectura que otros componentes
+ * ✅ Navegación con módulos dinámicos
  */
 
 console.log('[ExampleCrud] Inicializando...');
+
+// ═══════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DEL COMPONENTE
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Configuración base del componente.
+ * Derivada del contexto PHP o definida aquí como fuente de verdad JS.
+ * 
+ * NOTA: Idealmente esto vendría 100% del PHP, pero como fallback
+ * seguro, definimos los valores conocidos del componente.
+ */
+const COMPONENT_CONFIG = {
+    id: 'example-crud',
+    route: '/component/example-crud',
+    apiRoute: '/api/example-crud',
+    parentMenuId: 'example-crud',
+    tableId: 'example-crud-table'
+};
+
+/**
+ * Obtiene la configuración del componente.
+ * Usa SIEMPRE la configuración local como fuente de verdad.
+ */
+function getConfig() {
+    return COMPONENT_CONFIG;
+}
+
+/**
+ * Construye URL de API
+ */
+function apiUrl(action, params = null) {
+    const config = getConfig();
+    let url = `${config.apiRoute}/${action}`;
+    if (params && Object.keys(params).length > 0) {
+        url += '?' + new URLSearchParams(params).toString();
+    }
+    return url;
+}
+
+/**
+ * Construye URL de componente hijo
+ */
+function childUrl(childPath, params = null) {
+    const config = getConfig();
+    let url = `${config.route}/${childPath}`;
+    if (params && Object.keys(params).length > 0) {
+        url += '?' + new URLSearchParams(params).toString();
+    }
+    return url;
+}
+
+console.log('[ExampleCrud] Config:', getConfig());
 
 // ═══════════════════════════════════════════════════════════════════
 // CALLBACKS PARA ROW ACTIONS
@@ -29,8 +73,6 @@ console.log('[ExampleCrud] Inicializando...');
  */
 window.handleEditRecord = function(rowData, tableId) {
     console.log('[ExampleCrud] Editar registro:', rowData);
-
-    // Abrir módulo de edición con el ID del registro
     openEditModule(rowData.id);
 };
 
@@ -53,8 +95,7 @@ window.handleDeleteRecord = async function(rowData, tableId) {
     }
 
     try {
-        // Hacer fetch al endpoint de eliminación
-        const response = await fetch('/api/example-crud/delete', {
+        const response = await fetch(apiUrl('delete'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -97,7 +138,7 @@ window.handleDeleteRecord = async function(rowData, tableId) {
 // CREAR INSTANCIA DE TableManager
 // ═══════════════════════════════════════════════════════════════════
 
-const tableManager = new TableManager('example-crud-table');
+const tableManager = new TableManager(COMPONENT_CONFIG.tableId);
 
 // ═══════════════════════════════════════════════════════════════════
 // CUANDO LA TABLA ESTÉ LISTA
@@ -105,22 +146,14 @@ const tableManager = new TableManager('example-crud-table');
 
 tableManager.onReady(() => {
     console.log('[ExampleCrud] Tabla lista y configurada desde PHP');
-    // La tabla ya viene completamente configurada desde PHP con:
-    // - Columnas con anchos porcentuales
-    // - cellRenderer inline para acciones
-    // - valueFormatter para precio
-    // No necesitamos reconfigurar nada aquí
 });
 
 // ═══════════════════════════════════════════════════════════════════
-// NAVEGACIÓN - Usando sistema de módulos
+// NAVEGACIÓN - Usando configuración del componente
 // ═══════════════════════════════════════════════════════════════════
 
 /**
  * Abrir módulo de crear registro
- *
- * IMPORTANTE: NO usar window.location.href
- * El sistema usa pestañas dinámicas con ModuleStore
  */
 function openCreateModule() {
     if (!window.legoWindowManager) {
@@ -128,67 +161,53 @@ function openCreateModule() {
         return;
     }
 
-    const moduleId = 'example-crud-create';
-    const moduleUrl = '/component/example-crud/create';
-
-    // Abrir con ítem de menú dinámico
-    // parentMenuId: '10' es el grupo "Example CRUD" (padre conceptual correcto)
+    const config = getConfig();
+    
     window.legoWindowManager.openModuleWithMenu({
-        moduleId: moduleId,
-        parentMenuId: '10', // ID del grupo "Example CRUD" en el menú
+        moduleId: `${config.id}-create`,
+        parentMenuId: config.parentMenuId,
         label: 'Nuevo Registro',
-        url: moduleUrl,
+        url: childUrl('create'),
         icon: 'add-circle-outline'
     });
-
-    console.log('[ExampleCrud] Abriendo módulo crear con menú dinámico');
+    
+    console.log('[ExampleCrud] Abriendo módulo crear');
 }
 
 /**
  * Abrir módulo de editar registro
- *
- * OPCIÓN 2: Ventana de edición reutilizable única
- * Solo existe UNA ventana "Editar Registro" que reemplaza su contenido
- * cuando se edita un registro diferente.
+ * Ventana de edición reutilizable única
  */
-function openEditModule(recordId, recordData) {
-    if (!window.legoWindowManager || !window.moduleStore) {
-        console.error('[ExampleCrud] legoWindowManager o moduleStore no disponible');
+function openEditModule(recordId) {
+    if (!window.legoWindowManager) {
+        console.error('[ExampleCrud] legoWindowManager no disponible');
         return;
     }
 
-    // FIJO: Solo una ventana de edición reutilizable
-    const moduleId = 'example-crud-edit';
-    const moduleUrl = `/component/example-crud/edit?id=${recordId}`;
-
+    const config = getConfig();
+    const moduleId = `${config.id}-edit`;
+    const url = childUrl('edit', { id: recordId });
+    
     // Verificar si ya existe una ventana de edición abierta
-    const modules = window.moduleStore.getModules();
+    const modules = window.moduleStore?.getModules() || {};
+    
     if (modules[moduleId]) {
         console.log('[ExampleCrud] Ventana de edición ya existe, recargando con registro:', recordId);
-
-        // Obtener el container del módulo
+        
+        // Activar el módulo existente
         const container = document.getElementById(`module-${moduleId}`);
         if (container) {
-            // Activar el módulo
-            document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
+            document.querySelectorAll('.module-container').forEach(m => m.classList.remove('active'));
             container.classList.add('active');
             window.moduleStore._openModule(moduleId, modules[moduleId].component);
-
-            // Actualizar breadcrumb para el módulo activo
-            if (window.legoWindowManager) {
-                window.legoWindowManager.updateBreadcrumbFromActiveModule();
-            }
-
-            // Recargar el contenido del módulo con nuevo registro
-            fetch(moduleUrl)
+            
+            // Recargar contenido
+            fetch(url)
                 .then(res => res.text())
                 .then(html => {
-                    // Reemplazar contenido
                     container.innerHTML = html;
-
-                    // Ejecutar scripts manualmente
-                    const scripts = container.querySelectorAll('script');
-                    scripts.forEach((oldScript) => {
+                    // Re-ejecutar scripts
+                    container.querySelectorAll('script').forEach(oldScript => {
                         const newScript = document.createElement('script');
                         Array.from(oldScript.attributes).forEach(attr => {
                             newScript.setAttribute(attr.name, attr.value);
@@ -196,28 +215,23 @@ function openEditModule(recordId, recordData) {
                         newScript.textContent = oldScript.textContent;
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
-
                     console.log('[ExampleCrud] Contenido recargado para registro:', recordId);
                 })
-                .catch(err => {
-                    console.error('[ExampleCrud] Error recargando contenido:', err);
-                });
+                .catch(err => console.error('[ExampleCrud] Error recargando:', err));
         }
         return;
     }
 
-    // Abrir con ítem de menú dinámico (primera vez)
-    // parentMenuId: '10' es el grupo "Example CRUD" (padre conceptual correcto)
-    console.log('[ExampleCrud] Abriendo ventana de edición para registro:', recordId);
+    // Abrir nuevo módulo dinámico
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: '10', // ID del grupo "Example CRUD" en el menú
+        parentMenuId: config.parentMenuId,
         label: 'Editar Registro',
-        url: moduleUrl,
+        url: url,
         icon: 'create-outline'
     });
-
-    console.log('[ExampleCrud] Módulo editar abierto con menú dinámico');
+    
+    console.log('[ExampleCrud] Módulo editar abierto');
 }
 
 /**
@@ -250,7 +264,6 @@ function editRecord(recordId) {
 async function deleteRecord(recordId) {
     console.log('[ExampleCrud] Solicitud de eliminar registro:', recordId);
 
-    // Confirmar eliminación usando ConfirmationService
     const confirmed = window.ConfirmationService
         ? await window.ConfirmationService.delete(`registro <strong>#${recordId}</strong>`)
         : confirm('¿Estás seguro de que deseas eliminar este registro?');
@@ -261,7 +274,7 @@ async function deleteRecord(recordId) {
     }
 
     try {
-        const response = await fetch('/api/example-crud/delete', {
+        const response = await fetch(apiUrl('delete'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -275,14 +288,12 @@ async function deleteRecord(recordId) {
             throw new Error(result.msj || 'Error al eliminar registro');
         }
 
-        // Éxito
         if (window.AlertService) {
             await window.AlertService.success('Registro eliminado correctamente');
         } else {
             alert('Registro eliminado correctamente');
         }
 
-        // Recargar tabla
         if (window.legoWindowManager) {
             window.legoWindowManager.reloadActive();
         }

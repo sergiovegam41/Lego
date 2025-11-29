@@ -142,7 +142,7 @@ class ExampleCrudComponent extends CoreComponent
                     class="example-crud__create-btn"
                     id="example-crud-create-btn"
                     type="button"
-                    onclick="openModule('example-crud-create', '/component/example-crud/create', 'Crear Registro', null)"
+                    onclick="openCreateModule()"
                 >
                     <svg class="example-crud__create-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>

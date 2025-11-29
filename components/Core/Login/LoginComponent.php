@@ -15,6 +15,14 @@ class LoginComponent extends CoreComponent
 
     protected $CSS_PATHS = ["./login.css"];
 
+    /**
+     * Constructor vacío intencional.
+     * 
+     * RAZÓN ARQUITECTÓNICA:
+     * LoginComponent es una página standalone que renderiza HTML completo (DOCTYPE).
+     * No recibe parámetros porque es un entry point del router, no un componente
+     * embebido que necesite configuración desde su padre.
+     */
     public function __construct() {}
 
     protected function component(): string

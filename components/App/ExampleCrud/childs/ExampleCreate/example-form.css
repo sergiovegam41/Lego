@@ -210,7 +210,8 @@ html.light .example-form {
    ═══════════════════════════════════════════════════════════════ */
 
 html.dark .example-form {
-    --bg-surface: #1a1a1a;
+    /* Usar variables globales del tema para consistencia */
+    --bg-surface: var(--bg-body, #181A1B);
     --bg-surface-secondary: #2a2a2a;
     --bg-disabled: #404040;
 

@@ -30,6 +30,14 @@ class MainComponent extends CoreComponent
     protected $JS_PATHS_WITH_ARG = [];
     protected $CSS_PATHS = [];
 
+    /**
+     * Constructor vacío intencional.
+     * 
+     * RAZÓN ARQUITECTÓNICA:
+     * MainComponent es el layout principal SPA que renderiza HTML completo (DOCTYPE).
+     * Carga el menú desde base de datos internamente y no requiere configuración
+     * externa porque es el contenedor raíz de toda la aplicación autenticada.
+     */
     public function __construct() {}
 
     protected function component(): string
@@ -72,27 +80,40 @@ class MainComponent extends CoreComponent
           <link rel="stylesheet" href="./assets/css/core/confirmation-service.css">
           <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
 
-          <!-- FilePond CSS -->
+          <!-- ═══════════════════════════════════════════════════════════════
+               LEGO FRAMEWORK - SISTEMA DE CARGA DE ASSETS
+               
+               ORDEN DE CARGA (IMPORTANTE):
+               1. CSS Base + Plugins externos
+               2. Theme Init (previene FOUC)
+               3. Servicios Core (UI feedback)
+               4. Servicios Modulares (opcionales, cargados bajo demanda)
+               ═══════════════════════════════════════════════════════════════ -->
+
+          <!-- ═══ CSS: Plugins Externos ═══ -->
           <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
           <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
 
-          <!-- Solo necesitamos una versión de Babel -->
-
-          <!-- Universal Theme Initialization -->
+          <!-- ═══ BOOTSTRAP: Theme Init (CRÍTICO - previene flash) ═══ -->
           <script src="./assets/js/core/universal-theme-init.js"></script>
 
-          <!-- Alert Service -->
+          <!-- ═══ SERVICIOS CORE UI: Siempre necesarios para feedback ═══ -->
           <script src="./assets/js/services/AlertService.js"></script>
-
-          <!-- Confirmation Service -->
           <script src="./assets/js/services/ConfirmationService.js"></script>
 
-          <!-- LEGO Modular Services (Bloques) -->
+          <!-- ═══ SERVICIOS MODULARES: Disponibles globalmente ═══ -->
+          <!-- Estos servicios se cargan síncronamente porque son usados
+               por componentes dinámicos que los necesitan inmediatamente -->
           <script src="./assets/js/core/services/ApiClient.js"></script>
           <script src="./assets/js/core/services/StateManager.js"></script>
           <script src="./assets/js/core/services/ValidationEngine.js"></script>
           <script src="./assets/js/core/services/TableManager.js"></script>
           <script src="./assets/js/core/services/FormBuilder.js"></script>
+
+          <!-- ═══ COMPONENT CONTEXT: Elimina magic strings en JS ═══ -->
+          <!-- Permite que JS conozca el contexto del componente actual
+               (rutas, APIs, menú padre) sin valores hardcodeados -->
+          <script src="./assets/js/core/component-context.js"></script>
 
       </head>
       <body>
@@ -121,17 +142,30 @@ class MainComponent extends CoreComponent
               
           </div>
           
-          <!-- FilePond JS - Cargar antes de base-lego-framework -->
+          <!-- ═══════════════════════════════════════════════════════════════
+               SCRIPTS DE CIERRE (antes de </body>)
+               
+               ORDEN:
+               1. Plugins externos (FilePond)
+               2. Sistema de eventos LEGO
+               3. Framework base (SPA, módulos dinámicos)
+               4. Iconos
+               ═══════════════════════════════════════════════════════════════ -->
+
+          <!-- ═══ PLUGINS EXTERNOS: FilePond ═══ -->
           <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
           <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
           <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
           <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
           <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
 
-          <!-- Lego Events System - Cargar ANTES de base-lego-framework -->
+          <!-- ═══ LEGO CORE: Sistema de eventos (requerido por framework) ═══ -->
           <script src="./assets/js/core/modules/events/lego-events.js"></script>
 
+          <!-- ═══ LEGO FRAMEWORK: SPA y carga dinámica de módulos ═══ -->
           <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
+
+          <!-- ═══ ICONOS: Ionicons ═══ -->
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 
       </body>

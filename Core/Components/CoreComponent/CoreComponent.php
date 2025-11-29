@@ -2,6 +2,7 @@
 namespace Core\Components\CoreComponent;
 
 use Core\Dtos\ScriptCoreDTO;
+use Core\Traits\ComponentContextTrait;
 
 /**
  * CoreComponent - Clase base para todos los componentes Lego
@@ -15,6 +16,7 @@ use Core\Dtos\ScriptCoreDTO;
  * - Auto-loading de CSS/JS: Define $CSS_PATHS y $JS_PATHS
  * - Rutas relativas: Usa "./file.css" y se resuelve automáticamente
  * - Composición: Los componentes pueden contener otros componentes
+ * - ComponentContext: Contexto automático disponible para JS (sin magic strings)
  *
  * EJEMPLO:
  * class MenuComponent extends CoreComponent {
@@ -30,8 +32,28 @@ use Core\Dtos\ScriptCoreDTO;
  *         return "<div>...</div>";
  *     }
  * }
+ * 
+ * COMPONENT CONTEXT (para eliminar magic strings en JS):
+ * ```php
+ * protected function component(): string {
+ *     return <<<HTML
+ *     {$this->renderContext()}  <!-- Expone contexto al JS -->
+ *     <div>...</div>
+ *     HTML;
+ * }
+ * ```
+ * 
+ * En JS:
+ * ```javascript
+ * const ctx = ComponentContext.current();
+ * ctx.api('delete')     // '/api/mi-componente/delete'
+ * ctx.child('edit')     // '/component/mi-componente/edit'
+ * ctx.openDynamic('edit', { id: 5 }, { label: 'Editar' })
+ * ```
  */
 abstract class CoreComponent {
+
+    use ComponentContextTrait;
 
     protected $JS_PATHS = [];
 

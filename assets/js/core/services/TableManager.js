@@ -1,18 +1,24 @@
 /**
- * TableManager - Abstração modular de AG Grid
+ * TableManager - Abstracción modular de AG Grid
  *
  * FILOSOFÍA LEGO:
  * Abstrae la complejidad de AG Grid en una interfaz simple y agnóstica.
  * Funciona con cualquier tabla en cualquier página sin conocer detalles internos.
  *
- * USO:
- * const tableManager = new TableManager('products-crud-table');
- * tableManager.onReady(() => {
- *     tableManager.setData(products);
- *     tableManager.updateRowCount();
- * });
- * tableManager.on('action:edit', (rowId) => { ... });
- * tableManager.on('action:delete', (rowId) => { ... });
+ * DOS MODOS DE USO:
+ *
+ * 1. MODO INSTANCIA (recomendado para componentes):
+ *    const tableManager = new TableManager('products-table');
+ *    tableManager.onReady(() => {
+ *        tableManager.setData(products);
+ *    });
+ *
+ * 2. MODO ESTÁTICO (para scripts rápidos):
+ *    const table = await TableManager.waitForTable('products-table');
+ *    TableManager.setTableData('products-table', products);
+ *
+ * NOTA: Este módulo consolida la funcionalidad de TableHelper.
+ * TableHelper está deprecated y será eliminado en futuras versiones.
  */
 
 class TableManager {
@@ -295,4 +301,152 @@ class TableManager {
     getColumnAPI() {
         return this.columnApi;
     }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MÉTODOS ESTÁTICOS (consolidados desde TableHelper)
+    // Permiten uso sin instanciar: TableManager.waitForTable('id')
+    // ═══════════════════════════════════════════════════════════════════
+
+    /**
+     * [ESTÁTICO] Esperar a que una tabla esté completamente inicializada
+     * @param {string} tableId - ID de la tabla
+     * @param {number} timeout - Timeout en ms (default: 10000)
+     * @returns {Promise<Object>} Objeto con api y columnApi
+     */
+    static async waitForTable(tableId, timeout = 10000) {
+        console.log(`[TableManager] Esperando tabla: ${tableId}`);
+
+        // Inicializar registry si no existe
+        if (!window.LEGO_TABLES) {
+            window.LEGO_TABLES = {};
+        }
+
+        // Si la tabla ya existe, devolver inmediatamente
+        if (window.LEGO_TABLES[tableId]?.api) {
+            console.log(`[TableManager] Tabla ${tableId} ya disponible`);
+            return window.LEGO_TABLES[tableId];
+        }
+
+        // Si ya hay una Promise esperando, unirse a ella
+        if (window.LEGO_TABLES[tableId]?.promise) {
+            console.log(`[TableManager] Uniéndose a Promise existente para ${tableId}`);
+            return window.LEGO_TABLES[tableId].promise;
+        }
+
+        // Crear nueva Promise
+        const promise = new Promise((resolve, reject) => {
+            let resolved = false;
+
+            // Timeout
+            const timeoutId = setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    console.error(`[TableManager] Timeout esperando tabla: ${tableId}`);
+                    reject(new Error(`Timeout waiting for table: ${tableId}`));
+                }
+            }, timeout);
+
+            // Event listener
+            const handler = (event) => {
+                if (event.detail.tableId === tableId && !resolved) {
+                    resolved = true;
+                    clearTimeout(timeoutId);
+                    window.removeEventListener('lego:table:ready', handler);
+                    console.log(`[TableManager] Tabla ${tableId} lista!`);
+                    resolve(event.detail);
+                }
+            };
+
+            window.addEventListener('lego:table:ready', handler);
+
+            // Verificar de nuevo por si acaso
+            if (window.LEGO_TABLES[tableId]?.api && !resolved) {
+                resolved = true;
+                clearTimeout(timeoutId);
+                window.removeEventListener('lego:table:ready', handler);
+                resolve(window.LEGO_TABLES[tableId]);
+            }
+        });
+
+        // Guardar la promise para que otros puedan unirse
+        if (!window.LEGO_TABLES[tableId]) {
+            window.LEGO_TABLES[tableId] = {};
+        }
+        window.LEGO_TABLES[tableId].promise = promise;
+
+        return promise;
+    }
+
+    /**
+     * [ESTÁTICO] Verificar si una tabla está inicializada
+     * @param {string} tableId - ID de la tabla
+     * @returns {boolean}
+     */
+    static isTableReady(tableId) {
+        return !!(window.LEGO_TABLES && window.LEGO_TABLES[tableId]?.api);
+    }
+
+    /**
+     * [ESTÁTICO] Obtener API de tabla si está disponible (síncrono)
+     * @param {string} tableId - ID de la tabla
+     * @returns {Object|null} API o null si no está lista
+     */
+    static getTableApi(tableId) {
+        return window.LEGO_TABLES?.[tableId]?.api || null;
+    }
+
+    /**
+     * [ESTÁTICO] Actualizar datos de una tabla
+     * @param {string} tableId - ID de la tabla
+     * @param {Array} data - Datos a cargar
+     */
+    static async setTableData(tableId, data) {
+        const table = await TableManager.waitForTable(tableId);
+        table.api.setGridOption('rowData', data);
+        console.log(`[TableManager] Datos actualizados en ${tableId}:`, data.length, 'filas');
+    }
+
+    /**
+     * [ESTÁTICO] Obtener filas seleccionadas de una tabla
+     * @param {string} tableId - ID de la tabla
+     * @returns {Array} Filas seleccionadas
+     */
+    static async getSelectedRowsStatic(tableId) {
+        const table = await TableManager.waitForTable(tableId);
+        return table.api.getSelectedRows();
+    }
+
+    /**
+     * [ESTÁTICO] Refrescar tabla (disparar evento)
+     * @param {string} tableId - ID de la tabla
+     */
+    static refresh(tableId) {
+        console.log(`[TableManager] Disparando evento de refresh para ${tableId}`);
+        window.dispatchEvent(new CustomEvent('lego:table:refresh', {
+            detail: { tableId }
+        }));
+    }
+
+    /**
+     * [ESTÁTICO] Limpiar tabla
+     * @param {string} tableId - ID de la tabla
+     */
+    static async clearTable(tableId) {
+        const table = await TableManager.waitForTable(tableId);
+        table.api.setGridOption('rowData', []);
+        console.log(`[TableManager] Tabla ${tableId} limpiada`);
+    }
+
+    /**
+     * [ESTÁTICO] Aplicar filtro rápido a tabla
+     * @param {string} tableId - ID de la tabla
+     * @param {string} filterText - Texto a filtrar
+     */
+    static async quickFilter(tableId, filterText) {
+        const table = await TableManager.waitForTable(tableId);
+        table.api.setGridOption('quickFilterText', filterText);
+    }
 }
+
+// Exponer globalmente
+window.TableManager = TableManager;
