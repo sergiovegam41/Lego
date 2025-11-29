@@ -38,46 +38,46 @@
 /* ===== Variant Buttons ===== */
 .lego-alert-btn--primary {
     background: var(--accent-primary, #3b82f6) !important;
-    color: #ffffff !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--primary:hover {
-    background: var(--accent-primary-dark, #2563eb) !important;
+    background: var(--accent-primary-hover, #2563eb) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px var(--accent-primary-alpha, rgba(59, 130, 246, 0.3));
 }
 
 .lego-alert-btn--warning {
-    background: #f59e0b !important;
-    color: #ffffff !important;
+    background: var(--color-warning, #f59e0b) !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--warning:hover {
-    background: #d97706 !important;
+    background: var(--color-warning-hover, #d97706) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 12px var(--warning-bg, rgba(245, 158, 11, 0.3));
 }
 
 .lego-alert-btn--danger {
-    background: #ef4444 !important;
-    color: #ffffff !important;
+    background: var(--color-danger, #ef4444) !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--danger:hover {
-    background: #dc2626 !important;
+    background: var(--color-danger-hover, #dc2626) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 4px 12px var(--error-bg, rgba(239, 68, 68, 0.3));
 }
 
 .lego-alert-btn--info {
-    background: #3b82f6 !important;
-    color: #ffffff !important;
+    background: var(--color-info, #3b82f6) !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--info:hover {
-    background: #2563eb !important;
+    background: var(--color-info-hover, #1d4ed8) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px var(--info-bg, rgba(59, 130, 246, 0.3));
 }
 
 /* ===== Dark Theme Support ===== */

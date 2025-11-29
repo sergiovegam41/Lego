@@ -206,21 +206,15 @@
 }
 
 /* Dark mode */
-@media (prefers-color-scheme: dark) {
-    .lego-form__success {
-        background-color: rgba(34, 197, 94, 0.1);
-        border-color: rgba(34, 197, 94, 0.3);
-        color: var(--color-green-400);
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
+html.dark .lego-form__success {
+    background-color: var(--success-bg, rgba(34, 197, 94, 0.1));
+    border-color: var(--success-border, rgba(34, 197, 94, 0.3));
+    color: var(--success, #4caf50);
+}
 
-    .lego-form__error {
-        background-color: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: var(--color-orange-400);
-    }
-
-    .lego-form__group {
-        /* background-color: var(--bg-surface-secondary); */
-        /* border-color: var(--border-light); */
-    }
+html.dark .lego-form__error {
+    background-color: var(--error-bg, rgba(239, 68, 68, 0.1));
+    border-color: var(--error-border, rgba(239, 68, 68, 0.3));
+    color: var(--error, #ef4444);
 }

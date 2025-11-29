@@ -84,106 +84,99 @@ document.getElementById('toggle-password').addEventListener('click', function() 
     });
 
 // Theme toggle functionality
-function initTheme() {
-    // Check for saved theme using storage manager or fallback to localStorage
-    let savedTheme;
-    if (window.storageManager) {
-        savedTheme = window.storageManager.getTheme();
-    } else {
-        savedTheme = localStorage.getItem('lego_theme');
-    }
-    
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = savedTheme || (prefersDark ? 'dark' : 'dark'); // Default to dark
-    
-    // Apply theme
-    if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-}
+// LEGO Standard: Usar window.themeManager para consistencia con todo el framework
 
-function toggleTheme() {
-    console.log('toggleTheme function called');
-    const isDark = document.documentElement.classList.contains('dark');
-    console.log('Current theme is dark:', isDark);
-    
-    if (isDark) {
-        console.log('Switching to light theme');
-        document.documentElement.classList.remove('dark');
-        if (window.storageManager) {
-            window.storageManager.setTheme('light');
-            console.log('Theme saved to storageManager: light');
-        } else {
-            localStorage.setItem('lego_theme', 'light');
-            console.log('Theme saved to localStorage: light');
-        }
-    } else {
-        console.log('Switching to dark theme');
-        document.documentElement.classList.add('dark');
-        if (window.storageManager) {
-            window.storageManager.setTheme('dark');
-            console.log('Theme saved to storageManager: dark');
-        } else {
-            localStorage.setItem('lego_theme', 'dark');
-            console.log('Theme saved to localStorage: dark');
-        }
-    }
-}
-
-// Initialize theme immediately
-initTheme();
-
-// Add event listener to theme toggle button when DOM is loaded
-
-console.log('DOM loaded, searching for theme toggle button');
-
-// Wait a bit for all elements to be ready
-setTimeout(() => {
+/**
+ * Inicializa el toggle de tema usando el ThemeManager global
+ * Patrón unificado igual que en HeaderComponent
+ */
+function initializeThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
-    console.log('Theme toggle button found:', themeToggle);
-    console.log('Button properties:', {
-        style: themeToggle?.style?.cssText,
-        classes: themeToggle?.className,
-        offsetParent: themeToggle?.offsetParent,
-        clientWidth: themeToggle?.clientWidth,
-        clientHeight: themeToggle?.clientHeight
-    });
     
-    if (themeToggle) {
-        // Multiple event listeners for debugging
+    if (!themeToggle) {
+        console.error('[Login] Theme toggle button not found');
+        return;
+    }
+    
+    // Usar themeManager si está disponible, sino fallback local
+    if (window.themeManager) {
         themeToggle.addEventListener('click', function(event) {
-            console.log('CLICK EVENT TRIGGERED!', event);
             event.preventDefault();
             event.stopPropagation();
-            toggleTheme();
+            
+            // Visual feedback
+            this.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                window.themeManager.toggle();
+                this.style.transform = '';
+            }, 100);
         });
         
-        themeToggle.addEventListener('mousedown', function(event) {
-            console.log('MOUSEDOWN EVENT TRIGGERED!', event);
+        // Hover effects
+        themeToggle.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
         });
         
-        themeToggle.addEventListener('mouseup', function(event) {
-            console.log('MOUSEUP EVENT TRIGGERED!', event);
+        themeToggle.addEventListener('mouseleave', function() {
+            this.style.transform = '';
         });
         
-        themeToggle.addEventListener('pointerdown', function(event) {
-            console.log('POINTERDOWN EVENT TRIGGERED!', event);
-        });
-        
-        // Force click handler as backup
-        themeToggle.onclick = function(event) {
-            console.log('ONCLICK HANDLER TRIGGERED!', event);
-            event.preventDefault();
-            toggleTheme();
-        };
-        
-        console.log('All event listeners added to theme toggle button');
+        console.log('[Login] Theme toggle initialized with themeManager');
     } else {
-        console.error('Theme toggle button not found');
+        // Fallback: implementación local compatible con html.dark/html.light
+        themeToggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            this.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                toggleThemeFallback();
+                this.style.transform = '';
+            }, 100);
+        });
+        
+        console.log('[Login] Theme toggle initialized with fallback');
     }
-}, 100);
+}
+
+/**
+ * Fallback para toggle de tema si themeManager no está disponible
+ * Mantiene consistencia con el estándar LEGO (html.dark/html.light)
+ */
+function toggleThemeFallback() {
+    const html = document.documentElement;
+    const body = document.body;
+    const isDark = html.classList.contains('dark');
+    const STORAGE_KEY = 'lego_theme';
+    
+    if (isDark) {
+        // Cambiar a light
+        html.classList.remove('dark');
+        html.classList.add('light');
+        body.classList.remove('dark');
+        body.classList.add('light');
+        html.style.colorScheme = 'light';
+        localStorage.setItem(STORAGE_KEY, 'light');
+    } else {
+        // Cambiar a dark
+        html.classList.remove('light');
+        html.classList.add('dark');
+        body.classList.remove('light');
+        body.classList.add('dark');
+        html.style.colorScheme = 'dark';
+        localStorage.setItem(STORAGE_KEY, 'dark');
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeThemeToggle);
+} else {
+    // DOM ya cargado, esperar un tick para que themeManager esté disponible
+    setTimeout(initializeThemeToggle, 50);
+}
 
 
-console.log("Login component loaded")
+console.log("Login component loaded");

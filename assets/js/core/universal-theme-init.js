@@ -44,6 +44,7 @@
 
     /**
      * Aplica el tema inmediatamente para prevenir flash
+     * LEGO Standard: Usar tanto html.dark como html.light
      */
     function applyThemeImmediately(theme) {
         try {
@@ -56,9 +57,11 @@
 
             elements.forEach(element => {
                 if (theme === 'dark') {
+                    element.classList.remove('light');
                     element.classList.add('dark');
                 } else {
                     element.classList.remove('dark');
+                    element.classList.add('light');
                 }
             });
 
@@ -75,14 +78,17 @@
 
     /**
      * Observer para cuando el body esté disponible
+     * LEGO Standard: Usar tanto html.dark como html.light
      */
     function watchForBodyElement(theme) {
         if (document.body) {
             // Body ya existe, aplicar tema
             if (theme === 'dark') {
+                document.body.classList.remove('light');
                 document.body.classList.add('dark');
             } else {
                 document.body.classList.remove('dark');
+                document.body.classList.add('light');
             }
         } else {
             // Body no existe, observar hasta que aparezca
@@ -92,9 +98,11 @@
                         const body = document.querySelector('body');
                         if (body) {
                             if (theme === 'dark') {
+                                body.classList.remove('light');
                                 body.classList.add('dark');
                             } else {
                                 body.classList.remove('dark');
+                                body.classList.add('light');
                             }
                             observer.disconnect();
                         }

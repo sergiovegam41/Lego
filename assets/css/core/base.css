@@ -81,7 +81,7 @@ html.light {
     --text-primary: #000000;
     --text-secondary: #707070;
     --text-tertiary: #909090;
-    --text-on-focus: #ffffff;
+    --text-on-focus: #000000;
     --text-disabled: #a0a0a0;
 
     --border-light: #dddddd;
@@ -96,11 +96,11 @@ html.light {
     --accent-light: rgba(59, 161, 255, 0.1);
 }
 
-/* Light mode for body when no class is present - compatibility */
-body:not(.dark), body.light {
+/* Light mode - LEGO Standard: usar html.light para consistencia */
+html.light body {
     /* Apply light theme variables to ensure consistency */
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--bg-body);
+    color: var(--text-primary);
 }
 
 :root {
@@ -255,11 +255,8 @@ body {
 
 
 
-body.dark ion-icon, body.dark .name {
-     
-    color: white;
-
-    
+html.dark ion-icon, html.dark .name {
+    color: var(--text-primary);
 }
 
 
@@ -342,7 +339,7 @@ a:hover {
 
 
 
-body.dark .module-container{
+html.dark .module-container{
     background-color: transparent;
 }
 

@@ -192,12 +192,12 @@
     transform: rotate(0deg);
 }
 
-body.dark .theme-toggle-header .sun {
+html.dark .theme-toggle-header .sun {
     opacity: 1;
     transform: rotate(0deg);
 }
 
-body.dark .theme-toggle-header .moon {
+html.dark .theme-toggle-header .moon {
     opacity: 0;
     transform: rotate(-90deg);
 }

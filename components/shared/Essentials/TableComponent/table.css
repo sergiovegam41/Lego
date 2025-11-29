@@ -198,82 +198,77 @@
 }
 
 /* ===== Dark Mode Support ===== */
-@media (prefers-color-scheme: dark) {
-    .lego-table-container {
-        /* background: var(--bg-surface, #1f2937); */
-        /* box-shadow: 0 2px 8px rgba(0,0,0,0.3); */
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
 
-    .lego-table-toolbar {
-        border-bottom-color: var(--border-light, #374151);
-    }
+html.dark .lego-table-toolbar {
+    border-bottom-color: var(--border-light, #374151);
+}
 
-    .lego-table-toolbar__btn {
-        background: var(--bg-surface, #374151);
-        border-color: var(--border-light, #4b5563);
-        color: var(--text-primary, #f3f4f6);
-    }
+html.dark .lego-table-toolbar__btn {
+    background: var(--bg-surface, #374151);
+    border-color: var(--border-light, #4b5563);
+    color: var(--text-primary, #f3f4f6);
+}
 
-    .lego-table-toolbar__btn:hover {
-        background: var(--bg-surface-hover, #4b5563);
-        border-color: var(--accent-primary, #3b82f6);
-    }
+html.dark .lego-table-toolbar__btn:hover {
+    background: var(--bg-surface-hover, #4b5563);
+    border-color: var(--accent-primary, #3b82f6);
+}
 
-    .lego-table {
-        border-color: var(--border-light, #374151);
-    }
+html.dark .lego-table {
+    border-color: var(--border-light, #374151);
+}
 
-    .lego-table-loader {
-        background: rgba(31, 41, 55, 0.9);
-    }
+html.dark .lego-table-loader {
+    background: rgba(31, 41, 55, 0.9);
+}
 
-    .lego-table-loader__spinner {
-        border-color: var(--border-light, #4b5563);
-        border-top-color: var(--accent-primary, #3b82f6);
-    }
+html.dark .lego-table-loader__spinner {
+    border-color: var(--border-light, #4b5563);
+    border-top-color: var(--accent-primary, #3b82f6);
+}
 
-    .lego-table-loader__message {
-        color: var(--text-secondary, #9ca3af);
-    }
+html.dark .lego-table-loader__message {
+    color: var(--text-secondary, #9ca3af);
+}
 
-    /* AG Grid dark mode overrides */
-    .ag-theme-quartz {
-        --ag-background-color: #1f2937;
-        --ag-header-background-color: #111827;
-        --ag-odd-row-background-color: #1f2937;
-        --ag-row-hover-color: #374151;
-        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
-        --ag-border-color: #374151;
-        --ag-header-foreground-color: #f3f4f6;
-        --ag-foreground-color: #e5e7eb;
-        --ag-secondary-foreground-color: #9ca3af;
-        --ag-input-border-color: #4b5563;
-        --ag-input-focus-border-color: #3b82f6;
-    }
+/* AG Grid dark mode overrides */
+html.dark .ag-theme-quartz {
+    --ag-background-color: var(--bg-body, #1f2937);
+    --ag-header-background-color: var(--bg-surface, #111827);
+    --ag-odd-row-background-color: var(--bg-body, #1f2937);
+    --ag-row-hover-color: var(--bg-surface-hover, #374151);
+    --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+    --ag-border-color: var(--border-light, #374151);
+    --ag-header-foreground-color: var(--text-primary, #f3f4f6);
+    --ag-foreground-color: var(--text-primary, #e5e7eb);
+    --ag-secondary-foreground-color: var(--text-secondary, #9ca3af);
+    --ag-input-border-color: var(--border-medium, #4b5563);
+    --ag-input-focus-border-color: var(--accent-primary, #3b82f6);
+}
 
-    .ag-theme-alpine {
-        --ag-background-color: #1f2937;
-        --ag-header-background-color: #111827;
-        --ag-odd-row-background-color: #1f2937;
-        --ag-row-hover-color: #374151;
-        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
-        --ag-border-color: #374151;
-        --ag-foreground-color: #e5e7eb;
-    }
+html.dark .ag-theme-alpine {
+    --ag-background-color: var(--bg-body, #1f2937);
+    --ag-header-background-color: var(--bg-surface, #111827);
+    --ag-odd-row-background-color: var(--bg-body, #1f2937);
+    --ag-row-hover-color: var(--bg-surface-hover, #374151);
+    --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+    --ag-border-color: var(--border-light, #374151);
+    --ag-foreground-color: var(--text-primary, #e5e7eb);
+}
 
-    .ag-theme-balham {
-        --ag-background-color: #1f2937;
-        --ag-header-background-color: #111827;
-        --ag-odd-row-background-color: #1f2937;
-        --ag-row-hover-color: #374151;
-        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
-    }
+html.dark .ag-theme-balham {
+    --ag-background-color: var(--bg-body, #1f2937);
+    --ag-header-background-color: var(--bg-surface, #111827);
+    --ag-odd-row-background-color: var(--bg-body, #1f2937);
+    --ag-row-hover-color: var(--bg-surface-hover, #374151);
+    --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
+}
 
-    .ag-theme-material {
-        --ag-background-color: #1f2937;
-        --ag-header-background-color: #111827;
-        --ag-odd-row-background-color: #1f2937;
-        --ag-row-hover-color: #374151;
-        --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
-    }
+html.dark .ag-theme-material {
+    --ag-background-color: var(--bg-body, #1f2937);
+    --ag-header-background-color: var(--bg-surface, #111827);
+    --ag-odd-row-background-color: var(--bg-body, #1f2937);
+    --ag-row-hover-color: var(--bg-surface-hover, #374151);
+    --ag-selected-row-background-color: rgba(59, 130, 246, 0.2);
 }

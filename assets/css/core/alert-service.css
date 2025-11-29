@@ -39,13 +39,13 @@
 
 .lego-alert-btn--confirm {
     background: var(--accent-primary, #3b82f6) !important;
-    color: #ffffff !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--confirm:hover {
-    background: var(--accent-primary-dark, #2563eb) !important;
+    background: var(--accent-primary-hover, #2563eb) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px var(--accent-primary-alpha, rgba(59, 130, 246, 0.3));
 }
 
 .lego-alert-btn--cancel {
@@ -59,12 +59,12 @@
 }
 
 .lego-alert-btn--deny {
-    background: #ef4444 !important;
-    color: #ffffff !important;
+    background: var(--color-danger, #ef4444) !important;
+    color: var(--text-on-accent, #ffffff) !important;
 }
 
 .lego-alert-btn--deny:hover {
-    background: #dc2626 !important;
+    background: var(--color-danger-hover, #dc2626) !important;
 }
 
 /* ===== Progress Bar ===== */
@@ -106,11 +106,11 @@
 }
 
 .swal2-icon.swal2-success [class^='swal2-success-line'] {
-    background-color: var(--accent-success, #10b981) !important;
+    background-color: var(--success, #4caf50) !important;
 }
 
 .swal2-icon.swal2-success .swal2-success-ring {
-    border-color: rgba(16, 185, 129, 0.3) !important;
+    border-color: var(--success-bg, rgba(76, 175, 80, 0.3)) !important;
 }
 
 /* ===== Loading Spinner ===== */
@@ -137,9 +137,9 @@
 
 /* ===== Validation Error ===== */
 .swal2-validation-message {
-    background: #fef2f2 !important;
-    color: #ef4444 !important;
-    border: 1px solid #fecaca !important;
+    background: var(--error-bg, #fef2f2) !important;
+    color: var(--color-danger, #ef4444) !important;
+    border: 1px solid var(--error-border, #fecaca) !important;
     border-radius: var(--radius-input, 6px) !important;
 }
 

@@ -117,8 +117,3 @@ body {
   svg, svg * {
     transition: stroke 0.3s ease, fill 0.3s ease !important;
   }
-
-  /* Import base styles for consistency */
-  @import url('../../../assets/css/core/base.css');
-
-

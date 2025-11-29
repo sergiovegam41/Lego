@@ -215,8 +215,7 @@
 }
 
 /* Dark mode ajustes */
-@media (prefers-color-scheme: dark) {
-    .lego-select__dropdown {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
+html.dark .lego-select__dropdown {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }

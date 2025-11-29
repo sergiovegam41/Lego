@@ -131,8 +131,7 @@
 }
 
 /* Dark mode ajustes */
-@media (prefers-color-scheme: dark) {
-    .lego-radio__checkmark {
-        border-color: var(--border-light);
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
+html.dark .lego-radio__checkmark {
+    border-color: var(--border-light);
 }

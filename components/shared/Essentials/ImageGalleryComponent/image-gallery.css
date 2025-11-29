@@ -64,24 +64,23 @@
 }
 
 /* Dark mode adjustments for FilePond */
-@media (prefers-color-scheme: dark) {
-    .filepond--root {
-        color: rgb(209, 213, 219);
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
+html.dark .filepond--root {
+    color: var(--text-primary, rgb(209, 213, 219));
+}
 
-    .filepond--drop-label {
-        color: rgb(156, 163, 175);
-    }
+html.dark .filepond--drop-label {
+    color: var(--text-secondary, rgb(156, 163, 175));
+}
 
-    .filepond--panel-root {
-        background-color: rgb(31, 41, 55);
-    }
+html.dark .filepond--panel-root {
+    background-color: var(--bg-body, rgb(31, 41, 55));
+}
 
-    .filepond--item-panel {
-        background-color: rgb(55, 65, 81);
-    }
+html.dark .filepond--item-panel {
+    background-color: var(--bg-surface, rgb(55, 65, 81));
+}
 
-    .filepond--drip-blob {
-        background-color: rgba(59, 130, 246, 0.5);
-    }
+html.dark .filepond--drip-blob {
+    background-color: var(--accent-primary-alpha, rgba(59, 130, 246, 0.5));
 }

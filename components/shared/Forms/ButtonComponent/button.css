@@ -68,27 +68,27 @@
 }
 
 .lego-button--success {
-    color: white;
-    background-color: var(--color-green-600);
-    border-color: var(--color-green-600);
+    color: var(--text-on-accent, white);
+    background-color: var(--color-success, #4caf50);
+    border-color: var(--color-success, #4caf50);
 }
 
 .lego-button--success:hover:not(:disabled) {
-    background-color: var(--color-green-700);
-    border-color: var(--color-green-700);
+    background-color: var(--color-success-hover, #065f46);
+    border-color: var(--color-success-hover, #065f46);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .lego-button--danger {
-    color: white;
-    background-color: var(--color-orange-600);
-    border-color: var(--color-orange-600);
+    color: var(--text-on-accent, white);
+    background-color: var(--color-danger, #ef4444);
+    border-color: var(--color-danger, #ef4444);
 }
 
 .lego-button--danger:hover:not(:disabled) {
-    background-color: var(--color-orange-700);
-    border-color: var(--color-orange-700);
+    background-color: var(--color-danger-hover, #991b1b);
+    border-color: var(--color-danger-hover, #991b1b);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -181,12 +181,11 @@
 }
 
 /* Dark mode ajustes */
-@media (prefers-color-scheme: dark) {
-    .lego-button--secondary {
-        background-color: var(--bg-surface-secondary);
-    }
+/* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
+html.dark .lego-button--secondary {
+    background-color: var(--bg-surface-secondary);
+}
 
-    .lego-button--ghost:hover:not(:disabled) {
-        background-color: var(--bg-surface-tertiary);
-    }
+html.dark .lego-button--ghost:hover:not(:disabled) {
+    background-color: var(--bg-surface-tertiary);
 }

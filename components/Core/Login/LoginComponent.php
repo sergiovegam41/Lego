@@ -44,24 +44,27 @@ class LoginComponent extends CoreComponent
                 <link rel="stylesheet" href="./assets/css/core/base.css">
                 
                 <!-- Inline script to prevent flash of wrong theme -->
+                <!-- LEGO Standard: Usar html.dark/html.light para consistencia -->
                 <script>
                 (function() {
                     // Get theme immediately from localStorage
                     const STORAGE_KEY = 'lego_theme';
                     let savedTheme = localStorage.getItem(STORAGE_KEY);
                     
-                    // If no saved theme, check system preference and default to dark
+                    // If no saved theme, default to dark
                     if (!savedTheme) {
-                        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        savedTheme = prefersDark ? 'dark' : 'dark'; // Default to dark always
+                        savedTheme = 'dark';
                     }
                     
                     // Apply theme immediately to prevent flash
+                    // IMPORTANTE: Usar tanto html.dark como html.light para CSS correcto
                     if (savedTheme === 'dark') {
                         document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('light');
                         document.documentElement.style.colorScheme = 'dark';
                     } else {
                         document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('light');
                         document.documentElement.style.colorScheme = 'light';
                     }
                 })();

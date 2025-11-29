@@ -161,11 +161,14 @@ html.dark {
     --bg-sidebar: #242526;
     --bg-surface: #3a3b3c;
     --bg-surface-secondary: var(--neutral-900);
+    --bg-surface-tertiary: var(--neutral-800);
     --bg-surface-hover: var(--neutral-800);
     --bg-input: var(--neutral-900);
     --bg-disabled: #4a4b4c;
     --bg-overlay: rgba(0, 0, 0, 0.6);
     --bg-code: #1e293b;
+    --bg-hover: var(--state-hover);
+    --bg-active: var(--state-active);
 
     /* --- Text Colors --- */
     --text-primary: #ffffff;
@@ -174,6 +177,7 @@ html.dark {
     --text-disabled: #808080;
     --text-on-primary: #ffffff;
     --text-on-accent: #ffffff;
+    --text-on-focus: #ffffff;
     --text-inverse: #000000;
 
     /* --- Border Colors --- */
@@ -229,11 +233,14 @@ html.light {
     --bg-sidebar: #ffffff;
     --bg-surface: var(--neutral-100);
     --bg-surface-secondary: var(--neutral-50);
+    --bg-surface-tertiary: var(--neutral-200);
     --bg-surface-hover: var(--neutral-200);
     --bg-input: #ffffff;
     --bg-disabled: var(--neutral-100);
     --bg-overlay: rgba(0, 0, 0, 0.4);
     --bg-code: var(--blue-900);
+    --bg-hover: var(--state-hover);
+    --bg-active: var(--state-active);
 
     /* --- Text Colors --- */
     --text-primary: #000000;
@@ -242,6 +249,7 @@ html.light {
     --text-disabled: var(--neutral-400);
     --text-on-primary: #ffffff;
     --text-on-accent: #ffffff;
+    --text-on-focus: #000000;
     --text-inverse: #ffffff;
 
     /* --- Border Colors --- */
@@ -293,6 +301,18 @@ html.light {
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
+    /* === Alias de Color (para compatibilidad con componentes) === */
+    --color-primary: var(--accent-primary);
+    --color-primary-hover: var(--accent-primary-hover);
+    --color-success: var(--success);
+    --color-success-hover: var(--green-800);
+    --color-danger: var(--error);
+    --color-danger-hover: var(--red-800);
+    --color-warning: var(--warning);
+    --color-warning-hover: var(--yellow-700);
+    --color-info: var(--info);
+    --color-info-hover: var(--blue-700);
+
     /* === Button === */
     --button-bg-primary: var(--accent-primary);
     --button-bg-primary-hover: var(--accent-primary-hover);
