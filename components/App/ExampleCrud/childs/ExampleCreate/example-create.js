@@ -11,16 +11,18 @@
 console.log('[ExampleCreate] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
-// CONFIGURACIÓN DEL COMPONENTE
+// SCREEN CONFIG - Debe coincidir con ExampleCreateComponent::SCREEN_*
 // ═══════════════════════════════════════════════════════════════════
 
-const COMPONENT_CONFIG = {
-    id: 'example-crud-create',
+const SCREEN_CONFIG = {
+    screenId: 'example-crud-create',     // ExampleCreateComponent::SCREEN_ID
+    parentScreenId: 'example-crud-list', // ExampleCrudComponent::SCREEN_ID
+    menuGroupId: 'example-crud',         // ExampleCrudComponent::MENU_GROUP_ID
     apiRoute: '/api/example-crud'
 };
 
 function apiUrl(action) {
-    return `${COMPONENT_CONFIG.apiRoute}/${action}`;
+    return `${SCREEN_CONFIG.apiRoute}/${action}`;
 }
 
 // ═══════════════════════════════════════════════════════════════════

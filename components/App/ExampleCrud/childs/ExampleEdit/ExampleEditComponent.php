@@ -3,84 +3,93 @@ namespace Components\App\ExampleCrud\Childs\ExampleEdit;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
+use Core\Contracts\ScreenInterface;
+use Core\Traits\ScreenTrait;
 use Components\Shared\Forms\InputTextComponent\InputTextComponent;
 use Components\Shared\Forms\SelectComponent\SelectComponent;
 use Components\Shared\Forms\TextAreaComponent\TextAreaComponent;
 use Components\Shared\Forms\FilePondComponent\FilePondComponent;
+use Components\App\ExampleCrud\ExampleCrudComponent;
 
 /**
- * ExampleEditComponent - Formulario de edición (CRUD V3)
+ * ExampleEditComponent - Formulario de edición
  *
- * FILOSOFÍA LEGO:
- * Componente dedicado ÚNICAMENTE a editar registros.
- * Mantiene "las mismas distancias" que ExampleCreate.
- *
- * MEJORAS vs V1/V2:
- * ✅ Componente separado (no modal, no child page)
- * ✅ Navegación con módulos
- * ✅ Datos pre-cargados del registro
- * ✅ Usa ApiClient para fetch y update
- *
- * CONSISTENCIA DIMENSIONAL:
- * Formulario idéntico a ExampleCreate,
- * solo difiere en valores iniciales y endpoint.
+ * SCREEN PATTERN:
+ * - SCREEN_DYNAMIC = true: Este screen se activa por contexto (editar un registro)
+ * - SCREEN_VISIBLE = false: No aparece en el menú por defecto
+ * - Se registra dinámicamente cuando el usuario hace clic en "Editar"
  */
 #[ApiComponent('/example-crud/edit', methods: ['GET'])]
-class ExampleEditComponent extends CoreComponent
+class ExampleEditComponent extends CoreComponent implements ScreenInterface
 {
-    protected $CSS_PATHS = ["./example-form.css"];
-    protected $JS_PATHS = ["./example-edit.js"];
+    use ScreenTrait;
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // SCREEN IDENTITY - Fuente de verdad para el menú
+    // ═══════════════════════════════════════════════════════════════════
+    
+    public const SCREEN_ID = 'example-crud-edit';
+    public const SCREEN_LABEL = 'Editar Registro';
+    public const SCREEN_ICON = 'create-outline';
+    public const SCREEN_ROUTE = '/component/example-crud/edit';
+    public const SCREEN_PARENT = ExampleCrudComponent::MENU_GROUP_ID; // Hijo del grupo
+    public const SCREEN_ORDER = 20;
+    public const SCREEN_VISIBLE = false;  // No visible por defecto
+    public const SCREEN_DYNAMIC = true;   // Se activa por contexto
+    
+    // ═══════════════════════════════════════════════════════════════════
 
-    public function __construct(array $params = [])
-    {
-        // Obtener ID del registro desde parámetros o query string
-        // Intentar obtener de múltiples fuentes
-        $id = $params['id'] ?? $_GET['id'] ?? $_REQUEST['id'] ?? null;
-
-        // Convertir a int si es string numérico
-        if ($id !== null) {
-            $this->exampleId = is_numeric($id) ? (int)$id : null;
-        }
-
-        // Debug log
-        error_log('[ExampleEditComponent] Constructor - params: ' . json_encode($params));
-        error_log('[ExampleEditComponent] Constructor - $_GET: ' . json_encode($_GET));
-        error_log('[ExampleEditComponent] Constructor - exampleId: ' . ($this->exampleId ?? 'NULL'));
-    }
+    protected $CSS_PATHS = [
+        "components/Core/Screen/screen.css",  // Screen wrapper
+        "./example-form.css"
+    ];
+    protected $JS_PATHS = [
+        "components/Core/Screen/screen.js",   // Screen manager
+        "./example-edit.js"
+    ];
 
     private ?int $exampleId = null;
 
+    public function __construct(array $params = [])
+    {
+        $id = $params['id'] ?? $_GET['id'] ?? $_REQUEST['id'] ?? null;
+
+        if ($id !== null) {
+            $this->exampleId = is_numeric($id) ? (int)$id : null;
+        }
+    }
+
     protected function component(): string
     {
-        // Obtener example ID con múltiples fallbacks
         $exampleId = $this->exampleId
             ?? (isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : null)
             ?? (isset($_REQUEST['id']) && is_numeric($_REQUEST['id']) ? (int)$_REQUEST['id'] : null);
 
-        error_log('[ExampleEditComponent] component() - exampleId final: ' . ($exampleId ?? 'NULL'));
+        $screenId = self::SCREEN_ID;
+        $screenLabel = self::SCREEN_LABEL;
 
         if (!$exampleId) {
-            // Sin contexto: redirigir automáticamente a la lista
-            // Este caso no debería ocurrir si el menú está correctamente configurado
-            // (is_dynamic=true para la opción "Editar")
             return <<<HTML
-            <div class="example-form example-form--no-context">
-                <div class="example-form__empty-state">
-                    <ion-icon name="information-circle-outline" class="example-form__empty-icon"></ion-icon>
-                    <h2>Selecciona un registro</h2>
-                    <p>Para editar un registro, primero debes seleccionarlo desde la tabla.</p>
-                    <button 
-                        type="button" 
-                        class="example-form__button example-form__button--primary"
-                        onclick="window.legoWindowManager?.closeCurrentWindow() || history.back()"
-                    >
-                        <ion-icon name="arrow-back-outline"></ion-icon>
-                        Volver a la lista
-                    </button>
+            <div class="lego-screen lego-screen--padded" data-screen-id="{$screenId}">
+                <div class="lego-screen__content">
+                    <div class="example-form example-form--no-context">
+                        <div class="example-form__empty-state">
+                            <ion-icon name="information-circle-outline" class="example-form__empty-icon"></ion-icon>
+                            <h2>Selecciona un registro</h2>
+                            <p>Para editar un registro, primero debes seleccionarlo desde la tabla.</p>
+                            <button 
+                                type="button" 
+                                class="example-form__button example-form__button--primary"
+                                onclick="window.legoWindowManager?.closeCurrentWindow() || history.back()"
+                            >
+                                <ion-icon name="arrow-back-outline"></ion-icon>
+                                Volver a la lista
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <script>
-                // Auto-redirigir después de 3 segundos si el usuario no hace nada
                 setTimeout(() => {
                     if (window.legoWindowManager) {
                         window.legoWindowManager.closeCurrentWindow();
@@ -90,7 +99,7 @@ class ExampleEditComponent extends CoreComponent
             HTML;
         }
 
-        // Categorías (igual que en Create)
+        // Categorías
         $categories = [
             ["value" => "electronics", "label" => "Electrónica"],
             ["value" => "clothing", "label" => "Ropa"],
@@ -140,7 +149,7 @@ class ExampleEditComponent extends CoreComponent
         $filePondImages = new FilePondComponent(
             id: "example-images",
             label: "Imágenes del Registro",
-            path: "example-crud/images/", // Ruta en MinIO
+            path: "example-crud/images/",
             maxFiles: 5,
             allowReorder: true,
             allowMultiple: true,
@@ -148,69 +157,66 @@ class ExampleEditComponent extends CoreComponent
         );
 
         return <<<HTML
-        <div class="example-form" data-example-id="{$exampleId}">
-            <!-- Header -->
-            <div class="example-form__header">
-                <h1 class="example-form__title">Editar Registro</h1>
-            </div>
-
-            <!-- Loading state (mientras carga datos) -->
-            <div class="example-form__loading" id="example-form-loading">
-                Cargando registro...
-            </div>
-
-            <!-- Formulario (oculto hasta que carguen datos) -->
-            <form class="example-form__form" id="example-edit-form" style="display: none;">
-                <div class="example-form__grid">
-                    <!-- Nombre -->
-                    <div class="example-form__field example-form__field--full">
-                        {$nameInput->render()}
+        <div class="lego-screen lego-screen--padded" data-screen-id="{$screenId}">
+            <div class="lego-screen__content">
+                <div class="example-form" data-example-id="{$exampleId}">
+                    <!-- Header -->
+                    <div class="example-form__header">
+                        <h1 class="example-form__title">{$screenLabel}</h1>
                     </div>
 
-                    <!-- Descripción -->
-                    <div class="example-form__field example-form__field--full">
-                        {$descriptionTextarea->render()}
+                    <!-- Loading state -->
+                    <div class="example-form__loading" id="example-form-loading">
+                        Cargando registro...
                     </div>
 
-                    <!-- Precio -->
-                    <div class="example-form__field">
-                        {$priceInput->render()}
-                    </div>
+                    <!-- Formulario -->
+                    <form class="example-form__form" id="example-edit-form" style="display: none;">
+                        <div class="example-form__grid">
+                            <div class="example-form__field example-form__field--full">
+                                {$nameInput->render()}
+                            </div>
 
-                    <!-- Stock -->
-                    <div class="example-form__field">
-                        {$stockInput->render()}
-                    </div>
+                            <div class="example-form__field example-form__field--full">
+                                {$descriptionTextarea->render()}
+                            </div>
 
-                    <!-- Categoría -->
-                    <div class="example-form__field example-form__field--full">
-                        {$categorySelect->render()}
-                    </div>
+                            <div class="example-form__field">
+                                {$priceInput->render()}
+                            </div>
 
-                    <!-- Imágenes -->
-                    <div class="example-form__field example-form__field--full">
-                        {$filePondImages->render()}
-                    </div>
+                            <div class="example-form__field">
+                                {$stockInput->render()}
+                            </div>
+
+                            <div class="example-form__field example-form__field--full">
+                                {$categorySelect->render()}
+                            </div>
+
+                            <div class="example-form__field example-form__field--full">
+                                {$filePondImages->render()}
+                            </div>
+                        </div>
+
+                        <div class="example-form__actions">
+                            <button
+                                type="button"
+                                class="example-form__button example-form__button--secondary"
+                                id="example-form-cancel-btn"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                class="example-form__button example-form__button--primary"
+                                id="example-form-submit-btn"
+                            >
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Acciones -->
-                <div class="example-form__actions">
-                    <button
-                        type="button"
-                        class="example-form__button example-form__button--secondary"
-                        id="example-form-cancel-btn"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        class="example-form__button example-form__button--primary"
-                        id="example-form-submit-btn"
-                    >
-                        Guardar Cambios
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
         HTML;
     }

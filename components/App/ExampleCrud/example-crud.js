@@ -15,18 +15,39 @@ console.log('[ExampleCrud] Inicializando...');
 // ═══════════════════════════════════════════════════════════════════
 
 /**
- * Configuración base del componente.
- * Derivada del contexto PHP o definida aquí como fuente de verdad JS.
+ * SCREEN CONFIG - Debe coincidir con las constantes PHP
  * 
- * NOTA: Idealmente esto vendría 100% del PHP, pero como fallback
- * seguro, definimos los valores conocidos del componente.
+ * PHP: ExampleCrudComponent
+ *   MENU_GROUP_ID = 'example-crud'       -> menuGroupId
+ *   SCREEN_ID = 'example-crud-list'      -> screenId
+ *   SCREEN_ROUTE = '/component/example-crud' -> route
  */
-const COMPONENT_CONFIG = {
-    id: 'example-crud',
-    route: '/component/example-crud',
+const SCREEN_CONFIG = {
+    // Identidad del screen (coincide con PHP)
+    screenId: 'example-crud-list',      // ExampleCrudComponent::SCREEN_ID
+    menuGroupId: 'example-crud',        // ExampleCrudComponent::MENU_GROUP_ID
+    
+    // Rutas
+    route: '/component/example-crud',   // ExampleCrudComponent::SCREEN_ROUTE
     apiRoute: '/api/example-crud',
-    parentMenuId: 'example-crud',
+    
+    // Children screens (coinciden con PHP)
+    children: {
+        create: 'example-crud-create',  // ExampleCreateComponent::SCREEN_ID
+        edit: 'example-crud-edit'       // ExampleEditComponent::SCREEN_ID
+    },
+    
+    // Tabla
     tableId: 'example-crud-table'
+};
+
+// Alias para compatibilidad
+const COMPONENT_CONFIG = {
+    id: SCREEN_CONFIG.screenId,
+    route: SCREEN_CONFIG.route,
+    apiRoute: SCREEN_CONFIG.apiRoute,
+    parentMenuId: SCREEN_CONFIG.menuGroupId,
+    tableId: SCREEN_CONFIG.tableId
 };
 
 /**
@@ -256,11 +277,9 @@ function openCreateModule() {
         return;
     }
 
-    const config = getConfig();
-
     window.legoWindowManager.openModuleWithMenu({
-        moduleId: `${config.id}-create`,
-        parentMenuId: config.parentMenuId,
+        moduleId: SCREEN_CONFIG.children.create,  // 'example-crud-create'
+        parentMenuId: SCREEN_CONFIG.menuGroupId,  // 'example-crud'
         label: 'Nuevo Registro',
         url: childUrl('create'),
         icon: 'add-circle-outline'
@@ -279,8 +298,7 @@ function openEditModule(recordId) {
         return;
     }
 
-    const config = getConfig();
-    const moduleId = `${config.id}-edit`;
+    const moduleId = SCREEN_CONFIG.children.edit; // 'example-crud-edit'
     const url = childUrl('edit', { id: recordId });
 
     // Verificar si ya existe una ventana de edición abierta
@@ -320,7 +338,7 @@ function openEditModule(recordId) {
     // Abrir nuevo módulo dinámico
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: config.parentMenuId,
+        parentMenuId: SCREEN_CONFIG.menuGroupId,
         label: 'Editar Registro',
         url: url,
         icon: 'create-outline'

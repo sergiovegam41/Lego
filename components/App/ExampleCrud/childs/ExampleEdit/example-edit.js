@@ -11,16 +11,19 @@
 console.log('[ExampleEdit] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
-// CONFIGURACIÓN DEL COMPONENTE
+// SCREEN CONFIG - Debe coincidir con ExampleEditComponent::SCREEN_*
 // ═══════════════════════════════════════════════════════════════════
 
-const COMPONENT_CONFIG = {
-    id: 'example-crud-edit',
-    apiRoute: '/api/example-crud'
+const SCREEN_CONFIG = {
+    screenId: 'example-crud-edit',       // ExampleEditComponent::SCREEN_ID
+    parentScreenId: 'example-crud-list', // ExampleCrudComponent::SCREEN_ID
+    menuGroupId: 'example-crud',         // ExampleCrudComponent::MENU_GROUP_ID
+    apiRoute: '/api/example-crud',
+    isDynamic: true                      // ExampleEditComponent::SCREEN_DYNAMIC
 };
 
 function apiUrl(action, params = null) {
-    let url = `${COMPONENT_CONFIG.apiRoute}/${action}`;
+    let url = `${SCREEN_CONFIG.apiRoute}/${action}`;
     if (params && Object.keys(params).length > 0) {
         url += '?' + new URLSearchParams(params).toString();
     }

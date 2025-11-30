@@ -40,20 +40,25 @@ Sistema unificado de variables CSS que garantiza que todos tus componentes mante
 ```php
 // ✅ Así de simple es crear un componente
 class DashboardCard extends CoreComponent {
-    protected $CSS_PATHS = ["./card.css"]; // Ruta relativa al componente
+    protected $CSS_PATHS = ["./card.css"];
 
-    public function component(): string {
+    public function __construct(
+        public string $title,
+        public string $value
+    ) {}
+
+    protected function component(): string {
         return <<<HTML
         <div class="dashboard-card">
-            <h3>{$this->config['title']}</h3>
-            <p>{$this->config['value']}</p>
+            <h3>{$this->title}</h3>
+            <p>{$this->value}</p>
         </div>
         HTML;
     }
 }
 
 // Úsalo donde quieras - como un Widget de Flutter
-$card = new DashboardCard(['title' => 'Usuarios', 'value' => '1,250']);
+$card = new DashboardCard(title: 'Usuarios', value: '1,250');
 echo $card->render();
 ```
 
@@ -80,9 +85,10 @@ class UserCard extends StatelessWidget {
 ```php
 // LEGO Component - ¡Misma lógica!
 class UserCard extends CoreComponent {
-    public function component(): string {
-        $name = $this->config['name'];
-        return "<div class='card'>{$name}</div>";
+    public function __construct(public string $name) {}
+    
+    protected function component(): string {
+        return "<div class='card'>{$this->name}</div>";
     }
 }
 ```
@@ -124,16 +130,20 @@ lego/components/App/
 
 ```php
 class ButtonComponent extends CoreComponent {
-    protected $CSS_PATHS = ['/assets/css/button.css'];
-    protected $JS_PATHS = ['/assets/js/button.js'];
+    protected $CSS_PATHS = ["./button.css"];
+    protected $JS_PATHS = ["./button.js"];
+
+    public function __construct(
+        public string $label = 'Click',
+        public string $variant = 'primary'
+    ) {}
 
     protected function component(): string {
-        $label = $this->config['label'] ?? 'Click';
-        return "<button class='btn'>{$label}</button>";
+        return "<button class='btn btn--{$this->variant}'>{$this->label}</button>";
     }
 }
 
-$button = new ButtonComponent(['label' => 'Guardar']);
+$button = new ButtonComponent(label: 'Guardar', variant: 'primary');
 echo $button->render();
 ```
 
@@ -453,7 +463,38 @@ php lego migrate      # Configurar base de datos
 php lego map:routes   # Mapear todas las conexiones
 ```
 
-**👀 Mira la guía completa:** [`docs/COMO_CREAR_COMPONENTES.md`](docs/COMO_CREAR_COMPONENTES.md)
+**👀 Guía completa:** [`doc/flows/crear-componente.md`](doc/flows/crear-componente.md)
+
+---
+
+## 📖 Documentación
+
+**[Ver documentación completa →](doc/README.md)**
+
+| Tema | Descripción |
+|------|-------------|
+| [Arquitectura](doc/01-arquitectura.md) | Flujo de ejecución, capas, routing |
+| [Componentes](doc/02-componentes.md) | CoreComponent, CSS/JS, composición |
+| [Screens](doc/03-screens.md) | ScreenInterface, identidad de ventanas |
+| [Menú](doc/04-menu.md) | MenuStructure, items dinámicos |
+| [Módulos](doc/05-modulos.md) | WindowManager, navegación |
+| [API](doc/06-api.md) | Rutas, controladores |
+| [Modelos](doc/07-modelos.md) | Eloquent, atributos |
+| [Servicios JS](doc/08-servicios-js.md) | AlertService, ThemeManager |
+| [Tablas](doc/09-tablas.md) | TableComponent, filtros |
+| [Formularios](doc/10-formularios.md) | InputText, Select, FilePond |
+
+### Guías Prácticas (Cómo hacer X)
+
+| Flujo | Descripción |
+|-------|-------------|
+| [Crear componente](doc/flows/crear-componente.md) | Componente básico en 5 pasos |
+| [Crear screen](doc/flows/crear-screen.md) | Pantalla con identidad + menú |
+| [Crear CRUD](doc/flows/crear-crud.md) | Lista + Crear + Editar completo |
+| [Crear botón](doc/flows/crear-boton.md) | Botones con acciones |
+| [Crear migración](doc/flows/crear-migracion.md) | Tablas de base de datos |
+| [Agregar menú](doc/flows/agregar-menu-item.md) | Items al menú lateral |
+| [Agregar API](doc/flows/agregar-api-endpoint.md) | Endpoints REST |
 
 ---
 
@@ -505,21 +546,5 @@ Tu entorno viene con **todas las piezas esenciales**:
 
 
 
-### ⚠️ **OBLIGATORIO**
-Si eres desarrollador/IA, lee [`AI/README.md`](AI/README.md) - Sistema de contratos para calidad y consistencia.
-
----
-
-## 📖 Documentación
-
-### 📚 Para Desarrolladores
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitectura del framework
-- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Resolución de problemas comunes
-- **[QUICK_FIX.md](docs/QUICK_FIX.md)** - Guía de soluciones rápidas
-- **[TODOS.md](docs/TODOS.md)** - Lista de tareas pendientes del proyecto
-
-### 🤖 Para IA/Análisis
-- **[LEGO_ARCHITECTURE_ANALYSIS.md](AI/LEGO_ARCHITECTURE_ANALYSIS.md)** - Análisis completo de arquitectura
-- **[LEGO_VISUAL_DIAGRAMS.md](AI/LEGO_VISUAL_DIAGRAMS.md)** - Diagramas visuales del framework
-- **[implementation-guide.md](AI/implementation-guide.md)** - Guía de implementación para IA
-- **[README.md](AI/README.md)** - Contratos y reglas para desarrollo asistido por IA 
+### ⚠️ **Para Desarrolladores/IA**
+Lee [`AI/README.md`](AI/README.md) - Contratos y reglas para desarrollo asistido.

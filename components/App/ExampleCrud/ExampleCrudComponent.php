@@ -3,6 +3,9 @@ namespace Components\App\ExampleCrud;
 
 use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
+use Core\Contracts\ScreenInterface;
+use Core\Traits\ScreenTrait;
+use Components\Core\Screen\ScreenComponent;
 use Components\Shared\Essentials\TableComponent\TableComponent;
 use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
 use Components\Shared\Essentials\TableComponent\Dtos\ColumnDto;
@@ -16,29 +19,55 @@ use App\Models\ExampleCrud;
  *
  * FILOSOFÍA LEGO:
  * Componente de ejemplo/template que demuestra CRUD completo.
- * Enfocado ÚNICAMENTE en mostrar la tabla - separación de responsabilidades.
- * Sirve como referencia para construir otros CRUDs en el framework.
+ * Implementa ScreenInterface para definir su identidad en el menú.
+ * Envuelto en ScreenComponent para consistencia de ventanas.
+ *
+ * SCREEN PATTERN:
+ * - SCREEN_ID: Identificador único usado por el menú y window manager
+ * - SCREEN_LABEL: Texto mostrado en el menú
+ * - SCREEN_ICON: Icono ionicon
+ * - SCREEN_ROUTE: Ruta del componente
+ * - SCREEN_PARENT: ID del screen padre (null = raíz)
  *
  * CARACTERÍSTICAS:
  * ✅ Model-driven con server-side pagination automática
  * ✅ RowActions integradas (edit, delete con callbacks)
- * ✅ Anchos con DimensionValue (proporciones consistentes)
- * ✅ Sin duplicación de definiciones
+ * ✅ Screen wrapper para funcionalidad consistente
  * ✅ Navegación usando módulos (no window.location.href)
- * ✅ Theming correcto (html.dark, no @media)
  * ✅ Separación clara: 1 componente = 1 responsabilidad
- *
- * MODEL-DRIVEN:
- * - Pasa ExampleCrud::class y todo se configura automáticamente
- * - Server-side pagination desde /api/get/example-crud
- * - RowActions con callbacks personalizados (handleEdit, handleDelete)
- * - Sin necesidad de cargar datos en PHP (lazy loading)
  */
 #[ApiComponent('/example-crud', methods: ['GET'])]
-class ExampleCrudComponent extends CoreComponent
+class ExampleCrudComponent extends CoreComponent implements ScreenInterface
 {
-    protected $CSS_PATHS = ["./example-crud.css"];
-    protected $JS_PATHS = ["./example-crud.js"];
+    use ScreenTrait;
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // SCREEN IDENTITY - Fuente de verdad para el menú
+    // ═══════════════════════════════════════════════════════════════════
+    
+    // El grupo del menú (carpeta)
+    public const MENU_GROUP_ID = 'example-crud';
+    
+    // Esta screen es la LISTA (Ver)
+    public const SCREEN_ID = 'example-crud-list';
+    public const SCREEN_LABEL = 'Ver';
+    public const SCREEN_ICON = 'list-outline';
+    public const SCREEN_ROUTE = '/component/example-crud';
+    public const SCREEN_PARENT = self::MENU_GROUP_ID; // Hijo del grupo
+    public const SCREEN_ORDER = 0;
+    public const SCREEN_VISIBLE = true;
+    public const SCREEN_DYNAMIC = false;
+    
+    // ═══════════════════════════════════════════════════════════════════
+    
+    protected $CSS_PATHS = [
+        "components/Core/Screen/screen.css",  // Screen wrapper
+        "./example-crud.css"
+    ];
+    protected $JS_PATHS = [
+        "components/Core/Screen/screen.js",   // Screen manager
+        "./example-crud.js"
+    ];
 
     protected function component(): string
     {
@@ -109,45 +138,67 @@ class ExampleCrudComponent extends CoreComponent
                 icon: "trash-outline",
                 callback: "handleDeleteRecord",
                 variant: "danger",
-                confirm: false, // Desactivado: usamos ConfirmationService en el callback
+                confirm: false,
                 tooltip: "Eliminar registro"
             )
         );
 
-        // ✨ MAGIA: Tabla model-driven con server-side pagination
+        // Tabla model-driven con server-side pagination
         $table = new TableComponent(
             id: "example-crud-table",
-            model: ExampleCrud::class,  // ← Auto-configura API y paginación
+            model: ExampleCrud::class,
             columns: $columns,
-            rowActions: $actions,       // ← Acciones integradas
+            rowActions: $actions,
             height: "600px",
-            pagination: true,           // Server-side automático
+            pagination: true,
             rowSelection: "multiple"
         );
 
-        return <<<HTML
-        <div class="example-crud">
-            <!-- Header con botón crear -->
-            <div class="example-crud__header">
-                <h1 class="example-crud__title">Example CRUD</h1>
-                <button
-                    class="example-crud__create-btn"
-                    id="example-crud-create-btn"
-                    type="button"
-                    onclick="openCreateModule()"
-                >
-                    <svg class="example-crud__create-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Crear Registro
-                </button>
-            </div>
+        // Usar constante SCREEN_ID para el data attribute
+        $screenId = self::SCREEN_ID;
+        
+        // Envolver en Screen usando el componente
+        $screen = new ScreenComponent(
+            id: $screenId,
+            padded: true,
+            children: [] // Usamos el HTML manual por ahora para el header
+        );
 
-            <!-- Tabla de registros -->
-            <div class="example-crud__table">
-                {$table->render()}
+        return <<<HTML
+        <div class="lego-screen lego-screen--padded" data-screen-id="{$screenId}">
+            <div class="lego-screen__content">
+                <div class="example-crud">
+                    <!-- Header con botón crear -->
+                    <div class="example-crud__header">
+                        <h1 class="example-crud__title">{$this->getScreenLabel()}</h1>
+                        <button
+                            class="example-crud__create-btn"
+                            id="example-crud-create-btn"
+                            type="button"
+                            onclick="openCreateModule()"
+                        >
+                            <svg class="example-crud__create-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Crear Registro
+                        </button>
+                    </div>
+
+                    <!-- Tabla de registros -->
+                    <div class="example-crud__table">
+                        {$table->render()}
+                    </div>
+                </div>
             </div>
         </div>
         HTML;
+    }
+    
+    /**
+     * Helper para obtener el label (usado en el template)
+     */
+    private function getScreenLabel(): string
+    {
+        return self::SCREEN_LABEL;
     }
 }
