@@ -251,6 +251,37 @@ class AlertService {
     }
 
     /**
+     * Mostrar notificación toast (no bloqueante)
+     * @param {string} message - Mensaje a mostrar
+     * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
+     * @param {number} timer - Tiempo en ms antes de cerrar automáticamente (default: 3000)
+     */
+    static toast(message, type = 'success', timer = 3000) {
+        const iconMap = {
+            success: 'success',
+            error: 'error',
+            warning: 'warning',
+            info: 'info'
+        };
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: iconMap[type] || 'info',
+            title: message,
+            showConfirmButton: false,
+            timer: timer,
+            timerProgressBar: true,
+            background: this.isDarkTheme() ? '#1e293b' : '#ffffff',
+            color: this.isDarkTheme() ? '#f1f5f9' : '#1e293b',
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+    }
+
+    /**
      * Modal con formulario personalizado
      */
     static async modal(config) {

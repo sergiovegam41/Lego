@@ -168,7 +168,6 @@ class ExampleCrudController extends CoreController
 
             $record = ExampleCrud::create([
                 'name' => $data['name'],
-                'sku' => $data['sku'] ?? null,
                 'description' => $data['description'] ?? null,
                 'price' => $data['price'] ?? 0,
                 'stock' => $data['stock'] ?? 0,
@@ -237,7 +236,6 @@ class ExampleCrudController extends CoreController
 
             $record->update([
                 'name' => $data['name'] ?? $record->name,
-                'sku' => $data['sku'] ?? $record->sku,
                 'description' => $data['description'] ?? $record->description,
                 'price' => $data['price'] ?? $record->price,
                 'stock' => $data['stock'] ?? $record->stock,

@@ -28,7 +28,6 @@ use Core\Attributes\ApiGetResource;
  * CAMPOS:
  * - id: PK auto-increment
  * - name: Nombre del registro
- * - sku: Código único (Stock Keeping Unit)
  * - description: Descripción
  * - price: Precio decimal
  * - stock: Cantidad en inventario
@@ -52,9 +51,9 @@ use Core\Attributes\ApiGetResource;
     endpoint: 'example-crud',
     pagination: 'offset',
     perPage: 20,
-    sortable: ['id', 'name', 'sku', 'description', 'price', 'stock', 'category', 'created_at'],
-    filterable: ['id', 'name', 'sku', 'description', 'price', 'stock', 'category', 'is_active'],
-    searchable: ['name', 'description', 'sku']
+    sortable: ['id', 'name', 'description', 'price', 'stock', 'category', 'created_at'],
+    filterable: ['id', 'name', 'description', 'price', 'stock', 'category', 'is_active'],
+    searchable: ['name', 'description']
 )]
 class ExampleCrud extends Model
 {
@@ -68,7 +67,6 @@ class ExampleCrud extends Model
      */
     protected $fillable = [
         'name',
-        'sku',
         'description',
         'price',
         'stock',

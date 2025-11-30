@@ -1,11 +1,11 @@
 /**
- * ExampleCrud - Lógica de tabla (REFACTORIZADO con ComponentContext)
+ * ExampleCrud - Lógica de tabla
  *
  * FILOSOFÍA LEGO:
- * ✅ CERO hardcoding - todo derivado del contexto
- * ✅ Usa ComponentContext para rutas y IDs
- * ✅ Usa TableManager para gestión de tabla
+ * ✅ CERO hardcoding - configuración centralizada
+ * ✅ Eventos globales para comunicación reactiva
  * ✅ Navegación con módulos dinámicos
+ * ✅ Persistencia de filtros entre navegaciones
  */
 
 console.log('[ExampleCrud] Inicializando...');
@@ -109,12 +109,15 @@ window.handleDeleteRecord = async function(rowData, tableId) {
             throw new Error(result.msj || 'Error al eliminar registro');
         }
 
-        // Mostrar mensaje de éxito
-        if (window.AlertService) {
-            await window.AlertService.success(result.msj || 'Registro eliminado correctamente');
+        // Mostrar mensaje de éxito (toast sin bloquear)
+        if (window.AlertService?.toast) {
+            window.AlertService.toast(result.msj || 'Registro eliminado correctamente', 'success');
+        } else if (window.AlertService?.success) {
+            // Fallback sin await para no bloquear
+            window.AlertService.success(result.msj || 'Registro eliminado correctamente');
         }
 
-        // Recargar SOLO el módulo actual (LEGO way)
+        // Recargar INMEDIATAMENTE el módulo actual
         if (window.legoWindowManager) {
             console.log('[ExampleCrud] Recargando módulo activo...');
             window.legoWindowManager.reloadActive();
@@ -135,18 +138,110 @@ window.handleDeleteRecord = async function(rowData, tableId) {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// CREAR INSTANCIA DE TableManager
+// PERSISTENCIA DE FILTROS (LEGO Pattern)
+// 
+// Usa eventos globales para:
+// 1. Detectar cuando la tabla está lista → restaurar filtros
+// 2. Detectar cambios de filtros → persistirlos
+//
+// IMPORTANTE: Determinamos el módulo propietario desde el DOM, no desde
+// un registro global, para soportar múltiples instancias del mismo componente.
 // ═══════════════════════════════════════════════════════════════════
 
-const tableManager = new TableManager(COMPONENT_CONFIG.tableId);
+/**
+ * Encuentra el moduleId al que pertenece una tabla buscando en el DOM
+ * @param {string} tableId - ID de la tabla
+ * @returns {string|null} - El moduleId o null si no se encuentra
+ */
+function findTableOwnerModule(tableId) {
+    const tableContainer = document.getElementById(tableId);
+    if (!tableContainer) return null;
+    
+    // Buscar el contenedor de módulo más cercano (module-{id})
+    const moduleContainer = tableContainer.closest('[id^="module-"]');
+    if (!moduleContainer) return null;
+    
+    // Extraer el moduleId del id del contenedor (ej: "module-example-crud-list" → "example-crud-list")
+    return moduleContainer.id.replace('module-', '');
+}
+
+/**
+ * Restaurar filtros para una tabla específica
+ * @param {string} tableId - ID de la tabla
+ * @param {Object} api - AG Grid API
+ */
+function restoreFiltersForTable(tableId, api) {
+    const ownerModuleId = findTableOwnerModule(tableId);
+    if (!ownerModuleId) return;
+    
+    const params = window.legoWindowManager?.getParams(ownerModuleId);
+    
+    if (params?.columnFilters && Object.keys(params.columnFilters).length > 0) {
+        console.log('[ExampleCrud] Restaurando filtros para módulo', ownerModuleId, ':', params.columnFilters);
+        api.setFilterModel(params.columnFilters);
+    }
+}
+
+// Evitar registrar listeners duplicados cuando el módulo se recarga
+const LISTENER_KEY = `__lego_${COMPONENT_CONFIG.id}_listeners`;
+
+if (!window[LISTENER_KEY]) {
+    window[LISTENER_KEY] = true;
+    
+    /**
+     * Restaurar filtros persistidos cuando la tabla esté lista
+     */
+    window.addEventListener('lego:table:ready', (event) => {
+        const { tableId, api } = event.detail;
+        
+        // Solo procesar si es nuestra tabla (por tableId)
+        if (tableId !== COMPONENT_CONFIG.tableId) return;
+        
+        restoreFiltersForTable(tableId, api);
+    });
+    
+    /**
+     * Persistir filtros cuando cambien
+     */
+    window.addEventListener('lego:table:filterChanged', (event) => {
+        const { tableId, filterModel } = event.detail;
+        
+        // Solo procesar si es nuestra tabla (por tableId)
+        if (tableId !== COMPONENT_CONFIG.tableId) return;
+        
+        // Determinar el módulo propietario desde el DOM
+        const ownerModuleId = findTableOwnerModule(tableId);
+        if (!ownerModuleId) return;
+        
+        if (window.legoWindowManager) {
+            if (Object.keys(filterModel).length > 0) {
+                window.legoWindowManager.setParam('columnFilters', filterModel, ownerModuleId);
+            } else {
+                window.legoWindowManager.removeParam('columnFilters', ownerModuleId);
+            }
+        }
+    });
+    
+    console.log('[ExampleCrud] Listeners de filtros registrados');
+}
 
 // ═══════════════════════════════════════════════════════════════════
-// CUANDO LA TABLA ESTÉ LISTA
+// VERIFICAR SI LA TABLA YA ESTÁ LISTA (race condition fix)
+// Si el evento lego:table:ready ya se disparó antes de registrar el
+// listener, verificamos manualmente y restauramos filtros.
 // ═══════════════════════════════════════════════════════════════════
 
-tableManager.onReady(() => {
-    console.log('[ExampleCrud] Tabla lista y configurada desde PHP');
-});
+// Usar setTimeout para asegurar que el DOM esté actualizado
+setTimeout(() => {
+    const tableId = COMPONENT_CONFIG.tableId;
+    const existingTable = window.LEGO_TABLES?.[tableId];
+    
+    if (existingTable?.api) {
+        console.log('[ExampleCrud] Tabla ya existía, verificando filtros pendientes...');
+        restoreFiltersForTable(tableId, existingTable.api);
+    }
+}, 0);
+
 
 // ═══════════════════════════════════════════════════════════════════
 // NAVEGACIÓN - Usando configuración del componente
@@ -162,7 +257,7 @@ function openCreateModule() {
     }
 
     const config = getConfig();
-    
+
     window.legoWindowManager.openModuleWithMenu({
         moduleId: `${config.id}-create`,
         parentMenuId: config.parentMenuId,
@@ -170,7 +265,7 @@ function openCreateModule() {
         url: childUrl('create'),
         icon: 'add-circle-outline'
     });
-    
+
     console.log('[ExampleCrud] Abriendo módulo crear');
 }
 
@@ -187,20 +282,20 @@ function openEditModule(recordId) {
     const config = getConfig();
     const moduleId = `${config.id}-edit`;
     const url = childUrl('edit', { id: recordId });
-    
+
     // Verificar si ya existe una ventana de edición abierta
     const modules = window.moduleStore?.getModules() || {};
     
     if (modules[moduleId]) {
         console.log('[ExampleCrud] Ventana de edición ya existe, recargando con registro:', recordId);
-        
+
         // Activar el módulo existente
         const container = document.getElementById(`module-${moduleId}`);
         if (container) {
             document.querySelectorAll('.module-container').forEach(m => m.classList.remove('active'));
             container.classList.add('active');
             window.moduleStore._openModule(moduleId, modules[moduleId].component);
-            
+
             // Recargar contenido
             fetch(url)
                 .then(res => res.text())
@@ -230,7 +325,7 @@ function openEditModule(recordId) {
         url: url,
         icon: 'create-outline'
     });
-    
+
     console.log('[ExampleCrud] Módulo editar abierto');
 }
 
@@ -288,12 +383,14 @@ async function deleteRecord(recordId) {
             throw new Error(result.msj || 'Error al eliminar registro');
         }
 
-        if (window.AlertService) {
-            await window.AlertService.success('Registro eliminado correctamente');
-        } else {
-            alert('Registro eliminado correctamente');
+        // Mostrar mensaje de éxito (toast sin bloquear)
+        if (window.AlertService?.toast) {
+            window.AlertService.toast('Registro eliminado correctamente', 'success');
+        } else if (window.AlertService?.success) {
+            window.AlertService.success('Registro eliminado correctamente');
         }
 
+        // Recargar INMEDIATAMENTE
         if (window.legoWindowManager) {
             window.legoWindowManager.reloadActive();
         }

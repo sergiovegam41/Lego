@@ -487,75 +487,66 @@ let context = {CONTEXT};
             onCellClicked: callbacks.onCellClicked ?
                 (event) => window[callbacks.onCellClicked]?.(event) : undefined,
 
-            onGridReady: (event) => {
-                console.log('[LEGO Table] Grid listo:', id);
+            // Callback cuando cambian los filtros de columna
+            onFilterChanged: (event) => {
+                const filterModel = event.api.getFilterModel();
+                console.log('[LEGO Table] Filtros cambiados:', id, filterModel);
 
-                // Guardar referencia del grid API globalmente usando jsId sanitizado
-                window[`legoTable_${jsId}_api`] = event.api;
-                window[`legoTable_${jsId}_columnApi`] = event.columnApi;
-
-                // Inicializar registry global de tablas
-                if (!window.LEGO_TABLES) {
-                    window.LEGO_TABLES = {};
-                }
-
-                // Guardar referencia estructurada
-                window.LEGO_TABLES[id] = {
-                    api: event.api,
-                    columnApi: event.columnApi,
-                    tableId: id,
-                    jsId: jsId
-                };
-
-                // Disparar evento personalizado para que otros componentes sepan que la tabla está lista
-                const tableReadyEvent = new CustomEvent('lego:table:ready', {
+                // Disparar evento global para que otros componentes puedan reaccionar
+                const filterEvent = new CustomEvent('lego:table:filterChanged', {
                     detail: {
                         tableId: id,
                         jsId: jsId,
-                        api: event.api,
-                        columnApi: event.columnApi
+                        filterModel: filterModel,
+                        api: event.api
                     }
                 });
-                window.dispatchEvent(tableReadyEvent);
-                console.log('[LEGO Table] Evento lego:table:ready disparado para:', id);
+                window.dispatchEvent(filterEvent);
+                
+                // Callback personalizado si existe
+                if (callbacks.onFilterChanged) {
+                    window[callbacks.onFilterChanged]?.(event);
+                }
+            },
 
-                // Callback personalizado onGridReady
+            onGridReady: (event) => {
+                // Callback personalizado onGridReady (si existe)
                 if (callbacks.onGridReady) {
                     window[callbacks.onGridReady]?.(event);
                 }
 
-                // Autoajustar columnas si es necesario
-                event.api.sizeColumnsToFit();
+                // Solo auto-ajustar columnas si está habilitado explícitamente
+                // Por defecto respetamos los anchos definidos en las columnas
+                if (config.autoSizeColumns === true) {
+                    event.api.sizeColumnsToFit();
 
-                // Hacer la tabla responsive al resize del viewport
-                const resizeObserver = new ResizeObserver(() => {
-                    // Debounce para evitar demasiadas llamadas
-                    if (window._legoTableResizeTimeout) {
-                        clearTimeout(window._legoTableResizeTimeout);
-                    }
-                    window._legoTableResizeTimeout = setTimeout(() => {
-                        if (event.api) {
-                            event.api.sizeColumnsToFit();
+                    // Hacer la tabla responsive al resize del viewport
+                    const resizeObserver = new ResizeObserver(() => {
+                        if (window._legoTableResizeTimeout) {
+                            clearTimeout(window._legoTableResizeTimeout);
                         }
-                    }, 150);
-                });
+                        window._legoTableResizeTimeout = setTimeout(() => {
+                            if (event.api) {
+                                event.api.sizeColumnsToFit();
+                            }
+                        }, 150);
+                    });
 
-                // Observar cambios en el tamaño del contenedor de la grid
-                resizeObserver.observe(gridDiv);
+                    resizeObserver.observe(gridDiv);
 
-                // También escuchar eventos de resize de ventana
-                window.addEventListener('resize', () => {
-                    if (window._legoTableWindowResizeTimeout) {
-                        clearTimeout(window._legoTableWindowResizeTimeout);
-                    }
-                    window._legoTableWindowResizeTimeout = setTimeout(() => {
-                        if (event.api) {
-                            event.api.sizeColumnsToFit();
+                    window.addEventListener('resize', () => {
+                        if (window._legoTableWindowResizeTimeout) {
+                            clearTimeout(window._legoTableWindowResizeTimeout);
                         }
-                    }, 150);
-                });
+                        window._legoTableWindowResizeTimeout = setTimeout(() => {
+                            if (event.api) {
+                                event.api.sizeColumnsToFit();
+                            }
+                        }, 150);
+                    });
 
-                console.log('[LEGO Table] Auto-resize configurado');
+                    console.log('[LEGO Table] Auto-resize habilitado');
+                }
             }
         };
 
@@ -576,8 +567,16 @@ let context = {CONTEXT};
             fullGridOptions.infiniteInitialRowCount = 1000;
             fullGridOptions.maxBlocksInCache = 10;
 
+            // Guardar referencia al onGridReady original (resize handling)
+            const originalOnGridReady = fullGridOptions.onGridReady;
+
             // Crear datasource para cargar datos desde API
             fullGridOptions.onGridReady = function(params) {
+                // Ejecutar el onGridReady original primero (resize observers, callbacks)
+                if (originalOnGridReady) {
+                    originalOnGridReady(params);
+                }
+
                 const dataSource = {
                     rowCount: null,
                     getRows: function(params) {
@@ -655,6 +654,36 @@ let context = {CONTEXT};
 
         // Crear la grid
         const gridApi = agGrid.createGrid(gridDiv, fullGridOptions);
+
+        // AG Grid v31+: createGrid() devuelve el API directamente
+        // Guardar referencia global inmediatamente (onGridReady puede no ejecutarse)
+        const apiVarName = `legoTable_${jsId}_api`;
+        window[apiVarName] = gridApi;
+        window[`legoTable_${jsId}_columnApi`] = null; // Deprecated en AG Grid v31
+        console.log(`[LEGO Table] ✅ Variable global creada: ${apiVarName}`);
+
+        // También guardar en LEGO_TABLES para TableManager
+        if (!window.LEGO_TABLES) {
+            window.LEGO_TABLES = {};
+        }
+        window.LEGO_TABLES[id] = {
+            api: gridApi,
+            columnApi: null,
+            tableId: id,
+            jsId: jsId
+        };
+
+        // Disparar evento de tabla lista
+        const tableReadyEvent = new CustomEvent('lego:table:ready', {
+            detail: {
+                tableId: id,
+                jsId: jsId,
+                api: gridApi,
+                columnApi: null
+            }
+        });
+        window.dispatchEvent(tableReadyEvent);
+        console.log('[LEGO Table] Evento lego:table:ready disparado');
 
         console.log('[LEGO Table] Grid inicializada exitosamente:', id);
 

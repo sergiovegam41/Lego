@@ -16,9 +16,6 @@
  * 2. MODO ESTÁTICO (para scripts rápidos):
  *    const table = await TableManager.waitForTable('products-table');
  *    TableManager.setTableData('products-table', products);
- *
- * NOTA: Este módulo consolida la funcionalidad de TableHelper.
- * TableHelper está deprecated y será eliminado en futuras versiones.
  */
 
 class TableManager {
@@ -34,8 +31,8 @@ class TableManager {
         // Acceder a la API de la tabla global
         this._initializeTableApi();
 
-        // Si la tabla ya está lista
-        if (this.api && this.columnApi) {
+        // Si la tabla ya está lista (solo verificar api, columnApi es opcional)
+        if (this.api) {
             this.isReady = true;
             this._triggerReadyCallbacks();
         } else {
@@ -56,13 +53,14 @@ class TableManager {
      */
     _initializeTableApi() {
         const jsId = this.jsId;
-        const globalApi = window[`legoTable_${jsId}_api`];
+        const varName = `legoTable_${jsId}_api`;
+        const globalApi = window[varName];
         const globalColumnApi = window[`legoTable_${jsId}_columnApi`];
 
-        if (globalApi && globalColumnApi) {
+        // Solo necesitamos api (columnApi está deprecated en AG Grid moderno)
+        if (globalApi) {
             this.api = globalApi;
-            this.columnApi = globalColumnApi;
-            console.log(`[TableManager] API de tabla encontrada: ${this.tableId}`);
+            this.columnApi = globalColumnApi || null;
         }
     }
 
@@ -72,22 +70,21 @@ class TableManager {
     _waitForTableReady() {
         const checkInterval = setInterval(() => {
             this._initializeTableApi();
-            if (this.api && this.columnApi) {
+            // Solo verificar api (columnApi es opcional en AG Grid moderno)
+            if (this.api) {
                 this.isReady = true;
                 clearInterval(checkInterval);
-                console.log(`[TableManager] Tabla ${this.tableId} lista`);
                 this._triggerReadyCallbacks();
             }
         }, 100);
 
-        // También escuchar evento de tabla lista
+        // También escuchar evento de tabla lista (método preferido)
         window.addEventListener('lego:table:ready', (event) => {
             if (event.detail.tableId === this.tableId) {
                 this.api = event.detail.api;
                 this.columnApi = event.detail.columnApi;
                 this.isReady = true;
                 clearInterval(checkInterval);
-                console.log(`[TableManager] Tabla ${this.tableId} lista (evento)`);
                 this._triggerReadyCallbacks();
             }
         });
@@ -303,7 +300,7 @@ class TableManager {
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // MÉTODOS ESTÁTICOS (consolidados desde TableHelper)
+    // MÉTODOS ESTÁTICOS
     // Permiten uso sin instanciar: TableManager.waitForTable('id')
     // ═══════════════════════════════════════════════════════════════════
 

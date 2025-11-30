@@ -234,11 +234,15 @@ async function handleLogout() {
     } catch (error) {
         console.error('[Header] Error en logout:', error);
 
+        // Cerrar loading si está abierto
         if (window.AlertService) {
-            await window.AlertService.error(error.message || 'Error al cerrar sesión');
-        } else {
-            alert('Error al cerrar sesión: ' + error.message);
+            window.AlertService.close();
         }
+
+        // Siempre navegar al home/login, incluso si hay error
+        // (si no hay sesión, igual queremos sacar al usuario)
+        console.log('[Header] Navegando a home a pesar del error...');
+        window.location.href = '/';
     }
 }
 

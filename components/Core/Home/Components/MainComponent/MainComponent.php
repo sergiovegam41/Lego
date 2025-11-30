@@ -104,7 +104,6 @@ class MainComponent extends CoreComponent
           <!-- ═══ SERVICIOS MODULARES: Disponibles globalmente ═══ -->
           <!-- Estos servicios se cargan síncronamente porque son usados
                por componentes dinámicos que los necesitan inmediatamente -->
-          <script src="./assets/js/core/services/ApiClient.js"></script>
           <script src="./assets/js/core/services/StateManager.js"></script>
           <script src="./assets/js/core/services/ValidationEngine.js"></script>
           <script src="./assets/js/core/services/TableManager.js"></script>

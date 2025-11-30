@@ -61,14 +61,6 @@ class ExampleCrudComponent extends CoreComponent
                 filterType: "text"
             ),
             new ColumnDto(
-                field: "sku",
-                headerName: "SKU",
-                width: DimensionValue::px(120),
-                sortable: true,
-                filter: true,
-                filterType: "text"
-            ),
-            new ColumnDto(
                 field: "description",
                 headerName: "Descripción",
                 width: DimensionValue::px(250),

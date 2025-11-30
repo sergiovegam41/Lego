@@ -59,6 +59,18 @@ use Flight;
 
 /**
  * ========================================
+ * EXAMPLE CRUD LEGACY ROUTES
+ * ========================================
+ * Rutas legacy para ExampleCrud (POST con action en URL)
+ * Estas rutas permiten compatibilidad con el frontend existente
+ */
+Flight::route('POST /example-crud/delete', fn() => new ExampleCrudController('delete'));
+Flight::route('POST /example-crud/create', fn() => new ExampleCrudController('create'));
+Flight::route('POST /example-crud/update', fn() => new ExampleCrudController('update'));
+Flight::route('GET /example-crud/get', fn() => new ExampleCrudController('get'));
+
+/**
+ * ========================================
  * AUTO-GET ROUTES (Table-Driven API)
  * ========================================
  * Rutas GET de solo lectura generadas automáticamente desde modelos con #[ApiGetResource].

@@ -7,9 +7,18 @@ class ModuleStore {
     this.modules = {};
     this.activeModule = null;
     }
-    _openModule(id, component) {
+
+    _openModule(id, component, options = {}) {
+        const { sourceModuleId = null } = options;
+        
     if (!this.modules[id]) {
-        this.modules[id] = { component, isActive: false };
+            // Nuevo módulo: inicializar con params vacíos y origen
+            this.modules[id] = { 
+                component, 
+                isActive: false,
+                params: {},  // Parámetros persistentes del módulo
+                sourceModuleId: sourceModuleId  // De dónde vino este módulo
+            };
     }
     Object.keys(this.modules).forEach(moduleId => {
         this.modules[moduleId].isActive = moduleId === id;
@@ -27,13 +36,33 @@ class ModuleStore {
     }
     }
 
-    closeModule(id) {
+    closeModule(id, options = {}) {
+        const { returnTo = null } = options;
+        
+        // Obtener el sourceModuleId antes de eliminar
+        const sourceModuleId = this.modules[id]?.sourceModuleId;
+        
     if (this.modules[id]) {
-        delete this.modules[id];
+            delete this.modules[id]; // Al cerrar, se eliminan los params
     }
+        
     if (this.activeModule === id) {
+            // Prioridad: 1. returnTo explícito, 2. sourceModuleId, 3. primer módulo disponible
+            let nextModule = returnTo || sourceModuleId;
+            
+            // Verificar que el módulo destino existe
+            if (nextModule && !this.modules[nextModule]) {
+                nextModule = null;
+            }
+            
+            // Fallback: primer módulo disponible
+            if (!nextModule) {
         const remainingModules = Object.keys(this.modules);
-        this.activeModule = remainingModules.length > 0 ? remainingModules[0] : null;
+                nextModule = remainingModules.length > 0 ? remainingModules[0] : null;
+            }
+            
+            this.activeModule = nextModule;
+            
         if (this.activeModule) {
         this.modules[this.activeModule].isActive = true;
 
@@ -64,6 +93,74 @@ class ModuleStore {
     getModules() {
         return this.modules;
     }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // GESTIÓN DE PARÁMETROS PERSISTENTES POR MÓDULO
+    // ═══════════════════════════════════════════════════════════════════
+
+    /**
+     * Establecer un parámetro para un módulo
+     * @param {string} moduleId - ID del módulo
+     * @param {string} key - Clave del parámetro
+     * @param {*} value - Valor del parámetro
+     */
+    setParam(moduleId, key, value) {
+        if (!this.modules[moduleId]) {
+            console.warn(`[ModuleStore] Módulo no encontrado: ${moduleId}`);
+            return;
+        }
+        this.modules[moduleId].params[key] = value;
+        console.log(`[ModuleStore] Param set: ${moduleId}.${key} =`, value);
+    }
+
+    /**
+     * Obtener un parámetro de un módulo
+     * @param {string} moduleId - ID del módulo
+     * @param {string} key - Clave del parámetro
+     * @param {*} defaultValue - Valor por defecto si no existe
+     * @returns {*} Valor del parámetro
+     */
+    getParam(moduleId, key, defaultValue = null) {
+        if (!this.modules[moduleId]) {
+            return defaultValue;
+        }
+        return this.modules[moduleId].params[key] ?? defaultValue;
+    }
+
+    /**
+     * Obtener todos los parámetros de un módulo
+     * @param {string} moduleId - ID del módulo
+     * @returns {Object} Objeto con todos los parámetros
+     */
+    getParams(moduleId) {
+        if (!this.modules[moduleId]) {
+            return {};
+        }
+        return { ...this.modules[moduleId].params };
+    }
+
+    /**
+     * Eliminar un parámetro específico
+     * @param {string} moduleId - ID del módulo
+     * @param {string} key - Clave del parámetro a eliminar
+     */
+    removeParam(moduleId, key) {
+        if (this.modules[moduleId] && this.modules[moduleId].params[key] !== undefined) {
+            delete this.modules[moduleId].params[key];
+            console.log(`[ModuleStore] Param removed: ${moduleId}.${key}`);
+        }
+    }
+
+    /**
+     * Limpiar todos los parámetros de un módulo
+     * @param {string} moduleId - ID del módulo
+     */
+    clearParams(moduleId) {
+        if (this.modules[moduleId]) {
+            this.modules[moduleId].params = {};
+            console.log(`[ModuleStore] Params cleared: ${moduleId}`);
+        }
+    }
 }
 
 const moduleStore = new ModuleStore();
@@ -74,7 +171,22 @@ window.moduleStore = moduleStore;
 async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
     if (!container) {
-        let dataResp = await fetch(url).then(res => res.text());
+        const response = await fetch(url);
+        let dataResp = await response.text();
+        
+        // Detectar si la respuesta es el login (sesión expirada)
+        // Verificar por: redirección exacta a /login, o contenido específico de login
+        const responseUrlPath = new URL(response.url, window.location.origin).pathname;
+        const isLoginPage = responseUrlPath === '/login' || 
+                           responseUrlPath === '/' ||
+                           dataResp.includes('id="login-form"') ||
+                           dataResp.includes('class="login-container"');
+        
+        if (isLoginPage) {
+            console.warn('[WindowManager] Sesión expirada, redirigiendo a login...');
+            window.location.href = '/login';
+            return;
+        }
 
         container = document.createElement('div');
         container.id = `module-${id}`;
@@ -179,8 +291,11 @@ export function generateMenuLinks(){
 }
 
 // Unified openModule function with proper component info
-function openModule(id, url, name, component) {
-    moduleStore._openModule(id, component);
+function openModule(id, url, name, component, options = {}) {
+    // Capturar el módulo origen automáticamente si no se especifica
+    const sourceModuleId = options.sourceModuleId ?? moduleStore.activeModule;
+    
+    moduleStore._openModule(id, component, { sourceModuleId });
     renderModule(id, url, `Contenido dinámico del módulo ${id}`);
     updateMenu();
 }
@@ -193,14 +308,25 @@ window.openModule = openModule;
  * LegoWindowManager - Global API for window management
  * 
  * Provides methods for interacting with the module system:
- * - reloadActive(): Reload the currently active module
- * - closeModule(id): Close a specific module
+ * - reloadActive(): Reload the currently active module (preserving params)
+ * - closeModule(id, [options]): Close a specific module
+ * - closeCurrentWindow([options]): Close active module (options: refresh, returnTo)
  * - updateBreadcrumb(items): Update breadcrumb navigation
+ * - setParam(key, value, [moduleId]): Set a persistent parameter (default: active module)
+ * - getParam(key, [default], [moduleId]): Get a persistent parameter (default: active module)
+ * - getParams([moduleId]): Get all persistent parameters (default: active module)
+ * - removeParam(key, [moduleId]): Remove a persistent parameter (default: active module)
+ * - clearParams([moduleId]): Clear all persistent parameters (default: active module)
+ * 
+ * Module Navigation:
+ * - When opening a module, the current active module is saved as sourceModuleId
+ * - When closing, the system returns to sourceModuleId automatically
+ * - Use returnTo option to override: closeCurrentWindow({ returnTo: 'module-id' })
  */
 if (typeof window.legoWindowManager === 'undefined') {
     window.legoWindowManager = {
         /**
-         * Reload the currently active module
+         * Reload the currently active module, preserving persistent params
          */
         reloadActive: function() {
             if (!window.moduleStore || !window.moduleStore.activeModule) {
@@ -216,20 +342,46 @@ if (typeof window.legoWindowManager === 'undefined') {
                 return;
             }
 
+            // IMPORTANTE: Preservar todo el estado antes de eliminar el módulo
+            const preservedParams = { ...activeModule.params };
+            const preservedComponent = { ...activeModule.component };
+            const preservedSourceModuleId = activeModule.sourceModuleId;
+
+            console.log(`[WindowManager] Reloading module "${activeId}" with preserved params:`, preservedParams);
+
             // Remove the module container from DOM
             const container = document.getElementById(`module-${activeId}`);
             if (container) {
                 container.remove();
             }
 
-            // Remove from store
+            // Remove from store (esto elimina los params temporalmente)
             delete window.moduleStore.modules[activeId];
 
             // Re-open the module (will fetch fresh content)
-            const url = activeModule.component.url;
-            const name = activeModule.component.name;
+            // Pasar sourceModuleId explícitamente para evitar que capture el módulo actual (que somos nosotros)
+            const url = preservedComponent.url;
+            const name = preservedComponent.name;
 
-            openModule(activeId, url, name, activeModule.component);
+            openModule(activeId, url, name, preservedComponent, { sourceModuleId: preservedSourceModuleId });
+
+            // Restaurar los params después de reabrir
+            if (window.moduleStore.modules[activeId]) {
+                window.moduleStore.modules[activeId].params = preservedParams;
+            }
+
+            // Emitir evento para que el módulo pueda aplicar sus params
+            // El módulo puede escuchar este evento y restaurar su estado
+            setTimeout(() => {
+                const event = new CustomEvent('lego:module:reloaded', {
+                    detail: {
+                        moduleId: activeId,
+                        params: preservedParams
+                    }
+                });
+                document.dispatchEvent(event);
+                console.log(`[WindowManager] Event 'lego:module:reloaded' dispatched for "${activeId}"`);
+            }, 100); // Pequeño delay para que el DOM esté listo
 
             console.log('Module reloaded:', activeId);
         },
@@ -237,8 +389,10 @@ if (typeof window.legoWindowManager === 'undefined') {
         /**
          * Close a specific module
          * @param {string} id - Module ID to close
+         * @param {Object} [options] - Options
+         * @param {string} [options.returnTo] - Module ID to return to (overrides sourceModuleId)
          */
-        closeModule: function(id) {
+        closeModule: function(id, options = {}) {
             if (!window.moduleStore) {
                 console.warn('ModuleStore not available');
                 return;
@@ -250,8 +404,8 @@ if (typeof window.legoWindowManager === 'undefined') {
                 container.remove();
             }
 
-            // Close via ModuleStore
-            window.moduleStore.closeModule(id);
+            // Close via ModuleStore (passing returnTo option)
+            window.moduleStore.closeModule(id, options);
 
             // Remove dynamic menu item if it exists
             this.removeDynamicMenuItem(id);
@@ -279,16 +433,144 @@ if (typeof window.legoWindowManager === 'undefined') {
 
         /**
          * Close the currently active module
+         * @param {Object} options - Optional configuration
+         * @param {boolean} options.refresh - If true, refresh the module that becomes active after closing
+         * @param {string} options.returnTo - Module ID to return to (overrides automatic sourceModuleId)
          */
-        closeCurrentWindow: function() {
+        closeCurrentWindow: function(options = {}) {
             if (!window.moduleStore || !window.moduleStore.activeModule) {
                 console.warn('No active module to close');
                 return;
             }
 
             const activeId = window.moduleStore.activeModule;
-            this.closeModule(activeId);
+            const shouldRefresh = options.refresh === true;
+            const returnTo = options.returnTo || null;
+
+            this.closeModule(activeId, { returnTo });
             console.log('Current window closed:', activeId);
+
+            // If refresh requested, reload the new active module
+            if (shouldRefresh) {
+                // Small delay to ensure module switch is complete
+                setTimeout(() => {
+                    if (window.moduleStore.activeModule) {
+                        console.log('[WindowManager] Refreshing active module:', window.moduleStore.activeModule);
+                        this.reloadActive();
+                    }
+                }, 50);
+            }
+        },
+
+        // ═══════════════════════════════════════════════════════════════════
+        // PARÁMETROS PERSISTENTES POR MÓDULO
+        // Permite guardar estado (filtros, búsquedas, etc.) que persiste
+        // durante reloads pero se elimina al cerrar el módulo
+        // ═══════════════════════════════════════════════════════════════════
+
+        /**
+         * Establecer un parámetro persistente
+         * @param {string} key - Nombre del parámetro
+         * @param {*} value - Valor del parámetro (cualquier tipo serializable)
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         * 
+         * @example
+         * // Guardar en módulo activo
+         * legoWindowManager.setParam('tableFilter', 'nombre:Juan');
+         * 
+         * // Guardar en módulo específico
+         * legoWindowManager.setParam('currentPage', 3, 'products-list');
+         */
+        setParam: function(key, value, moduleId = null) {
+            if (!window.moduleStore) {
+                console.warn('[WindowManager] ModuleStore not available');
+                return;
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                console.warn('[WindowManager] No module specified and no active module');
+                return;
+            }
+            window.moduleStore.setParam(targetModule, key, value);
+        },
+
+        /**
+         * Obtener un parámetro persistente
+         * @param {string} key - Nombre del parámetro
+         * @param {*} [defaultValue=null] - Valor por defecto si no existe
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         * @returns {*} Valor del parámetro
+         * 
+         * @example
+         * // Obtener del módulo activo
+         * const filter = legoWindowManager.getParam('tableFilter', '');
+         * 
+         * // Obtener de módulo específico
+         * const page = legoWindowManager.getParam('currentPage', 1, 'products-list');
+         */
+        getParam: function(key, defaultValue = null, moduleId = null) {
+            if (!window.moduleStore) {
+                return defaultValue;
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                return defaultValue;
+            }
+            return window.moduleStore.getParam(targetModule, key, defaultValue);
+        },
+
+        /**
+         * Obtener todos los parámetros persistentes
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         * @returns {Object} Objeto con todos los parámetros
+         * 
+         * @example
+         * // Del módulo activo
+         * const params = legoWindowManager.getParams();
+         * 
+         * // De módulo específico
+         * const params = legoWindowManager.getParams('products-list');
+         */
+        getParams: function(moduleId = null) {
+            if (!window.moduleStore) {
+                return {};
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                return {};
+            }
+            return window.moduleStore.getParams(targetModule);
+        },
+
+        /**
+         * Eliminar un parámetro específico
+         * @param {string} key - Nombre del parámetro a eliminar
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         */
+        removeParam: function(key, moduleId = null) {
+            if (!window.moduleStore) {
+                return;
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                return;
+            }
+            window.moduleStore.removeParam(targetModule, key);
+        },
+
+        /**
+         * Limpiar todos los parámetros
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         */
+        clearParams: function(moduleId = null) {
+            if (!window.moduleStore) {
+                return;
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                return;
+            }
+            window.moduleStore.clearParams(targetModule);
         },
 
         /**
@@ -522,9 +804,10 @@ if (typeof window.legoWindowManager === 'undefined') {
          * @param {string} config.label - Display label
          * @param {string} config.url - URL to load
          * @param {string} config.icon - Icon name (optional)
+         * @param {string} config.sourceModuleId - Module to return to when closing (optional, defaults to current active)
          */
         openModuleWithMenu: function(config) {
-            const { moduleId, parentMenuId, label, url, icon } = config;
+            const { moduleId, parentMenuId, label, url, icon, sourceModuleId } = config;
 
             // First, add the dynamic menu item
             this.addDynamicMenuItem({
@@ -535,8 +818,8 @@ if (typeof window.legoWindowManager === 'undefined') {
                 url
             });
 
-            // Then open the module
-            openModule(moduleId, url, label, { url, name: label });
+            // Then open the module (sourceModuleId defaults to current active in openModule)
+            openModule(moduleId, url, label, { url, name: label }, { sourceModuleId });
         },
 
         /**

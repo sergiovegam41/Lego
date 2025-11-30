@@ -183,9 +183,9 @@
 /* Dark mode ajustes */
 /* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
 html.dark .lego-button--secondary {
-    background-color: var(--bg-surface-secondary);
-}
+        background-color: var(--bg-surface-secondary);
+    }
 
 html.dark .lego-button--ghost:hover:not(:disabled) {
-    background-color: var(--bg-surface-tertiary);
+        background-color: var(--bg-surface-tertiary);
 }

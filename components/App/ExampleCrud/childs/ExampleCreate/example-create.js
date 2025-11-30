@@ -184,15 +184,15 @@ function clearForm() {
 // ═══════════════════════════════════════════════════════════════════
 
 function closeModule() {
-    if (!window.moduleStore) {
-        console.error('[ExampleCreate] ModuleStore no disponible');
-        return;
-    }
-
-    const currentModule = window.moduleStore.getActiveModule();
-    if (currentModule && window.lego && window.lego.closeModule) {
-        window.lego.closeModule(currentModule);
-        console.log('[ExampleCreate] Módulo cerrado');
+    if (window.legoWindowManager) {
+        // Usar legoWindowManager que se encarga de:
+        // 1. Cerrar el módulo
+        // 2. Eliminar el ítem dinámico del menú (si aplica)
+        // 3. Volver al módulo origen
+        window.legoWindowManager.closeCurrentWindow();
+        console.log('[ExampleCreate] Módulo cerrado via legoWindowManager');
+    } else {
+        console.error('[ExampleCreate] legoWindowManager no disponible');
     }
 }
 
@@ -281,13 +281,10 @@ function initializeForm() {
                     alert('Registro creado correctamente');
                 }
 
-                // Recargar tabla
-                reloadExampleCrudTable();
-
-                // Cerrar automáticamente el formulario después de un breve delay
+                // Cerrar y refrescar el módulo origen automáticamente
                 setTimeout(() => {
                     if (window.legoWindowManager) {
-                        window.legoWindowManager.closeCurrentWindow();
+                        window.legoWindowManager.closeCurrentWindow({ refresh: true });
                     }
                 }, 500); // Delay para que el usuario vea el mensaje de éxito
             }

@@ -126,10 +126,10 @@
 /* Dark mode ajustes */
 /* LEGO Standard: Usar html.dark para consistencia con el toggle de tema */
 html.dark .lego-textarea__field {
-    background-color: var(--bg-surface);
-    border-color: var(--border-light);
-}
+        background-color: var(--bg-surface);
+        border-color: var(--border-light);
+    }
 
 html.dark .lego-textarea__field:hover:not(:disabled) {
-    border-color: var(--border-light);
+        border-color: var(--border-light);
 }

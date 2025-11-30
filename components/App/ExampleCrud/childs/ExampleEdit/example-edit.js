@@ -220,15 +220,15 @@ async function updateRecord(recordId, formData) {
 // ═══════════════════════════════════════════════════════════════════
 
 function closeModule() {
-    if (!window.moduleStore) {
-        console.error('[ExampleEdit] ModuleStore no disponible');
-        return;
-    }
-
-    const currentModule = window.moduleStore.getActiveModule();
-    if (currentModule && window.lego && window.lego.closeModule) {
-        window.lego.closeModule(currentModule);
-        console.log('[ExampleEdit] Módulo cerrado');
+    if (window.legoWindowManager) {
+        // Usar legoWindowManager que se encarga de:
+        // 1. Cerrar el módulo
+        // 2. Eliminar el ítem dinámico del menú
+        // 3. Volver al módulo origen
+        window.legoWindowManager.closeCurrentWindow();
+        console.log('[ExampleEdit] Módulo cerrado via legoWindowManager');
+    } else {
+        console.error('[ExampleEdit] legoWindowManager no disponible');
     }
 }
 
@@ -407,13 +407,10 @@ async function initializeForm() {
                     alert('Registro actualizado correctamente');
                 }
 
-                // Recargar tabla
-                reloadExampleCrudTable();
-
-                // Cerrar automáticamente el formulario después de un breve delay
+                // Cerrar y refrescar el módulo origen automáticamente
                 setTimeout(() => {
                     if (window.legoWindowManager) {
-                        window.legoWindowManager.closeCurrentWindow();
+                        window.legoWindowManager.closeCurrentWindow({ refresh: true });
                     }
                 }, 500); // Delay para que el usuario vea el mensaje de éxito
             }
