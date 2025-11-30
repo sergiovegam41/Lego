@@ -5,7 +5,6 @@ use Core\Components\CoreComponent\CoreComponent;
 use Core\Attributes\ApiComponent;
 use Core\Contracts\ScreenInterface;
 use Core\Traits\ScreenTrait;
-use Components\Core\Screen\ScreenComponent;
 use Components\Shared\Essentials\TableComponent\TableComponent;
 use Components\Shared\Essentials\TableComponent\Collections\ColumnCollection;
 use Components\Shared\Essentials\TableComponent\Dtos\ColumnDto;
@@ -154,15 +153,7 @@ class ExampleCrudComponent extends CoreComponent implements ScreenInterface
             rowSelection: "multiple"
         );
 
-        // Usar constante SCREEN_ID para el data attribute
         $screenId = self::SCREEN_ID;
-        
-        // Envolver en Screen usando el componente
-        $screen = new ScreenComponent(
-            id: $screenId,
-            padded: true,
-            children: [] // Usamos el HTML manual por ahora para el header
-        );
 
         return <<<HTML
         <div class="lego-screen lego-screen--padded" data-screen-id="{$screenId}">
