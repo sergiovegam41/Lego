@@ -8,6 +8,7 @@ let context = {CONTEXT};
     initializeNotificationClick();
     initializeUserInfo();
     initializeDropdownButtons();
+    initializeParamsBadge();
     
     // Use data from PHP if available
     if (context && context.arg) {
@@ -270,6 +271,297 @@ function showUserSettings() {
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// PARAMS POPOVER FUNCTIONALITY
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Initialize params badge - updates when module changes or params change
+ */
+function initializeParamsBadge() {
+    // Update badge initially
+    updateParamsBadge();
+    
+    // Listen for module changes - update badge and close popover
+    window.addEventListener('lego:module:activated', () => {
+        updateParamsBadge();
+        closeParamsPopover(); // Close popover when switching modules
+    });
+    window.addEventListener('lego:module:closed', updateParamsBadge);
+    
+    // Poll periodically to catch param changes (backup, less frequent now)
+    setInterval(updateParamsBadge, 2000);
+}
+
+/**
+ * Update the params badge with current count
+ * Counts individual values, not just top-level keys
+ * e.g., columnFilters with 2 filters = 2, not 1
+ */
+function updateParamsBadge() {
+    const badge = document.getElementById('params-badge');
+    if (!badge) return;
+    
+    const params = window.legoWindowManager?.getParams() || {};
+    let count = 0;
+    
+    for (const [key, value] of Object.entries(params)) {
+        if (key === 'columnFilters' && typeof value === 'object') {
+            // Count individual column filters
+            count += Object.keys(value).length;
+        } else if (typeof value === 'object' && value !== null) {
+            // For other objects, count their keys
+            count += Object.keys(value).length;
+        } else {
+            // Simple values count as 1
+            count += 1;
+        }
+    }
+    
+    if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+/**
+ * Toggle params popover visibility
+ */
+function toggleParamsPopover() {
+    const popover = document.getElementById('params-popover');
+    if (!popover) return;
+
+    if (popover.classList.contains('active')) {
+        closeParamsPopover();
+    } else {
+        openParamsPopover();
+    }
+}
+
+/**
+ * Open params popover and populate with data
+ */
+function openParamsPopover() {
+    const popover = document.getElementById('params-popover');
+    if (!popover) return;
+
+    // Get active module and its params
+    const activeModuleId = window.moduleStore?.getActiveModule();
+    const params = window.legoWindowManager?.getParams() || {};
+
+    // Update module info
+    const moduleInfo = document.getElementById('params-module-info');
+    if (moduleInfo) {
+        moduleInfo.innerHTML = activeModuleId 
+            ? `<strong>Módulo:</strong> ${escapeHtml(activeModuleId)}`
+            : '<em>No hay módulo activo</em>';
+    }
+
+    // Populate params content
+    const content = document.getElementById('params-content');
+    if (content) {
+        renderParams(content, params, activeModuleId);
+    }
+
+    popover.classList.add('active');
+
+    // Remove existing listener first to prevent duplicates (Bug fix)
+    document.removeEventListener('click', handleParamsClickOutside);
+    
+    // Close on click outside
+    setTimeout(() => {
+        document.addEventListener('click', handleParamsClickOutside);
+    }, 10);
+}
+
+/**
+ * Close params popover
+ */
+function closeParamsPopover() {
+    const popover = document.getElementById('params-popover');
+    if (popover) {
+        popover.classList.remove('active');
+    }
+    document.removeEventListener('click', handleParamsClickOutside);
+}
+
+/**
+ * Handle click outside popover
+ */
+function handleParamsClickOutside(e) {
+    const popover = document.getElementById('params-popover');
+    const container = document.querySelector('.params-popover-container');
+    
+    if (container && !container.contains(e.target)) {
+        closeParamsPopover();
+    }
+}
+
+/**
+ * Format a value in a friendly way (with XSS protection)
+ */
+function formatValueFriendly(key, value) {
+    // Si es un objeto (como columnFilters), formatearlo de manera amigable
+    if (typeof value === 'object' && value !== null) {
+        // Caso especial: filtros de columnas
+        if (key === 'columnFilters') {
+            const filters = [];
+            for (const [col, filter] of Object.entries(value)) {
+                const filterValue = filter.filter || filter.value || JSON.stringify(filter);
+                filters.push(`<span class="param-filter-item">${escapeHtml(col)}: <strong>${escapeHtml(String(filterValue))}</strong></span>`);
+            }
+            return filters.length > 0 
+                ? filters.join('<br>') 
+                : '<em>Sin filtros</em>';
+        }
+        
+        // Para otros objetos, mostrar pares clave-valor
+        const pairs = [];
+        for (const [k, v] of Object.entries(value)) {
+            const displayValue = typeof v === 'object' ? JSON.stringify(v) : v;
+            pairs.push(`${escapeHtml(k)}: ${escapeHtml(String(displayValue))}`);
+        }
+        return pairs.join('<br>') || '<em>Vacío</em>';
+    }
+    
+    // Valores simples
+    return escapeHtml(String(value));
+}
+
+/**
+ * Get a friendly label for param keys
+ */
+function getFriendlyKeyLabel(key) {
+    const labels = {
+        'columnFilters': '🔍 Filtros de columnas',
+        'sortModel': '↕️ Ordenamiento',
+        'page': '📄 Página',
+        'scrollPosition': '📍 Posición scroll'
+    };
+    return labels[key] || key;
+}
+
+/**
+ * Render params in the popover content
+ */
+function renderParams(container, params, moduleId) {
+    const keys = Object.keys(params);
+
+    if (keys.length === 0) {
+        container.innerHTML = `
+            <div class="params-popover__empty">
+                <ion-icon name="file-tray-outline"></ion-icon>
+                No hay parámetros persistentes
+            </div>
+        `;
+        // Disable clear button
+        const clearBtn = document.querySelector('.params-popover__clear-btn');
+        if (clearBtn) clearBtn.disabled = true;
+        return;
+    }
+
+    // Enable clear button
+    const clearBtn = document.querySelector('.params-popover__clear-btn');
+    if (clearBtn) clearBtn.disabled = false;
+
+    container.innerHTML = keys.map(key => {
+        const value = params[key];
+        const friendlyLabel = getFriendlyKeyLabel(key);
+        const friendlyValue = formatValueFriendly(key, value);
+        const escapedKey = escapeHtml(key);
+        // Escape for JS string context (replace quotes and backslashes)
+        const jsEscapedKey = key.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        
+        return `
+            <div class="param-item" data-param-key="${escapedKey}">
+                <div class="param-item__header">
+                    <span class="param-item__key">${escapeHtml(friendlyLabel)}</span>
+                    <div class="param-item__actions">
+                        <button class="param-item__btn param-item__btn--delete" 
+                                onclick="deleteParam('${jsEscapedKey}')" 
+                                title="Eliminar">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="param-item__value">${friendlyValue}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Delete a single param and refresh popover + module
+ */
+function deleteParam(key) {
+    if (window.legoWindowManager) {
+        window.legoWindowManager.removeParam(key);
+        console.log(`[Header] Param "${key}" eliminado`);
+    }
+    // Update badge
+    updateParamsBadge();
+    
+    // Refresh popover content only (not the whole popover to avoid listener issues)
+    const popover = document.getElementById('params-popover');
+    if (popover && popover.classList.contains('active')) {
+        const activeModuleId = window.moduleStore?.getActiveModule();
+        const params = window.legoWindowManager?.getParams() || {};
+        const content = document.getElementById('params-content');
+        if (content) {
+            renderParams(content, params, activeModuleId);
+        }
+    }
+    
+    // Reload active module to reflect parameter removal
+    if (window.legoWindowManager) {
+        window.legoWindowManager.reloadActive();
+    }
+}
+
+/**
+ * Clear all params for current module and refresh
+ */
+function clearAllParams() {
+    const activeModuleId = window.moduleStore?.getActiveModule();
+    
+    if (!activeModuleId) {
+        console.warn('[Header] No hay módulo activo');
+        return;
+    }
+
+    if (window.legoWindowManager) {
+        window.legoWindowManager.clearParams();
+        console.log(`[Header] Todos los params eliminados para ${activeModuleId}`);
+    }
+
+    // Update badge
+    updateParamsBadge();
+
+    // Close the popover
+    closeParamsPopover();
+
+    // Show feedback
+    if (window.AlertService?.toast) {
+        window.AlertService.toast('Parámetros limpiados', 'success');
+    }
+
+    // Refresh the active module
+    if (window.legoWindowManager) {
+        window.legoWindowManager.reloadActive();
+    }
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Export functions for external use
 window.headerComponent = {
     initializeThemeToggle,
@@ -278,10 +570,16 @@ window.headerComponent = {
     updateUserInfo,
     updateNotificationBadge,
     toggleUserMenu,
-    closeUserMenu
+    closeUserMenu,
+    toggleParamsPopover,
+    closeParamsPopover
 };
 
 // Exponer funciones globalmente para onclick
 window.handleLogout = handleLogout;
 window.showUserProfile = showUserProfile;
 window.showUserSettings = showUserSettings;
+window.toggleParamsPopover = toggleParamsPopover;
+window.closeParamsPopover = closeParamsPopover;
+window.deleteParam = deleteParam;
+window.clearAllParams = clearAllParams;

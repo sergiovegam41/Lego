@@ -873,3 +873,58 @@ html.light .menu-close-button ion-icon {
     display: block;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   MENU FILTER/SEARCH STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Cuando el menú está en modo filtrado, expandir submenús */
+.menu-filtering .custom-submenu.menu-filter-expanded {
+    display: block !important;
+    max-height: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Asegurar que los padres expandidos muestren el indicador */
+.menu-filtering .menu-filter-visible > .menu_item_openable_content .bx-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Resaltado de texto que coincide */
+.menu-highlight {
+    background: var(--primary, #4a9eff);
+    color: #000;
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+html.light .menu-highlight {
+    background: var(--primary, #3b82f6);
+    color: #fff;
+}
+
+/* Transición suave al mostrar/ocultar items */
+.menu-filtering [data-menu-item-id] {
+    transition: opacity 0.15s ease;
+}
+
+.menu-filter-hidden {
+    display: none !important;
+}
+
+/* Indicador visual de que hay filtro activo */
+.menu-filtering .search-box {
+    background: var(--primary-bg, rgba(74, 158, 255, 0.1));
+    border-radius: 6px;
+}
+
+.menu-filtering .search-box input {
+    color: var(--primary, #4a9eff);
+}
+
+/* Cuando el sidebar está colapsado, no aplicar filtrado visual */
+.sidebar.close .menu-filtering .custom-submenu.menu-filter-expanded {
+    display: none !important;
+}
+

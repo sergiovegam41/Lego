@@ -34,6 +34,11 @@ class ModuleStore {
     if (window.legoWindowManager) {
         window.legoWindowManager.updateBreadcrumbFromActiveModule();
     }
+    
+    // Dispatch event for module activation
+    window.dispatchEvent(new CustomEvent('lego:module:activated', {
+        detail: { moduleId: id, params: this.modules[id].params }
+    }));
     }
 
     closeModule(id, options = {}) {
@@ -84,6 +89,11 @@ class ModuleStore {
     if (window.legoWindowManager) {
         window.legoWindowManager.updateBreadcrumbFromActiveModule();
     }
+    
+    // Dispatch event for module closed
+    window.dispatchEvent(new CustomEvent('lego:module:closed', {
+        detail: { moduleId: id, activeModuleId: this.activeModule }
+    }));
     }
 
     getActiveModule() {

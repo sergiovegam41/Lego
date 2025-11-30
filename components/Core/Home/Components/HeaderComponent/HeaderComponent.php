@@ -72,6 +72,16 @@ class HeaderComponent extends CoreComponent
             className: "header-close-btn"
         ))->render();
 
+        // Render params button (for debugging/managing persistent params)
+        $paramsButton = (new IconButtonComponent(
+            icon: "options-outline",
+            size: "medium",
+            variant: "ghost",
+            onClick: "toggleParamsPopover()",
+            title: "Ver parámetros persistentes",
+            className: "header-params-btn"
+        ))->render();
+
         return <<<HTML
         <header id="top-header" class="main-header">
             <div class="header-left">
@@ -80,6 +90,32 @@ class HeaderComponent extends CoreComponent
             <div class="header-center">
                 {$reloadButton}
                 {$closeButton}
+                <div class="params-popover-container">
+                    <div class="params-btn-wrapper">
+                        {$paramsButton}
+                        <span class="params-badge" id="params-badge" style="display: none;">0</span>
+                    </div>
+                    <div class="params-popover" id="params-popover">
+                        <div class="params-popover__header">
+                            <span class="params-popover__title">Parámetros Persistentes</span>
+                            <button class="params-popover__close" onclick="closeParamsPopover()">
+                                <ion-icon name="close-outline"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="params-popover__module-info" id="params-module-info">
+                            <!-- Module info will be populated by JS -->
+                        </div>
+                        <div class="params-popover__content" id="params-content">
+                            <!-- Params will be populated by JS -->
+                        </div>
+                        <div class="params-popover__footer">
+                            <button class="params-popover__clear-btn" onclick="clearAllParams()">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                Limpiar todos
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="header-right">
                 <div class="notification-btn" id="notification-btn">

@@ -51,11 +51,22 @@ namespace Routes;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
 use App\Controllers\ExampleCrud\Controllers\ExampleCrudController;
+use App\Controllers\Menu\Controllers\MenuSearchController;
 use App\Controllers\ComponentsController;
 use Core\Controllers\CoreController;
 use Core\Routing\ApiCrudRouter;
 use Core\Routing\ApiGetRouter;
 use Flight;
+
+/**
+ * ========================================
+ * MENU SEARCH API
+ * ========================================
+ * Búsqueda de items del menú desde la base de datos
+ * Incluye: visible=true, visible=false (ocultos pero buscables)
+ * Excluye: dynamic=true (requieren contexto)
+ */
+Flight::route('GET /menu/search', fn() => new MenuSearchController());
 
 /**
  * ========================================
