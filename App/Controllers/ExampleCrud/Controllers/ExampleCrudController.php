@@ -11,6 +11,7 @@ use App\Models\ExampleCrudImage;
 use App\Models\EntityFile;
 use Core\Services\Storage\StorageService;
 use Core\Services\File\FileService;
+use Core\Attributes\ApiRoutes;
 
 /**
  * ExampleCrudController - API REST para example_crud
@@ -19,24 +20,16 @@ use Core\Services\File\FileService;
  * Controlador de ejemplo/template que demuestra implementación completa de CRUD.
  * Sirve como referencia para construir otros controladores en el framework.
  *
- * ENDPOINTS REST:
- * GET    /api/example-crud              - Listar todos los registros
- * GET    /api/example-crud/{id}         - Obtener un registro por ID
- * POST   /api/example-crud              - Crear nuevo registro
- * PUT    /api/example-crud/{id}         - Actualizar registro
- * DELETE /api/example-crud/{id}         - Eliminar registro
- *
- * ENDPOINTS LEGACY (compatibilidad):
- * GET    /api/example-crud/list         - Listar todos (LEGACY)
- * GET    /api/example-crud/get          - Obtener por ID (LEGACY)
- * POST   /api/example-crud/create       - Crear (LEGACY)
- * POST   /api/example-crud/update       - Actualizar (LEGACY)
- * POST   /api/example-crud/delete       - Eliminar (LEGACY)
- * POST   /api/example-crud/upload_image - Subir imagen
- * POST   /api/example-crud/delete_image - Eliminar imagen
- * POST   /api/example-crud/reorder_images - Reordenar imágenes
- * POST   /api/example-crud/set_primary  - Marcar imagen como principal
+ * AUTO-REGISTRO DE RUTAS:
+ * El atributo #[ApiRoutes] registra automáticamente todas las rutas.
+ * Preset 'crud' + acciones adicionales para manejo de imágenes.
  */
+#[ApiRoutes('/example-crud', preset: 'crud', actions: [
+    'upload_image' => ['POST'],
+    'delete_image' => ['POST'],
+    'reorder_images' => ['POST'],
+    'set_primary' => ['POST'],
+])]
 class ExampleCrudController extends CoreController
 {
 

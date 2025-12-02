@@ -20,7 +20,9 @@
  * form.setErrors(validationErrors); // Mostrar errores
  */
 
-class FormBuilder {
+// Evitar redeclaración si ya existe
+if (typeof FormBuilder === 'undefined') {
+    class FormBuilder {
     constructor(config) {
         this.config = {
             id: config.id || 'form-' + Date.now(),
@@ -386,4 +388,8 @@ class FormBuilder {
         }
         return true;
     }
+    }
+
+    // Exponer globalmente
+    window.FormBuilder = FormBuilder;
 }

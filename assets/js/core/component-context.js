@@ -34,7 +34,10 @@
  * });
  * ```
  */
-class ComponentContext {
+
+// Evitar redeclaración si ya existe
+if (typeof ComponentContext === 'undefined') {
+    class ComponentContext {
     constructor(contextData) {
         this._data = contextData || {};
     }
@@ -281,11 +284,12 @@ class ComponentContext {
     }
 }
 
-// Exponer globalmente
-window.ComponentContext = ComponentContext;
+    // Exponer globalmente
+    window.ComponentContext = ComponentContext;
 
-// Shorthand para uso rápido
-window.ctx = () => ComponentContext.current();
+    // Shorthand para uso rápido
+    window.ctx = () => ComponentContext.current();
 
-console.log('[Lego] ComponentContext disponible - usa ctx() o ComponentContext.current()');
+    console.log('[Lego] ComponentContext disponible - usa ctx() o ComponentContext.current()');
+}
 

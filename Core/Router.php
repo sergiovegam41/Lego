@@ -43,26 +43,37 @@ class Router
      */
     public static function dispatch(): void
     {
-        // Normalizar URI: quitar slashes y agregar uno al final para consistencia
-        $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-        $uri = rtrim($uri, '/') . '/';
+        // Obtener URI completa incluyendo query string
+        $fullUri = $_SERVER['REQUEST_URI'];
+        $path = parse_url($fullUri, PHP_URL_PATH);
+        $queryString = parse_url($fullUri, PHP_URL_QUERY);
+        
+        // Normalizar path para comparación (sin slashes al inicio/final)
+        $normalizedPath = trim($path, '/');
+        
+        // Reconstruir query string si existe
+        $qs = $queryString ? '?' . $queryString : '';
 
         // Determinar capa de routing según primer segmento
-        if (strpos($uri, 'api/') === 0) {
+        if (strpos($normalizedPath . '/', 'api/') === 0) {
             // Capa 1: API Backend
-            // Reescribir REQUEST_URI quitando el prefijo /api/
-            $_SERVER['REQUEST_URI'] = '/' . substr($uri, 4);
+            // Quitar solo el prefijo 'api/' del path, preservar el resto exacto
+            $newPath = substr($path, 4); // Quita '/api' del inicio
+            if ($newPath === '' || $newPath === false) $newPath = '/';
+            $_SERVER['REQUEST_URI'] = $newPath . $qs;
             require __DIR__ . '/../Routes/Api.php';
 
-        } elseif (strpos($uri, 'component/') === 0) {
+        } elseif (strpos($normalizedPath . '/', 'component/') === 0) {
             // Capa 2: Component Routes (SPA + Assets estáticos)
-            // Reescribir REQUEST_URI quitando el prefijo /component/
-            $_SERVER['REQUEST_URI'] = '/' . substr($uri, 10);
+            // Quitar solo el prefijo 'component/' del path, preservar el resto exacto
+            $newPath = substr($path, 10); // Quita '/component' del inicio
+            if ($newPath === '' || $newPath === false) $newPath = '/';
+            $_SERVER['REQUEST_URI'] = $newPath . $qs;
             require __DIR__ . '/../Routes/Component.php';
 
         } else {
             // Capa 3: Web Routes (Páginas completas)
-            // Mantener REQUEST_URI original
+            // Mantener REQUEST_URI original sin modificar
             require __DIR__ . '/../Routes/Web.php';
         }
 

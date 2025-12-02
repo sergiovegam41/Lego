@@ -47,10 +47,12 @@ class MenuSearchController extends CoreController
             }
 
             // Buscar items usando el scope searchable (excluye dinámicos)
+            // COLLATE NOCASE para búsqueda case-insensitive en SQLite
             $items = MenuItem::searchable()
                 ->where(function($q) use ($query) {
-                    $q->where('label', 'LIKE', "%{$query}%")
-                      ->orWhere('index_label', 'LIKE', "%{$query}%");
+                    $lowerQuery = strtolower($query);
+                    $q->whereRaw('LOWER(label) LIKE ?', ["%{$lowerQuery}%"])
+                      ->orWhereRaw('LOWER(index_label) LIKE ?', ["%{$lowerQuery}%"]);
                 })
                 ->orderBy('level')
                 ->orderBy('display_order')

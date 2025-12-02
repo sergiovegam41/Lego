@@ -624,13 +624,36 @@ if (typeof window.legoWindowManager === 'undefined') {
             }
 
             // Get parent's submenu or create insertion point
-            let submenu = parentMenuItem.parentElement.querySelector('.custom-submenu');
+            // IMPORTANTE: El submenu está DENTRO del parentMenuItem, no en su parentElement
+            let submenu = parentMenuItem.querySelector('.custom-submenu');
             if (!submenu) {
                 // If parent doesn't have a submenu, create one
-                submenu = document.createElement('div');
-                submenu.className = 'custom-submenu';
-                submenu.style.display = 'block'; // Ensure it's visible
-                parentMenuItem.parentElement.appendChild(submenu);
+                // Verificar si el parent es un grupo (tiene custom-menu-title) o un item simple
+                const hasTitle = parentMenuItem.querySelector('.custom-menu-title');
+                if (hasTitle) {
+                    // Es un grupo, crear submenu después del title
+                    submenu = document.createElement('div');
+                    submenu.className = 'custom-submenu';
+                    submenu.style.display = 'block'; // Ensure it's visible
+                    parentMenuItem.appendChild(submenu);
+                } else {
+                    // Es un item simple, convertirlo en grupo
+                    const button = parentMenuItem.querySelector('.custom-button');
+                    if (button) {
+                        // Convertir el button en title
+                        const title = document.createElement('div');
+                        title.className = 'custom-menu-title';
+                        title.setAttribute('onclick', 'toggleSubMenu(this)');
+                        title.innerHTML = button.innerHTML;
+                        button.replaceWith(title);
+                        
+                        // Crear submenu
+                        submenu = document.createElement('div');
+                        submenu.className = 'custom-submenu';
+                        submenu.style.display = 'block';
+                        parentMenuItem.appendChild(submenu);
+                    }
+                }
             }
 
             // Determine icon to use

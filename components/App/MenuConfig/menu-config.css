@@ -1,0 +1,999 @@
+/**
+ * MenuConfig - Estilos de configuración del menú
+ *
+ * FILOSOFÍA LEGO:
+ * Panel de configuración con drag & drop y edición inline.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONTAINER
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg, 24px);
+    padding: var(--space-lg, 24px);
+    height: 100%;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-md, 16px);
+    padding-bottom: var(--space-md, 16px);
+}
+
+/* Ocultar breadcrumb del header principal cuando está en menu-config solo en móvil */
+@media (max-width: 768px) {
+    body:has(.lego-screen[data-screen-id="menu-config"]) #lego-breadcrumb,
+    body:has(.lego-screen[data-screen-id="menu-config"]) .lego-breadcrumb,
+    body:has(.lego-screen[data-screen-id="menu-config"]) .header-left {
+        display: none !important;
+    }
+}
+
+/* Asegurar que el breadcrumb sea visible en desktop */
+@media (min-width: 769px) {
+    body:has(.lego-screen[data-screen-id="menu-config"]) #lego-breadcrumb,
+    body:has(.lego-screen[data-screen-id="menu-config"]) .lego-breadcrumb,
+    body:has(.lego-screen[data-screen-id="menu-config"]) .header-left {
+        display: flex !important;
+    }
+}
+
+.menu-config__header-actions {
+    display: flex;
+    gap: var(--space-sm, 8px);
+    align-items: center;
+}
+
+.menu-config__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm, 8px);
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 36px;
+    height: 36px;
+}
+
+.menu-config__btn--secondary {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+}
+
+.menu-config__btn--secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.menu-config__header-info {
+    flex: 1;
+}
+
+.menu-config__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 var(--space-xs, 4px) 0;
+    color: var(--text-primary);
+}
+
+.menu-config__title ion-icon {
+    font-size: 28px;
+    color: var(--color-primary);
+}
+
+.menu-config__subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.menu-config__save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm, 8px);
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 36px;
+    height: 36px;
+}
+
+.menu-config__save-btn:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+.menu-config__save-btn:disabled {
+    background: var(--bg-disabled);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LISTA DE ITEMS
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config__list {
+    flex: 1;
+}
+
+.menu-config__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* Asegurar que los itemContent en todos los niveles puedan recibir eventos */
+.menu-config__item-content {
+    position: relative;
+    z-index: 1;
+}
+
+.menu-config__items[data-level="1"] {
+    margin-left: 32px;
+    margin-top: var(--space-sm, 8px);
+    margin-bottom: 0;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-default);
+}
+
+.menu-config__items[data-level="2"] {
+    margin-left: 32px;
+    margin-top: var(--space-sm, 8px);
+    margin-bottom: 0;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-default);
+}
+
+.menu-config__items[data-level="3"] {
+    margin-left: 32px;
+    margin-top: var(--space-sm, 8px);
+    margin-bottom: 0;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-default);
+}
+
+.menu-config__item {
+    margin-bottom: var(--space-sm, 8px);
+}
+
+.menu-config__item-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-item);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    cursor: grab;
+    transition: all 0.15s ease;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Asegurar que los popovers estén siempre por encima */
+.menu-config__item-mobile-menu-dropdown,
+.menu-config__mobile-menu-dropdown {
+    z-index: 999999 !important;
+}
+
+/* REMOVIDO: Ya no deshabilitamos pointer-events en el padre cuando se arrastra un hijo */
+/* La lógica de JavaScript ya previene mover un item dentro de su propio padre */
+/* Esto permite que TODOS los itemContent en TODOS los niveles puedan recibir eventos de drag-and-drop */
+
+.menu-config__item-content:hover {
+    border-color: var(--color-primary);
+    background: var(--bg-item-hover);
+}
+
+.menu-config__item.dragging .menu-config__item-content {
+    opacity: 0.5;
+    border-style: dashed;
+}
+
+.menu-config__item.drag-over .menu-config__item-content {
+    border-color: var(--color-primary);
+    border-width: 2px;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.menu-config__item-content.menu-config__drop-zone {
+    border-color: var(--color-primary);
+    border-width: 2px;
+    border-style: dashed;
+    background: rgba(59, 130, 246, 0.15);
+    position: relative;
+}
+
+.menu-config__item-content.menu-config__drop-zone::after {
+    content: 'Soltar aquí para crear grupo';
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--color-primary);
+    background: var(--bg-surface);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.menu-config__drag-handle {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    cursor: grab;
+}
+
+.menu-config__drag-handle ion-icon {
+    font-size: 20px;
+}
+
+.menu-config__item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--bg-icon);
+    border-radius: 6px;
+    color: var(--color-primary);
+}
+
+.menu-config__item-icon ion-icon {
+    font-size: 18px;
+}
+
+.menu-config__item-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* En móvil: truncar texto con ellipsis después de 10 caracteres */
+@media (max-width: 768px) {
+    .menu-config__item-label {
+        max-width: 10ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.menu-config__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.menu-config__badge--hidden {
+    background: rgba(156, 163, 175, 0.2);
+    color: var(--text-secondary);
+}
+
+.menu-config__badge--dynamic {
+    background: rgba(139, 92, 246, 0.2);
+    color: #8b5cf6;
+}
+
+.menu-config__badge--group {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+/* En móvil: convertir badges a círculos de color sin texto */
+@media (max-width: 768px) {
+    .menu-config__badge {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-left: 4px;
+        font-size: 0;
+        line-height: 0;
+        overflow: hidden;
+        text-indent: -9999px;
+    }
+    
+    .menu-config__badge--hidden {
+        background: #9ca3af;
+        color: transparent;
+    }
+    
+    .menu-config__badge--dynamic {
+        background: #8b5cf6;
+        color: transparent;
+    }
+    
+    .menu-config__badge--group {
+        background: #22c55e;
+        color: transparent;
+    }
+}
+
+.menu-config__item-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.menu-config__item-desktop-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+}
+
+.menu-config__item-mobile-menu {
+    display: none;
+    position: static;
+    z-index: 99999;
+}
+
+/* En móvil, mostrar el menú */
+@media (max-width: 768px) {
+    .menu-config__item-mobile-menu {
+        display: block;
+    }
+}
+
+.menu-config__item-mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.menu-config__item-mobile-menu-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.menu-config__item-mobile-menu-btn ion-icon {
+    font-size: 18px;
+}
+
+.menu-config__item-mobile-menu-dropdown {
+    display: none !important;
+    position: fixed !important;
+    top: auto;
+    right: auto;
+    left: auto;
+    min-width: 180px;
+    max-width: 90vw;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 999999 !important;
+    overflow: visible !important;
+    isolation: isolate;
+    pointer-events: auto !important;
+}
+
+.menu-config__item-mobile-menu-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.menu-config__item-mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.menu-config__item-mobile-menu-item:hover {
+    background: var(--bg-hover);
+}
+
+.menu-config__item-mobile-menu-item ion-icon {
+    font-size: 18px;
+    width: 20px;
+}
+
+.menu-config__arrow-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: var(--bg-item, #f9fafb);
+    border: 1px solid var(--border-default, #e5e7eb);
+    border-radius: 6px;
+}
+
+.menu-config__arrow-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-secondary, #6b7280);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.menu-config__arrow-btn:hover {
+    background: var(--color-primary, #3b82f6);
+    color: white;
+}
+
+.menu-config__arrow-btn:active {
+    transform: scale(0.95);
+}
+
+.menu-config__arrow-btn ion-icon {
+    font-size: 14px;
+}
+
+.menu-config__edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.menu-config__edit-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config__modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999999 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg, 24px);
+    isolation: isolate;
+}
+
+.menu-config__modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.menu-config__modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000000 !important;
+}
+
+.menu-config__modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md, 16px);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.menu-config__modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.menu-config__modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.menu-config__modal-close:hover {
+    background: var(--bg-hover);
+}
+
+#menu-edit-form,
+#menu-new-form,
+#menu-import-form {
+    padding: var(--space-md, 16px);
+    margin: 0;
+}
+
+.menu-config__form-group {
+    margin-bottom: var(--space-md, 16px);
+}
+
+.menu-config__form-group:last-child {
+    margin-bottom: 0;
+}
+
+.menu-config__form-group label {
+    display: block;
+    margin-bottom: var(--space-sm, 8px);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu-config__form-group input {
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.menu-config__form-group input:focus,
+.menu-config__form-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.menu-config__form-control {
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.menu-config__form-group input[type="file"] {
+    padding: var(--space-sm, 8px);
+    cursor: pointer;
+}
+
+.menu-config__checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    cursor: pointer;
+    user-select: none;
+}
+
+.menu-config__checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.menu-config__form-help {
+    display: block;
+    margin-top: var(--space-xs, 4px);
+    font-size: 12px;
+    color: var(--text-secondary, #6b7280);
+    font-style: italic;
+}
+
+.menu-config__icon-preview {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    margin-bottom: var(--space-sm, 8px);
+}
+
+.menu-config__icon-preview ion-icon {
+    font-size: 24px;
+    color: var(--color-primary);
+}
+
+.menu-config__icon-preview span {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.menu-config__icon-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: var(--space-xs, 4px);
+    max-height: 200px;
+    overflow-y: auto;
+    padding: var(--space-sm, 8px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+}
+
+.menu-config__icon-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.menu-config__icon-option:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.menu-config__icon-option.selected {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.menu-config__icon-option ion-icon {
+    font-size: 20px;
+}
+
+.menu-config__form-actions {
+    display: flex;
+    gap: var(--space-sm, 8px);
+    justify-content: flex-end;
+    padding-top: var(--space-md, 16px);
+    border-top: 1px solid var(--border-default);
+}
+
+.menu-config__btn {
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-config__btn--primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.menu-config__btn--primary:hover {
+    background: var(--color-primary-hover);
+}
+
+.menu-config__btn--secondary {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+}
+
+.menu-config__btn--secondary:hover {
+    background: var(--bg-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEMING - LIGHT MODE
+   ═══════════════════════════════════════════════════════════════ */
+
+html.light .menu-config {
+    --bg-surface: #ffffff;
+    --bg-item: #f9fafb;
+    --bg-item-hover: #f3f4f6;
+    --bg-icon: #e5e7eb;
+    --bg-input: #ffffff;
+    --bg-hover: #f3f4f6;
+    --bg-disabled: #e5e7eb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b7280;
+    --border-default: #e5e7eb;
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEMING - DARK MODE
+   ═══════════════════════════════════════════════════════════════ */
+
+html.dark .menu-config {
+    --bg-surface: var(--bg-body, #181A1B);
+    --bg-item: #252525;
+    --bg-item-hover: #2a2a2a;
+    --bg-icon: #333333;
+    --bg-input: #252525;
+    --bg-hover: #333333;
+    --bg-disabled: #404040;
+    --text-primary: #f5f5f5;
+    --text-secondary: #9ca3af;
+    --border-default: #404040;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   MENÚ MÓVIL
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config__mobile-menu {
+    display: none;
+    position: relative;
+    z-index: 99999;
+}
+
+.menu-config__mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: var(--bg-item);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-config__mobile-menu-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.menu-config__mobile-menu-btn ion-icon {
+    font-size: 18px;
+}
+
+.menu-config__mobile-menu-dropdown {
+    display: none;
+    position: fixed !important;
+    top: auto;
+    right: auto;
+    min-width: 180px;
+    max-width: 90vw;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 99999 !important;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.menu-config__mobile-menu-dropdown.show {
+    display: block;
+}
+
+.menu-config__mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.menu-config__mobile-menu-item:hover {
+    background: var(--bg-hover);
+}
+
+.menu-config__mobile-menu-item--primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.menu-config__mobile-menu-item--primary:hover {
+    background: var(--color-primary-hover);
+}
+
+.menu-config__mobile-menu-item ion-icon {
+    font-size: 18px;
+}
+
+.menu-config__desktop-actions {
+    display: flex;
+    gap: var(--space-sm, 8px);
+    align-items: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    /* Eliminar padding y márgenes en móvil para más espacio */
+    .menu-config {
+        padding: var(--space-xs, 4px);
+        gap: var(--space-sm, 8px);
+    }
+    
+    .menu-config__header {
+        flex-direction: column;
+        gap: var(--space-sm, 8px);
+        padding: var(--space-sm, 8px);
+        margin: 0;
+    }
+
+    .menu-config__header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    /* Ocultar botones desktop en móviles */
+    .menu-config__desktop-actions {
+        display: none;
+    }
+
+    /* Mostrar menú móvil en móviles */
+    .menu-config__mobile-menu {
+        display: block;
+    }
+
+    /* Ocultar acciones desktop de items en móviles */
+    .menu-config__item-desktop-actions {
+        display: none;
+    }
+
+    /* Mostrar menú móvil de items en móviles */
+    .menu-config__item-mobile-menu {
+        display: block;
+    }
+
+    .menu-config__icon-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    /* Asegurar que no haya scroll horizontal */
+    .menu-config__item-content {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    /* Alinear botones "..." completamente a la derecha */
+    .menu-config__item-actions {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+    
+    .menu-config__item-mobile-menu-btn {
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 769px) {
+    /* Ocultar menú móvil en desktop */
+    .menu-config__mobile-menu {
+        display: none !important;
+    }
+
+    /* Mostrar botones desktop */
+    .menu-config__desktop-actions {
+        display: flex !important;
+    }
+
+    /* Ocultar menú móvil de items en desktop */
+    .menu-config__item-mobile-menu {
+        display: none !important;
+    }
+
+    /* Mostrar acciones desktop de items */
+    .menu-config__item-desktop-actions {
+        display: flex !important;
+    }
+}
+

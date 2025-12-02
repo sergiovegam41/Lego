@@ -96,17 +96,20 @@ class ApiCrudResource
     }
 
     /**
-     * Obtener endpoint completo con prefijo /api
+     * Obtener endpoint para Flight (sin prefijo /api)
+     *
+     * IMPORTANTE: Core/Router.php ya quita el prefijo /api/ antes de procesar rutas,
+     * por lo que Flight recibe URIs como /products, no /api/products.
      *
      * @param string $modelClass Nombre completo de la clase
-     * @return string Endpoint completo (ej: '/api/products')
+     * @return string Endpoint para Flight (ej: '/products')
      */
     public function getEndpoint(string $modelClass): string
     {
-        // Si endpoint está definido, agregar prefijo /api
+        // Si endpoint está definido, usar directamente (sin /api)
         if ($this->endpoint !== null) {
             $path = ltrim($this->endpoint, '/');
-            return "/api/{$path}";
+            return "/{$path}";
         }
 
         // Auto-generar desde nombre del modelo
@@ -117,7 +120,7 @@ class ApiCrudResource
         $plural = $this->pluralize($shortName);
         $kebab = $this->toKebabCase($plural);
 
-        return "/api/{$kebab}";
+        return "/{$kebab}";
     }
 
     /**

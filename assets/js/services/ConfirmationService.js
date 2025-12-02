@@ -29,7 +29,9 @@
  * ✅ Callbacks opcionales (onConfirm, onCancel)
  */
 
-class ConfirmationService {
+// Evitar redeclaración si ya existe
+if (typeof ConfirmationService === 'undefined') {
+    class ConfirmationService {
 
     /**
      * PRESET: Confirmación de eliminación
@@ -339,18 +341,19 @@ class ConfirmationService {
     }
 }
 
-// Auto-inicializar cuando AlertService esté disponible
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+    // Auto-inicializar cuando AlertService esté disponible
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.AlertService !== 'undefined') {
+                console.log('[LEGO Framework] ConfirmationService cargado');
+            }
+        });
+    } else {
         if (typeof window.AlertService !== 'undefined') {
             console.log('[LEGO Framework] ConfirmationService cargado');
         }
-    });
-} else {
-    if (typeof window.AlertService !== 'undefined') {
-        console.log('[LEGO Framework] ConfirmationService cargado');
     }
-}
 
-// Exponer globalmente
-window.ConfirmationService = ConfirmationService;
+    // Exponer globalmente
+    window.ConfirmationService = ConfirmationService;
+}

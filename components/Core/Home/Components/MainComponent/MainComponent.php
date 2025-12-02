@@ -162,7 +162,7 @@ class MainComponent extends CoreComponent
           <script src="./assets/js/core/modules/events/lego-events.js"></script>
 
           <!-- ═══ LEGO FRAMEWORK: SPA y carga dinámica de módulos ═══ -->
-          <script type="module" src="./assets/js/core/base-lego-framework.js" defer></script>
+          <script type="module" src="./assets/js/core/base-lego-framework.js?v=<?= time() ?>" defer></script>
 
           <!-- ═══ ICONOS: Ionicons ═══ -->
           <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
@@ -228,10 +228,18 @@ class MainComponent extends CoreComponent
           ? $item->index_label 
           : $item->label;
       
+      // Si no tiene ruta, es un grupo (url = null)
+      // Si tiene hijos, es un grupo (url = null)
+      // Si tiene ruta y no tiene hijos, es un item con link
+      $url = null;
+      if (!$item->hasChildren() && !empty($item->route)) {
+          $url = $hostName . $item->route;
+      }
+      
       return new MenuItemDto(
           id: $item->id,
           name: $displayName,
-          url: $item->hasChildren() ? null : $hostName . $item->route,
+          url: $url,
           iconName: $item->icon,
           childs: $childDtos  // Ya es array vacío [] si no hay hijos
       );

@@ -10,6 +10,10 @@ use Core\Registry\ScreenRegistry;
 use Components\App\ExampleCrud\ExampleCrudComponent;
 use Components\App\ExampleCrud\Childs\ExampleCreate\ExampleCreateComponent;
 use Components\App\ExampleCrud\Childs\ExampleEdit\ExampleEditComponent;
+use Components\App\ToolsCrud\ToolsCrudComponent;
+use Components\App\ToolsCrud\Childs\ToolsCreate\ToolsCreateComponent;
+use Components\App\ToolsCrud\Childs\ToolsEdit\ToolsEditComponent;
+use Components\App\MenuConfig\MenuConfigComponent;
 
 /**
  * MenuStructure - Fuente única de verdad para el menú de navegación
@@ -111,6 +115,80 @@ class MenuStructure
                         'is_dynamic' => ExampleEditComponent::SCREEN_DYNAMIC
                     ]
                 ]
+            ],
+            
+            // ═══════════════════════════════════════════════════════════════
+            // TOOLS CRUD - Herramientas
+            // ═══════════════════════════════════════════════════════════════
+            [
+                'id' => ToolsCrudComponent::MENU_GROUP_ID,
+                'parent_id' => null,
+                'label' => 'Herramientas',
+                'index_label' => 'Herramientas',
+                'route' => ToolsCrudComponent::SCREEN_ROUTE,
+                'icon' => 'construct-outline',
+                'display_order' => 2,
+                'level' => 0,
+                'is_visible' => true,
+                'is_dynamic' => false,
+                'children' => [
+                    // Ver (Lista)
+                    [
+                        'id' => ToolsCrudComponent::SCREEN_ID,
+                        'parent_id' => ToolsCrudComponent::MENU_GROUP_ID,
+                        'label' => ToolsCrudComponent::SCREEN_LABEL,
+                        'index_label' => ToolsCrudComponent::SCREEN_LABEL,
+                        'route' => ToolsCrudComponent::SCREEN_ROUTE,
+                        'icon' => ToolsCrudComponent::SCREEN_ICON,
+                        'display_order' => ToolsCrudComponent::SCREEN_ORDER,
+                        'level' => 1,
+                        'is_visible' => ToolsCrudComponent::SCREEN_VISIBLE,
+                        'is_dynamic' => ToolsCrudComponent::SCREEN_DYNAMIC
+                    ],
+                    // Crear
+                    [
+                        'id' => ToolsCreateComponent::SCREEN_ID,
+                        'parent_id' => ToolsCrudComponent::MENU_GROUP_ID,
+                        'label' => ToolsCreateComponent::SCREEN_LABEL,
+                        'index_label' => ToolsCreateComponent::SCREEN_LABEL,
+                        'route' => ToolsCreateComponent::SCREEN_ROUTE,
+                        'icon' => ToolsCreateComponent::SCREEN_ICON,
+                        'display_order' => ToolsCreateComponent::SCREEN_ORDER,
+                        'level' => 1,
+                        'is_visible' => ToolsCreateComponent::SCREEN_VISIBLE,
+                        'is_dynamic' => ToolsCreateComponent::SCREEN_DYNAMIC
+                    ],
+                    // Editar (dinámico)
+                    [
+                        'id' => ToolsEditComponent::SCREEN_ID,
+                        'parent_id' => ToolsCrudComponent::MENU_GROUP_ID,
+                        'label' => ToolsEditComponent::SCREEN_LABEL,
+                        'index_label' => ToolsEditComponent::SCREEN_LABEL,
+                        'route' => ToolsEditComponent::SCREEN_ROUTE,
+                        'icon' => ToolsEditComponent::SCREEN_ICON,
+                        'display_order' => ToolsEditComponent::SCREEN_ORDER,
+                        'level' => 1,
+                        'is_visible' => ToolsEditComponent::SCREEN_VISIBLE,
+                        'is_dynamic' => ToolsEditComponent::SCREEN_DYNAMIC
+                    ]
+                ]
+            ],
+            
+            // ═══════════════════════════════════════════════════════════════
+            // CONFIGURACIÓN DEL MENÚ - OCULTO pero BUSCABLE
+            // Screen de configuración accesible solo por búsqueda o URL directa
+            // ═══════════════════════════════════════════════════════════════
+            [
+                'id' => MenuConfigComponent::SCREEN_ID,
+                'parent_id' => MenuConfigComponent::SCREEN_PARENT,
+                'label' => MenuConfigComponent::SCREEN_LABEL,
+                'index_label' => 'Configuración Menú',
+                'route' => MenuConfigComponent::SCREEN_ROUTE,
+                'icon' => MenuConfigComponent::SCREEN_ICON,
+                'display_order' => MenuConfigComponent::SCREEN_ORDER,
+                'level' => 0,
+                'is_visible' => MenuConfigComponent::SCREEN_VISIBLE,
+                'is_dynamic' => MenuConfigComponent::SCREEN_DYNAMIC
             ]
         ];
     }
@@ -125,7 +203,12 @@ class MenuStructure
             '- Example CRUD (carpeta)',
             '  - Ver',
             '  - Crear',
-            '  - Editar [dinámico]'
+            '  - Editar [dinámico]',
+            '- Herramientas (carpeta)',
+            '  - Ver',
+            '  - Nueva Herramienta',
+            '  - Editar [dinámico]',
+            '- Configuración del Menú [oculto, buscable]'
         ];
     }
     

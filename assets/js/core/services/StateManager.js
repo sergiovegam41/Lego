@@ -11,7 +11,9 @@
  * state.emit('product:selected', 123);
  */
 
-class StateManager {
+// Evitar redeclaración si ya existe
+if (typeof StateManager === 'undefined') {
+    class StateManager {
     constructor() {
         this.state = {};
         this.listeners = {};
@@ -103,6 +105,10 @@ class StateManager {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = StateManager;
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = StateManager;
+    }
+    
+    // Exponer globalmente
+    window.StateManager = StateManager;
 }

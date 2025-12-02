@@ -11,7 +11,9 @@
  * AlertService.loading('Guardando...');
  */
 
-class AlertService {
+// Evitar redeclaración si ya existe
+if (typeof AlertService === 'undefined') {
+    class AlertService {
 
     /**
      * Inicializar SweetAlert2 con configuración por defecto
@@ -484,14 +486,15 @@ class AlertService {
     }
 }
 
-// Auto-inicializar cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => AlertService.init());
-} else {
-    AlertService.init();
+    // Auto-inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => AlertService.init());
+    } else {
+        AlertService.init();
+    }
+
+    // Exponer globalmente
+    window.AlertService = AlertService;
+
+    console.log('[LEGO Framework] AlertService cargado');
 }
-
-// Exponer globalmente
-window.AlertService = AlertService;
-
-console.log('[LEGO Framework] AlertService cargado');

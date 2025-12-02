@@ -128,13 +128,26 @@
 
 @media (max-width: 768px) {
     .lego-screen--padded .lego-screen__content {
-        padding: var(--space-md);
+        padding: 0;
+    }
+    
+    /* Prevenir scroll horizontal */
+    .lego-screen {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .lego-screen__content {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     .lego-screen--padded .lego-screen__content {
-        padding: var(--space-sm);
+        padding: 0;
     }
 }
 

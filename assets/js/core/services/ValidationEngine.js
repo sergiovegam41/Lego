@@ -13,7 +13,9 @@
  * const errors = validator.validate({ name: 'Juan', email: 'juan@example.com' });
  */
 
-class ValidationEngine {
+// Evitar redeclaración si ya existe
+if (typeof ValidationEngine === 'undefined') {
+    class ValidationEngine {
     constructor(rules = {}) {
         this.rules = rules;
         this.customValidators = {};
@@ -174,8 +176,12 @@ class ValidationEngine {
         if (!errors[field]) return null;
         return Array.isArray(errors[field]) ? errors[field][0] : errors[field];
     }
-}
+    }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ValidationEngine;
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = ValidationEngine;
+    }
+    
+    // Exponer globalmente
+    window.ValidationEngine = ValidationEngine;
 }

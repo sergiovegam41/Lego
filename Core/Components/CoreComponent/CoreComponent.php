@@ -170,13 +170,15 @@ abstract class CoreComponent {
 
         return <<<HTML
          <script>
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                window.lego.loadModulesWithArguments({$modules});
-            } else {
-                window.addEventListener('load', ()=>{
+            // Función que espera a que window.lego.loadModulesWithArguments esté disponible
+            (function waitForLego() {
+                if (window.lego && typeof window.lego.loadModulesWithArguments === 'function') {
                     window.lego.loadModulesWithArguments({$modules});
-                });
-            }
+                } else {
+                    // Si aún no está disponible, reintentar en 10ms
+                    setTimeout(waitForLego, 10);
+                }
+            })();
         </script>
         HTML;
     }
@@ -196,17 +198,15 @@ abstract class CoreComponent {
 
         return <<<HTML
             <script>
-
-                if (document.readyState === 'complete' || document.readyState === 'interactive') {
-
-                   window.lego.loadModules({$modules})
-                
-                }else{
-                
-                    window.addEventListener('load',()=>window.lego.loadModules({$modules}));
-                
-                }
-            
+                // Función que espera a que window.lego.loadModules esté disponible
+                (function waitForLego() {
+                    if (window.lego && typeof window.lego.loadModules === 'function') {
+                        window.lego.loadModules({$modules});
+                    } else {
+                        // Si aún no está disponible, reintentar en 10ms
+                        setTimeout(waitForLego, 10);
+                    }
+                })();
             </script>
         HTML;
     }

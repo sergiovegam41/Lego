@@ -50,12 +50,12 @@
 namespace Routes;
 
 use App\Controllers\Auth\Controllers\AuthGroupsController;
-use App\Controllers\ExampleCrud\Controllers\ExampleCrudController;
 use App\Controllers\Menu\Controllers\MenuSearchController;
 use App\Controllers\ComponentsController;
 use Core\Controllers\CoreController;
 use Core\Routing\ApiCrudRouter;
 use Core\Routing\ApiGetRouter;
+use Core\Routing\ApiControllerRouter;
 use Flight;
 
 /**
@@ -66,19 +66,35 @@ use Flight;
  * Incluye: visible=true, visible=false (ocultos pero buscables)
  * Excluye: dynamic=true (requieren contexto)
  */
-Flight::route('GET /menu/search', fn() => new MenuSearchController());
+Flight::route('GET /menu/search', function() {
+    new MenuSearchController();
+});
 
 /**
  * ========================================
- * EXAMPLE CRUD LEGACY ROUTES
+ * MENU STRUCTURE API
  * ========================================
- * Rutas legacy para ExampleCrud (POST con action en URL)
- * Estas rutas permiten compatibilidad con el frontend existente
+ * Obtiene la estructura completa del menú en formato MenuItemDto[]
+ * Solo items visibles, con estructura de árbol
  */
-Flight::route('POST /example-crud/delete', fn() => new ExampleCrudController('delete'));
-Flight::route('POST /example-crud/create', fn() => new ExampleCrudController('create'));
-Flight::route('POST /example-crud/update', fn() => new ExampleCrudController('update'));
-Flight::route('GET /example-crud/get', fn() => new ExampleCrudController('get'));
+Flight::route('GET /menu/structure', function() {
+    new \App\Controllers\Menu\Controllers\MenuStructureController();
+});
+
+/**
+ * ========================================
+ * AUTO-CONTROLLER ROUTES (Atributo #[ApiRoutes])
+ * ========================================
+ * Rutas de controladores generadas automáticamente desde #[ApiRoutes].
+ * Soporta cualquier tipo de controlador: CRUD, reportes, webhooks, etc.
+ * Ver: Core/Routing/ApiControllerRouter.php
+ *
+ * Controladores registrados:
+ * - ExampleCrudController → /api/example-crud (crud + imágenes)
+ * - ToolsController → /api/tools (crud)
+ * - [Agregar más controladores con #[ApiRoutes]]
+ */
+ApiControllerRouter::registerRoutes();
 
 /**
  * ========================================

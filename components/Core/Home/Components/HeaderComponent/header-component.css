@@ -43,12 +43,27 @@
     padding-left: 1.5rem; /* More spacing from left edge */
 }
 
+/* Ocultar breadcrumb cuando está en menu-config solo en móvil */
+@media (max-width: 768px) {
+    body:has(.lego-screen[data-screen-id="menu-config"]) .header-left {
+        display: none !important;
+    }
+}
+
+/* Asegurar que el breadcrumb sea visible en desktop */
+@media (min-width: 769px) {
+    body:has(.lego-screen[data-screen-id="menu-config"]) .header-left {
+        display: flex !important;
+    }
+}
+
 /* Header Center Section - Reload Button */
 .header-center {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: var(--space-md);
+    margin-left: auto;
 }
 
 .header-reload-btn {

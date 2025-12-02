@@ -18,6 +18,9 @@
  *    TableManager.setTableData('products-table', products);
  */
 
+// Evitar redeclaración si ya existe
+if (typeof TableManager === 'undefined') {
+
 class TableManager {
     constructor(tableId) {
         this.tableId = tableId;
@@ -445,5 +448,6 @@ class TableManager {
     }
 }
 
-// Exponer globalmente
-window.TableManager = TableManager;
+    // Exponer globalmente
+    window.TableManager = TableManager;
+}

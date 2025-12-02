@@ -34,7 +34,9 @@
  * - form:submitted - Cuando se envía un formulario
  */
 
-class LegoEvents {
+// Evitar redeclaración si ya existe
+if (typeof LegoEvents === 'undefined') {
+    class LegoEvents {
     constructor() {
         this.listeners = new Map();
         this.eventHistory = [];
@@ -242,6 +244,7 @@ class LegoEvents {
     }
 }
 
-// Crear instancia singleton y exponerla globalmente
-window.LegoEvents = LegoEvents;
-window.legoEvents = new LegoEvents();
+    // Crear instancia singleton y exponerla globalmente
+    window.LegoEvents = LegoEvents;
+    window.legoEvents = new LegoEvents();
+}

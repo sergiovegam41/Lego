@@ -72,21 +72,28 @@ function executeCode(code) {
  */
 function executeCodeSafely(code, moduleName, contextData = null) {
     try {
-        // Si hay contextData, inyectarlo como variable global antes de ejecutar el código
+        // Si hay contextData, inyectarlo como variables locales disponibles para el código
+        let contextSetup = '';
         if (contextData) {
             // Crear una variable global temporal con el contexto
             // Usamos un nombre único para evitar colisiones
             const contextVarName = '_LEGO_CONTEXT_' + Date.now() + '_' + Math.random().toString(36).substring(7);
             window[contextVarName] = contextData;
 
-            // Reemplazar {CONTEXT} con referencia a la variable global
+            // Reemplazar {CONTEXT} con referencia a la variable global (retrocompatibilidad)
             code = code.replace('{CONTEXT}', contextVarName);
+            
+            // Exponer `arg` y `_legoContext` como variables locales dentro del IIFE
+            // Esto permite que scripts usen `arg` directamente sin {CONTEXT}
+            // Usamos _legoContext en lugar de context para evitar conflictos con variables existentes
+            contextSetup = `var arg = window['${contextVarName}'].arg; var _legoContext = window['${contextVarName}'].context;`;
         }
 
         // Crear un contexto aislado para el módulo
         const wrappedCode =
             'try {' +
                 '(function() {' +
+                    contextSetup +
                     code +
                 '})();' +
             '} catch (moduleError) {' +
@@ -109,8 +116,6 @@ function executeCodeSafely(code, moduleName, contextData = null) {
  * @returns {Promise<void[]>} Promise que resuelve cuando todos los scripts están cargados
  */
 export async function _loadModulesWithArguments(scripts) {
-
-    console.log("🚀 _loadModulesWithArguments", scripts);
     if (!scripts?.data?.length) return;
 
     const loadScriptWithContext = async (scriptData) => {

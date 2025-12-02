@@ -153,13 +153,27 @@ function populateForm(record, activeModuleContainer) {
 
     // Poblar select usando LegoSelect API (con retry para asegurar que esté listo)
     if (record.category) {
-        const setCategory = () => {
-            if (window.LegoSelect) {
+        const setCategory = (retries = 20) => {
+            if (!window.LegoSelect) {
+                if (retries > 0) {
+                    console.warn('[ExampleEdit] LegoSelect no disponible, reintentando...');
+                    setTimeout(() => setCategory(retries - 1), 100);
+                }
+                return;
+            }
+            
+            // Verificar si la instancia del select está lista
+            const instance = window.LegoSelect.getInstance('example-category');
+            if (instance) {
                 console.log('[ExampleEdit] Seteando categoría:', record.category);
                 window.LegoSelect.setValue('example-category', record.category);
             } else {
-                console.warn('[ExampleEdit] LegoSelect no disponible, reintentando...');
-                setTimeout(setCategory, 100);
+                if (retries > 0) {
+                    console.warn('[ExampleEdit] Select example-category aún no está inicializado, reintentando...');
+                    setTimeout(() => setCategory(retries - 1), 100);
+                } else {
+                    console.error('[ExampleEdit] No se pudo inicializar el select example-category después de múltiples intentos');
+                }
             }
         };
         setCategory();
@@ -423,7 +437,7 @@ async function initializeForm() {
         } finally {
             // Re-habilitar botón
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Guardar Cambios';
+            submitBtn.textContent = 'Guardar';
         }
     });
 

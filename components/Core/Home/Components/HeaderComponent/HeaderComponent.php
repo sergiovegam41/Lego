@@ -45,11 +45,9 @@ class HeaderComponent extends CoreComponent
             ])
         ];
 
-        // Render breadcrumb
+        // Render breadcrumb vacío al inicio (se actualizará dinámicamente)
         $breadcrumb = (new BreadcrumbComponent(
-            items: [
-                ['label' => 'Inicio', 'href' => '#']
-            ]
+            items: []
         ))->render();
 
         // Render reload button

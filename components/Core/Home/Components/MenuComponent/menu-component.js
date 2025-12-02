@@ -7,7 +7,7 @@
 
 // El argumento 'arg' es pasado automáticamente por loadModulesWithArguments
 // y contiene { menuStructure: [...] } donde menuStructure ya es un array de objetos
-if (typeof arg !== 'undefined' && arg.menuStructure) {
+if (typeof arg !== 'undefined' && arg && arg.menuStructure) {
     // Inicializar window.lego si no existe
     window.lego = window.lego || {};
 
@@ -157,6 +157,208 @@ let sidebarResizing = false;
         } else {
             console.warn('No se encontró el resize handle');
         }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // SIDEBAR STATE MANAGER - Gestión de estado con localStorage
+        // ═══════════════════════════════════════════════════════════════════
+        
+        /**
+         * SidebarStateManager
+         * 
+         * Gestiona el estado del sidebar (colapsado/expandido) usando localStorage.
+         * Solo guarda estado en desktop, en móvil siempre está colapsado.
+         */
+        class SidebarStateManager {
+            static STORAGE_KEY = 'lego_sidebar_state';
+            static STATE_COLLAPSED = 'collapsed';
+            static STATE_EXPANDED = 'expanded';
+            static MOBILE_BREAKPOINT = 768;
+            
+            /**
+             * Obtener estado guardado del sidebar
+             * @returns {string|null} 'collapsed', 'expanded' o null si no hay estado guardado
+             */
+            static getState() {
+                try {
+                    return localStorage.getItem(this.STORAGE_KEY);
+                } catch (e) {
+                    console.warn('[SidebarStateManager] Error leyendo localStorage:', e);
+                    return null;
+                }
+            }
+            
+            /**
+             * Guardar estado del sidebar
+             * @param {string} state - 'collapsed' o 'expanded'
+             */
+            static saveState(state) {
+                try {
+                    if (state === this.STATE_COLLAPSED || state === this.STATE_EXPANDED) {
+                        localStorage.setItem(this.STORAGE_KEY, state);
+                    }
+                } catch (e) {
+                    console.warn('[SidebarStateManager] Error guardando en localStorage:', e);
+                }
+            }
+            
+            /**
+             * Verificar si estamos en móvil
+             * @returns {boolean}
+             */
+            static isMobile() {
+                return window.innerWidth <= this.MOBILE_BREAKPOINT;
+            }
+            
+            /**
+             * Aplicar estado al sidebar
+             * @param {HTMLElement} sidebar - Elemento del sidebar
+             * @param {HTMLElement} sidebarShade - Elemento del shade
+             * @param {string} state - 'collapsed' o 'expanded'
+             */
+            static applyState(sidebar, sidebarShade, state) {
+                if (!sidebar) return;
+                
+                if (state === this.STATE_COLLAPSED) {
+                    sidebar.classList.add('close');
+                    document.body.classList.add('sidebar-collapsed');
+                    
+                    if (sidebarShade) {
+                        const collapsedWidth = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width-collapsed');
+                        const collapsedWidthPx = parseFloat(collapsedWidth) * 16;
+                        sidebarShade.style.minWidth = collapsedWidthPx + 'px';
+                        sidebarShade.style.width = collapsedWidthPx + 'px';
+                    }
+                } else {
+                    sidebar.classList.remove('close');
+                    document.body.classList.remove('sidebar-collapsed');
+                    
+                    if (sidebarShade) {
+                        const currentWidth = window.storageManager ? window.storageManager.getSidebarWidth() : localStorage.getItem('lego_sidebar_width');
+                        if (currentWidth && currentWidth >= 200 && currentWidth <= 400) {
+                            sidebarShade.style.minWidth = currentWidth + 'px';
+                            sidebarShade.style.width = currentWidth + 'px';
+                        } else {
+                            const defaultWidth = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width');
+                            const defaultWidthPx = parseFloat(defaultWidth) * 16;
+                            sidebarShade.style.minWidth = defaultWidthPx + 'px';
+                            sidebarShade.style.width = defaultWidthPx + 'px';
+                        }
+                    }
+                }
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // RESPONSIVE SIDEBAR - Colapsar/expandir automáticamente
+        // ═══════════════════════════════════════════════════════════════════
+        
+        let wasMobile = SidebarStateManager.isMobile(); // Trackear si estábamos en móvil
+        
+        function handleResponsiveSidebar(forceMobileCollapse = false) {
+            const sidebar = document.querySelector('nav.sidebar');
+            const sidebarShade = document.querySelector('#content-sidebar-shade');
+            if (!sidebar) return;
+            
+            const isMobile = SidebarStateManager.isMobile();
+            const switchedToDesktop = wasMobile && !isMobile;
+            const switchedToMobile = !wasMobile && isMobile;
+            
+            wasMobile = isMobile; // Actualizar estado
+            
+            if (isMobile || forceMobileCollapse) {
+                // En móviles: siempre colapsado
+                // El usuario puede expandirlo manualmente, pero no guardamos ese estado
+                SidebarStateManager.applyState(sidebar, sidebarShade, SidebarStateManager.STATE_COLLAPSED);
+            } else if (switchedToDesktop) {
+                // Al cambiar de móvil a desktop: restaurar estado guardado
+                const savedState = SidebarStateManager.getState();
+                const targetState = savedState || SidebarStateManager.STATE_EXPANDED;
+                SidebarStateManager.applyState(sidebar, sidebarShade, targetState);
+            } else {
+                // En desktop: cargar estado guardado solo si no hay estado actual
+                const savedState = SidebarStateManager.getState();
+                if (savedState) {
+                    const currentState = sidebar.classList.contains('close') 
+                        ? SidebarStateManager.STATE_COLLAPSED 
+                        : SidebarStateManager.STATE_EXPANDED;
+                    
+                    // Solo aplicar si el estado guardado es diferente al actual
+                    if (savedState !== currentState) {
+                        SidebarStateManager.applyState(sidebar, sidebarShade, savedState);
+                    }
+                } else {
+                    // No hay estado guardado, usar expandido por defecto
+                    if (sidebar.classList.contains('close')) {
+                        SidebarStateManager.applyState(sidebar, sidebarShade, SidebarStateManager.STATE_EXPANDED);
+                    }
+                }
+            }
+        }
+        
+        // Ejecutar al cargar (después de un pequeño delay para asegurar que el DOM esté listo)
+        setTimeout(function() {
+            handleResponsiveSidebar(true); // Forzar colapsado en móvil al inicio
+        }, 200);
+        
+        // Ejecutar al redimensionar ventana (con debounce)
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                const isMobile = SidebarStateManager.isMobile();
+                handleResponsiveSidebar(isMobile); // Forzar colapsado si cambiamos a móvil
+            }, 150);
+        });
+        
+        // Guardar estado cuando el usuario colapsa/expande manualmente (solo en desktop)
+        (function() {
+            const sidebarElement = document.querySelector('nav.sidebar');
+            if (!sidebarElement) return;
+            
+            let isManualToggle = false; // Flag para detectar cambios manuales del usuario
+            
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const isMobile = SidebarStateManager.isMobile();
+                        const isCollapsed = sidebarElement.classList.contains('close');
+                        
+                        if (!isMobile && isManualToggle) {
+                            // En desktop: guardar estado cuando el usuario lo cambia manualmente
+                            const state = isCollapsed ? SidebarStateManager.STATE_COLLAPSED : SidebarStateManager.STATE_EXPANDED;
+                            SidebarStateManager.saveState(state);
+                            isManualToggle = false; // Resetear flag
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(sidebarElement, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            
+            // Detectar clicks en el botón toggle y el botón de búsqueda
+            const toggle = document.querySelector('.toggle');
+            const searchBtn = document.querySelector('.search-box');
+            
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    if (!SidebarStateManager.isMobile()) {
+                        isManualToggle = true; // Marcar como acción manual en desktop
+                    }
+                });
+            }
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    if (!SidebarStateManager.isMobile()) {
+                        isManualToggle = true; // Marcar como acción manual en desktop
+                    }
+                });
+            }
+        })();
+        
 
 /**
  * MenuStateManager
@@ -328,6 +530,12 @@ class MenuFilterManager {
     }
 
     applyFilter(matchingItems, query) {
+        // Si no hay coincidencias, mostrar todos los items (no ocultar todo el menú)
+        if (matchingItems.length === 0) {
+            this.clearFilter();
+            return;
+        }
+
         // Crear set de IDs que coinciden (incluyendo sus padres)
         const visibleIds = new Set();
         
@@ -509,4 +717,185 @@ class MenuFilterManager {
 // Initialize MenuFilterManager
 if (typeof window.menuFilterManager === 'undefined') {
     window.menuFilterManager = new MenuFilterManager();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MENU RELOAD FUNCTIONALITY
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * MenuReloadManager
+ * 
+ * Gestiona la recarga del menú cuando se actualiza la configuración
+ */
+class MenuReloadManager {
+    constructor() {
+        this.menuContainer = document.querySelector('.custom-menu');
+        this.setupEventListeners();
+    }
+
+    /**
+     * Configurar listeners de eventos
+     */
+    setupEventListeners() {
+        // Escuchar evento de actualización del menú
+        if (window.lego && window.lego.events) {
+            window.lego.events.on('menu:updated', () => {
+                this.reloadMenu();
+            });
+        }
+
+        // También escuchar evento nativo del navegador
+        window.addEventListener('lego:menu:updated', () => {
+            this.reloadMenu();
+        });
+    }
+
+    /**
+     * Recargar el menú desde el servidor
+     */
+    async reloadMenu() {
+        console.log('[MenuReload] Recargando menú...');
+
+        try {
+            // Obtener nueva estructura del menú
+            const response = await fetch('/api/menu/structure');
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.msj || 'Error al obtener estructura del menú');
+            }
+
+            const menuStructure = result.data || [];
+
+            // Actualizar window.lego.menu
+            if (window.lego) {
+                window.lego.menu = menuStructure;
+                console.log('[MenuReload] window.lego.menu actualizado');
+            }
+
+            // Re-renderizar el menú en el DOM
+            this.renderMenu(menuStructure);
+
+            console.log('[MenuReload] Menú recargado correctamente');
+        } catch (error) {
+            console.error('[MenuReload] Error al recargar menú:', error);
+        }
+    }
+
+    /**
+     * Renderizar el menú en el DOM
+     */
+    renderMenu(menuStructure) {
+        if (!this.menuContainer) {
+            console.warn('[MenuReload] No se encontró el contenedor del menú');
+            return;
+        }
+
+        // Limpiar contenido actual
+        this.menuContainer.innerHTML = '';
+
+        // Renderizar cada item del menú
+        menuStructure.forEach(item => {
+            const html = this.renderMenuItem(item, 0);
+            this.menuContainer.insertAdjacentHTML('beforeend', html);
+        });
+
+        // Re-inicializar el filtro de menú si existe
+        if (window.menuFilterManager) {
+            window.menuFilterManager.saveOriginalTexts();
+        }
+
+        // Re-sincronizar estados del menú
+        if (window.menuStateManager) {
+            window.menuStateManager.syncWithModuleStore();
+        }
+    }
+
+    /**
+     * Renderizar un item del menú (recursivo)
+     */
+    renderMenuItem(item, level) {
+        const id = this.escapeHtml(item.id);
+        const name = this.escapeHtml(item.name);
+        const iconName = item.iconName || 'document-text-outline';
+        const url = item.url || '#';
+        const hasChildren = item.childs && item.childs.length > 0;
+        const levelAux = level;
+
+        if (!hasChildren) {
+            // Item simple con link
+            return `
+                <div class="custom-menu-section menu_item_openable" moduleId="${id}" moduleUrl="${url}" data-menu-item-id="${id}">
+                    <button class="menu-close-button" title="Cerrar">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                    <button class="custom-button level-${levelAux}">
+                        <ion-icon name="${iconName}" class="icon_menu"></ion-icon>
+                        <p class="text_menu_option">${name}</p>
+                        <div class="menu-state-indicator"></div>
+                    </button>
+                </div>
+            `;
+        } else {
+            // Item con submenú
+            let childrenHtml = '';
+            item.childs.forEach(child => {
+                childrenHtml += this.renderMenuItem(child, level + 1);
+            });
+
+            return `
+                <div class="custom-menu-section" data-menu-item-id="${id}">
+                    <div class="custom-menu-title level-${levelAux}" onclick="toggleSubMenu(this)">
+                        <ion-icon name="${iconName}" class="icon_menu icon_menu_parent"></ion-icon>
+                        <p class="text_menu_option">${name}</p>
+                        <ion-icon name="chevron-forward-outline" class="icon_menu icon_menu_chevron"></ion-icon>
+                    </div>
+                    <div class="custom-submenu section-level-${level + 1}">
+                        ${childrenHtml}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Escapar HTML para prevenir XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// Initialize MenuReloadManager (después de que el DOM esté listo)
+function initMenuReloadManager() {
+    if (typeof window.menuReloadManager === 'undefined') {
+        // Esperar a que el contenedor del menú esté disponible
+        const checkMenuContainer = setInterval(() => {
+            const menuContainer = document.querySelector('.custom-menu');
+            if (menuContainer) {
+                clearInterval(checkMenuContainer);
+                window.menuReloadManager = new MenuReloadManager();
+                console.log('[MenuReload] MenuReloadManager inicializado');
+            }
+        }, 100);
+
+        // Timeout de seguridad (5 segundos)
+        setTimeout(() => {
+            clearInterval(checkMenuContainer);
+            if (typeof window.menuReloadManager === 'undefined') {
+                console.warn('[MenuReload] No se pudo inicializar MenuReloadManager: contenedor no encontrado');
+            }
+        }, 5000);
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenuReloadManager);
+} else {
+    // DOM ya está listo
+    initMenuReloadManager();
 }
