@@ -15,7 +15,7 @@ use Components\App\ToolsCrud\ToolsCrudComponent;
  *
  * SCREEN PATTERN:
  * - Implementa ScreenInterface para definir su identidad
- * - SCREEN_PARENT apunta al grupo del menú
+ * - parent_id se obtiene proceduralmente desde la BD
  * - Visible en el menú como hijo de ToolsCrud
  */
 #[ApiComponent('/tools-crud/create', methods: ['GET'])]
@@ -31,7 +31,7 @@ class ToolsCreateComponent extends CoreComponent implements ScreenInterface
     public const SCREEN_LABEL = 'Nueva Herramienta';
     public const SCREEN_ICON = 'add-circle-outline';
     public const SCREEN_ROUTE = '/component/tools-crud/create';
-    public const SCREEN_PARENT = ToolsCrudComponent::MENU_GROUP_ID;
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 10;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;

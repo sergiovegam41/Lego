@@ -83,6 +83,27 @@ Flight::route('GET /menu/structure', function() {
 
 /**
  * ========================================
+ * MENU SYSTEM ITEMS API
+ * ========================================
+ * Obtiene items ocultos del sistema (is_visible=false, is_dynamic=false)
+ * Para mostrar en el dropdown de configuración del header
+ */
+Flight::route('GET /menu/system-items', function() {
+    new \App\Controllers\Menu\Controllers\MenuSystemItemsController();
+});
+
+/**
+ * ========================================
+ * MENU ITEM HIERARCHY API
+ * ========================================
+ * Obtiene la jerarquía completa de un item (ancestros + item + hijos)
+ */
+Flight::route('GET /menu/item-hierarchy', function() {
+    new \App\Controllers\Menu\Controllers\MenuItemHierarchyController();
+});
+
+/**
+ * ========================================
  * AUTO-CONTROLLER ROUTES (Atributo #[ApiRoutes])
  * ========================================
  * Rutas de controladores generadas automáticamente desde #[ApiRoutes].

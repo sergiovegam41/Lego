@@ -7,7 +7,6 @@
  * ✅ Guardado batch de cambios
  */
 
-console.log('[MenuConfig] Inicializando...');
 
 // ═══════════════════════════════════════════════════════════════════
 // CONFIG
@@ -22,6 +21,7 @@ const MENU_CONFIG = {
 let pendingChanges = {};
 let currentEditItem = null;
 let currentNewItemIcon = 'ellipse-outline';
+let availableRoles = {}; // Cache de roles por grupo de autenticación
 
 // ═══════════════════════════════════════════════════════════════════
 // DRAG & DROP
@@ -100,7 +100,6 @@ function initDragAndDrop() {
         }, true);
         
         dragAndDropInitialized = true;
-        console.log('[MenuConfig] Event delegation inicializado para drag & drop');
     }
 }
 
@@ -180,13 +179,6 @@ function handleItemContentDragOver(e) {
     // Solo bloqueamos si es el padre directo o si crearía un ciclo
     
     // Permitir drop en cualquier otro caso (hermanos, otros grupos, niveles más profundos, etc.)
-    console.log('[MenuConfig] DragOver permitido:', {
-        source: sourceId,
-        sourceLevel: sourceLevel,
-        target: targetId,
-        targetLevel: targetLevel,
-        newLevel: targetLevel + 1
-    });
     this.classList.add('menu-config__drop-zone');
     e.dataTransfer.dropEffect = 'move';
 }
@@ -223,7 +215,6 @@ function handleItemContentDrop(e) {
     const draggedParent = draggedItem.closest('.menu-config__items')?.closest('.menu-config__item');
     if (draggedParent && draggedParent === targetItem) {
         // El target es el padre directo, bloquear (no tiene sentido mover dentro de su propio padre)
-        console.log('[MenuConfig] No se puede mover un item dentro de su propio padre');
         return;
     }
     
@@ -263,7 +254,6 @@ function handleItemContentDrop(e) {
         if (!pendingChanges[targetId]) {
             pendingChanges[targetId] = {};
         }
-        console.log('[MenuConfig] Item convertido en grupo:', targetId);
     }
     
     // Mover el item arrastrado dentro del grupo
@@ -275,7 +265,6 @@ function handleItemContentDrop(e) {
     // Recalcular orden dentro del nuevo nivel
     recalculateOrder(targetList);
     
-    console.log('[MenuConfig] Item movido dentro de grupo:', sourceId, '→ dentro de', targetId, '(nivel', newLevel + ')');
 }
 
 /**
@@ -346,12 +335,10 @@ function updateItemParentAndLevel(itemId, newParentId, newLevel) {
     if (oldParentId !== normalizedNewParentId) {
         // Guardar null explícitamente, no string vacío
         pendingChanges[itemId].parent_id = normalizedNewParentId;
-        console.log('[MenuConfig] Cambio de parent:', itemId, oldParentId, '→', normalizedNewParentId);
     }
     
     if (oldLevel !== normalizedNewLevel) {
         pendingChanges[itemId].level = normalizedNewLevel;
-        console.log('[MenuConfig] Cambio de level:', itemId, oldLevel, '→', normalizedNewLevel);
         
         // Actualizar recursivamente los niveles de los hijos
         updateChildrenLevels(item, normalizedNewLevel);
@@ -361,7 +348,6 @@ function updateItemParentAndLevel(itemId, newParentId, newLevel) {
     if (normalizedNewParentId === null && normalizedNewLevel !== 0) {
         pendingChanges[itemId].level = 0;
         item.dataset.level = 0;
-        console.log('[MenuConfig] Ajustando level a 0 para item sin padre:', itemId);
     }
     
     updateSaveButtonState();
@@ -403,7 +389,6 @@ function recalculateOrder(list) {
             }
             pendingChanges[id].display_order = index;
             
-            console.log('[MenuConfig] Cambio de orden:', id, oldOrder, '→', index);
         }
     });
     
@@ -414,8 +399,8 @@ function recalculateOrder(list) {
 // MODAL DE EDICIÓN
 // ═══════════════════════════════════════════════════════════════════
 
-window.openEditModal = function(id, label, icon, route) {
-    currentEditItem = { id, label, icon, route: route || '' };
+window.openEditModal = async function(id, label, icon, route, allowedRoles = null, defaultChildId = null) {
+    currentEditItem = { id, label, icon, route: route || '', allowedRoles: allowedRoles, defaultChildId: defaultChildId };
     
     document.getElementById('edit-item-id').value = id;
     document.getElementById('edit-label').value = label;
@@ -423,8 +408,18 @@ window.openEditModal = function(id, label, icon, route) {
     document.getElementById('current-icon').setAttribute('name', icon);
     document.getElementById('current-icon-name').textContent = icon;
     
-    // Renderizar grid de iconos
+    // Renderizar grid de iconos (colapsado inicialmente)
     renderIconGrid(icon);
+    const iconToggle = document.getElementById('icon-toggle');
+    if (iconToggle) {
+        iconToggle.classList.remove('expanded');
+    }
+    
+    // Cargar y renderizar roles
+    loadAndRenderRoles('edit', allowedRoles);
+    
+    // Cargar hijos para el selector de hijo por defecto
+    await loadChildrenForDefaultChildSelector(id, defaultChildId);
     
     const modal = document.getElementById('menu-edit-modal');
     // Mover modal al body si no está ya ahí
@@ -435,6 +430,53 @@ window.openEditModal = function(id, label, icon, route) {
     modal.style.display = 'flex';
     modal.style.zIndex = '9999999';
 };
+
+/**
+ * Cargar hijos del item para el selector de hijo por defecto
+ */
+async function loadChildrenForDefaultChildSelector(itemId, currentDefaultChildId = null) {
+    const groupContainer = document.getElementById('edit-default-child-group');
+    const select = document.getElementById('edit-default-child-id');
+    
+    if (!groupContainer || !select) return;
+    
+    try {
+        // Obtener la jerarquía del item para ver si tiene hijos
+        const response = await fetch(`/api/menu/item-hierarchy?id=${encodeURIComponent(itemId)}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const children = result.data.children || [];
+            
+            // Limpiar opciones existentes (excepto la primera)
+            select.innerHTML = '<option value="">Ninguno (usar primer hijo con ruta válida)</option>';
+            
+            if (children.length > 0) {
+                // Mostrar el grupo
+                groupContainer.style.display = 'block';
+                
+                // Agregar opciones para cada hijo
+                children.forEach(child => {
+                    const option = document.createElement('option');
+                    option.value = child.id;
+                    option.textContent = child.display_name || child.label;
+                    if (child.id === currentDefaultChildId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            } else {
+                // Ocultar el grupo si no tiene hijos
+                groupContainer.style.display = 'none';
+            }
+        } else {
+            groupContainer.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('[MenuConfig] Error cargando hijos para selector:', error);
+        groupContainer.style.display = 'none';
+    }
+}
 
 window.closeEditModal = function() {
     const modal = document.getElementById('menu-edit-modal');
@@ -465,7 +507,30 @@ function renderIconGrid(selectedIcon) {
             <ion-icon name="${icon}"></ion-icon>
         </button>
     `).join('');
+    
+    // Asegurar que el grid esté colapsado inicialmente
+    grid.classList.remove('expanded');
 }
+
+window.toggleIconGrid = function(modalType) {
+    const gridId = modalType === 'edit' ? 'icon-grid' : 'new-icon-grid';
+    const toggleId = modalType === 'edit' ? 'icon-toggle' : 'new-icon-toggle';
+    
+    const grid = document.getElementById(gridId);
+    const toggle = document.getElementById(toggleId);
+    
+    if (!grid || !toggle) return;
+    
+    const isExpanded = grid.classList.contains('expanded');
+    
+    if (isExpanded) {
+        grid.classList.remove('expanded');
+        toggle.classList.remove('expanded');
+    } else {
+        grid.classList.add('expanded');
+        toggle.classList.add('expanded');
+    }
+};
 
 window.selectIcon = function(icon) {
     // Actualizar preview
@@ -488,6 +553,9 @@ window.applyEditChanges = function() {
     const newRoute = document.getElementById('edit-route').value.trim();
     const newIcon = currentEditItem.icon;
     
+    // Obtener roles seleccionados
+    const selectedRoles = getSelectedRoles('edit');
+    
     // Actualizar en DOM
     const item = document.querySelector(`.menu-config__item[data-id="${id}"]`);
     if (item) {
@@ -502,8 +570,8 @@ window.applyEditChanges = function() {
     pendingChanges[id].label = newLabel;
     pendingChanges[id].route = newRoute || null; // null si está vacío (grupo)
     pendingChanges[id].icon = newIcon;
+    pendingChanges[id].allowed_roles = selectedRoles.length > 0 ? selectedRoles : null;
     
-    console.log('[MenuConfig] Cambios aplicados:', id, { label: newLabel, route: newRoute, icon: newIcon });
     
     updateSaveButtonState();
     closeEditModal();
@@ -521,8 +589,15 @@ window.openNewItemModal = function() {
     document.getElementById('new-current-icon').setAttribute('name', currentNewItemIcon);
     document.getElementById('new-current-icon-name').textContent = currentNewItemIcon;
     
-    // Renderizar grid de iconos
+    // Renderizar grid de iconos (colapsado inicialmente)
     renderNewIconGrid(currentNewItemIcon);
+    const iconToggle = document.getElementById('new-icon-toggle');
+    if (iconToggle) {
+        iconToggle.classList.remove('expanded');
+    }
+    
+    // Cargar y renderizar roles (sin roles seleccionados)
+    loadAndRenderRoles('new', null);
     
     const modal = document.getElementById('menu-new-modal');
     // Mover modal al body si no está ya ahí
@@ -563,6 +638,9 @@ function renderNewIconGrid(selectedIcon) {
             <ion-icon name="${icon}"></ion-icon>
         </button>
     `).join('');
+    
+    // Asegurar que el grid esté colapsado inicialmente
+    grid.classList.remove('expanded');
 }
 
 window.selectNewIcon = function(icon) {
@@ -582,6 +660,7 @@ window.createNewItem = async function() {
     const label = document.getElementById('new-label').value.trim();
     const route = document.getElementById('new-route').value.trim();
     const icon = currentNewItemIcon;
+    const selectedRoles = getSelectedRoles('new');
     
     if (!label) {
         if (window.AlertService) {
@@ -600,7 +679,8 @@ window.createNewItem = async function() {
             body: JSON.stringify({
                 label: label,
                 route: route || null, // null si está vacío (será un grupo)
-                icon: icon
+                icon: icon,
+                allowed_roles: selectedRoles.length > 0 ? selectedRoles : null
             })
         });
         
@@ -627,6 +707,115 @@ window.createNewItem = async function() {
         }
     }
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// ROLES MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Carga roles disponibles desde la API y los renderiza en el modal
+ */
+async function loadAndRenderRoles(modalType, selectedRoles = null) {
+    const containerId = modalType === 'edit' ? 'edit-allowed-roles-container' : 'new-allowed-roles-container';
+    const container = document.getElementById(containerId);
+    
+    if (!container) {
+        console.warn('[MenuConfig] No se encontró el contenedor de roles:', containerId);
+        return;
+    }
+    
+    // Mostrar loading
+    container.innerHTML = '<div class="menu-config__roles-loading">Cargando roles...</div>';
+    
+    try {
+        // Cargar roles de todos los grupos (sin filtro)
+        const response = await fetch(MENU_CONFIG.apiRoute + '/roles');
+        const result = await response.json();
+        
+        if (!response.ok || !result.success) {
+            throw new Error(result.msj || 'Error al cargar roles');
+        }
+        
+        const rolesByGroup = result.data || {};
+        
+        // Parsear selectedRoles si viene como JSON string
+        let selectedRolesArray = [];
+        if (selectedRoles) {
+            if (typeof selectedRoles === 'string') {
+                try {
+                    selectedRolesArray = JSON.parse(selectedRoles);
+                } catch (e) {
+                    selectedRolesArray = [selectedRoles];
+                }
+            } else if (Array.isArray(selectedRoles)) {
+                selectedRolesArray = selectedRoles;
+            }
+        }
+        
+        // Renderizar checkboxes agrupados por grupo de autenticación
+        renderRolesCheckboxes(container, rolesByGroup, selectedRolesArray);
+        
+    } catch (error) {
+        console.error('[MenuConfig] Error cargando roles:', error);
+        container.innerHTML = '<div class="menu-config__roles-error">Error al cargar roles: ' + error.message + '</div>';
+    }
+}
+
+/**
+ * Renderiza checkboxes de roles agrupados por grupo de autenticación
+ */
+function renderRolesCheckboxes(container, rolesByGroup, selectedRoles = []) {
+    if (!rolesByGroup || Object.keys(rolesByGroup).length === 0) {
+        container.innerHTML = '<div class="menu-config__roles-empty">No hay roles disponibles</div>';
+        return;
+    }
+    
+    let html = '<div class="menu-config__roles-list">';
+    
+    for (const [authGroupId, roles] of Object.entries(rolesByGroup)) {
+        if (!Array.isArray(roles) || roles.length === 0) continue;
+        
+        html += `<div class="menu-config__roles-group">`;
+        html += `<div class="menu-config__roles-group-title">${authGroupId}</div>`;
+        html += `<div class="menu-config__roles-group-items">`;
+        
+        for (const role of roles) {
+            const isChecked = selectedRoles.includes(role);
+            const checkboxId = `role-${authGroupId}-${role}`.replace(/[^a-zA-Z0-9-]/g, '-');
+            
+            html += `
+                <label class="menu-config__role-checkbox">
+                    <input 
+                        type="checkbox" 
+                        value="${role}" 
+                        data-auth-group="${authGroupId}"
+                        ${isChecked ? 'checked' : ''}
+                        id="${checkboxId}"
+                    >
+                    <span>${role}</span>
+                </label>
+            `;
+        }
+        
+        html += `</div></div>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+/**
+ * Obtiene los roles seleccionados del modal
+ */
+function getSelectedRoles(modalType) {
+    const containerId = modalType === 'edit' ? 'edit-allowed-roles-container' : 'new-allowed-roles-container';
+    const container = document.getElementById(containerId);
+    
+    if (!container) return [];
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // GUARDAR
@@ -673,7 +862,6 @@ window.saveMenuConfig = async function() {
             }
         }
         
-        console.log('[MenuConfig] Guardando cambios:', JSON.stringify(normalizedChanges, null, 2));
         
         const response = await fetch(MENU_CONFIG.apiRoute + '/update', {
             method: 'POST',
@@ -751,7 +939,6 @@ async function reloadMenuConfigView() {
                 initDragAndDrop();
             }
             
-            console.log('[MenuConfig] Vista recargada');
         }
     } catch (error) {
         console.error('[MenuConfig] Error al recargar vista:', error);
@@ -862,7 +1049,7 @@ function renderMenuTreeToHtml(items, level = 0) {
                             ${downButton}
                             ${leftButton}
                         </div>
-                        <button class="menu-config__edit-btn" onclick="openEditModal('${id}', '${escapeHtml(label)}', '${icon}', '${escapeHtml(item.route || '')}')">
+                        <button class="menu-config__edit-btn" onclick="openEditModal('${id}', '${escapeHtml(label)}', '${icon}', '${escapeHtml(item.route || '')}', null, ${item.default_child_id ? `'${item.default_child_id}'` : 'null'})">
                             <ion-icon name="create-outline"></ion-icon>
                         </button>
                     </div>
@@ -915,7 +1102,6 @@ window.moveItemUp = function(itemId) {
     // Recalcular orden
     recalculateOrder(list);
     
-    console.log('[MenuConfig] Item movido hacia arriba:', itemId);
 };
 
 /**
@@ -947,7 +1133,6 @@ window.moveItemDown = function(itemId) {
     // Recalcular orden
     recalculateOrder(list);
     
-    console.log('[MenuConfig] Item movido hacia abajo:', itemId);
 };
 
 // Botón de derecha eliminado - se usa drag & drop para mover hacia adentro
@@ -1008,13 +1193,6 @@ window.moveItemLeft = function(itemId) {
         newLevel = 0;
     }
     
-    console.log('[MenuConfig] Moviendo item:', {
-        itemId,
-        currentParentId,
-        newParentId,
-        currentLevel,
-        newLevel
-    });
     
     // Mover el item al nivel del padre (en la misma lista donde está el padre)
     // Insertar después del padre
@@ -1034,7 +1212,6 @@ window.moveItemLeft = function(itemId) {
         recalculateOrder(newList);
     }
     
-    console.log('[MenuConfig] Item movido a nivel más superficial:', itemId, '→ nivel', newLevel, 'parent:', newParentId);
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1042,10 +1219,8 @@ window.moveItemLeft = function(itemId) {
 // ═══════════════════════════════════════════════════════════════════
 
 function initialize() {
-    console.log('[MenuConfig] Inicializando drag & drop...');
     initDragAndDrop();
     updateSaveButtonState();
-    console.log('[MenuConfig] Listo');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1549,7 +1724,6 @@ if (document.readyState === 'loading') {
 if (window.lego && window.lego.events) {
     window.lego.events.on('lego:module:reloaded', function(event) {
         if (event.detail && event.detail.moduleId === 'menu-config') {
-            console.log('[MenuConfig] Módulo recargado, reinicializando...');
             setTimeout(initMenuConfig, 200);
         }
     });

@@ -48,7 +48,6 @@ class ThemeAwareComponent {
 
         this._autoSubscribeToTheme();
 
-        console.log(`[${this._componentName}] Theme-aware component initialized`);
     }
 
     /**
@@ -129,7 +128,6 @@ class ThemeAwareComponent {
      * @param {string} theme - 'light' o 'dark'
      */
     onThemeChange(theme) {
-        console.log(`[${this._componentName}] Theme changed to: ${theme}`);
     }
 
     /**
@@ -174,7 +172,6 @@ class ThemeAwareComponent {
             this._themeUnsubscribe = null;
         }
 
-        console.log(`[${this._componentName}] Component destroyed and unsubscribed from theme`);
     }
 
     /**

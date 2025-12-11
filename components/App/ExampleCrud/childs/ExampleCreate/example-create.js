@@ -8,7 +8,6 @@
  * ✅ Usa fetch con manejo de errores robusto
  */
 
-console.log('[ExampleCreate] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
 // SCREEN CONFIG - Debe coincidir con ExampleCreateComponent::SCREEN_*
@@ -17,7 +16,7 @@ console.log('[ExampleCreate] Script cargado');
 const SCREEN_CONFIG = {
     screenId: 'example-crud-create',     // ExampleCreateComponent::SCREEN_ID
     parentScreenId: 'example-crud-list', // ExampleCrudComponent::SCREEN_ID
-    menuGroupId: 'example-crud',         // ExampleCrudComponent::MENU_GROUP_ID
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     apiRoute: '/api/example-crud'
 };
 
@@ -87,7 +86,6 @@ async function createRecord(formData) {
             throw new Error(result.msj || 'Error al crear registro');
         }
 
-        console.log('[ExampleCreate] Registro creado:', result.data);
         return result.data;
 
     } catch (error) {
@@ -151,7 +149,6 @@ function showValidationErrors(errors) {
 // ═══════════════════════════════════════════════════════════════════
 
 function clearForm() {
-    console.log('[ExampleCreate] Limpiando formulario...');
 
     // Limpiar campos de texto
     const nameInput = document.getElementById('example-name');
@@ -178,7 +175,6 @@ function clearForm() {
         el.classList.remove('lego-input--error', 'lego-select--error', 'lego-textarea--error');
     });
 
-    console.log('[ExampleCreate] Formulario limpiado');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -192,7 +188,6 @@ function closeModule() {
         // 2. Eliminar el ítem dinámico del menú (si aplica)
         // 3. Volver al módulo origen
         window.legoWindowManager.closeCurrentWindow();
-        console.log('[ExampleCreate] Módulo cerrado via legoWindowManager');
     } else {
         console.error('[ExampleCreate] legoWindowManager no disponible');
     }
@@ -207,7 +202,6 @@ function reloadExampleCrudTable() {
     const refreshFn = window.legoTable_example_crud_table_refresh;
 
     if (refreshFn) {
-        console.log('[ExampleCreate] Recargando tabla de registros...');
         refreshFn();
     } else {
         console.warn('[ExampleCreate] Función de recarga de tabla no encontrada');
@@ -219,7 +213,6 @@ function reloadExampleCrudTable() {
 // ═══════════════════════════════════════════════════════════════════
 
 function initializeForm() {
-    console.log('[ExampleCreate] Inicializando formulario...');
 
     // IMPORTANTE: Buscar elementos SOLO dentro del módulo activo
     const activeModuleId = window.moduleStore?.getActiveModule();
@@ -248,7 +241,6 @@ function initializeForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ExampleCreate] Enviando formulario...');
 
         // Deshabilitar botón mientras se envía
         submitBtn.disabled = true;
@@ -270,7 +262,6 @@ function initializeForm() {
                 formData.image_ids = imageIds;
             }
 
-            console.log('[ExampleCreate] Datos del formulario:', formData);
 
             // Crear registro
             const newRecord = await createRecord(formData);
@@ -307,7 +298,6 @@ function initializeForm() {
         });
     }
 
-    console.log('[ExampleCreate] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -326,7 +316,6 @@ function tryInitialize() {
     if (!activeModuleId) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ExampleCreate] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
             console.error('[ExampleCreate] ModuleStore no disponible después de 2 segundos');
@@ -340,7 +329,6 @@ function tryInitialize() {
     if (!activeModuleContainer) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ExampleCreate] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
             console.error('[ExampleCreate] Container del módulo activo no encontrado después de 2 segundos');
@@ -352,11 +340,9 @@ function tryInitialize() {
     const form = activeModuleContainer.querySelector('#example-create-form');
 
     if (form) {
-        console.log('[ExampleCreate] Formulario encontrado en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ExampleCreate] Formulario no encontrado en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
         console.error('[ExampleCreate] No se pudo encontrar el formulario después de 2 segundos');

@@ -7,7 +7,6 @@
  *
  * USO:
  * const state = new StateManager();
- * state.on('product:selected', (id) => console.log('Producto:', id));
  * state.emit('product:selected', 123);
  */
 
@@ -29,7 +28,6 @@ if (typeof StateManager === 'undefined') {
         // Emitir evento de cambio
         if (oldValue !== value) {
             this.emit(`${key}:changed`, { old: oldValue, new: value });
-            console.log(`[StateManager] ${key}:`, value);
         }
 
         return value;

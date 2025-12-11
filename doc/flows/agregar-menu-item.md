@@ -19,26 +19,24 @@ public static function get(): array
         // Items existentes...
         
         [
-            'id' => MiFeatureComponent::MENU_GROUP_ID,
-            'parent_id' => null,
+            // El id del grupo se deriva desde SCREEN_ROUTE usando getGroupIdFromRoute()
+            'id' => self::getGroupIdFromRoute(MiFeatureComponent::SCREEN_ROUTE),
             'label' => 'Mi Feature',
             'index_label' => 'Mi Feature',
             'route' => MiFeatureComponent::SCREEN_ROUTE,
             'icon' => 'cube-outline',
             'display_order' => 10,
-            'level' => 0,
             'is_visible' => true,
             'is_dynamic' => false,
             'children' => [
                 [
                     'id' => MiFeatureComponent::SCREEN_ID,
-                    'parent_id' => MiFeatureComponent::MENU_GROUP_ID,
+                    // parent_id y level se deducen automáticamente desde la jerarquía (children)
                     'label' => MiFeatureComponent::SCREEN_LABEL,
                     'index_label' => MiFeatureComponent::SCREEN_LABEL,
                     'route' => MiFeatureComponent::SCREEN_ROUTE,
                     'icon' => MiFeatureComponent::SCREEN_ICON,
                     'display_order' => MiFeatureComponent::SCREEN_ORDER,
-                    'level' => 1,
                     'is_visible' => MiFeatureComponent::SCREEN_VISIBLE,
                     'is_dynamic' => MiFeatureComponent::SCREEN_DYNAMIC
                 ]
@@ -79,18 +77,18 @@ php lego config:reset
     'children' => [
         [
             'id' => 'productos-list',
-            'parent_id' => 'productos',
+            // parent_id se deduce automáticamente desde la jerarquía (children)
             'label' => 'Ver todos',
             'route' => '/component/productos',
-            'level' => 1,
+            // level se deduce automáticamente
             // ...
         ],
         [
             'id' => 'productos-categorias',
-            'parent_id' => 'productos',
+            // parent_id se deduce automáticamente desde la jerarquía (children)
             'label' => 'Categorías',
             'route' => '/component/productos/categorias',
-            'level' => 1,
+            // level se deduce automáticamente
             // ...
         ]
     ]
@@ -102,12 +100,12 @@ php lego config:reset
 ```php
 [
     'id' => 'productos-edit',
-    'parent_id' => 'productos',
+    // parent_id se deduce automáticamente desde la jerarquía (children)
     'label' => 'Editar',
     'route' => '/component/productos/edit',
     'icon' => 'create-outline',
     'display_order' => 20,
-    'level' => 1,
+    // level se deduce automáticamente
     'is_visible' => false,   // No aparece por defecto
     'is_dynamic' => true     // Se activa programáticamente
 ]
@@ -117,7 +115,7 @@ Activación desde JS:
 ```javascript
 window.legoWindowManager.openModuleWithMenu({
     moduleId: 'productos-edit',
-    parentMenuId: 'productos',
+    // parentMenuId se obtiene automáticamente desde la BD (no se debe hardcodear)
     label: 'Editar Producto',
     url: '/component/productos/edit?id=5',
     icon: 'create-outline'

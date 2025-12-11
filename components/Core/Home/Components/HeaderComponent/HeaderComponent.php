@@ -149,6 +149,21 @@ class HeaderComponent extends CoreComponent
                         </div>
                     </div>
                 </div>
+                
+                <!-- Configuration Popover (positioned relative to header) -->
+                <div class="config-popover-container">
+                    <div class="config-popover" id="config-popover">
+                        <div class="config-popover__header">
+                            <span class="config-popover__title">Configuración</span>
+                            <button class="config-popover__close" onclick="closeConfigPopover()">
+                                <ion-icon name="close-outline"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="config-popover__content" id="config-content">
+                            <div class="config-popover__loading">Cargando opciones...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
         HTML;

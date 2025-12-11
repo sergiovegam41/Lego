@@ -1,0 +1,221 @@
+/**
+ * UsersConfig - Estilos de gestión de usuarios
+ */
+
+.users-config {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg, 24px);
+    padding: var(--space-lg, 24px);
+    height: 100%;
+}
+
+.users-config__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md, 16px);
+}
+
+.users-config__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 8px);
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.users-config__title ion-icon {
+    font-size: 28px;
+    color: var(--color-primary);
+}
+
+.users-config__create-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.users-config__create-btn:hover {
+    background: var(--color-primary-dark, #2563eb);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.users-config__table {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Modal de usuario */
+.user-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999999 !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg, 24px);
+    isolation: isolate;
+}
+
+.user-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.user-modal__content {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000000 !important;
+}
+
+.user-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md, 16px);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.user-modal__header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.user-modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.user-modal__close:hover {
+    background: var(--bg-hover);
+}
+
+#user-form {
+    padding: var(--space-md, 16px);
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.user-form__group {
+    margin-bottom: var(--space-md, 16px);
+}
+
+.user-form__group:last-child {
+    margin-bottom: 0;
+}
+
+.user-form__group label {
+    display: block;
+    margin-bottom: var(--space-sm, 8px);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-form__group input,
+.user-form__group select {
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.user-form__group input:focus,
+.user-form__group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.user-form__help {
+    display: block;
+    margin-top: var(--space-xs, 4px);
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.user-form__actions {
+    display: flex;
+    gap: var(--space-sm, 8px);
+    justify-content: flex-end;
+    padding: var(--space-md, 16px);
+    border-top: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.user-form__btn {
+    padding: var(--space-sm, 8px) var(--space-md, 16px);
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.user-form__btn--primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.user-form__btn--primary:hover {
+    background: var(--color-primary-dark, #2563eb);
+}
+
+.user-form__btn--secondary {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+}
+
+.user-form__btn--secondary:hover {
+    background: var(--bg-hover);
+}
+

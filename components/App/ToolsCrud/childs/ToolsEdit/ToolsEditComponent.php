@@ -30,7 +30,7 @@ class ToolsEditComponent extends CoreComponent implements ScreenInterface
     public const SCREEN_LABEL = 'Editar Herramienta';
     public const SCREEN_ICON = 'create-outline';
     public const SCREEN_ROUTE = '/component/tools-crud/edit';
-    public const SCREEN_PARENT = ToolsCrudComponent::MENU_GROUP_ID;
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 20;
     public const SCREEN_VISIBLE = false;
     public const SCREEN_DYNAMIC = true;

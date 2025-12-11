@@ -35,15 +35,12 @@ class ToolsCrudComponent extends CoreComponent implements ScreenInterface
     // SCREEN IDENTITY - Fuente de verdad para el menú
     // ═══════════════════════════════════════════════════════════════════
     
-    // El grupo del menú (carpeta)
-    public const MENU_GROUP_ID = 'tools-crud';
-    
     // Esta screen es la LISTA (Ver)
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ID = 'tools-crud-list';
     public const SCREEN_LABEL = 'Ver';
     public const SCREEN_ICON = 'list-outline';
     public const SCREEN_ROUTE = '/component/tools-crud';
-    public const SCREEN_PARENT = self::MENU_GROUP_ID;
     public const SCREEN_ORDER = 0;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;

@@ -8,7 +8,6 @@
  * ✅ Cierra módulo al finalizar
  */
 
-console.log('[ToolsCreate] Script cargado');
 
 // ═══════════════════════════════════════════════════════════════════
 // SCREEN CONFIG
@@ -17,7 +16,7 @@ console.log('[ToolsCreate] Script cargado');
 const TOOLS_CREATE_CONFIG = {
     screenId: 'tools-crud-create',
     parentScreenId: 'tools-crud-list',
-    menuGroupId: 'tools-crud',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     apiRoute: '/api/tools'
 };
 
@@ -167,7 +166,6 @@ async function createTool(formData, activeModuleContainer) {
             throw new Error(result.msj || 'Error al crear herramienta');
         }
 
-        console.log('[ToolsCreate] Herramienta creada:', result.data);
         return result.data;
 
     } catch (error) {
@@ -190,7 +188,6 @@ async function createTool(formData, activeModuleContainer) {
 function closeToolsModule() {
     if (window.legoWindowManager) {
         window.legoWindowManager.closeCurrentWindow();
-        console.log('[ToolsCreate] Módulo cerrado');
     } else {
         console.error('[ToolsCreate] legoWindowManager no disponible');
     }
@@ -201,7 +198,6 @@ function closeToolsModule() {
 // ═══════════════════════════════════════════════════════════════════
 
 function initializeToolsForm() {
-    console.log('[ToolsCreate] Inicializando formulario...');
 
     const activeModuleId = window.moduleStore?.getActiveModule();
     if (!activeModuleId) {
@@ -228,7 +224,6 @@ function initializeToolsForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ToolsCreate] Enviando formulario...');
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Creando...';
@@ -246,7 +241,6 @@ function initializeToolsForm() {
                 formData.image_ids = imageIds;
             }
 
-            console.log('[ToolsCreate] Datos del formulario:', formData);
 
             const newTool = await createTool(formData, activeModuleContainer);
 
@@ -279,7 +273,6 @@ function initializeToolsForm() {
         });
     }
 
-    console.log('[ToolsCreate] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -313,7 +306,6 @@ function tryInitialize() {
     const form = activeModuleContainer.querySelector('#tools-create-form');
 
     if (form) {
-        console.log('[ToolsCreate] Formulario encontrado, inicializando...');
         initializeToolsForm();
     } else if (attempts < maxAttempts) {
         attempts++;

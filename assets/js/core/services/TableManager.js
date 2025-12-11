@@ -129,7 +129,6 @@ class TableManager {
 
         try {
             this.api.setGridOption('rowData', rowData);
-            console.log(`[TableManager] Datos actualizados (${rowData.length} registros)`);
             return true;
         } catch (error) {
             console.error(`[TableManager] Error al actualizar datos:`, error);
@@ -196,7 +195,6 @@ class TableManager {
 
         try {
             this.api.setGridOption('columnDefs', columnDefs);
-            console.log(`[TableManager] Columnas actualizadas`);
             return true;
         } catch (error) {
             console.error(`[TableManager] Error al actualizar columnas:`, error);
@@ -210,7 +208,6 @@ class TableManager {
     exportToCSV(fileName = 'export') {
         const exportFunction = window[`legoTable_${this.jsId}_exportCSV`];
         if (exportFunction && typeof exportFunction === 'function') {
-            console.log(`[TableManager] Exportando CSV: ${fileName}`);
             exportFunction();
             return true;
         }
@@ -280,7 +277,6 @@ class TableManager {
         if (!this.api) return false;
         try {
             this.api.sizeColumnsToFit();
-            console.log(`[TableManager] Columnas autoajustadas`);
             return true;
         } catch (error) {
             console.error(`[TableManager] Error al autoajustar columnas:`, error);
@@ -314,7 +310,6 @@ class TableManager {
      * @returns {Promise<Object>} Objeto con api y columnApi
      */
     static async waitForTable(tableId, timeout = 10000) {
-        console.log(`[TableManager] Esperando tabla: ${tableId}`);
 
         // Inicializar registry si no existe
         if (!window.LEGO_TABLES) {
@@ -323,13 +318,11 @@ class TableManager {
 
         // Si la tabla ya existe, devolver inmediatamente
         if (window.LEGO_TABLES[tableId]?.api) {
-            console.log(`[TableManager] Tabla ${tableId} ya disponible`);
             return window.LEGO_TABLES[tableId];
         }
 
         // Si ya hay una Promise esperando, unirse a ella
         if (window.LEGO_TABLES[tableId]?.promise) {
-            console.log(`[TableManager] Uniéndose a Promise existente para ${tableId}`);
             return window.LEGO_TABLES[tableId].promise;
         }
 
@@ -352,7 +345,6 @@ class TableManager {
                     resolved = true;
                     clearTimeout(timeoutId);
                     window.removeEventListener('lego:table:ready', handler);
-                    console.log(`[TableManager] Tabla ${tableId} lista!`);
                     resolve(event.detail);
                 }
             };
@@ -403,7 +395,6 @@ class TableManager {
     static async setTableData(tableId, data) {
         const table = await TableManager.waitForTable(tableId);
         table.api.setGridOption('rowData', data);
-        console.log(`[TableManager] Datos actualizados en ${tableId}:`, data.length, 'filas');
     }
 
     /**
@@ -421,7 +412,6 @@ class TableManager {
      * @param {string} tableId - ID de la tabla
      */
     static refresh(tableId) {
-        console.log(`[TableManager] Disparando evento de refresh para ${tableId}`);
         window.dispatchEvent(new CustomEvent('lego:table:refresh', {
             detail: { tableId }
         }));
@@ -434,7 +424,6 @@ class TableManager {
     static async clearTable(tableId) {
         const table = await TableManager.waitForTable(tableId);
         table.api.setGridOption('rowData', []);
-        console.log(`[TableManager] Tabla ${tableId} limpiada`);
     }
 
     /**

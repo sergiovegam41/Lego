@@ -8,8 +8,6 @@
  * ✅ Validación antes de actualizar
  */
 
-console.log('[ToolsEdit] Script cargado');
-
 // ═══════════════════════════════════════════════════════════════════
 // SCREEN CONFIG
 // ═══════════════════════════════════════════════════════════════════
@@ -17,7 +15,7 @@ console.log('[ToolsEdit] Script cargado');
 const TOOLS_EDIT_CONFIG = {
     screenId: 'tools-crud-edit',
     parentScreenId: 'tools-crud-list',
-    menuGroupId: 'tools-crud',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     apiRoute: '/api/tools',
     isDynamic: true
 };
@@ -191,7 +189,6 @@ function showToolsValidationErrors(errors, activeModuleContainer) {
 
 async function loadToolData(toolId) {
     try {
-        console.log('[ToolsEdit] Cargando herramienta:', toolId);
 
         const response = await fetch(toolsEditApiUrl('get', { id: toolId }));
         const result = await response.json();
@@ -200,7 +197,6 @@ async function loadToolData(toolId) {
             throw new Error(result.msj || 'Error al cargar herramienta');
         }
 
-        console.log('[ToolsEdit] Herramienta cargada:', result.data);
         return result.data;
 
     } catch (error) {
@@ -221,7 +217,6 @@ async function loadToolData(toolId) {
 // ═══════════════════════════════════════════════════════════════════
 
 function populateToolForm(tool, activeModuleContainer) {
-    console.log('[ToolsEdit] Poblando formulario con:', tool);
 
     const nameInput = activeModuleContainer.querySelector('#tool-name');
     const descriptionTextarea = activeModuleContainer.querySelector('#tool-description');
@@ -235,7 +230,6 @@ function populateToolForm(tool, activeModuleContainer) {
         populateFeatures(tool.features_list || [], featuresContainer);
     }
 
-    console.log('[ToolsEdit] Formulario poblado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -251,7 +245,6 @@ async function updateTool(toolId, formData, activeModuleContainer) {
             return null;
         }
 
-        console.log('[ToolsEdit] Actualizando herramienta:', toolId, formData);
 
         const response = await fetch(toolsEditApiUrl('update'), {
             method: 'POST',
@@ -270,7 +263,6 @@ async function updateTool(toolId, formData, activeModuleContainer) {
             throw new Error(result.msj || 'Error al actualizar herramienta');
         }
 
-        console.log('[ToolsEdit] Herramienta actualizada:', result.data);
         return result.data;
 
     } catch (error) {
@@ -293,7 +285,6 @@ async function updateTool(toolId, formData, activeModuleContainer) {
 function closeToolsModule() {
     if (window.legoWindowManager) {
         window.legoWindowManager.closeCurrentWindow();
-        console.log('[ToolsEdit] Módulo cerrado');
     } else {
         console.error('[ToolsEdit] legoWindowManager no disponible');
     }
@@ -304,7 +295,6 @@ function closeToolsModule() {
 // ═══════════════════════════════════════════════════════════════════
 
 function loadToolImages(images) {
-    console.log('[ToolsEdit] Cargando imágenes en FilePond:', images);
 
     const waitForFilePond = setInterval(() => {
         const pond = window.FilePondComponent?.getInstance('tool-images');
@@ -325,7 +315,6 @@ function loadToolImages(images) {
                         imageId: image.id
                     }
                 }).then(file => {
-                    console.log('[ToolsEdit] Imagen agregada con ID:', image.id);
                 }).catch(error => {
                     console.error('[ToolsEdit] Error agregando imagen:', error);
                 });
@@ -343,7 +332,6 @@ function loadToolImages(images) {
 // ═══════════════════════════════════════════════════════════════════
 
 async function initializeToolsEditForm() {
-    console.log('[ToolsEdit] Inicializando formulario...');
 
     const activeModuleId = window.moduleStore?.getActiveModule();
     if (!activeModuleId) {
@@ -360,7 +348,6 @@ async function initializeToolsEditForm() {
     // Verificar estado sin contexto
     const emptyState = activeModuleContainer.querySelector('.tools-form--no-context');
     if (emptyState) {
-        console.log('[ToolsEdit] Modo sin contexto detectado');
         return;
     }
 
@@ -368,7 +355,6 @@ async function initializeToolsEditForm() {
     const toolId = container?.getAttribute('data-tool-id');
 
     if (!toolId) {
-        console.log('[ToolsEdit] No hay ID de herramienta');
         return;
     }
 
@@ -409,8 +395,6 @@ async function initializeToolsEditForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ToolsEdit] Enviando formulario...');
-
         submitBtn.disabled = true;
         submitBtn.textContent = 'Guardando...';
 
@@ -425,8 +409,6 @@ async function initializeToolsEditForm() {
             if (imageIds.length > 0) {
                 formData.image_ids = imageIds;
             }
-
-            console.log('[ToolsEdit] Datos del formulario:', formData);
 
             const updatedTool = await updateTool(toolId, formData, activeModuleContainer);
 
@@ -459,7 +441,6 @@ async function initializeToolsEditForm() {
         });
     }
 
-    console.log('[ToolsEdit] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -492,7 +473,6 @@ function tryInitialize() {
 
     const emptyState = activeModuleContainer.querySelector('.tools-form--no-context');
     if (emptyState) {
-        console.log('[ToolsEdit] Modo sin contexto detectado');
         return;
     }
 
@@ -500,7 +480,6 @@ function tryInitialize() {
     const form = activeModuleContainer.querySelector('#tools-edit-form');
 
     if (container && form) {
-        console.log('[ToolsEdit] Elementos encontrados, inicializando...');
         initializeToolsEditForm();
     } else if (attempts < maxAttempts) {
         attempts++;

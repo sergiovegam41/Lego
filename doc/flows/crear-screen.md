@@ -22,15 +22,12 @@ class MiFeatureComponent extends CoreComponent implements ScreenInterface
 {
     use ScreenTrait;
     
-    // Grupo del menú
-    public const MENU_GROUP_ID = 'mi-feature';
-    
     // Identidad del screen
+    // parent_id se obtiene proceduralmente desde la BD (no se define como constante)
     public const SCREEN_ID = 'mi-feature-list';
     public const SCREEN_LABEL = 'Mi Feature';
     public const SCREEN_ICON = 'cube-outline';
     public const SCREEN_ROUTE = '/component/mi-feature';
-    public const SCREEN_PARENT = self::MENU_GROUP_ID;
     public const SCREEN_ORDER = 0;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;
@@ -87,19 +84,18 @@ use Components\App\MiFeature\MiFeatureComponent;
 
 // En el array de get():
 [
-    'id' => MiFeatureComponent::MENU_GROUP_ID,
-    'parent_id' => null,
+    // El id del grupo se deriva desde SCREEN_ROUTE usando getGroupIdFromRoute()
+    'id' => self::getGroupIdFromRoute(MiFeatureComponent::SCREEN_ROUTE),
     'label' => MiFeatureComponent::SCREEN_LABEL,
     'route' => MiFeatureComponent::SCREEN_ROUTE,
     'icon' => MiFeatureComponent::SCREEN_ICON,
     'display_order' => 10,
-    'level' => 0,
     'is_visible' => true,
     'is_dynamic' => false,
     'children' => [
         [
             'id' => MiFeatureComponent::SCREEN_ID,
-            'parent_id' => MiFeatureComponent::MENU_GROUP_ID,
+            // parent_id y level se deducen automáticamente desde la jerarquía (children)
             // ...resto desde constantes
         ]
     ]
@@ -116,7 +112,7 @@ php lego config:reset
 // mi-feature.js
 const SCREEN_CONFIG = {
     screenId: 'mi-feature-list',
-    menuGroupId: 'mi-feature',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     route: '/component/mi-feature',
     apiRoute: '/api/mi-feature'
 };

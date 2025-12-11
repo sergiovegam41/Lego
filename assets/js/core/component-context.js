@@ -155,7 +155,6 @@ if (typeof ComponentContext === 'undefined') {
             icon: icon
         });
 
-        console.log(`[ComponentContext] Módulo dinámico abierto: ${moduleId}`);
     }
 
     /**
@@ -198,7 +197,6 @@ if (typeof ComponentContext === 'undefined') {
                     newScript.textContent = oldScript.textContent;
                     oldScript.parentNode.replaceChild(newScript, oldScript);
                 });
-                console.log(`[ComponentContext] Módulo ${moduleId} recargado`);
             })
             .catch(err => console.error(`[ComponentContext] Error recargando ${moduleId}:`, err));
 
@@ -290,6 +288,5 @@ if (typeof ComponentContext === 'undefined') {
     // Shorthand para uso rápido
     window.ctx = () => ComponentContext.current();
 
-    console.log('[Lego] ComponentContext disponible - usa ctx() o ComponentContext.current()');
 }
 

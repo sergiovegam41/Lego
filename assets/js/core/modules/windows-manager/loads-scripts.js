@@ -122,7 +122,6 @@ export async function _loadModulesWithArguments(scripts) {
         const { path, arg } = scriptData[0];
         
         try {
-            // console.log(`🧱 Loading module: ${path}`);
             const response = await fetch(path);
             
             if (!response.ok) {
@@ -144,7 +143,6 @@ export async function _loadModulesWithArguments(scripts) {
 
             // Ejecutar código en un contexto aislado, pasando contextData como objeto
             executeCodeSafely(processedCode, path, contextData);
-            // console.log(`✅ Module loaded successfully: ${path}`);
             
             return { success: true, path };
             
@@ -162,7 +160,6 @@ export async function _loadModulesWithArguments(scripts) {
     const successful = results.filter(r => r.status === 'fulfilled' && r.value?.success).length;
     const failed = results.filter(r => r.status === 'rejected' || r.value?.error).length;
     
-    // console.log(`📊 Module loading summary: ${successful} successful, ${failed} failed`);
     
     return results;
 }

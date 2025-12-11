@@ -158,4 +158,3 @@ window.ImageGalleryFilePondHelpers = {
     }
 };
 
-console.log('[ImageGallery] Helper de FilePond cargado');

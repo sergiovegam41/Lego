@@ -1,6 +1,5 @@
 let context = {CONTEXT};
 
-console.log(context);
 
 document.getElementById('submit-button').addEventListener('click', async (event) => {
 
@@ -36,7 +35,6 @@ document.getElementById('submit-button').addEventListener('click', async (event)
   fetch("/api/auth/admin/login", requestOptions)
     .then(async (result) => {
 
-    console.log(result);
 
       window.lego.loading(false,{
           success:true,
@@ -122,7 +120,6 @@ function initializeThemeToggle() {
             this.style.transform = '';
         });
         
-        console.log('[Login] Theme toggle initialized with themeManager');
     } else {
         // Fallback: implementación local compatible con html.dark/html.light
         themeToggle.addEventListener('click', function(event) {
@@ -137,7 +134,6 @@ function initializeThemeToggle() {
             }, 100);
         });
         
-        console.log('[Login] Theme toggle initialized with fallback');
     }
 }
 
@@ -179,4 +175,3 @@ if (document.readyState === 'loading') {
 }
 
 
-console.log("Login component loaded");

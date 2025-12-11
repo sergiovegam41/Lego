@@ -7,6 +7,8 @@ use Core\Response;
 use Core\Models\ResponseDTO;
 use Core\Models\StatusCodes;
 use App\Models\MenuItem;
+use App\Models\User;
+use App\Models\Role;
 use Core\Attributes\ApiRoutes;
 
 /**
@@ -27,6 +29,7 @@ use Core\Attributes\ApiRoutes;
     'delete' => ['POST'],
     'export' => ['GET'],
     'import' => ['POST'],
+    'roles' => ['GET'], // Obtener roles disponibles por grupo
 ])]
 class MenuConfigController extends CoreController
 {
@@ -103,15 +106,33 @@ class MenuConfigController extends CoreController
                 }
 
                 // Aplicar cambios permitidos
-                $allowedFields = ['label', 'index_label', 'icon', 'display_order', 'level', 'parent_id', 'route'];
+                $allowedFields = ['label', 'index_label', 'icon', 'display_order', 'level', 'parent_id', 'route', 'allowed_roles', 'default_child_id'];
                 $updateData = [];
 
                 foreach ($allowedFields as $field) {
                     // Usar array_key_exists en lugar de isset para detectar null explícitamente
                     if (array_key_exists($field, $changes)) {
-                        // Convertir 'null' string a null real para parent_id y route
-                        if ($field === 'parent_id' || $field === 'route') {
+                        // Convertir 'null' string a null real para parent_id, route y default_child_id
+                        if ($field === 'parent_id' || $field === 'route' || $field === 'default_child_id') {
                             if ($changes[$field] === '' || $changes[$field] === 'null' || $changes[$field] === null) {
+                                $updateData[$field] = null;
+                            } else {
+                                $updateData[$field] = $changes[$field];
+                            }
+                        } elseif ($field === 'allowed_roles') {
+                            // allowed_roles puede ser array o JSON string
+                            if (is_array($changes[$field])) {
+                                $updateData[$field] = json_encode($changes[$field]);
+                            } elseif (is_string($changes[$field])) {
+                                // Si es string, validar que sea JSON válido
+                                $decoded = json_decode($changes[$field], true);
+                                if (json_last_error() === JSON_ERROR_NONE) {
+                                    $updateData[$field] = $changes[$field];
+                                } else {
+                                    // Si no es JSON válido, tratar como array simple
+                                    $updateData[$field] = json_encode([$changes[$field]]);
+                                }
+                            } elseif ($changes[$field] === null || $changes[$field] === '') {
                                 $updateData[$field] = null;
                             } else {
                                 $updateData[$field] = $changes[$field];
@@ -252,6 +273,20 @@ class MenuConfigController extends CoreController
                                ->max('display_order') ?? -1;
             $displayOrder = $maxOrder + 1;
             
+            // Procesar allowed_roles
+            $allowedRoles = $data['allowed_roles'] ?? null;
+            if (is_array($allowedRoles)) {
+                $allowedRoles = json_encode($allowedRoles);
+            } elseif (is_string($allowedRoles) && !empty($allowedRoles)) {
+                // Validar que sea JSON válido
+                $decoded = json_decode($allowedRoles, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $allowedRoles = json_encode([$allowedRoles]);
+                }
+            } else {
+                $allowedRoles = null;
+            }
+            
             // Crear el item
             $menuItem = MenuItem::create([
                 'id' => $id,
@@ -263,7 +298,8 @@ class MenuConfigController extends CoreController
                 'display_order' => $displayOrder,
                 'level' => $level,
                 'is_visible' => true,
-                'is_dynamic' => false
+                'is_dynamic' => false,
+                'allowed_roles' => $allowedRoles
             ]);
             
             Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
@@ -368,6 +404,7 @@ class MenuConfigController extends CoreController
                                    'level' => $item->level,
                                    'is_visible' => $item->is_visible,
                                    'is_dynamic' => $item->is_dynamic,
+                                   'allowed_roles' => $item->allowed_roles,
                                ];
                            })
                            ->toArray();
@@ -458,6 +495,19 @@ class MenuConfigController extends CoreController
                         }
                     }
 
+                    // Procesar allowed_roles
+                    $allowedRoles = $itemData['allowed_roles'] ?? null;
+                    if (is_array($allowedRoles)) {
+                        $allowedRoles = json_encode($allowedRoles);
+                    } elseif (is_string($allowedRoles) && !empty($allowedRoles)) {
+                        $decoded = json_decode($allowedRoles, true);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            $allowedRoles = json_encode([$allowedRoles]);
+                        }
+                    } else {
+                        $allowedRoles = null;
+                    }
+                    
                     $itemDataToSave = [
                         'id' => $id,
                         'parent_id' => $parentId,
@@ -469,6 +519,7 @@ class MenuConfigController extends CoreController
                         'level' => $level,
                         'is_visible' => $itemData['is_visible'] ?? true,
                         'is_dynamic' => $itemData['is_dynamic'] ?? false,
+                        'allowed_roles' => $allowedRoles,
                     ];
 
                     if ($existingItem) {
@@ -531,6 +582,40 @@ class MenuConfigController extends CoreController
             if ($item->level !== $level) {
                 $item->update(['level' => $level]);
             }
+        }
+    }
+
+    /**
+     * GET /api/menu-config/roles
+     * Obtiene los roles disponibles agrupados por grupo de autenticación
+     * Ahora consulta desde el catálogo auth_roles en lugar de auth_users
+     * Query params: ?auth_group_id=ADMINS (opcional, si no se envía retorna todos)
+     */
+    public function roles()
+    {
+        try {
+            $authGroupId = $_GET['auth_group_id'] ?? null;
+            
+            if ($authGroupId) {
+                // Retornar solo roles del grupo especificado
+                $roles = Role::getRolesByGroup($authGroupId);
+                $result = [$authGroupId => $roles];
+            } else {
+                // Retornar todos los roles agrupados por grupo
+                $result = Role::getGroupedRoles();
+            }
+            
+            Response::json(StatusCodes::HTTP_OK, (array)new ResponseDTO(
+                true,
+                'Roles obtenidos correctamente',
+                $result
+            ));
+        } catch (\Exception $e) {
+            Response::json(StatusCodes::HTTP_INTERNAL_SERVER_ERROR, (array)new ResponseDTO(
+                false,
+                'Error al obtener roles: ' . $e->getMessage(),
+                null
+            ));
         }
     }
 }

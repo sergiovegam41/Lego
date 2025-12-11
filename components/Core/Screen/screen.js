@@ -31,7 +31,6 @@ class LegoScreen {
             detail: { screen: this, id: this.id }
         }));
         
-        console.log(`[LegoScreen] Screen inicializado: ${this.id}`);
     }
     
     /**
@@ -134,7 +133,6 @@ class LegoScreenManager {
         // Observar nuevos screens agregados al DOM
         this._setupMutationObserver();
         
-        console.log('[LegoScreenManager] Manager inicializado');
     }
     
     _initExistingScreens() {

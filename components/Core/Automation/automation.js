@@ -35,7 +35,6 @@ document.getElementById('submit-button').addEventListener('click', async (event)
   fetch("/api/auth/admin/login", requestOptions)
     .then(async (result) => {
 
-    console.log(result);
 
       window.lego.loading(false,{
           success:true,
@@ -82,4 +81,3 @@ document.getElementById('toggle-password').addEventListener('click', function() 
     }
     });
 
-    console.log("hola mundo")

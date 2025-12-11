@@ -36,9 +36,7 @@
  *     await api.get('/products');
  * } catch (error) {
  *     if (error.isNetworkError()) {
- *         console.log('Sin conexión');
  *     } else if (error.isValidationError()) {
- *         console.log('Datos inválidos:', error.validationErrors);
  *     }
  * }
  */

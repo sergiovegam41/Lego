@@ -14,7 +14,6 @@
  * ```javascript
  * // Suscribirse a evento de inicialización de componente
  * lego.events.on('component:init', (detail) => {
- *     console.log('Componente inicializado:', detail.componentName);
  * });
  *
  * // En tu componente
@@ -42,7 +41,6 @@ if (typeof LegoEvents === 'undefined') {
         this.eventHistory = [];
         this.maxHistorySize = 50;
 
-        console.log('[LegoEvents] Sistema de eventos inicializado');
     }
 
     /**
@@ -69,7 +67,6 @@ if (typeof LegoEvents === 'undefined') {
         // Ordenar por prioridad (mayor prioridad primero)
         this.listeners.get(eventName).sort((a, b) => b.priority - a.priority);
 
-        console.log(`[LegoEvents] Listener registrado: ${eventName}`, options);
 
         // Retornar función para desuscribirse
         return () => this.off(eventName, listener.id);
@@ -93,7 +90,6 @@ if (typeof LegoEvents === 'undefined') {
 
         if (index !== -1) {
             listeners.splice(index, 1);
-            console.log(`[LegoEvents] Listener eliminado: ${eventName}`);
         }
     }
 
@@ -101,7 +97,6 @@ if (typeof LegoEvents === 'undefined') {
      * Emitir un evento
      */
     emit(eventName, detail = {}) {
-        console.log(`[LegoEvents] Emitiendo evento: ${eventName}`, detail);
 
         // Guardar en historial
         this.eventHistory.push({
@@ -157,10 +152,8 @@ if (typeof LegoEvents === 'undefined') {
     clear(eventName = null) {
         if (eventName) {
             this.listeners.delete(eventName);
-            console.log(`[LegoEvents] Listeners eliminados para: ${eventName}`);
         } else {
             this.listeners.clear();
-            console.log('[LegoEvents] Todos los listeners eliminados');
         }
     }
 

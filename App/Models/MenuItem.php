@@ -62,7 +62,9 @@ class MenuItem extends Model
         'display_order',
         'level',
         'is_visible',
-        'is_dynamic'
+        'is_dynamic',
+        'allowed_roles',
+        'default_child_id'
     ];
 
     /**

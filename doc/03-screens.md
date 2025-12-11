@@ -25,15 +25,12 @@ class ProductosListComponent extends CoreComponent implements ScreenInterface
 {
     use ScreenTrait;
     
-    // Grupo del menú (carpeta)
-    public const MENU_GROUP_ID = 'productos';
-    
     // Identidad del screen
+    // parent_id se obtiene proceduralmente desde la BD (no se define como constante)
     public const SCREEN_ID = 'productos-list';
     public const SCREEN_LABEL = 'Ver Productos';
     public const SCREEN_ICON = 'list-outline';
     public const SCREEN_ROUTE = '/component/productos';
-    public const SCREEN_PARENT = self::MENU_GROUP_ID;
     public const SCREEN_ORDER = 0;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;
@@ -48,11 +45,13 @@ class ProductosListComponent extends CoreComponent implements ScreenInterface
 | `SCREEN_ROUTE` | ✅ | - | Ruta del componente |
 | `SCREEN_LABEL` | ❌ | SCREEN_ID | Texto en menú |
 | `SCREEN_ICON` | ❌ | `document-outline` | Icono ionicon |
-| `SCREEN_PARENT` | ❌ | `null` | ID del grupo padre |
 | `SCREEN_ORDER` | ❌ | `100` | Orden en menú |
 | `SCREEN_VISIBLE` | ❌ | `true` | Si aparece en menú |
 | `SCREEN_DYNAMIC` | ❌ | `false` | Si se activa por contexto |
-| `MENU_GROUP_ID` | ❌ | - | ID del grupo (para screens raíz) |
+| ~~`SCREEN_PARENT`~~ | ❌ | - | ❌ **OBSOLETO** - Se obtiene proceduralmente desde la BD |
+| ~~`MENU_GROUP_ID`~~ | ❌ | - | ❌ **OBSOLETO** - Se obtiene proceduralmente desde la BD |
+
+**NOTA IMPORTANTE:** `parent_id` y `menu_group_id` se obtienen **proceduralmente desde la base de datos** usando `SCREEN_ID`. No se deben definir como constantes. La BD es la fuente de verdad.
 
 ## Tipos de Screens
 
@@ -80,22 +79,28 @@ Se activa por contexto (ej: "Editar" requiere saber qué editar).
 ## Estructura Padre-Hijo
 
 ```
-📁 productos (MENU_GROUP_ID)
+📁 productos (grupo del menú, definido en MenuStructure.php)
 ├── 📄 productos-list (SCREEN_ID del componente principal)
 ├── 📄 productos-create
 └── 📄 productos-edit (dinámico)
 ```
 
+**FILOSOFÍA LEGO - PROCEDURAL:**
+La jerarquía padre-hijo se define en `Core/Config/MenuStructure.php` usando la estructura anidada (`children`). El `parent_id` se deduce automáticamente desde esta jerarquía.
+
 ```php
 // ProductosListComponent
-public const MENU_GROUP_ID = 'productos';
+// parent_id se obtiene proceduralmente desde la BD
 public const SCREEN_ID = 'productos-list';
-public const SCREEN_PARENT = self::MENU_GROUP_ID;
+public const SCREEN_ROUTE = '/component/productos';
 
 // ProductosCreateComponent
+// parent_id se obtiene proceduralmente desde la BD
 public const SCREEN_ID = 'productos-create';
-public const SCREEN_PARENT = ProductosListComponent::MENU_GROUP_ID;
+public const SCREEN_ROUTE = '/component/productos/create';
 ```
+
+**NO se definen `MENU_GROUP_ID` ni `SCREEN_PARENT`** - todo se obtiene desde la BD proceduralmente.
 
 ## ScreenRegistry
 
@@ -138,7 +143,7 @@ protected function component(): string
 ```javascript
 const SCREEN_CONFIG = {
     screenId: 'productos-list',
-    menuGroupId: 'productos',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     route: '/component/productos',
     apiRoute: '/api/productos',
     children: {
@@ -147,4 +152,6 @@ const SCREEN_CONFIG = {
     }
 };
 ```
+
+**NOTA:** `parentMenuId` se obtiene automáticamente desde la BD cuando se usa `openModuleWithMenu()`. No se debe hardcodear.
 

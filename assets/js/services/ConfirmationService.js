@@ -179,8 +179,6 @@ if (typeof ConfirmationService === 'undefined') {
      *     cancelText: 'Cancelar',
      *     icon: 'question',
      *     variant: 'primary',
-     *     onConfirm: () => console.log('Confirmado'),
-     *     onCancel: () => console.log('Cancelado')
      * });
      */
     static async custom({
@@ -345,12 +343,10 @@ if (typeof ConfirmationService === 'undefined') {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof window.AlertService !== 'undefined') {
-                console.log('[LEGO Framework] ConfirmationService cargado');
             }
         });
     } else {
         if (typeof window.AlertService !== 'undefined') {
-            console.log('[LEGO Framework] ConfirmationService cargado');
         }
     }
 

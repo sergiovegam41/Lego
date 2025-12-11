@@ -97,9 +97,9 @@ class BooleanRenderer extends CellRenderer
     const showIcon = {$showIcon};
     const style = '{$style}';
 
-    // Iconos SVG
-    const checkIcon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-    const xIcon = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+    // Iconos SVG (tamaño pequeño para tablas)
+    const checkIcon = '<svg style="width: 20px; height: 20px; max-width: 20px; max-height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+    const xIcon = '<svg style="width: 20px; height: 20px; max-width: 20px; max-height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
 
     if (style === 'badge') {
         // Estilo badge completo
@@ -142,7 +142,7 @@ class BooleanRenderer extends CellRenderer
                 </div>
             `;
         } else if (showIcon) {
-            return `<div class="flex items-center justify-center \${colorClass}">\${icon}</div>`;
+            return `<div class="flex items-center justify-center \${colorClass}" style="width: 100%; max-width: 28px; margin: 0 auto;">\${icon}</div>`;
         } else {
             return `<span class="\${colorClass}">\${text}</span>`;
         }

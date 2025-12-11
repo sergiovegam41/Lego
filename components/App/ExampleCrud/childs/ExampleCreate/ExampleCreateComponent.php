@@ -16,7 +16,7 @@ use Components\App\ExampleCrud\ExampleCrudComponent;
  *
  * SCREEN PATTERN:
  * - Implementa ScreenInterface para definir su identidad
- * - SCREEN_PARENT apunta al ID del screen padre (ExampleCrudComponent)
+ * - parent_id se obtiene proceduralmente desde la BD
  * - Visible en el menú como hijo de ExampleCrud
  */
 #[ApiComponent('/example-crud/create', methods: ['GET'])]
@@ -32,7 +32,7 @@ class ExampleCreateComponent extends CoreComponent implements ScreenInterface
     public const SCREEN_LABEL = 'Crear Registro';
     public const SCREEN_ICON = 'add-circle-outline';
     public const SCREEN_ROUTE = '/component/example-crud/create';
-    public const SCREEN_PARENT = ExampleCrudComponent::MENU_GROUP_ID; // Hijo del grupo, no de la lista
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 10;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;

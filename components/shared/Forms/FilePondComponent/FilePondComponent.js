@@ -18,7 +18,6 @@
  * ✅ Asociación automática a producto (si productId existe)
  */
 
-console.log('[FilePondComponent] Script cargado');
 
 // CDN de FilePond
 const FILEPOND_CDN = {
@@ -38,7 +37,6 @@ async function loadFilePond() {
         return;
     }
 
-    console.log('[FilePondComponent] Cargando FilePond desde CDN...');
 
     // Cargar CSS
     const cssLink1 = document.createElement('link');
@@ -58,7 +56,6 @@ async function loadFilePond() {
     await loadScript(FILEPOND_CDN.imageExifOrientation);
     await loadScript(FILEPOND_CDN.core);
 
-    console.log('[FilePondComponent] FilePond cargado exitosamente');
 }
 
 function loadScript(src) {
@@ -73,7 +70,6 @@ function loadScript(src) {
 
 // Inicializar instancias de FilePond
 async function initializeFilePond() {
-    console.log('[FilePondComponent] Inicializando instancias...');
 
     // Cargar FilePond si no está disponible
     await loadFilePond();
@@ -94,7 +90,6 @@ async function initializeFilePond() {
         const activeModuleContainer = document.getElementById(`module-${activeModuleId}`);
         if (activeModuleContainer) {
             searchContext = activeModuleContainer;
-            console.log('[FilePondComponent] Buscando solo en módulo activo:', activeModuleId);
         }
     }
 
@@ -110,7 +105,6 @@ async function initializeFilePond() {
             return;
         }
 
-        console.log('[FilePondComponent] Configurando FilePond:', config.id);
 
         // Crear instancia de FilePond
         const pond = FilePond.create(inputElement, {
@@ -163,23 +157,19 @@ async function initializeFilePond() {
                     headers: {},
                     timeout: 7000,
                     ondata: (formData) => {
-                        console.log('[FilePondComponent] Preparando upload, FormData:', formData);
 
                         // Agregar path (ej: 'products/images/', 'documents/pdf/')
                         if (config.path) {
                             formData.append('path', config.path);
-                            console.log('[FilePondComponent] Path agregado:', config.path);
                         }
 
                         // Debug: ver todos los campos del FormData
                         for (let pair of formData.entries()) {
-                            console.log('[FilePondComponent] FormData field:', pair[0], pair[1]);
                         }
 
                         return formData;
                     },
                     onload: (response) => {
-                        console.log('[FilePondComponent] Upload exitoso, response:', response);
                         // FilesController retorna el ID del archivo como text/plain
                         return response;
                     },
@@ -195,7 +185,6 @@ async function initializeFilePond() {
                 // Load (cargar archivos existentes)
                 load: (source, load, error, progress, abort, headers) => {
                     // source puede ser una URL o un ID de imagen
-                    console.log('[FilePondComponent] Cargando imagen:', source);
 
                     fetch(source)
                         .then(response => {
@@ -276,7 +265,6 @@ async function initializeFilePond() {
             updateImageIds(config.id);
         });
 
-        console.log('[FilePondComponent] FilePond inicializado:', config.id);
     });
 }
 
@@ -326,7 +314,6 @@ function updateImageIds(componentId) {
         hiddenInput.value = JSON.stringify(imageIds);
     }
 
-    console.log('[FilePondComponent] IDs actualizados:', imageIds);
 }
 
 // API pública para obtener IDs de imágenes
@@ -357,13 +344,11 @@ function tryInitialize() {
     const containers = document.querySelectorAll('.lego-filepond__container');
 
     if (containers.length > 0) {
-        console.log('[FilePondComponent] Containers encontrados, inicializando...');
         initializeFilePond();
     } else if (attempts < maxAttempts) {
         attempts++;
         setTimeout(tryInitialize, 50);
     } else {
-        console.log('[FilePondComponent] No se encontraron containers FilePond');
     }
 }
 

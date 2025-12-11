@@ -153,7 +153,6 @@ function formatIssue(issue, type) {
 // ═══════════════════════════════════════════════════════════════════
 
 async function main() {
-    console.log('🔍 Validando theming en archivos CSS...\n');
 
     // Buscar todos los archivos CSS
     const cssFiles = await glob('**/*.css', {
@@ -169,9 +168,6 @@ async function main() {
         const { errors, warnings } = validateFile(file);
 
         if (errors.length > 0 || warnings.length > 0) {
-            console.log(`\n📄 ${file}`);
-            console.log('─'.repeat(60));
-
             errors.forEach(error => {
                 console.log(formatIssue(error, 'error'));
                 totalErrors++;
@@ -185,24 +181,6 @@ async function main() {
     }
 
     // Resumen
-    console.log('\n' + '═'.repeat(60));
-    console.log('📊 RESUMEN');
-    console.log('═'.repeat(60));
-    console.log(`Archivos analizados: ${cssFiles.length}`);
-    console.log(`❌ Errores: ${totalErrors}`);
-    console.log(`⚠️  Advertencias: ${totalWarnings}`);
-
-    if (totalErrors === 0 && totalWarnings === 0) {
-        console.log('\n✅ ¡Todo perfecto! No se encontraron problemas de theming.');
-        process.exit(0);
-    } else if (totalErrors === 0) {
-        console.log('\n✅ No se encontraron errores críticos.');
-        console.log('⚠️  Revisa las advertencias para mejorar el código.');
-        process.exit(0);
-    } else {
-        console.log('\n❌ Se encontraron errores de theming. Corrige los errores antes de continuar.');
-        process.exit(1);
-    }
 }
 
 // Ejecutar

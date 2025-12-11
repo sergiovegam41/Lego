@@ -603,6 +603,9 @@
 #menu-import-form {
     padding: var(--space-md, 16px);
     margin: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 .menu-config__form-group {
@@ -700,12 +703,49 @@
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     gap: var(--space-xs, 4px);
-    max-height: 200px;
-    overflow-y: auto;
-    padding: var(--space-sm, 8px);
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 var(--space-sm, 8px);
     background: var(--bg-input);
     border: 1px solid var(--border-default);
     border-radius: 6px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.menu-config__icon-grid.expanded {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--space-sm, 8px);
+    margin-top: var(--space-sm, 8px);
+}
+
+.menu-config__icon-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-sm, 8px) var(--space-md, 12px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-top: var(--space-sm, 8px);
+}
+
+.menu-config__icon-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+}
+
+.menu-config__icon-toggle ion-icon {
+    transition: transform 0.3s ease;
+}
+
+.menu-config__icon-toggle.expanded ion-icon {
+    transform: rotate(180deg);
 }
 
 .menu-config__icon-option {
@@ -741,8 +781,11 @@
     display: flex;
     gap: var(--space-sm, 8px);
     justify-content: flex-end;
-    padding-top: var(--space-md, 16px);
+    padding: var(--space-md, 16px);
     border-top: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    flex-shrink: 0;
+    margin-top: auto;
 }
 
 .menu-config__btn {
@@ -995,5 +1038,97 @@ html.dark .menu-config {
     .menu-config__item-desktop-actions {
         display: flex !important;
     }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROLES SELECTOR
+   ═══════════════════════════════════════════════════════════════ */
+
+.menu-config__roles-container {
+    min-height: 60px;
+}
+
+.menu-config__roles-loading,
+.menu-config__roles-error,
+.menu-config__roles-empty {
+    padding: var(--space-md, 16px);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.menu-config__roles-error {
+    color: #ef4444;
+}
+
+.menu-config__roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md, 16px);
+}
+
+.menu-config__roles-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm, 8px);
+}
+
+.menu-config__roles-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: var(--space-xs, 4px);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.menu-config__roles-group-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm, 8px);
+}
+
+.menu-config__role-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 4px);
+    padding: var(--space-xs, 4px) var(--space-sm, 8px);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    font-size: 13px;
+}
+
+.menu-config__role-checkbox:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+}
+
+.menu-config__role-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.menu-config__role-checkbox input[type="checkbox"]:checked + span {
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+.menu-config__role-checkbox:has(input[type="checkbox"]:checked) {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--color-primary);
+}
+
+.menu-config__role-checkbox span {
+    color: var(--text-primary);
+    font-size: 13px;
 }
 

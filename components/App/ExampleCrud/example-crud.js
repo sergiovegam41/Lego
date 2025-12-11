@@ -8,7 +8,6 @@
  * ✅ Persistencia de filtros entre navegaciones
  */
 
-console.log('[ExampleCrud] Inicializando...');
 
 // ═══════════════════════════════════════════════════════════════════
 // CONFIGURACIÓN DEL COMPONENTE
@@ -18,14 +17,14 @@ console.log('[ExampleCrud] Inicializando...');
  * SCREEN CONFIG - Debe coincidir con las constantes PHP
  * 
  * PHP: ExampleCrudComponent
- *   MENU_GROUP_ID = 'example-crud'       -> menuGroupId
  *   SCREEN_ID = 'example-crud-list'      -> screenId
  *   SCREEN_ROUTE = '/component/example-crud' -> route
+ *   parent_id se obtiene proceduralmente desde la BD (no se define como constante)
  */
 const SCREEN_CONFIG = {
     // Identidad del screen (coincide con PHP)
     screenId: 'example-crud-list',      // ExampleCrudComponent::SCREEN_ID
-    menuGroupId: 'example-crud',        // ExampleCrudComponent::MENU_GROUP_ID
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     
     // Rutas
     route: '/component/example-crud',   // ExampleCrudComponent::SCREEN_ROUTE
@@ -46,7 +45,7 @@ const COMPONENT_CONFIG = {
     id: SCREEN_CONFIG.screenId,
     route: SCREEN_CONFIG.route,
     apiRoute: SCREEN_CONFIG.apiRoute,
-    parentMenuId: SCREEN_CONFIG.menuGroupId,
+    // parentMenuId removido - se obtiene dinámicamente desde la BD
     tableId: SCREEN_CONFIG.tableId
 };
 
@@ -82,7 +81,6 @@ function childUrl(childPath, params = null) {
     return url;
 }
 
-console.log('[ExampleCrud] Config:', getConfig());
 
 // ═══════════════════════════════════════════════════════════════════
 // CALLBACKS PARA ROW ACTIONS
@@ -93,8 +91,7 @@ console.log('[ExampleCrud] Config:', getConfig());
  * Se ejecuta cuando el usuario hace clic en el botón "Editar"
  */
 window.handleEditRecord = function(rowData, tableId) {
-    console.log('[ExampleCrud] Editar registro:', rowData);
-    openEditModule(rowData.id);
+    openEditExampleModule(rowData.id);
 };
 
 /**
@@ -102,7 +99,6 @@ window.handleEditRecord = function(rowData, tableId) {
  * Se ejecuta cuando el usuario hace clic en el botón "Eliminar" y confirma
  */
 window.handleDeleteRecord = async function(rowData, tableId) {
-    console.log('[ExampleCrud] Solicitud de eliminar registro:', rowData);
 
     // Confirmar eliminación usando ConfirmationService
     const itemName = `<strong>${rowData.name || 'ID: ' + rowData.id}</strong>`;
@@ -111,7 +107,6 @@ window.handleDeleteRecord = async function(rowData, tableId) {
         : confirm('¿Estás seguro de que deseas eliminar este registro?');
 
     if (!confirmed) {
-        console.log('[ExampleCrud] Eliminación cancelada por el usuario');
         return;
     }
 
@@ -140,7 +135,6 @@ window.handleDeleteRecord = async function(rowData, tableId) {
 
         // Recargar INMEDIATAMENTE el módulo actual
         if (window.legoWindowManager) {
-            console.log('[ExampleCrud] Recargando módulo activo...');
             window.legoWindowManager.reloadActive();
         } else {
             console.warn('[ExampleCrud] legoWindowManager no disponible, recargando página');
@@ -198,7 +192,6 @@ function restoreFiltersForTable(tableId, api) {
     const params = window.legoWindowManager?.getParams(ownerModuleId);
     
     if (params?.columnFilters && Object.keys(params.columnFilters).length > 0) {
-        console.log('[ExampleCrud] Restaurando filtros para módulo', ownerModuleId, ':', params.columnFilters);
         api.setFilterModel(params.columnFilters);
     }
 }
@@ -243,7 +236,6 @@ if (!window[LISTENER_KEY]) {
         }
     });
     
-    console.log('[ExampleCrud] Listeners de filtros registrados');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -258,7 +250,6 @@ setTimeout(() => {
     const existingTable = window.LEGO_TABLES?.[tableId];
     
     if (existingTable?.api) {
-        console.log('[ExampleCrud] Tabla ya existía, verificando filtros pendientes...');
         restoreFiltersForTable(tableId, existingTable.api);
     }
 }, 0);
@@ -279,20 +270,20 @@ function openCreateModule() {
 
     window.legoWindowManager.openModuleWithMenu({
         moduleId: SCREEN_CONFIG.children.create,  // 'example-crud-create'
-        parentMenuId: SCREEN_CONFIG.menuGroupId,  // 'example-crud'
+        // parentMenuId se obtiene dinámicamente desde la BD
         label: 'Nuevo Registro',
         url: childUrl('create'),
         icon: 'add-circle-outline'
     });
 
-    console.log('[ExampleCrud] Abriendo módulo crear');
 }
 
 /**
  * Abrir módulo de editar registro
  * Ventana de edición reutilizable única
+ * NOMBRE ÚNICO: openEditExampleModule para evitar conflictos con otros módulos
  */
-function openEditModule(recordId) {
+function openEditExampleModule(recordId) {
     if (!window.legoWindowManager) {
         console.error('[ExampleCrud] legoWindowManager no disponible');
         return;
@@ -305,7 +296,6 @@ function openEditModule(recordId) {
     const modules = window.moduleStore?.getModules() || {};
     
     if (modules[moduleId]) {
-        console.log('[ExampleCrud] Ventana de edición ya existe, recargando con registro:', recordId);
 
         // Activar el módulo existente
         const container = document.getElementById(`module-${moduleId}`);
@@ -328,7 +318,6 @@ function openEditModule(recordId) {
                         newScript.textContent = oldScript.textContent;
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
-                    console.log('[ExampleCrud] Contenido recargado para registro:', recordId);
                 })
                 .catch(err => console.error('[ExampleCrud] Error recargando:', err));
         }
@@ -338,13 +327,12 @@ function openEditModule(recordId) {
     // Abrir nuevo módulo dinámico
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: SCREEN_CONFIG.menuGroupId,
+        // parentMenuId se obtiene dinámicamente desde la BD
         label: 'Editar Registro',
         url: url,
         icon: 'create-outline'
     });
 
-    console.log('[ExampleCrud] Módulo editar abierto');
 }
 
 /**
@@ -359,7 +347,6 @@ function closeCurrentModule() {
     const currentModule = window.moduleStore.getActiveModule();
     if (currentModule && window.lego && window.lego.closeModule) {
         window.lego.closeModule(currentModule);
-        console.log('[ExampleCrud] Módulo cerrado:', currentModule);
     }
 }
 
@@ -367,22 +354,19 @@ function closeCurrentModule() {
  * Editar registro (llamado desde botón de acciones)
  */
 function editRecord(recordId) {
-    console.log('[ExampleCrud] Editar registro:', recordId);
-    openEditModule(recordId);
+    openEditExampleModule(recordId);
 }
 
 /**
  * Eliminar registro (llamado desde botón de acciones - LEGACY)
  */
 async function deleteRecord(recordId) {
-    console.log('[ExampleCrud] Solicitud de eliminar registro:', recordId);
 
     const confirmed = window.ConfirmationService
         ? await window.ConfirmationService.delete(`registro <strong>#${recordId}</strong>`)
         : confirm('¿Estás seguro de que deseas eliminar este registro?');
 
     if (!confirmed) {
-        console.log('[ExampleCrud] Eliminación cancelada por el usuario');
         return;
     }
 
@@ -429,7 +413,7 @@ async function deleteRecord(recordId) {
 // ═══════════════════════════════════════════════════════════════════
 
 window.openCreateModule = openCreateModule;
-window.openEditModule = openEditModule;
+window.openEditExampleModule = openEditExampleModule;
 window.closeCurrentModule = closeCurrentModule;
 window.editRecord = editRecord;
 window.deleteRecord = deleteRecord;
@@ -438,4 +422,3 @@ window.deleteRecord = deleteRecord;
 // INICIALIZACIÓN
 // ═══════════════════════════════════════════════════════════════════
 
-console.log('[ExampleCrud] Sistema listo');

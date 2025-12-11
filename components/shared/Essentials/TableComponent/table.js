@@ -24,19 +24,16 @@ let context = {CONTEXT};
         callbacks
     } = config;
 
-    console.log('[LEGO Table] Inicializando tabla:', id);
 
     // Cargar AG Grid desde CDN si no está cargado
     function loadAGGrid() {
         return new Promise((resolve, reject) => {
             // Verificar si AG Grid ya está cargado
             if (window.agGrid) {
-                console.log('[LEGO Table] AG Grid ya está cargado');
                 resolve();
                 return;
             }
 
-            console.log('[LEGO Table] Cargando AG Grid desde CDN...');
 
             // Cargar CSS de AG Grid
             const cssLink = document.createElement('link');
@@ -54,7 +51,6 @@ let context = {CONTEXT};
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/ag-grid-community@31.0.0/dist/ag-grid-community.min.js';
             script.onload = () => {
-                console.log('[LEGO Table] AG Grid cargado exitosamente');
                 resolve();
             };
             script.onerror = (error) => {
@@ -272,18 +268,15 @@ let context = {CONTEXT};
      * Busca la función en el scope del módulo, NO en window global
      */
     function executeCallback(callbackName, rowData, tableId) {
-        console.log(`[LEGO Table] Ejecutando callback: ${callbackName} para tabla ${tableId}`);
 
         // Intentar buscar en window primero (por retrocompatibilidad)
         if (typeof window[callbackName] === 'function') {
-            console.log(`[LEGO Table] Callback encontrado en window.${callbackName}`);
             window[callbackName](rowData, tableId);
             return;
         }
 
         // Si no está en window, emitir evento para que el componente lo maneje
         if (window.lego && window.lego.events) {
-            console.log(`[LEGO Table] Emitiendo evento: table:action:${callbackName}`);
             window.lego.events.emit(`table:action:${callbackName}`, {
                 rowData,
                 tableId
@@ -318,7 +311,6 @@ let context = {CONTEXT};
                 isDark = html.classList.contains('dark') || body.classList.contains('dark');
             }
 
-            console.log('[LEGO Table] Sincronizando tema. Parámetro:', theme, '| isDark:', isDark, '| html.classList:', html.classList.toString());
 
             // Aplicar atributos para CSS
             body.setAttribute('data-ag-theme-mode', isDark ? 'dark' : 'light');
@@ -361,22 +353,18 @@ let context = {CONTEXT};
                 gridDiv.style.setProperty('--ag-wrapper-border-radius', '0px');
             }
 
-            console.log('[LEGO Table] Tema sincronizado:', isDark ? 'dark' : 'light');
         };
 
         // Aplicar tema inicial
         const initialTheme = window.themeManager ? window.themeManager.getCurrentTheme() :
                            (html.classList.contains('dark') ? 'dark' : 'light');
         syncTheme(initialTheme);
-        console.log('[LEGO Table] Tema inicial aplicado:', initialTheme);
 
         // Suscribirse a cambios de tema del LEGO Framework
         if (window.themeManager) {
             window.themeManager.subscribe((theme) => {
-                console.log('[LEGO Table] Cambio de tema detectado:', theme);
                 syncTheme(theme);
             });
-            console.log('[LEGO Table] Suscrito al ThemeManager');
         } else {
             // Fallback: escuchar cambios en la preferencia del sistema si no hay ThemeManager
             console.warn('[LEGO Table] ThemeManager no disponible, usando fallback');
@@ -490,7 +478,6 @@ let context = {CONTEXT};
             // Callback cuando cambian los filtros de columna
             onFilterChanged: (event) => {
                 const filterModel = event.api.getFilterModel();
-                console.log('[LEGO Table] Filtros cambiados:', id, filterModel);
 
                 // Disparar evento global para que otros componentes puedan reaccionar
                 const filterEvent = new CustomEvent('lego:table:filterChanged', {
@@ -545,7 +532,6 @@ let context = {CONTEXT};
                         }, 150);
                     });
 
-                    console.log('[LEGO Table] Auto-resize habilitado');
                 }
             }
         };
@@ -554,7 +540,6 @@ let context = {CONTEXT};
         // SERVER-SIDE MODE (Model-Driven)
         // ========================================
         if (config.serverSide && config.apiConfig) {
-            console.log('[LEGO Table] Modo server-side habilitado:', config.apiConfig);
 
             // Remover rowData inicial (se cargará desde API)
             delete fullGridOptions.rowData;
@@ -580,9 +565,6 @@ let context = {CONTEXT};
                 const dataSource = {
                     rowCount: null,
                     getRows: function(params) {
-                        console.log('[LEGO Table] Solicitando filas:', params.startRow, '-', params.endRow);
-                        console.log('[LEGO Table] Sort model:', params.sortModel);
-                        console.log('[LEGO Table] Filter model:', params.filterModel);
 
                         // Calcular página actual
                         const page = Math.floor(params.startRow / config.apiConfig.perPage) + 1;
@@ -620,14 +602,12 @@ let context = {CONTEXT};
                             });
                         }
 
-                        console.log('[LEGO Table] Fetching:', url.toString());
 
                         // Hacer fetch a la API
                         fetch(url.toString())
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    console.log('[LEGO Table] Datos recibidos:', data.data.length, 'filas');
 
                                     // Actualizar total de filas
                                     let lastRow = -1;
@@ -660,7 +640,6 @@ let context = {CONTEXT};
         const apiVarName = `legoTable_${jsId}_api`;
         window[apiVarName] = gridApi;
         window[`legoTable_${jsId}_columnApi`] = null; // Deprecated en AG Grid v31
-        console.log(`[LEGO Table] ✅ Variable global creada: ${apiVarName}`);
 
         // También guardar en LEGO_TABLES para TableManager
         if (!window.LEGO_TABLES) {
@@ -683,9 +662,7 @@ let context = {CONTEXT};
             }
         });
         window.dispatchEvent(tableReadyEvent);
-        console.log('[LEGO Table] Evento lego:table:ready disparado');
 
-        console.log('[LEGO Table] Grid inicializada exitosamente:', id);
 
         // Funciones de exportación globales usando jsId sanitizado
         window[`legoTable_${jsId}_exportCSV`] = function() {
@@ -694,7 +671,6 @@ let context = {CONTEXT};
                 api.exportDataAsCsv({
                     fileName: config.exportFileName || 'export'
                 });
-                console.log('[LEGO Table] Exportando a CSV...');
             }
         };
 
@@ -703,14 +679,12 @@ let context = {CONTEXT};
             if (api) {
                 // AG Grid Community no soporta Excel export
                 // Usar CSV como alternativa compatible
-                console.log('[LEGO Table] Exportando datos...');
                 console.warn('[LEGO Table] Excel export requiere AG Grid Enterprise. Usando formato CSV.');
 
                 api.exportDataAsCsv({
                     fileName: config.exportFileName || 'export'
                 });
 
-                console.log('[LEGO Table] ✓ Archivo CSV descargado exitosamente');
             } else {
                 console.error('[LEGO Table] API de tabla no disponible');
             }
@@ -721,7 +695,6 @@ let context = {CONTEXT};
             const api = window[`legoTable_${jsId}_api`];
             if (api) {
                 api.setGridOption('rowData', newRowData);
-                console.log('[LEGO Table] Datos actualizados:', id);
             }
         };
 
@@ -751,9 +724,7 @@ let context = {CONTEXT};
         window[`legoTable_${jsId}_refresh`] = function() {
             const api = window[`legoTable_${jsId}_api`];
             if (api) {
-                console.log('[LEGO Table] Recargando datos del servidor...');
                 api.refreshInfiniteCache();
-                console.log('[LEGO Table] Datos recargados');
             }
         };
 

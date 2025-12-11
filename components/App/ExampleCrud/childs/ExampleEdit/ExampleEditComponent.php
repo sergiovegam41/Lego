@@ -32,7 +32,7 @@ class ExampleEditComponent extends CoreComponent implements ScreenInterface
     public const SCREEN_LABEL = 'Editar Registro';
     public const SCREEN_ICON = 'create-outline';
     public const SCREEN_ROUTE = '/component/example-crud/edit';
-    public const SCREEN_PARENT = ExampleCrudComponent::MENU_GROUP_ID; // Hijo del grupo
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 20;
     public const SCREEN_VISIBLE = false;  // No visible por defecto
     public const SCREEN_DYNAMIC = true;   // Se activa por contexto
@@ -211,7 +211,7 @@ class ExampleEditComponent extends CoreComponent implements ScreenInterface
                                 class="example-form__button example-form__button--primary"
                                 id="example-form-submit-btn"
                             >
-                                Guardar Cambios
+                                Guardar
                             </button>
                         </div>
                     </form>

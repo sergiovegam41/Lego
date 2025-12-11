@@ -117,7 +117,7 @@ async function guardar() {
 function abrirCrear() {
     window.legoWindowManager.openModuleWithMenu({
         moduleId: 'items-create',
-        parentMenuId: 'items',
+        // parentMenuId se obtiene automáticamente desde la BD
         label: 'Nuevo Item',
         url: '/component/items/create',
         icon: 'add-circle-outline'

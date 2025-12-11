@@ -35,9 +35,9 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
     public const SCREEN_LABEL = 'Configuración del Menú';
     public const SCREEN_ICON = 'settings-outline';
     public const SCREEN_ROUTE = '/component/menu-config';
-    public const SCREEN_PARENT = null;
+    // parent_id se obtiene proceduralmente desde la BD (null para raíz)
     public const SCREEN_ORDER = 999;
-    public const SCREEN_VISIBLE = true;  // Visible en el menú lateral
+    public const SCREEN_VISIBLE = false; // Oculto: aparece solo en popover de configuración y búsqueda
     public const SCREEN_DYNAMIC = false; // No requiere contexto
     
     // ═══════════════════════════════════════════════════════════════════
@@ -216,7 +216,19 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
                                         <ion-icon name="ellipse-outline" id="new-current-icon"></ion-icon>
                                         <span id="new-current-icon-name">ellipse-outline</span>
                                     </div>
+                                    <button type="button" class="menu-config__icon-toggle" id="new-icon-toggle" onclick="toggleIconGrid('new')">
+                                        <span>Seleccionar icono</span>
+                                        <ion-icon name="chevron-down-outline"></ion-icon>
+                                    </button>
                                     <div class="menu-config__icon-grid" id="new-icon-grid"></div>
+                                </div>
+
+                                <div class="menu-config__form-group">
+                                    <label for="new-allowed-roles">Roles permitidos</label>
+                                    <div id="new-allowed-roles-container" class="menu-config__roles-container">
+                                        <div class="menu-config__roles-loading">Cargando roles...</div>
+                                    </div>
+                                    <small class="menu-config__form-help">Selecciona los roles que pueden ver este item. Si no seleccionas ninguno, todos los roles pueden verlo. SUPERADMIN siempre ve todo.</small>
                                 </div>
 
                                 <div class="menu-config__form-actions">
@@ -261,7 +273,27 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
                                         <ion-icon name="ellipse-outline" id="current-icon"></ion-icon>
                                         <span id="current-icon-name">ellipse-outline</span>
                                     </div>
+                                    <button type="button" class="menu-config__icon-toggle" id="icon-toggle" onclick="toggleIconGrid('edit')">
+                                        <span>Seleccionar icono</span>
+                                        <ion-icon name="chevron-down-outline"></ion-icon>
+                                    </button>
                                     <div class="menu-config__icon-grid" id="icon-grid"></div>
+                                </div>
+
+                                <div class="menu-config__form-group" id="edit-default-child-group" style="display: none;">
+                                    <label for="edit-default-child-id">Hijo por defecto</label>
+                                    <select id="edit-default-child-id" class="menu-config__select">
+                                        <option value="">Ninguno (usar primer hijo con ruta válida)</option>
+                                    </select>
+                                    <small class="menu-config__form-help">Al hacer clic en este grupo, se abrirá automáticamente el hijo seleccionado</small>
+                                </div>
+
+                                <div class="menu-config__form-group">
+                                    <label for="edit-allowed-roles">Roles permitidos</label>
+                                    <div id="edit-allowed-roles-container" class="menu-config__roles-container">
+                                        <div class="menu-config__roles-loading">Cargando roles...</div>
+                                    </div>
+                                    <small class="menu-config__form-help">Selecciona los roles que pueden ver este item. Si no seleccionas ninguno, todos los roles pueden verlo. SUPERADMIN siempre ve todo.</small>
                                 </div>
 
                                 <div class="menu-config__form-actions">
@@ -410,6 +442,10 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
             $isVisible = $item['is_visible'] ? 'visible' : 'hidden';
             $isDynamic = $item['is_dynamic'] ? 'dynamic' : 'static';
             $hasChildren = !empty($item['children']);
+            $allowedRoles = isset($item['allowed_roles']) ? htmlspecialchars($item['allowed_roles'], ENT_QUOTES) : '';
+            $defaultChildId = isset($item['default_child_id']) && !empty($item['default_child_id']) 
+                ? htmlspecialchars($item['default_child_id'], ENT_QUOTES) 
+                : 'null';
 
             $badges = '';
             if (!$item['is_visible']) {
@@ -488,7 +524,7 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
                             </button>
                             <div class="menu-config__item-mobile-menu-dropdown" id="item-menu-{$id}">
                                 {$mobileMenuButtons}
-                                <button class="menu-config__item-mobile-menu-item" onclick="openEditModal('{$id}', '{$label}', '{$icon}', '{$item['route']}'); closeItemMobileMenu('{$id}');">
+                                <button class="menu-config__item-mobile-menu-item" onclick="openEditModal('{$id}', '{$label}', '{$icon}', '{$item['route']}', '{$allowedRoles}', {$defaultChildId}); closeItemMobileMenu('{$id}');">
                                     <ion-icon name="create-outline"></ion-icon>
                                     <span>Editar</span>
                                 </button>
@@ -502,7 +538,7 @@ class MenuConfigComponent extends CoreComponent implements ScreenInterface
                                 {$downButton}
                                 {$leftButton}
                             </div>
-                            <button class="menu-config__edit-btn" onclick="openEditModal('{$id}', '{$label}', '{$icon}', '{$item['route']}')">
+                            <button class="menu-config__edit-btn" onclick="openEditModal('{$id}', '{$label}', '{$icon}', '{$item['route']}', '{$allowedRoles}', {$defaultChildId})">
                                 <ion-icon name="create-outline"></ion-icon>
                             </button>
                         </div>

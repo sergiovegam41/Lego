@@ -152,12 +152,10 @@ class ImageGalleryComponent extends CoreComponent
                 const galleryId = '{$this->id}';
                 const initFunction = function() {
                     if (typeof FilePond === 'undefined') {
-                        console.log('[FilePond] Esperando a que se cargue la librería...');
                         setTimeout(initFunction, 100);
                         return;
                     }
 
-                    console.log('[FilePond] Inicializando galería:', galleryId);
 
                     // Registrar plugins de FilePond
                     FilePond.registerPlugin(
@@ -175,7 +173,6 @@ class ImageGalleryComponent extends CoreComponent
                         return;
                     }
 
-                    console.log('[FilePond] Input element encontrado, creando instancia...');
 
                     // Crear instancia de FilePond
                     const pond = FilePond.create(inputElement, {
@@ -259,7 +256,6 @@ class ImageGalleryComponent extends CoreComponent
                         },
 
                         revert: (uniqueFileId, load, error) => {
-                            console.log('[FilePond] Eliminando imagen con ID:', uniqueFileId);
 
                             fetch('{$this->deleteEndpoint}', {
                                 method: 'POST',
@@ -271,14 +267,11 @@ class ImageGalleryComponent extends CoreComponent
                                 })
                             })
                             .then(response => {
-                                console.log('[FilePond] Respuesta del servidor:', response.status);
                                 return response.json();
                             })
                             .then(data => {
-                                console.log('[FilePond] Data recibida:', data);
                                 // El backend retorna { success: true/false, msj: '...', data: null }
                                 if (data.success === true) {
-                                    console.log('[FilePond] Imagen eliminada exitosamente');
                                     load();
                                 } else {
                                     console.error('[FilePond] Error al eliminar:', data.msj);
@@ -307,7 +300,6 @@ class ImageGalleryComponent extends CoreComponent
 
                         remove: (source, load, error) => {
                             // Se llama cuando se elimina un archivo que ya existía (tipo 'local')
-                            console.log('[FilePond] Remove llamado para source:', source);
 
                             fetch('{$this->deleteEndpoint}', {
                                 method: 'POST',
@@ -320,7 +312,6 @@ class ImageGalleryComponent extends CoreComponent
                             })
                             .then(response => response.json())
                             .then(data => {
-                                console.log('[FilePond] Respuesta de remove:', data);
                                 if (data.success === true) {
                                     load();
                                 } else {
@@ -361,10 +352,8 @@ class ImageGalleryComponent extends CoreComponent
                             }
                         }).then(fileItem => {
                             // Establecer serverId = ID para que el método remove lo reciba
-                            console.log('[FilePond] Archivo agregado:', fileItem);
                             if (fileItem) {
                                 fileItem.serverId = String(image.id);
-                                console.log('[FilePond] ServerId establecido:', fileItem.serverId);
                             }
                         }).catch(err => {
                             console.error('[FilePond] Error al agregar archivo:', err);
@@ -390,7 +379,6 @@ class ImageGalleryComponent extends CoreComponent
                         );
                     }
 
-                    console.log('[FilePond] Instancia creada y configurada correctamente');
                 };
 
                 // Iniciar cuando el DOM esté listo

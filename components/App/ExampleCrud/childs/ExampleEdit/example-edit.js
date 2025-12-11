@@ -8,8 +8,6 @@
  * ✅ Validación antes de actualizar
  */
 
-console.log('[ExampleEdit] Script cargado');
-
 // ═══════════════════════════════════════════════════════════════════
 // SCREEN CONFIG - Debe coincidir con ExampleEditComponent::SCREEN_*
 // ═══════════════════════════════════════════════════════════════════
@@ -17,7 +15,7 @@ console.log('[ExampleEdit] Script cargado');
 const SCREEN_CONFIG = {
     screenId: 'example-crud-edit',       // ExampleEditComponent::SCREEN_ID
     parentScreenId: 'example-crud-list', // ExampleCrudComponent::SCREEN_ID
-    menuGroupId: 'example-crud',         // ExampleCrudComponent::MENU_GROUP_ID
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     apiRoute: '/api/example-crud',
     isDynamic: true                      // ExampleEditComponent::SCREEN_DYNAMIC
 };
@@ -107,7 +105,6 @@ function showValidationErrors(errors) {
 
 async function loadRecordData(recordId) {
     try {
-        console.log('[ExampleEdit] Cargando registro:', recordId);
 
         // Usar apiUrl()
         const response = await fetch(apiUrl('get', { id: recordId }));
@@ -117,7 +114,6 @@ async function loadRecordData(recordId) {
             throw new Error(result.msj || 'Error al cargar registro');
         }
 
-        console.log('[ExampleEdit] Registro cargado:', result.data);
         return result.data;
 
     } catch (error) {
@@ -138,7 +134,6 @@ async function loadRecordData(recordId) {
 // ═══════════════════════════════════════════════════════════════════
 
 function populateForm(record, activeModuleContainer) {
-    console.log('[ExampleEdit] Poblando formulario con:', record);
 
     // Poblar inputs DENTRO del módulo activo
     const nameInput = activeModuleContainer.querySelector('#example-name');
@@ -165,7 +160,6 @@ function populateForm(record, activeModuleContainer) {
             // Verificar si la instancia del select está lista
             const instance = window.LegoSelect.getInstance('example-category');
             if (instance) {
-                console.log('[ExampleEdit] Seteando categoría:', record.category);
                 window.LegoSelect.setValue('example-category', record.category);
             } else {
                 if (retries > 0) {
@@ -179,7 +173,6 @@ function populateForm(record, activeModuleContainer) {
         setCategory();
     }
 
-    console.log('[ExampleEdit] Formulario poblado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -196,7 +189,6 @@ async function updateRecord(recordId, formData) {
             return null;
         }
 
-        console.log('[ExampleEdit] Actualizando registro:', recordId, formData);
 
         // Usar apiUrl()
         const response = await fetch(apiUrl('update'), {
@@ -216,7 +208,6 @@ async function updateRecord(recordId, formData) {
             throw new Error(result.msj || 'Error al actualizar registro');
         }
 
-        console.log('[ExampleEdit] Registro actualizado:', result.data);
         return result.data;
 
     } catch (error) {
@@ -243,7 +234,6 @@ function closeModule() {
         // 2. Eliminar el ítem dinámico del menú
         // 3. Volver al módulo origen
         window.legoWindowManager.closeCurrentWindow();
-        console.log('[ExampleEdit] Módulo cerrado via legoWindowManager');
     } else {
         console.error('[ExampleEdit] legoWindowManager no disponible');
     }
@@ -258,7 +248,6 @@ function reloadExampleCrudTable() {
     const refreshFn = window.legoTable_example_crud_table_refresh;
 
     if (refreshFn) {
-        console.log('[ExampleEdit] Recargando tabla de registros...');
         refreshFn();
     } else {
         console.warn('[ExampleEdit] Función de recarga de tabla no encontrada');
@@ -270,7 +259,6 @@ function reloadExampleCrudTable() {
 // ═══════════════════════════════════════════════════════════════════
 
 function loadRecordImages(images) {
-    console.log('[ExampleEdit] Cargando imágenes en FilePond:', images);
 
     // Esperar a que FilePond esté listo
     const waitForFilePond = setInterval(() => {
@@ -295,7 +283,6 @@ function loadRecordImages(images) {
                         imageId: image.id   // ID para referencia adicional
                     }
                 }).then(file => {
-                    console.log('[ExampleEdit] Imagen agregada a FilePond con ID:', image.id);
                 }).catch(error => {
                     console.error('[ExampleEdit] Error agregando imagen a FilePond:', error);
                 });
@@ -314,7 +301,6 @@ function loadRecordImages(images) {
 // ═══════════════════════════════════════════════════════════════════
 
 async function initializeForm() {
-    console.log('[ExampleEdit] Inicializando formulario...');
 
     // IMPORTANTE: Buscar el container dentro del módulo activo SOLAMENTE
     const activeModuleId = window.moduleStore?.getActiveModule();
@@ -332,20 +318,15 @@ async function initializeForm() {
     // Verificar si estamos en estado "sin contexto" (empty state)
     const emptyState = activeModuleContainer.querySelector('.example-form--no-context');
     if (emptyState) {
-        console.log('[ExampleEdit] Modo sin contexto detectado, no hay registro para cargar');
         return; // No hay nada que hacer - el PHP ya muestra el mensaje adecuado
     }
 
     // Buscar el formulario DENTRO del módulo activo
     const container = activeModuleContainer.querySelector('.example-form[data-example-id]');
-    console.log('[ExampleEdit] Container encontrado:', container);
-    console.log('[ExampleEdit] Atributos del container:', container ? Array.from(container.attributes).map(a => `${a.name}="${a.value}"`).join(', ') : 'N/A');
 
     const recordId = container?.getAttribute('data-example-id');
-    console.log('[ExampleEdit] Record ID extraído:', recordId);
 
     if (!recordId) {
-        console.log('[ExampleEdit] No hay ID de registro - estado sin contexto');
         return;
     }
 
@@ -389,7 +370,6 @@ async function initializeForm() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        console.log('[ExampleEdit] Enviando formulario...');
 
         // Deshabilitar botón mientras se envía
         submitBtn.disabled = true;
@@ -410,8 +390,6 @@ async function initializeForm() {
             if (imageIds.length > 0) {
                 formData.image_ids = imageIds;
             }
-
-            console.log('[ExampleEdit] Datos del formulario:', formData);
 
             // Actualizar registro
             const updatedRecord = await updateRecord(recordId, formData);
@@ -448,7 +426,6 @@ async function initializeForm() {
         });
     }
 
-    console.log('[ExampleEdit] Formulario inicializado correctamente');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -465,7 +442,6 @@ function tryInitialize() {
     if (!activeModuleId) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ExampleEdit] ModuleStore no disponible, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
             console.error('[ExampleEdit] ModuleStore no disponible después de 2 segundos');
@@ -479,7 +455,6 @@ function tryInitialize() {
     if (!activeModuleContainer) {
         if (attempts < maxAttempts) {
             attempts++;
-            console.log(`[ExampleEdit] Container del módulo activo no encontrado, reintentando... (${attempts}/${maxAttempts})`);
             setTimeout(tryInitialize, 50);
         } else {
             console.error('[ExampleEdit] Container del módulo activo no encontrado después de 2 segundos');
@@ -490,7 +465,6 @@ function tryInitialize() {
     // Verificar si es estado sin contexto (empty state) - no hay nada que inicializar
     const emptyState = activeModuleContainer.querySelector('.example-form--no-context');
     if (emptyState) {
-        console.log('[ExampleEdit] Modo sin contexto detectado, inicialización no necesaria');
         return; // Nada que hacer
     }
 
@@ -499,11 +473,9 @@ function tryInitialize() {
     const form = activeModuleContainer.querySelector('#example-edit-form');
 
     if (container && form) {
-        console.log('[ExampleEdit] Elementos encontrados en módulo activo, inicializando...');
         initializeForm();
     } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`[ExampleEdit] Elementos no encontrados en módulo activo, reintentando... (${attempts}/${maxAttempts})`);
         setTimeout(tryInitialize, 50);
     } else {
         console.error('[ExampleEdit] No se pudieron encontrar los elementos después de 2 segundos');

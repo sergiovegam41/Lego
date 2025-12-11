@@ -7,7 +7,6 @@
  * ✅ Navegación con módulos dinámicos
  */
 
-console.log('[ToolsCrud] Inicializando...');
 
 // ═══════════════════════════════════════════════════════════════════
 // CONFIGURACIÓN DEL COMPONENTE
@@ -15,7 +14,7 @@ console.log('[ToolsCrud] Inicializando...');
 
 const TOOLS_SCREEN_CONFIG = {
     screenId: 'tools-crud-list',
-    menuGroupId: 'tools-crud',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     route: '/component/tools-crud',
     apiRoute: '/api/tools',
     children: {
@@ -41,7 +40,6 @@ function toolsChildUrl(childPath, params = null) {
     return url;
 }
 
-console.log('[ToolsCrud] Config:', TOOLS_SCREEN_CONFIG);
 
 // ═══════════════════════════════════════════════════════════════════
 // CALLBACKS PARA ROW ACTIONS
@@ -51,7 +49,6 @@ console.log('[ToolsCrud] Config:', TOOLS_SCREEN_CONFIG);
  * Callback para editar herramienta
  */
 window.handleEditTool = function(rowData, tableId) {
-    console.log('[ToolsCrud] Editar herramienta:', rowData);
     openToolsEditModule(rowData.id);
 };
 
@@ -59,7 +56,6 @@ window.handleEditTool = function(rowData, tableId) {
  * Callback para eliminar herramienta
  */
 window.handleDeleteTool = async function(rowData, tableId) {
-    console.log('[ToolsCrud] Solicitud de eliminar herramienta:', rowData);
 
     const itemName = `<strong>${rowData.name || 'ID: ' + rowData.id}</strong>`;
     const confirmed = window.ConfirmationService
@@ -67,7 +63,6 @@ window.handleDeleteTool = async function(rowData, tableId) {
         : confirm('¿Estás seguro de que deseas eliminar esta herramienta?');
 
     if (!confirmed) {
-        console.log('[ToolsCrud] Eliminación cancelada por el usuario');
         return;
     }
 
@@ -122,13 +117,12 @@ function openToolsCreateModule() {
 
     window.legoWindowManager.openModuleWithMenu({
         moduleId: TOOLS_SCREEN_CONFIG.children.create,
-        parentMenuId: TOOLS_SCREEN_CONFIG.menuGroupId,
+        // parentMenuId se obtiene dinámicamente desde la BD
         label: 'Nueva Herramienta',
         url: toolsChildUrl('create'),
         icon: 'add-circle-outline'
     });
 
-    console.log('[ToolsCrud] Abriendo módulo crear');
 }
 
 /**
@@ -146,7 +140,6 @@ function openToolsEditModule(recordId) {
     const modules = window.moduleStore?.getModules() || {};
     
     if (modules[moduleId]) {
-        console.log('[ToolsCrud] Ventana de edición ya existe, recargando con herramienta:', recordId);
 
         const container = document.getElementById(`module-${moduleId}`);
         if (container) {
@@ -166,7 +159,6 @@ function openToolsEditModule(recordId) {
                         newScript.textContent = oldScript.textContent;
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
-                    console.log('[ToolsCrud] Contenido recargado para herramienta:', recordId);
                 })
                 .catch(err => console.error('[ToolsCrud] Error recargando:', err));
         }
@@ -175,13 +167,12 @@ function openToolsEditModule(recordId) {
 
     window.legoWindowManager.openModuleWithMenu({
         moduleId: moduleId,
-        parentMenuId: TOOLS_SCREEN_CONFIG.menuGroupId,
+        // parentMenuId se obtiene dinámicamente desde la BD
         label: 'Editar Herramienta',
         url: url,
         icon: 'create-outline'
     });
 
-    console.log('[ToolsCrud] Módulo editar abierto');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -191,5 +182,4 @@ function openToolsEditModule(recordId) {
 window.openToolsCreateModule = openToolsCreateModule;
 window.openToolsEditModule = openToolsEditModule;
 
-console.log('[ToolsCrud] Sistema listo');
 

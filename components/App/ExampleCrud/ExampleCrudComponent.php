@@ -26,7 +26,7 @@ use App\Models\ExampleCrud;
  * - SCREEN_LABEL: Texto mostrado en el menú
  * - SCREEN_ICON: Icono ionicon
  * - SCREEN_ROUTE: Ruta del componente
- * - SCREEN_PARENT: ID del screen padre (null = raíz)
+ * - parent_id: Se obtiene proceduralmente desde la BD (no se define como constante)
  *
  * CARACTERÍSTICAS:
  * ✅ Model-driven con server-side pagination automática
@@ -44,15 +44,12 @@ class ExampleCrudComponent extends CoreComponent implements ScreenInterface
     // SCREEN IDENTITY - Fuente de verdad para el menú
     // ═══════════════════════════════════════════════════════════════════
     
-    // El grupo del menú (carpeta)
-    public const MENU_GROUP_ID = 'example-crud';
-    
     // Esta screen es la LISTA (Ver)
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ID = 'example-crud-list';
     public const SCREEN_LABEL = 'Ver';
     public const SCREEN_ICON = 'list-outline';
     public const SCREEN_ROUTE = '/component/example-crud';
-    public const SCREEN_PARENT = self::MENU_GROUP_ID; // Hijo del grupo
     public const SCREEN_ORDER = 0;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;

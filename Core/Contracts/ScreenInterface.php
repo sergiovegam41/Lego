@@ -22,7 +22,7 @@ namespace Core\Contracts;
  *     public const SCREEN_ID = 'products-list';
  *     public const SCREEN_LABEL = 'Productos';
  *     public const SCREEN_ICON = 'cube-outline';
- *     public const SCREEN_PARENT = 'inventory'; // null si es raíz
+ *     // parent_id se obtiene proceduralmente desde la BD (no se define como constante)
  *     public const SCREEN_ROUTE = '/component/products';
  *     public const SCREEN_VISIBLE = true;
  *     public const SCREEN_DYNAMIC = false;

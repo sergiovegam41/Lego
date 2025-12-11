@@ -182,7 +182,6 @@ class {$name}Component {
     }
 
     init() {
-        console.log('{$name} component initialized');
         // Add your component logic here
     }
 

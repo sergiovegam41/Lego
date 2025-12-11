@@ -184,19 +184,27 @@ trait ComponentContextTrait
     }
 
     /**
-     * Encontrar el ID del menú padre basándose en la ruta
+     * Encontrar el ID del menú padre
+     * 
+     * FILOSOFÍA LEGO:
+     * Si implementa ScreenInterface → usar BD (procedural).
+     * Si no → derivar desde ruta (fallback).
      */
     private function findParentMenuId(string $route): ?string
     {
-        // /component/example-crud/edit -> buscar 'example-crud' en el menú
+        // Procedural: si es Screen, obtener desde BD
+        if ($this instanceof \Core\Contracts\ScreenInterface) {
+            try {
+                return \Core\Helpers\MenuHelper::getParentIdFromScreenId(static::getScreenId());
+            } catch (\Exception $e) {
+                // Continuar con fallback
+            }
+        }
+        
+        // Fallback: derivar desde ruta
         $path = str_replace('/component/', '', $route);
         $parts = explode('/', trim($path, '/'));
-        
-        if (count($parts) > 0) {
-            return $parts[0]; // El primer segmento es típicamente el ID del menú
-        }
-
-        return null;
+        return $parts[0] ?? null;
     }
 
     /**

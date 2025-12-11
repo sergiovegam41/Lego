@@ -33,7 +33,6 @@ if (typeof AlertService === 'undefined') {
                 this.updateModalTheme(theme);
                 this.updateDefaultConfig();
             });
-            console.log('[AlertService] Suscrito a cambios de tema');
         }
     }
 
@@ -91,7 +90,6 @@ if (typeof AlertService === 'undefined') {
             } else {
                 modal.classList.remove('swal2-dark-theme');
             }
-            console.log('[AlertService] Tema de modal actualizado:', isDark ? 'dark' : 'light');
         }
     }
 
@@ -110,7 +108,6 @@ if (typeof AlertService === 'undefined') {
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
             script.onload = () => {
-                console.log('[AlertService] SweetAlert2 cargado');
                 resolve();
             };
             script.onerror = reject;
@@ -496,5 +493,4 @@ if (typeof AlertService === 'undefined') {
     // Exponer globalmente
     window.AlertService = AlertService;
 
-    console.log('[LEGO Framework] AlertService cargado');
 }

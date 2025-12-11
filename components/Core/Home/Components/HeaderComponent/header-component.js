@@ -1,7 +1,6 @@
 // Header Component JavaScript
 let context = {CONTEXT};
 
-    console.log('Header component loaded.');
 
     // Initialize header functionality
     initializeThemeToggle();
@@ -9,6 +8,7 @@ let context = {CONTEXT};
     initializeUserInfo();
     initializeDropdownButtons();
     initializeParamsBadge();
+    loadSystemMenuItems();
     
     // Use data from PHP if available
     if (context && context.arg) {
@@ -151,7 +151,6 @@ function updateNotificationBadge(notificationData) {
  * Show notifications panel (implement your logic here)
  */
 function showNotifications() {
-    console.log('Show notifications panel - implement your logic here');
     // Example: toggle notification panel, show dropdown, etc.
 }
 
@@ -185,9 +184,6 @@ function closeUserMenu() {
  * Handle logout with confirmation
  */
 async function handleLogout() {
-    console.log('[Header] Iniciando logout...');
-    console.log('[Header] ConfirmationService disponible:', typeof window.ConfirmationService);
-    console.log('[Header] AlertService disponible:', typeof window.AlertService);
 
     // Cerrar el dropdown
     closeUserMenu();
@@ -197,10 +193,8 @@ async function handleLogout() {
         ? await window.ConfirmationService.logout()
         : confirm('¿Estás seguro de que deseas cerrar sesión?');
 
-    console.log('[Header] Usuario confirmó logout:', confirmed);
 
     if (!confirmed) {
-        console.log('[Header] Logout cancelado por el usuario');
         return;
     }
 
@@ -242,7 +236,6 @@ async function handleLogout() {
 
         // Siempre navegar al home/login, incluso si hay error
         // (si no hay sesión, igual queremos sacar al usuario)
-        console.log('[Header] Navegando a home a pesar del error...');
         window.location.href = '/';
     }
 }
@@ -251,7 +244,6 @@ async function handleLogout() {
  * Show user profile (placeholder)
  */
 function showUserProfile() {
-    console.log('[Header] Mostrar perfil de usuario');
     closeUserMenu();
 
     if (window.AlertService) {
@@ -260,14 +252,783 @@ function showUserProfile() {
 }
 
 /**
- * Show user settings (placeholder)
+ * Show user settings - opens configuration popover
  */
 function showUserSettings() {
-    console.log('[Header] Mostrar configuración de usuario');
     closeUserMenu();
+    openConfigPopover();
+}
 
-    if (window.AlertService) {
-        window.AlertService.info('Función de configuración próximamente disponible');
+/**
+ * Load configuration menu items - Configuración manual, no automática
+ * El usuario define qué items quiere mostrar aquí
+ */
+async function loadSystemMenuItems() {
+    const container = document.getElementById('config-content');
+    if (!container) return;
+
+    // Configuración manual de items para el popover de configuración
+    // Estos items pueden estar en cualquier parte del menú, no necesariamente ocultos
+    const configItems = [
+        {
+            id: 'menu-config',
+            label: 'Configuración del Menú',
+            route: '/component/menu-config',
+            icon: 'settings-outline',
+            hasChildren: false
+        },
+        {
+            id: 'roles-config',
+            label: 'Gestión de Roles',
+            route: null, // Es un grupo, no tiene ruta directa
+            icon: 'shield-outline',
+            hasChildren: true
+        },
+        {
+            id: 'users-config',
+            label: 'Gestión de Usuarios',
+            route: '/component/users-config',
+            icon: 'people-outline',
+            hasChildren: false
+        }
+    ];
+
+    try {
+        // Render items with support for nested groups
+        const html = await renderSystemMenuItems(configItems);
+        console.log('[loadSystemMenuItems] HTML generado:', html.substring(0, 200) + '...');
+        container.innerHTML = html;
+        
+        // Esperar un momento para que el DOM se actualice
+        setTimeout(() => {
+            // Verificar que los grupos estén en el DOM
+            const groupsInDOM = container.querySelectorAll('.config-popover__group');
+            console.log('[loadSystemMenuItems] Grupos en DOM después de innerHTML:', groupsInDOM.length);
+            
+            // Agregar event delegation para los grupos
+            setupConfigGroupListeners(container);
+        }, 10);
+
+    } catch (error) {
+        console.error('[Header] Error cargando items de configuración:', error);
+        container.innerHTML = '<div class="config-popover__error">Error al cargar opciones</div>';
+    }
+}
+
+/**
+ * Setup event listeners for configuration groups using event delegation
+ */
+function setupConfigGroupListeners(container) {
+    console.log('[setupConfigGroupListeners] Configurando listeners, container:', container);
+    console.log('[setupConfigGroupListeners] Container HTML:', container.innerHTML.substring(0, 300));
+    
+    if (!container) {
+        console.error('[setupConfigGroupListeners] Container no encontrado');
+        return;
+    }
+    
+    // Verificar que los grupos existan
+    const groups = container.querySelectorAll('.config-popover__group');
+    console.log('[setupConfigGroupListeners] Grupos encontrados:', groups.length);
+    groups.forEach((group, index) => {
+        console.log(`[setupConfigGroupListeners] Grupo ${index}:`, group.getAttribute('data-group-id'), group);
+    });
+    
+    // Event delegation para los headers de grupos
+    container.addEventListener('click', function(e) {
+        console.log('[setupConfigGroupListeners] Click capturado en container, target:', e.target);
+        
+        // Buscar primero el grupo, luego verificar si el click fue en el header
+        const groupElement = e.target.closest('.config-popover__group');
+        if (!groupElement) {
+            // No es un grupo, ignorar
+            return;
+        }
+        
+        // Verificar si el click fue en el header o en sus hijos
+        const groupHeader = groupElement.querySelector('.config-popover__group-header');
+        if (!groupHeader) {
+            console.log('[setupConfigGroupListeners] Grupo encontrado pero sin header');
+            return;
+        }
+        
+        // Verificar si el click fue dentro del header (incluyendo sus hijos)
+        if (!groupHeader.contains(e.target)) {
+            // El click fue en el grupo pero no en el header (probablemente en el contenido expandido)
+            return;
+        }
+        
+        console.log('[setupConfigGroupListeners] Click en group-header detectado');
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const groupId = groupElement.getAttribute('data-group-id');
+        if (!groupId) {
+            console.error('[setupConfigGroupListeners] No se encontró data-group-id');
+            return;
+        }
+        
+        console.log('[setupConfigGroupListeners] Click detectado en grupo:', groupId);
+        
+        if (window.handleConfigGroupClick) {
+            console.log('[setupConfigGroupListeners] Llamando handleConfigGroupClick');
+            window.handleConfigGroupClick(groupId);
+        } else {
+            console.error('[setupConfigGroupListeners] handleConfigGroupClick no está disponible');
+        }
+    });
+    
+    console.log('[setupConfigGroupListeners] Listener agregado correctamente');
+}
+
+/**
+ * Render system menu items with nested structure
+ */
+async function renderSystemMenuItems(items) {
+    let html = '<div class="config-popover__items">';
+    
+    for (const item of items) {
+        const label = item.index_label || item.label;
+        const route = item.route || null;
+        const icon = item.icon || 'settings-outline';
+        const escapedId = escapeHtml(item.id);
+        const escapedLabel = escapeHtml(label);
+        const escapedIcon = escapeHtml(icon);
+        const hasChildren = item.hasChildren || item.has_children || false;
+        
+        if (hasChildren) {
+            // Item with children - render as expandable group, pero también clicable para abrir el primer hijo
+            html += `
+                <div class="config-popover__group" data-group-id="${escapedId}">
+                    <div class="config-popover__group-header" style="cursor: pointer;">
+                        <ion-icon name="${escapedIcon}"></ion-icon>
+                        <span>${escapedLabel}</span>
+                        <ion-icon name="chevron-forward-outline" class="config-popover__chevron"></ion-icon>
+                    </div>
+                    <div class="config-popover__group-content" id="config-group-${escapedId}">
+                        <div class="config-popover__loading">Cargando...</div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Simple item - render as clickable option
+            const routeAttr = route ? `onclick="openSystemMenuItem('${escapedId}', '${escapeHtml(route)}')"` : '';
+            html += `
+                <div class="config-popover__item" data-menu-item-id="${escapedId}" ${routeAttr}>
+                    <ion-icon name="${escapedIcon}"></ion-icon>
+                    <span>${escapedLabel}</span>
+                </div>
+            `;
+        }
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+
+/**
+ * Handle click on configuration group - expand/collapse or open first child
+ */
+async function handleConfigGroupClick(groupId) {
+    console.log('[handleConfigGroupClick] ========== FUNCIÓN LLAMADA ==========');
+    console.log('[handleConfigGroupClick] Grupo ID:', groupId);
+    console.log('[handleConfigGroupClick] Stack trace:', new Error().stack);
+    
+    if (!groupId) {
+        console.error('[handleConfigGroupClick] groupId no proporcionado');
+        return;
+    }
+    
+    // Primero, intentar abrir directamente el primer hijo usando openSystemMenuItem
+    // Esto obtendrá la jerarquía y abrirá automáticamente el primer hijo
+    try {
+        // Obtener la jerarquía del grupo para encontrar el primer hijo
+        const hierarchyResponse = await fetch(`/api/menu/item-hierarchy?id=${encodeURIComponent(groupId)}`);
+        const hierarchyResult = await hierarchyResponse.json();
+        
+        if (hierarchyResult.success && hierarchyResult.data) {
+            const hierarchy = hierarchyResult.data;
+            const item = hierarchy.item || {};
+            const children = hierarchy.children || [];
+            
+            if (children.length > 0) {
+                let childToOpen = null;
+                
+                // Si tiene default_child_id configurado, buscar ese hijo específico
+                if (item.default_child_id) {
+                    childToOpen = children.find(child => child.id === item.default_child_id);
+                    console.log('[handleConfigGroupClick] default_child_id configurado:', item.default_child_id, 'hijo encontrado:', childToOpen?.id);
+                }
+                
+                // Si no se encontró el hijo por defecto o no está configurado, usar el primer hijo con ruta válida
+                if (!childToOpen) {
+                    childToOpen = children.find(child => child.route && child.route !== '#') || children[0];
+                    console.log('[handleConfigGroupClick] Usando primer hijo con ruta válida:', childToOpen?.id);
+                }
+                
+                if (childToOpen && childToOpen.route && childToOpen.route !== '#') {
+                    console.log('[handleConfigGroupClick] Abriendo hijo:', childToOpen.id, 'route:', childToOpen.route);
+                    // Abrir el hijo directamente
+                    await openSystemMenuItem(childToOpen.id, childToOpen.route);
+                    return; // Salir, no expandir/colapsar
+                }
+            }
+        }
+    } catch (error) {
+        console.error('[handleConfigGroupClick] Error obteniendo jerarquía:', error);
+    }
+    
+    // Si no se pudo abrir el primer hijo, expandir/colapsar como antes
+    const groupContent = document.getElementById(`config-group-${groupId}`);
+    const groupHeader = document.querySelector(`[data-group-id="${groupId}"] .config-popover__group-header`);
+    const chevron = groupHeader?.querySelector('.config-popover__chevron');
+    
+    if (!groupContent) return;
+    
+    const isExpanded = groupContent.classList.contains('expanded');
+    
+    if (isExpanded) {
+        // Collapse
+        groupContent.classList.remove('expanded');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    } else {
+        // Expand - load children if not loaded
+        if (groupContent.innerHTML.includes('Cargando')) {
+            await loadGroupChildren(groupId, groupContent);
+        }
+        groupContent.classList.add('expanded');
+        if (chevron) chevron.style.transform = 'rotate(90deg)';
+        
+        // Si hay hijos, abrir el primero automáticamente
+        const firstChild = groupContent.querySelector('.config-popover__item');
+        if (firstChild) {
+            const childId = firstChild.getAttribute('data-menu-item-id');
+            const childRoute = firstChild.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+            if (childId && childRoute) {
+                // Pequeño delay para que se vea la expansión
+                setTimeout(() => {
+                    openSystemMenuItem(childId, childRoute);
+                }, 100);
+            }
+        }
+    }
+}
+
+/**
+ * Toggle a configuration group (expand/collapse) - kept for compatibility
+ */
+async function toggleConfigGroup(groupId) {
+    await handleConfigGroupClick(groupId);
+}
+
+/**
+ * Load children of a menu group
+ */
+async function loadGroupChildren(groupId, container) {
+    try {
+        const response = await fetch(`/api/menu-config/list`);
+        const result = await response.json();
+        
+        if (!result.success || !result.data) {
+            container.innerHTML = '<div class="config-popover__error">Error al cargar subopciones</div>';
+            return;
+        }
+        
+        // Filtrar hijos del grupo y ordenarlos
+        const children = result.data
+            .filter(item => item.parent_id === groupId)
+            .filter(item => !item.is_dynamic) // Excluir items dinámicos
+            .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+        
+        if (children.length === 0) {
+            container.innerHTML = '<div class="config-popover__empty">No hay subopciones</div>';
+            return;
+        }
+        
+        container.innerHTML = children.map(child => {
+            const label = child.index_label || child.label;
+            const route = child.route || null;
+            const icon = child.icon || 'ellipse-outline';
+            const escapedId = escapeHtml(child.id);
+            const escapedLabel = escapeHtml(label);
+            const escapedIcon = escapeHtml(icon);
+            const routeAttr = route ? `onclick="openSystemMenuItem('${escapedId}', '${escapeHtml(route)}')"` : '';
+            
+            return `
+                <div class="config-popover__item config-popover__item--nested" data-menu-item-id="${escapedId}" ${routeAttr}>
+                    <ion-icon name="${escapedIcon}"></ion-icon>
+                    <span>${escapedLabel}</span>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('[Header] Error cargando hijos del grupo:', error);
+        container.innerHTML = '<div class="config-popover__error">Error al cargar subopciones</div>';
+    }
+}
+
+/**
+ * Open a system menu item as a window (not navigation)
+ */
+async function openSystemMenuItem(itemId, route) {
+    console.log('[openSystemMenuItem] Iniciando, itemId:', itemId, 'route:', route);
+    
+    closeConfigPopover();
+
+    // Obtener la jerarquía completa del item (padres e hijos) PRIMERO
+    // para determinar si es un grupo y debemos abrir el primer hijo
+    console.log('[openSystemMenuItem] Obteniendo jerarquía del item');
+    let hierarchy = null;
+    try {
+        const hierarchyResponse = await fetch(`/api/menu/item-hierarchy?id=${encodeURIComponent(itemId)}`);
+        const hierarchyResult = await hierarchyResponse.json();
+        if (hierarchyResult.success && hierarchyResult.data) {
+            hierarchy = hierarchyResult.data;
+            console.log('[openSystemMenuItem] Jerarquía obtenida:', hierarchy);
+            
+            // Los grupos no se abren directamente, siempre abren su primer hijo (o el configurado)
+            const children = hierarchy.children || [];
+            const item = hierarchy.item || {};
+            const hasChildren = children.length > 0;
+            const hasChildrenFlag = item.has_children === true;
+            
+            if (hasChildren || hasChildrenFlag) {
+                console.log('[openSystemMenuItem] Item tiene hijos, buscando hijo a abrir. Total hijos:', children.length);
+                
+                let childToOpen = null;
+                
+                // Si tiene default_child_id configurado, buscar ese hijo específico
+                if (item.default_child_id) {
+                    childToOpen = children.find(child => child.id === item.default_child_id);
+                    console.log('[openSystemMenuItem] default_child_id configurado:', item.default_child_id, 'hijo encontrado:', childToOpen?.id);
+                }
+                
+                // Si no se encontró el hijo por defecto o no está configurado, usar el primer hijo con ruta válida
+                if (!childToOpen) {
+                    const firstChild = children[0];
+                    if (firstChild) {
+                        // Buscar el primer hijo que tenga ruta válida
+                        childToOpen = firstChild.route && firstChild.route !== '#' 
+                            ? firstChild 
+                            : children.find(child => child.route && child.route !== '#') || firstChild;
+                        console.log('[openSystemMenuItem] Usando primer hijo con ruta válida:', childToOpen?.id);
+                    }
+                }
+                
+                if (childToOpen && childToOpen.route && childToOpen.route !== '#') {
+                    console.log('[openSystemMenuItem] Item es grupo con hijos, abriendo hijo:', childToOpen.id, 'route:', childToOpen.route);
+                    // Recursivamente abrir el hijo
+                    return await openSystemMenuItem(childToOpen.id, childToOpen.route);
+                } else {
+                    console.warn('[openSystemMenuItem] Grupo no tiene hijos con ruta válida. childToOpen:', childToOpen);
+                }
+            } else {
+                console.log('[openSystemMenuItem] Item no tiene hijos, continuando con apertura normal');
+            }
+        }
+    } catch (error) {
+        console.error('[openSystemMenuItem] Error obteniendo jerarquía:', error);
+    }
+
+    if (!route || route === '#') {
+        console.warn('[openSystemMenuItem] Ruta no válida:', route);
+        if (window.AlertService) {
+            window.AlertService.warning('Esta opción no tiene ruta configurada');
+        }
+        return;
+    }
+
+    // Obtener el label del item para mostrar en el menú
+    // Intentar obtenerlo del popover primero, luego del DOM general
+    let itemLabel = document.querySelector(`[data-menu-item-id="${itemId}"]`)?.textContent?.trim();
+    console.log('[openSystemMenuItem] Label desde DOM general:', itemLabel);
+    
+    if (!itemLabel) {
+        // Buscar en el popover de configuración
+        const configItem = document.querySelector(`#config-content [data-menu-item-id="${itemId}"]`);
+        itemLabel = configItem?.textContent?.trim() || itemId;
+        console.log('[openSystemMenuItem] Label desde popover:', itemLabel);
+    }
+    
+    // Si no tenemos jerarquía aún, obtenerla ahora
+    if (!hierarchy) {
+        try {
+            const hierarchyResponse = await fetch(`/api/menu/item-hierarchy?id=${encodeURIComponent(itemId)}`);
+            const hierarchyResult = await hierarchyResponse.json();
+            if (hierarchyResult.success && hierarchyResult.data) {
+                hierarchy = hierarchyResult.data;
+            }
+        } catch (error) {
+            console.error('[openSystemMenuItem] Error obteniendo jerarquía:', error);
+        }
+    }
+
+    // Agregar directamente al menú como item dinámico (sin carpeta padre)
+    const menuContainer = document.querySelector('.custom-menu');
+    console.log('[openSystemMenuItem] Menu container encontrado:', !!menuContainer);
+    
+    if (menuContainer) {
+        // Verificar si el item ya existe EN EL MENÚ LATERAL (no en el popover)
+        const existingItem = menuContainer.querySelector(`[data-menu-item-id="${itemId}"]:not([data-temp-item="true"])`);
+        console.log('[openSystemMenuItem] Item existente encontrado en menú:', !!existingItem);
+        
+        if (existingItem) {
+            // Si ya existe, verificar si tiene jerarquía completa o necesita agregarla
+            console.log('[openSystemMenuItem] Item ya existe, verificando jerarquía completa');
+            console.log('[openSystemMenuItem] Item encontrado:', existingItem);
+            console.log('[openSystemMenuItem] Item display:', window.getComputedStyle(existingItem).display);
+            console.log('[openSystemMenuItem] Item visibility:', window.getComputedStyle(existingItem).visibility);
+            console.log('[openSystemMenuItem] Item offsetParent:', existingItem.offsetParent);
+            console.log('[openSystemMenuItem] Item parent:', existingItem.parentElement);
+            console.log('[openSystemMenuItem] Item parent classes:', existingItem.parentElement?.className);
+            console.log('[openSystemMenuItem] Item parent display:', existingItem.parentElement ? window.getComputedStyle(existingItem.parentElement).display : 'N/A');
+            
+            // Si tenemos jerarquía, verificar que todos los elementos estén presentes
+            if (hierarchy) {
+                const ancestors = hierarchy.ancestors || [];
+                const children = hierarchy.children || [];
+                
+                console.log('[openSystemMenuItem] Ancestros en jerarquía:', ancestors.length);
+                console.log('[openSystemMenuItem] Hijos en jerarquía:', children.length);
+                
+                // Verificar que todos los ancestros existan EN EL MENÚ
+                let missingAncestors = [];
+                for (const ancestor of ancestors) {
+                    const ancestorExists = menuContainer.querySelector(`[data-menu-item-id="${ancestor.id}"]:not([data-temp-item="true"])`);
+                    if (!ancestorExists) {
+                        missingAncestors.push(ancestor);
+                        console.log('[openSystemMenuItem] Ancestro faltante:', ancestor.id);
+                    }
+                }
+                
+                // Verificar que todos los hijos existan EN EL MENÚ
+                let missingChildren = [];
+                const checkChildren = (childList) => {
+                    for (const child of childList) {
+                        const childExists = menuContainer.querySelector(`[data-menu-item-id="${child.id}"]:not([data-temp-item="true"])`);
+                        if (!childExists) {
+                            missingChildren.push(child);
+                            console.log('[openSystemMenuItem] Hijo faltante:', child.id);
+                        }
+                        if (child.children && child.children.length > 0) {
+                            checkChildren(child.children);
+                        }
+                    }
+                };
+                checkChildren(children);
+                
+                // Si faltan elementos, agregarlos usando MenuHiddenItemsManager
+                if (missingAncestors.length > 0 || missingChildren.length > 0) {
+                    console.log('[openSystemMenuItem] Faltan elementos en la jerarquía, agregándolos');
+                    console.log('[openSystemMenuItem] Ancestros faltantes:', missingAncestors.length);
+                    console.log('[openSystemMenuItem] Hijos faltantes:', missingChildren.length);
+                    if (window.menuHiddenItemsManager) {
+                        await window.menuHiddenItemsManager.addHiddenItemAsDynamic(itemId, hierarchy);
+                    }
+                } else {
+                    console.log('[openSystemMenuItem] Jerarquía completa ya está presente');
+                }
+            }
+            
+            // Asegurarse de que esté visible y no oculto por filtros
+            console.log('[openSystemMenuItem] Forzando visibilidad del item');
+            existingItem.style.display = '';
+            existingItem.style.visibility = 'visible';
+            existingItem.style.opacity = '1';
+            existingItem.classList.remove('menu-filter-hidden');
+            existingItem.classList.add('menu-filter-visible');
+            
+            // Asegurar que los padres estén expandidos y visibles
+            let parent = existingItem.parentElement;
+            let level = 0;
+            console.log('[openSystemMenuItem] Recorriendo padres, nivel inicial:', level);
+            
+            while (parent && level < 10) { // Limitar a 10 niveles para evitar loops infinitos
+                console.log('[openSystemMenuItem] Padre nivel', level, ':', parent.tagName, parent.className);
+                
+                if (parent.classList.contains('custom-menu-section')) {
+                    console.log('[openSystemMenuItem] Es custom-menu-section, forzando visibilidad');
+                    parent.style.display = '';
+                    parent.style.visibility = 'visible';
+                    parent.style.opacity = '1';
+                    parent.classList.remove('menu-filter-hidden');
+                    parent.classList.add('menu-filter-visible');
+                    
+                    const submenu = parent.querySelector('.custom-submenu');
+                    if (submenu) {
+                        console.log('[openSystemMenuItem] Submenu encontrado, expandiendo');
+                        submenu.style.display = 'block';
+                        submenu.style.visibility = 'visible';
+                        submenu.style.opacity = '1';
+                        parent.classList.add('expanded');
+                    } else {
+                        console.log('[openSystemMenuItem] No se encontró submenu en este padre');
+                    }
+                } else if (parent.classList.contains('custom-submenu')) {
+                    console.log('[openSystemMenuItem] Es custom-submenu, forzando visibilidad');
+                    parent.style.display = 'block';
+                    parent.style.visibility = 'visible';
+                    parent.style.opacity = '1';
+                } else if (parent.classList.contains('custom-menu')) {
+                    console.log('[openSystemMenuItem] Es contenedor principal del menú');
+                    break; // Llegamos al contenedor principal
+                }
+                
+                parent = parent.parentElement;
+                level++;
+            }
+            
+            // También asegurar que todos los hijos estén visibles
+            if (hierarchy && hierarchy.children) {
+                console.log('[openSystemMenuItem] Forzando visibilidad de hijos');
+                const makeChildrenVisible = (children) => {
+                    children.forEach(child => {
+                        const childElement = menuContainer.querySelector(`[data-menu-item-id="${child.id}"]:not([data-temp-item="true"])`);
+                        if (childElement) {
+                            console.log('[openSystemMenuItem] Haciendo visible hijo:', child.id);
+                            childElement.style.display = '';
+                            childElement.style.visibility = 'visible';
+                            childElement.style.opacity = '1';
+                            childElement.classList.remove('menu-filter-hidden');
+                            childElement.classList.add('menu-filter-visible');
+                            
+                            // Si tiene hijos, hacerlos visibles también
+                            if (child.children && child.children.length > 0) {
+                                makeChildrenVisible(child.children);
+                            }
+                        } else {
+                            console.log('[openSystemMenuItem] Hijo no encontrado en menú:', child.id);
+                        }
+                    });
+                };
+                makeChildrenVisible(hierarchy.children);
+            }
+            
+            // Verificación final - buscar en el menú, no en todo el documento
+            const finalCheck = menuContainer.querySelector(`[data-menu-item-id="${itemId}"]:not([data-temp-item="true"])`);
+            console.log('[openSystemMenuItem] Verificación final del item:');
+            console.log('[openSystemMenuItem] - Existe:', !!finalCheck);
+            console.log('[openSystemMenuItem] - Display:', finalCheck ? window.getComputedStyle(finalCheck).display : 'N/A');
+            console.log('[openSystemMenuItem] - Visibility:', finalCheck ? window.getComputedStyle(finalCheck).visibility : 'N/A');
+            console.log('[openSystemMenuItem] - Opacity:', finalCheck ? window.getComputedStyle(finalCheck).opacity : 'N/A');
+            console.log('[openSystemMenuItem] - OffsetParent:', finalCheck ? !!finalCheck.offsetParent : 'N/A');
+            console.log('[openSystemMenuItem] - Parent display:', finalCheck?.parentElement ? window.getComputedStyle(finalCheck.parentElement).display : 'N/A');
+            console.log('[openSystemMenuItem] - Parent visibility:', finalCheck?.parentElement ? window.getComputedStyle(finalCheck.parentElement).visibility : 'N/A');
+            
+            console.log('[openSystemMenuItem] Visibilidad forzada para item y jerarquía');
+            
+            // Abrir el módulo
+            if (typeof window.openModule === 'function') {
+                window.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+                console.log('[openSystemMenuItem] Módulo abierto con window.openModule');
+                
+                // Asegurar que el estado visual se actualice después de abrir
+                setTimeout(() => {
+                    if (window.menuStateManager) {
+                        window.menuStateManager.syncWithModuleStore();
+                    }
+                    // También actualizar el menú usando updateMenu si está disponible
+                    if (typeof updateMenu === 'function') {
+                        updateMenu();
+                    }
+                }, 150);
+            } else if (window.legoWindowManager && window.legoWindowManager.openModule) {
+                window.legoWindowManager.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+                console.log('[openSystemMenuItem] Módulo abierto con legoWindowManager.openModule');
+                
+                // Asegurar que el estado visual se actualice después de abrir
+                setTimeout(() => {
+                    if (window.menuStateManager) {
+                        window.menuStateManager.syncWithModuleStore();
+                    }
+                }, 150);
+            } else {
+                console.error('[openSystemMenuItem] Ninguna función openModule disponible');
+            }
+            return;
+        }
+        
+        // Si tenemos jerarquía, usar MenuHiddenItemsManager para agregar todo (padres e hijos)
+        if (hierarchy && window.menuHiddenItemsManager) {
+            console.log('[openSystemMenuItem] Usando MenuHiddenItemsManager para agregar jerarquía completa');
+            await window.menuHiddenItemsManager.addHiddenItemAsDynamic(itemId, hierarchy);
+            console.log('[openSystemMenuItem] Jerarquía agregada al menú');
+        } else {
+            // Fallback: crear el item directamente en el menú (sin jerarquía)
+            console.log('[openSystemMenuItem] Fallback: creando item sin jerarquía');
+            const itemIcon = 'settings-outline';
+            
+            const menuItemHTML = `
+                <div class="custom-menu-section menu_item_openable dynamic-menu-item"
+                    moduleId="${itemId}"
+                    moduleUrl="${route}"
+                    data-menu-item-id="${itemId}"
+                    data-module-id="${itemId}"
+                    data-module-url="${route}"
+                    data-dynamic-item="true">
+                    <button class="menu-close-button" title="Cerrar">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                    <button class="custom-button level-0">
+                        <ion-icon name="${itemIcon}" class="icon_menu"></ion-icon>
+                        <p class="text_menu_option">${itemLabel}</p>
+                        <div class="menu-state-indicator"></div>
+                    </button>
+                </div>
+            `;
+            
+            menuContainer.insertAdjacentHTML('beforeend', menuItemHTML);
+            
+            // Agregar listener de click
+            const newMenuItem = document.querySelector(`[data-menu-item-id="${itemId}"]`);
+            if (newMenuItem) {
+                newMenuItem.addEventListener('click', function(e) {
+                    if (e.target.closest('.menu-close-button')) return;
+                    
+                    const id = this.getAttribute('moduleId') || this.getAttribute('data-menu-item-id');
+                    const url = this.getAttribute('moduleUrl') || '#';
+                    const name = this.querySelector('.text_menu_option')?.textContent || id;
+                    
+                    if (window.moduleStore && window.moduleStore.getActiveModule() !== id) {
+                        if (typeof window.openModule === 'function') {
+                            window.openModule(id, url, name, { url, name });
+                        }
+                    }
+                });
+            }
+            
+            // Agregar a window.lego.menu para breadcrumb
+            if (window.lego && window.lego.menu && Array.isArray(window.lego.menu)) {
+                window.lego.menu.push({
+                    id: itemId,
+                    name: itemLabel,
+                    url: route,
+                    iconName: itemIcon,
+                    level: 0,
+                    childs: [],
+                    isDynamic: true
+                });
+            }
+        }
+        
+        // Abrir el módulo después de agregar al menú
+        console.log('[openSystemMenuItem] Intentando abrir módulo');
+        
+        // Pequeño delay para asegurar que el DOM esté actualizado
+        setTimeout(() => {
+            if (typeof window.openModule === 'function') {
+                window.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+                console.log('[openSystemMenuItem] Módulo abierto exitosamente con window.openModule');
+                
+                // Asegurar que el estado visual se actualice después de abrir
+                // El evento lego:module:activated también disparará syncWithModuleStore
+                // pero agregamos un timeout adicional para asegurar que el item esté en el DOM
+                setTimeout(() => {
+                    if (window.menuStateManager) {
+                        window.menuStateManager.syncWithModuleStore();
+                    }
+                    // También actualizar el menú usando updateMenu si está disponible
+                    if (typeof updateMenu === 'function') {
+                        updateMenu();
+                    }
+                }, 200);
+            } else if (window.legoWindowManager && window.legoWindowManager.openModule) {
+                window.legoWindowManager.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+                console.log('[openSystemMenuItem] Módulo abierto exitosamente con legoWindowManager.openModule');
+                
+                // Asegurar que el estado visual se actualice después de abrir
+                setTimeout(() => {
+                    if (window.menuStateManager) {
+                        window.menuStateManager.syncWithModuleStore();
+                    }
+                }, 200);
+            } else {
+                console.error('[openSystemMenuItem] No se puede abrir el módulo: ninguna función openModule disponible');
+            }
+        }, 100);
+    } else {
+        console.log('[openSystemMenuItem] Menu container no encontrado, usando fallback');
+        // Fallback: usar window.openModule o navegación directa
+        if (typeof window.openModule === 'function') {
+            window.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+            console.log('[openSystemMenuItem] Fallback: módulo abierto con window.openModule');
+        } else if (window.legoWindowManager && window.legoWindowManager.openModule) {
+            window.legoWindowManager.openModule(itemId, route, itemLabel, { url: route, name: itemLabel });
+            console.log('[openSystemMenuItem] Fallback: módulo abierto con legoWindowManager.openModule');
+        } else {
+            console.error('[openSystemMenuItem] Último fallback: navegación directa');
+            window.location.href = route;
+        }
+    }
+}
+
+/**
+ * Open configuration popover
+ */
+function openConfigPopover() {
+    const popover = document.getElementById('config-popover');
+    const container = document.querySelector('.config-popover-container');
+    const settingsBtn = document.getElementById('user-settings-btn');
+    
+    if (!popover || !container || !settingsBtn) return;
+
+    // Position popover near the settings button
+    const btnRect = settingsBtn.getBoundingClientRect();
+    const headerRect = document.getElementById('top-header')?.getBoundingClientRect();
+    
+    if (headerRect) {
+        container.style.top = `${headerRect.bottom + 4}px`;
+        container.style.right = `${window.innerWidth - btnRect.right}px`;
+    }
+
+    // Load items if not loaded yet
+    const content = document.getElementById('config-content');
+    if (content && (content.innerHTML.includes('Cargando') || content.innerHTML.trim() === '')) {
+        loadSystemMenuItems();
+    }
+
+    popover.classList.add('active');
+
+    // Close on click outside
+    document.removeEventListener('click', handleConfigClickOutside);
+    setTimeout(() => {
+        document.addEventListener('click', handleConfigClickOutside);
+    }, 10);
+}
+
+/**
+ * Close configuration popover
+ */
+function closeConfigPopover() {
+    const popover = document.getElementById('config-popover');
+    if (popover) {
+        popover.classList.remove('active');
+    }
+    document.removeEventListener('click', handleConfigClickOutside);
+}
+
+/**
+ * Handle click outside configuration popover
+ */
+function handleConfigClickOutside(e) {
+    const popover = document.getElementById('config-popover');
+    const container = document.querySelector('.config-popover-container');
+    const settingsBtn = document.getElementById('user-settings-btn');
+    const userInfo = document.getElementById('user-info');
+    
+    // Si el click es en un group-header, NO cerrar el popover
+    if (e.target.closest('.config-popover__group-header')) {
+        console.log('[handleConfigClickOutside] Click en group-header, ignorando cierre');
+        return;
+    }
+    
+    if (container && !container.contains(e.target) && 
+        settingsBtn && !settingsBtn.contains(e.target) &&
+        userInfo && !userInfo.contains(e.target)) {
+        closeConfigPopover();
     }
 }
 
@@ -498,7 +1259,6 @@ function renderParams(container, params, moduleId) {
 function deleteParam(key) {
     if (window.legoWindowManager) {
         window.legoWindowManager.removeParam(key);
-        console.log(`[Header] Param "${key}" eliminado`);
     }
     // Update badge
     updateParamsBadge();
@@ -533,7 +1293,6 @@ function clearAllParams() {
 
     if (window.legoWindowManager) {
         window.legoWindowManager.clearParams();
-        console.log(`[Header] Todos los params eliminados para ${activeModuleId}`);
     }
 
     // Update badge
@@ -583,3 +1342,8 @@ window.toggleParamsPopover = toggleParamsPopover;
 window.closeParamsPopover = closeParamsPopover;
 window.deleteParam = deleteParam;
 window.clearAllParams = clearAllParams;
+window.openSystemMenuItem = openSystemMenuItem;
+window.handleConfigGroupClick = handleConfigGroupClick;
+window.openConfigPopover = openConfigPopover;
+window.closeConfigPopover = closeConfigPopover;
+window.toggleConfigGroup = toggleConfigGroup;

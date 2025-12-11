@@ -139,12 +139,11 @@ class ProductosComponent extends CoreComponent implements ScreenInterface
 {
     use ScreenTrait;
     
-    public const MENU_GROUP_ID = 'productos';
+    // parent_id se obtiene proceduralmente desde la BD (no se define como constante)
     public const SCREEN_ID = 'productos-list';
     public const SCREEN_LABEL = 'Ver';
     public const SCREEN_ICON = 'list-outline';
     public const SCREEN_ROUTE = '/component/productos';
-    public const SCREEN_PARENT = self::MENU_GROUP_ID;
     public const SCREEN_ORDER = 0;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;
@@ -170,7 +169,7 @@ class ProductosCreateComponent extends CoreComponent implements ScreenInterface
     
     public const SCREEN_ID = 'productos-create';
     public const SCREEN_LABEL = 'Crear Producto';
-    public const SCREEN_PARENT = ProductosComponent::MENU_GROUP_ID;
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 10;
     public const SCREEN_VISIBLE = true;
     public const SCREEN_DYNAMIC = false;
@@ -189,7 +188,7 @@ class ProductosEditComponent extends CoreComponent implements ScreenInterface
     
     public const SCREEN_ID = 'productos-edit';
     public const SCREEN_LABEL = 'Editar Producto';
-    public const SCREEN_PARENT = ProductosComponent::MENU_GROUP_ID;
+    // parent_id se obtiene proceduralmente desde la BD
     public const SCREEN_ORDER = 20;
     public const SCREEN_VISIBLE = false;  // No en menú
     public const SCREEN_DYNAMIC = true;   // Se activa por contexto
@@ -207,7 +206,7 @@ Ver [crear-screen.md](crear-screen.md) pasos 3-5.
 
 const SCREEN_CONFIG = {
     screenId: 'productos-list',
-    menuGroupId: 'productos',
+    // menuGroupId removido - se obtiene dinámicamente desde la BD
     route: '/component/productos',
     apiRoute: '/api/productos',
     children: {
@@ -220,7 +219,7 @@ const SCREEN_CONFIG = {
 window.handleEdit = function(rowData) {
     window.legoWindowManager.openModuleWithMenu({
         moduleId: SCREEN_CONFIG.children.edit,
-        parentMenuId: SCREEN_CONFIG.menuGroupId,
+        // parentMenuId se obtiene automáticamente desde la BD
         label: 'Editar',
         url: `${SCREEN_CONFIG.route}/edit?id=${rowData.id}`,
         icon: 'create-outline'
@@ -245,7 +244,7 @@ window.handleDelete = async function(rowData) {
 function openCreateModule() {
     window.legoWindowManager.openModuleWithMenu({
         moduleId: SCREEN_CONFIG.children.create,
-        parentMenuId: SCREEN_CONFIG.menuGroupId,
+        // parentMenuId se obtiene automáticamente desde la BD
         label: 'Nuevo',
         url: `${SCREEN_CONFIG.route}/create`,
         icon: 'add-circle-outline'
