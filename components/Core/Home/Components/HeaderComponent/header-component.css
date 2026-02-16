@@ -536,6 +536,67 @@ html.dark .theme-toggle-header .moon {
     color: var(--primary);
 }
 
+/* Route params section (read-only) */
+.params-popover__route-section {
+    border-bottom: 1px solid var(--border-light);
+}
+
+.params-popover__route-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-surface-secondary);
+}
+
+.params-popover__route-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.params-popover__route-title ion-icon {
+    font-size: 16px;
+}
+
+.params-popover__route-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: var(--transition-fast);
+}
+
+.params-popover__route-toggle:hover {
+    background: var(--bg-surface-hover);
+    color: var(--text-primary);
+}
+
+.params-popover__route-content {
+    padding: var(--space-sm);
+}
+
+/* Read-only param item variant */
+.param-item--readonly {
+    opacity: 0.85;
+    border-left: 2px solid var(--text-muted);
+}
+
+.param-item__readonly-badge {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
 .params-popover__content {
     flex: 1;
     overflow-y: auto;

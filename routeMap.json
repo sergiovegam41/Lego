@@ -1,6 +1,15 @@
 {
     "auth": "\\App\\Controllers\\Auth\\Controllers\\AuthGroupsController",
+    "auth-groups": "\\App\\Controllers\\AuthGroups\\Controllers\\AuthGroupsController",
     "example-crud": "\\App\\Controllers\\ExampleCrud\\Controllers\\ExampleCrudController",
+    "files": "\\App\\Controllers\\Files\\Controllers\\FilesController",
+    "MenuItemHierarchy": "\\App\\Controllers\\Menu\\Controllers\\MenuItemHierarchyController",
+    "MenuSearch": "\\App\\Controllers\\Menu\\Controllers\\MenuSearchController",
+    "MenuStructure": "\\App\\Controllers\\Menu\\Controllers\\MenuStructureController",
+    "MenuSystemItems": "\\App\\Controllers\\Menu\\Controllers\\MenuSystemItemsController",
+    "MenuConfig": "\\App\\Controllers\\MenuConfig\\Controllers\\MenuConfigController",
+    "roles-config": "\\App\\Controllers\\RolesConfig\\Controllers\\RolesConfigController",
     "storage": "\\App\\Controllers\\Storage\\Controllers\\StorageController",
-    "files": "\\App\\Controllers\\Files\\Controllers\\FilesController"
+    "tools": "\\App\\Controllers\\Tools\\Controllers\\ToolsController",
+    "users-config": "\\App\\Controllers\\UsersConfig\\Controllers\\UsersConfigController"
 }

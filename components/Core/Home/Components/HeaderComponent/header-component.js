@@ -1120,6 +1120,13 @@ function openParamsPopover() {
             : '<em>No hay módulo activo</em>';
     }
 
+    // Populate route params section
+    const routeParams = window.legoWindowManager?.getRouteParams() || {};
+    const routeSection = document.getElementById('params-route-section');
+    if (routeSection) {
+        renderRouteParams(routeSection, routeParams);
+    }
+
     // Populate params content
     const content = document.getElementById('params-content');
     if (content) {
@@ -1202,6 +1209,66 @@ function getFriendlyKeyLabel(key) {
         'scrollPosition': '📍 Posición scroll'
     };
     return labels[key] || key;
+}
+
+// Estado del toggle de route params
+let routeParamsVisible = false;
+
+/**
+ * Render route params (read-only) in the route section
+ */
+function renderRouteParams(container, routeParams) {
+    const keys = Object.keys(routeParams);
+
+    if (keys.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    const eyeIcon = routeParamsVisible ? 'eye-outline' : 'eye-off-outline';
+    const contentDisplay = routeParamsVisible ? 'block' : 'none';
+
+    container.innerHTML = `
+        <div class="params-popover__route-header">
+            <span class="params-popover__route-title">
+                <ion-icon name="link-outline"></ion-icon>
+                Parámetros de Ruta
+            </span>
+            <button class="params-popover__route-toggle" onclick="toggleRouteParams()" title="Mostrar/ocultar parámetros de ruta">
+                <ion-icon name="${eyeIcon}"></ion-icon>
+            </button>
+        </div>
+        <div class="params-popover__route-content" id="params-route-content" style="display: ${contentDisplay};">
+            ${keys.map(key => `
+                <div class="param-item param-item--readonly">
+                    <div class="param-item__header">
+                        <span class="param-item__key">${escapeHtml(key)}</span>
+                        <span class="param-item__readonly-badge">
+                            <ion-icon name="lock-closed-outline"></ion-icon>
+                        </span>
+                    </div>
+                    <div class="param-item__value">${escapeHtml(String(routeParams[key]))}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+/**
+ * Toggle route params visibility
+ */
+function toggleRouteParams() {
+    routeParamsVisible = !routeParamsVisible;
+    const content = document.getElementById('params-route-content');
+    const toggle = document.querySelector('.params-popover__route-toggle ion-icon');
+
+    if (content) {
+        content.style.display = routeParamsVisible ? 'block' : 'none';
+    }
+    if (toggle) {
+        toggle.setAttribute('name', routeParamsVisible ? 'eye-outline' : 'eye-off-outline');
+    }
 }
 
 /**
@@ -1342,6 +1409,7 @@ window.toggleParamsPopover = toggleParamsPopover;
 window.closeParamsPopover = closeParamsPopover;
 window.deleteParam = deleteParam;
 window.clearAllParams = clearAllParams;
+window.toggleRouteParams = toggleRouteParams;
 window.openSystemMenuItem = openSystemMenuItem;
 window.handleConfigGroupClick = handleConfigGroupClick;
 window.openConfigPopover = openConfigPopover;

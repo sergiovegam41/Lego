@@ -7,15 +7,35 @@ class ModuleStore {
     this.activeModule = null;
     }
 
+    _parseRouteParams(url) {
+        if (!url) return {};
+        try {
+            const urlObj = new URL(url, window.location.origin);
+            const params = {};
+            urlObj.searchParams.forEach((value, key) => {
+                params[key] = value;
+            });
+            return params;
+        } catch (e) {
+            return {};
+        }
+    }
+
+    getRouteParams(moduleId) {
+        if (!this.modules[moduleId]) return {};
+        return { ...this.modules[moduleId].routeParams };
+    }
+
     _openModule(id, component, options = {}) {
         const { sourceModuleId = null } = options;
-        
+
     if (!this.modules[id]) {
             // Nuevo módulo: inicializar con params vacíos y origen
-            this.modules[id] = { 
-                component, 
+            this.modules[id] = {
+                component,
                 isActive: false,
                 params: {},  // Parámetros persistentes del módulo
+                routeParams: this._parseRouteParams(component?.url),  // Parámetros de ruta (solo lectura)
                 sourceModuleId: sourceModuleId  // De dónde vino este módulo
             };
     }
@@ -350,6 +370,7 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             // IMPORTANTE: Preservar todo el estado antes de eliminar el módulo
             const preservedParams = { ...activeModule.params };
+            const preservedRouteParams = { ...activeModule.routeParams };
             const preservedComponent = { ...activeModule.component };
             const preservedSourceModuleId = activeModule.sourceModuleId;
 
@@ -373,6 +394,7 @@ if (typeof window.legoWindowManager === 'undefined') {
             // Restaurar los params después de reabrir
             if (window.moduleStore.modules[activeId]) {
                 window.moduleStore.modules[activeId].params = preservedParams;
+                window.moduleStore.modules[activeId].routeParams = preservedRouteParams;
             }
 
             // Emitir evento para que el módulo pueda aplicar sus params
@@ -548,6 +570,23 @@ if (typeof window.legoWindowManager === 'undefined') {
         },
 
         /**
+         * Obtener los parámetros de ruta (solo lectura) del módulo
+         * Estos son los query params con los que se abrió el componente (ej. ?id=5)
+         * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
+         * @returns {Object} Objeto con los parámetros de ruta
+         */
+        getRouteParams: function(moduleId = null) {
+            if (!window.moduleStore) {
+                return {};
+            }
+            const targetModule = moduleId || window.moduleStore.activeModule;
+            if (!targetModule) {
+                return {};
+            }
+            return window.moduleStore.getRouteParams(targetModule);
+        },
+
+        /**
          * Eliminar un parámetro específico
          * @param {string} key - Nombre del parámetro a eliminar
          * @param {string} [moduleId] - ID del módulo (opcional, usa el activo si no se pasa)
@@ -590,49 +629,57 @@ if (typeof window.legoWindowManager === 'undefined') {
         addDynamicMenuItem: function(config) {
             const { moduleId, parentMenuId, label, icon, url, insertAfter } = config;
 
+            console.log(`[addDynamicMenuItem] ▶ Inicio - moduleId: ${moduleId}, parentMenuId: ${parentMenuId}, label: ${label}, url: ${url}`);
 
             if (!moduleId || !parentMenuId || !label) {
-                console.error('[WindowManager] addDynamicMenuItem: moduleId, parentMenuId, and label are required');
-                return false; // Return false on failure
+                console.error(`[addDynamicMenuItem] ✖ Faltan parámetros requeridos - moduleId: ${moduleId}, parentMenuId: ${parentMenuId}, label: ${label}`);
+                return false;
             }
 
             // Find the parent menu item
             const parentMenuItem = document.querySelector(`[data-menu-item-id="${parentMenuId}"]`);
 
             if (!parentMenuItem) {
-                console.warn(`[WindowManager] Parent menu item not found: ${parentMenuId}`);
-                return false; // Return false on failure
+                // Log detallado: mostrar todos los data-menu-item-id disponibles para ayudar a debuggear
+                const allMenuItems = document.querySelectorAll('[data-menu-item-id]');
+                const availableIds = Array.from(allMenuItems).map(el => el.getAttribute('data-menu-item-id'));
+                console.error(`[addDynamicMenuItem] ✖ Parent menu item NO encontrado en DOM: "${parentMenuId}"`);
+                console.log(`[addDynamicMenuItem]   IDs disponibles en DOM (${availableIds.length}):`, availableIds);
+                return false;
             }
+
+            console.log(`[addDynamicMenuItem] ✔ Parent encontrado: "${parentMenuId}"`, parentMenuItem);
 
             // Check if dynamic item already exists - buscar SOLO en el menú principal, no en popovers
             const menuContainer = document.querySelector('.custom-menu');
             if (menuContainer) {
                 const existingItem = menuContainer.querySelector(`[data-menu-item-id="${moduleId}"]:not([data-temp-item="true"])`);
                 if (existingItem) {
-                    console.warn(`[WindowManager] Item ${moduleId} ya existe en el menú, no se agregará duplicado`);
-                    return false; // Return false on failure
+                    console.log(`[addDynamicMenuItem] ℹ Item "${moduleId}" ya existe en el menú, no se duplicará (esto NO es un error)`);
+                    return true; // Ya existe = éxito, no necesita crearse de nuevo
                 }
             } else {
-                // Si no hay menuContainer, buscar en todo el documento pero con advertencia
                 const existingItem = document.querySelector(`[data-menu-item-id="${moduleId}"]:not([data-temp-item="true"])`);
                 if (existingItem) {
-                    console.warn(`[WindowManager] Item ${moduleId} ya existe en el DOM, no se agregará duplicado`);
-                    return false; // Return false on failure
+                    console.log(`[addDynamicMenuItem] ℹ Item "${moduleId}" ya existe en el DOM, no se duplicará (esto NO es un error)`);
+                    return true; // Ya existe = éxito, no necesita crearse de nuevo
                 }
             }
 
             // Get parent's submenu or create insertion point
             // IMPORTANTE: El submenu está DENTRO del parentMenuItem, no en su parentElement
             let submenu = parentMenuItem.querySelector('.custom-submenu');
-            
+
             // Si no hay submenu, intentar encontrarlo por clase section-level
             if (!submenu) {
                 submenu = parentMenuItem.querySelector('[class*="section-level"]');
             }
-            
-            // Debug: verificar que el submenu existe
+
             if (!submenu) {
-                console.warn(`[WindowManager] Submenu no encontrado para parent: ${parentMenuId}`, parentMenuItem);
+                console.warn(`[addDynamicMenuItem] ⚠ Submenu no encontrado para parent: "${parentMenuId}". Clases del parent:`, parentMenuItem.className);
+                console.log(`[addDynamicMenuItem]   innerHTML del parent (primeros 300 chars):`, parentMenuItem.innerHTML.substring(0, 300));
+            } else {
+                console.log(`[addDynamicMenuItem] ✔ Submenu encontrado para parent: "${parentMenuId}", clase: ${submenu.className}`);
             }
             
             if (!submenu) {
@@ -696,8 +743,8 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             // Insert into submenu
             if (!submenu) {
-                console.error(`[WindowManager] No se puede insertar item ${moduleId}: submenu no encontrado`);
-                return;
+                console.error(`[addDynamicMenuItem] ✖ No se puede insertar item "${moduleId}": submenu no encontrado después de intentar crearlo. Parent: "${parentMenuId}"`);
+                return false;
             }
             
             // Si se especifica insertAfter, insertar después de ese item
@@ -924,27 +971,38 @@ if (typeof window.legoWindowManager === 'undefined') {
         openModuleWithMenu: async function(config) {
             const { moduleId, parentMenuId, label, url, icon, sourceModuleId } = config;
 
+            console.log(`[openModuleWithMenu] ▶ Inicio - moduleId: "${moduleId}", parentMenuId: "${parentMenuId}", label: "${label}", url: "${url}"`);
+
             // FILOSOFÍA LEGO: La BD es la fuente de verdad
             // Siempre intentar obtener parent_id desde BD primero (procedural)
             let actualParentMenuId = null;
             try {
+                console.log(`[openModuleWithMenu] Consultando BD para parent_id de "${moduleId}"...`);
                 const hierarchyResponse = await fetch(`/api/menu/item-hierarchy?id=${encodeURIComponent(moduleId)}`);
                 const hierarchyResult = await hierarchyResponse.json();
+                console.log(`[openModuleWithMenu] Respuesta de BD:`, hierarchyResult);
                 if (hierarchyResult.success && hierarchyResult.data && hierarchyResult.data.item) {
                     actualParentMenuId = hierarchyResult.data.item.parent_id || null;
-                    console.log(`[WindowManager] parent_id obtenido desde BD para ${moduleId}:`, actualParentMenuId);
+                    console.log(`[openModuleWithMenu] ✔ parent_id desde BD: "${actualParentMenuId}"`);
+                } else {
+                    console.warn(`[openModuleWithMenu] ⚠ BD no retornó item para "${moduleId}". success: ${hierarchyResult.success}, data:`, hierarchyResult.data);
                 }
             } catch (error) {
-                console.error(`[WindowManager] Error obteniendo parent_id para ${moduleId}:`, error);
+                console.error(`[openModuleWithMenu] ✖ Error HTTP obteniendo parent_id para "${moduleId}":`, error);
             }
-            
+
             // Fallback: usar parentMenuId proporcionado si no se encontró en BD
             if (!actualParentMenuId && parentMenuId) {
                 actualParentMenuId = parentMenuId;
-                console.log(`[WindowManager] Usando parentMenuId proporcionado como fallback para ${moduleId}:`, actualParentMenuId);
+                console.log(`[openModuleWithMenu] ℹ Usando parentMenuId del caller como fallback: "${actualParentMenuId}"`);
+            }
+
+            if (!actualParentMenuId) {
+                console.error(`[openModuleWithMenu] ✖ No se pudo determinar parentMenuId para "${moduleId}" (ni BD ni caller lo proporcionaron)`);
             }
 
             // First, add the dynamic menu item
+            console.log(`[openModuleWithMenu] Llamando addDynamicMenuItem con parentMenuId: "${actualParentMenuId}"`);
             const menuItemAdded = this.addDynamicMenuItem({
                 moduleId,
                 parentMenuId: actualParentMenuId,
@@ -953,15 +1011,17 @@ if (typeof window.legoWindowManager === 'undefined') {
                 url
             });
 
-            // Only open the module if the menu item was successfully added
+            console.log(`[openModuleWithMenu] addDynamicMenuItem retornó: ${menuItemAdded}`);
+
             if (menuItemAdded) {
-                // Then open the module (sourceModuleId defaults to current active in openModule)
+                // Menu item agregado (o ya existía) - abrir módulo
                 openModule(moduleId, url, label, { url, name: label }, { sourceModuleId });
+                console.log(`[openModuleWithMenu] ✔ Módulo "${moduleId}" abierto exitosamente`);
             } else {
-                console.error(`[WindowManager] No se pudo agregar el item del menú para ${moduleId}, no se abrirá el módulo`);
-                if (window.AlertService) {
-                    window.AlertService.error('Error al agregar el item al menú. El módulo no se abrirá.');
-                }
+                // El menu item NO se pudo agregar - abrir módulo de todas formas pero con warning
+                console.warn(`[openModuleWithMenu] ⚠ No se pudo agregar menu item para "${moduleId}", pero el módulo se abrirá de todas formas`);
+                openModule(moduleId, url, label, { url, name: label }, { sourceModuleId });
+                console.log(`[openModuleWithMenu] ✔ Módulo "${moduleId}" abierto (sin menu item)`);
             }
         },
 
@@ -1101,5 +1161,15 @@ if (typeof window.legoWindowManager === 'undefined') {
 
             this.updateBreadcrumb(breadcrumbItems);
         }
+    };
+}
+
+// Asegurar que getRouteParams siempre exista (incluso si legoWindowManager ya estaba definido)
+if (window.legoWindowManager && !window.legoWindowManager.getRouteParams) {
+    window.legoWindowManager.getRouteParams = function(moduleId = null) {
+        if (!window.moduleStore) return {};
+        const targetModule = moduleId || window.moduleStore.activeModule;
+        if (!targetModule) return {};
+        return window.moduleStore.getRouteParams(targetModule);
     };
 }

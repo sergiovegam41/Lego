@@ -1298,12 +1298,21 @@ class MenuFilterManager {
             tempContainer.addEventListener('click', async function(e) {
                 const menuItem = e.target.closest('.menu_item_openable');
                 if (!menuItem || e.target.closest('.menu-close-button')) return;
-                
+
                 const id = menuItem.getAttribute('moduleId') || menuItem.getAttribute('data-menu-item-id');
                 const url = menuItem.getAttribute('moduleUrl') || '#';
                 const name = menuItem.querySelector('.text_menu_option')?.textContent || id;
 
+                console.log(`[MenuFilterManager] Click en resultado de búsqueda: id="${id}", url="${url}", name="${name}"`);
+
                 if (window.moduleStore && window.moduleStore.getActiveModule() !== id) {
+                    // IMPORTANTE: Limpiar el filtro de búsqueda ANTES de abrir el módulo
+                    // para que el nuevo item dinámico no quede oculto por el filtro
+                    if (window.menuFilterManager) {
+                        console.log(`[MenuFilterManager] Limpiando filtro de búsqueda antes de abrir módulo`);
+                        window.menuFilterManager.clearFilter(true);
+                    }
+
                     // Obtener el parent_id correcto desde la base de datos
                     let parentMenuId = null;
                     try {
@@ -1311,10 +1320,12 @@ class MenuFilterManager {
                         const hierarchyResult = await hierarchyResponse.json();
                         if (hierarchyResult.success && hierarchyResult.data && hierarchyResult.data.item) {
                             parentMenuId = hierarchyResult.data.item.parent_id || null;
-                            console.log(`[MenuFilterManager] parent_id obtenido desde BD para ${id}:`, parentMenuId);
+                            console.log(`[MenuFilterManager] parent_id obtenido desde BD para "${id}": "${parentMenuId}"`);
+                        } else {
+                            console.warn(`[MenuFilterManager] BD no retornó item para "${id}":`, hierarchyResult);
                         }
                     } catch (error) {
-                        console.error('[MenuFilterManager] Error obteniendo parent_id:', error);
+                        console.error(`[MenuFilterManager] Error obteniendo parent_id para "${id}":`, error);
                     }
 
                     if (window.legoWindowManager && window.legoWindowManager.openModuleWithMenu) {

@@ -103,6 +103,9 @@ class HeaderComponent extends CoreComponent
                         <div class="params-popover__module-info" id="params-module-info">
                             <!-- Module info will be populated by JS -->
                         </div>
+                        <div class="params-popover__route-section" id="params-route-section" style="display: none;">
+                            <!-- Route params will be populated by JS -->
+                        </div>
                         <div class="params-popover__content" id="params-content">
                             <!-- Params will be populated by JS -->
                         </div>
