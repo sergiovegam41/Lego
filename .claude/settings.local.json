@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"---EXIT:$?---\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(docker exec *)",
+      "Bash(curl -s \"http://localhost:8080/api/get/example-crud?page=1&limit=5\")",
+      "Bash(xargs grep *)"
+    ]
+  }
+}

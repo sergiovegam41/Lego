@@ -130,10 +130,10 @@ class MainComponent extends CoreComponent
 
             </div>
 
-            <div id="principal-content-viwer"> 
-              
+            <div id="principal-content-viwer">
+
               <div id="home-page">
-       
+
 
               </div>
 

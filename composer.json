@@ -26,7 +26,24 @@
           "components/shared/Navigation/Navigation.php"
         ]
       },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "scripts": {
-        "post-autoload-dump": "php scripts/generate-ide-helpers.php"
+        "post-autoload-dump": "php scripts/generate-ide-helpers.php",
+        "test": "vendor/bin/pest",
+        "test:unit": "vendor/bin/pest --testsuite=Unit",
+        "test:arch": "vendor/bin/pest --testsuite=Architecture"
+    },
+    "require-dev": {
+        "pestphp/pest": "*",
+        "pestphp/pest-plugin-arch": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }

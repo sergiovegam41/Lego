@@ -135,7 +135,7 @@ class ApiGetResource
      */
     public function getControllerClass(): string
     {
-        return $this->controllerClass ?? \Core\Controllers\AbstractGetController::class;
+        return $this->controllerClass ?? \Core\Controllers\DefaultGetController::class;
     }
 
     /**

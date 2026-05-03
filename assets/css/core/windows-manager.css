@@ -51,8 +51,35 @@ body {
   }
   .module-container {
     display: none;
-   
   }
+
+  @keyframes lego-module-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
   .module-container.active {
     display: block;
+    animation: lego-module-fadein 0.33s ease;
   }
+
+/* ══════════════════════════════════════════════════════════════
+   MENU ITEM LOADING PULSE
+   Se activa solo durante el fetch del componente (scaffold)
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes lego-menu-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+.menu_item_openable.is-loading .custom-button {
+  animation: lego-menu-pulse 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Scaffold visible mientras carga el siguiente — mismo ritmo, solo opacidad */
+.module-container.active.is-loading {
+  animation: lego-menu-pulse 1.2s ease-in-out infinite;
+  pointer-events: none;
+}

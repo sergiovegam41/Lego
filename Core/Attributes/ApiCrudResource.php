@@ -130,7 +130,7 @@ class ApiCrudResource
      */
     public function getControllerClass(): string
     {
-        return $this->controllerClass ?? \Core\Controllers\AbstractCrudController::class;
+        return $this->controllerClass ?? \Core\Controllers\DefaultCrudController::class;
     }
 
     /**

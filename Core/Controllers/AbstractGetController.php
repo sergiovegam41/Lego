@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * - GET /api/get/resource        → list()
  * - GET /api/get/resource/{id}   → get($id)
  */
-class AbstractGetController
+abstract class AbstractGetController
 {
     protected string $modelClass;
     protected ApiGetResource $config;

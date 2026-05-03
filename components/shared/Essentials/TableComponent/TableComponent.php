@@ -198,6 +198,7 @@ class TableComponent extends CoreComponent {
             'gridOptions' => $gridOptions,
             'callbacks' => $this->buildCallbacks(),
             'serverSide' => $this->serverSide,
+            'loadingMessage' => $this->loadingMessage,
         ];
 
         // Si es modo model-driven, agregar configuración de API
@@ -253,19 +254,16 @@ class TableComponent extends CoreComponent {
             HTML;
         }
 
-        // Loader overlay
-        $loaderHtml = "";
-        if ($this->loading) {
-            $loaderHtml = <<<HTML
-            <div class="lego-table-loader" id="{$this->id}-loader">
-                <div class="lego-table-loader__spinner"></div>
-                <p class="lego-table-loader__message">{$this->loadingMessage}</p>
-            </div>
-            HTML;
-        }
+        // Loader overlay — siempre se renderiza; JS lo oculta cuando los datos están listos
+        $loaderHtml = <<<HTML
+        <div class="lego-table-loader" id="{$this->id}-loader" aria-hidden="true">
+            <div class="lego-table-loader__spinner"></div>
+            <p class="lego-table-loader__message">{$this->loadingMessage}</p>
+        </div>
+        HTML;
 
         // Estilos inline para dimensiones
-        $containerStyles = "width: {$this->width};";
+        $containerStyles = "width: {$this->width}; position: relative;";
 
         return <<<HTML
         <div class="{$containerClassStr}" style="{$containerStyles}">

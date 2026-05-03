@@ -194,21 +194,46 @@ const moduleStore = new ModuleStore();
 // Expose moduleStore globally for menu state manager and other components
 window.moduleStore = moduleStore;
 
+function startMenuItemPulse(id) {
+    const item = document.querySelector(`[data-menu-item-id="${id}"]`);
+    if (item) item.classList.add('is-loading');
+
+    // Pulsar también el scaffold activo visible
+    const activeModule = document.querySelector('.module-container.active');
+    if (activeModule) activeModule.classList.add('is-loading');
+}
+
+function stopMenuItemPulse(id) {
+    const item = document.querySelector(`[data-menu-item-id="${id}"]`);
+    if (item) item.classList.remove('is-loading');
+
+    document.querySelectorAll('.module-container.is-loading')
+        .forEach(m => m.classList.remove('is-loading'));
+}
+
 async function renderModule(id, url, content) {
     let container = document.getElementById(`module-${id}`);
     if (!container) {
-        const response = await fetch(url);
-        let dataResp = await response.text();
-        
+        startMenuItemPulse(id);
+        let response, dataResp;
+        try {
+            response = await fetch(url);
+            dataResp = await response.text();
+        } catch (err) {
+            stopMenuItemPulse(id);
+            throw err;
+        }
+
         // Detectar si la respuesta es el login (sesión expirada)
         // Verificar por: redirección exacta a /login, o contenido específico de login
         const responseUrlPath = new URL(response.url, window.location.origin).pathname;
-        const isLoginPage = responseUrlPath === '/login' || 
+        const isLoginPage = responseUrlPath === '/login' ||
                            responseUrlPath === '/' ||
                            dataResp.includes('id="login-form"') ||
                            dataResp.includes('class="login-container"');
-        
+
         if (isLoginPage) {
+            stopMenuItemPulse(id);
             console.warn('[WindowManager] Sesión expirada, redirigiendo a login...');
             window.location.href = '/login';
             return;
@@ -241,6 +266,7 @@ async function renderModule(id, url, content) {
         });
 
         document.getElementById('home-page').appendChild(container);
+        stopMenuItemPulse(id);
     }
     document.querySelectorAll('.module-container').forEach(module => module.classList.remove('active'));
     container.classList.add('active');

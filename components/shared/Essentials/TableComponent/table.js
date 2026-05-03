@@ -288,6 +288,13 @@ let context = {CONTEXT};
         console.error('[LEGO Table] Asegúrate de definir la función en window o suscribirte al evento table:action:' + callbackName);
     }
 
+    function hideLoader() {
+        const loader = document.getElementById(id + '-loader');
+        if (loader) {
+            loader.classList.add('lego-table-loader--hidden');
+        }
+    }
+
     function initTable() {
         const gridDiv = document.getElementById(id);
         if (!gridDiv) {
@@ -502,6 +509,11 @@ let context = {CONTEXT};
                     window[callbacks.onGridReady]?.(event);
                 }
 
+                // Ocultar loader en modo client-side (server-side lo oculta tras la primera carga)
+                if (!config.serverSide) {
+                    hideLoader();
+                }
+
                 // Solo auto-ajustar columnas si está habilitado explícitamente
                 // Por defecto respetamos los anchos definidos en las columnas
                 if (config.autoSizeColumns === true) {
@@ -616,14 +628,17 @@ let context = {CONTEXT};
                                     }
 
                                     params.successCallback(data.data, lastRow);
+                                    hideLoader();
                                 } else {
                                     console.error('[LEGO Table] Error en respuesta API:', data);
                                     params.failCallback();
+                                    hideLoader();
                                 }
                             })
                             .catch(error => {
                                 console.error('[LEGO Table] Error fetching data:', error);
                                 params.failCallback();
+                                hideLoader();
                             });
                     }
                 };

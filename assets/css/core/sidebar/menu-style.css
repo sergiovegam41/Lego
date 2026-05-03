@@ -396,6 +396,21 @@ hr{
     background-color: transparent;
     max-height: var(--menu-item-height);
     min-height: var(--menu-item-height);
+    outline: none;
+  }
+
+  .custom-button:focus,
+  .custom-button:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .menu_item_openable:focus,
+  .menu_item_openable:focus-within,
+  .menu-close-button:focus,
+  .menu-close-button:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
 

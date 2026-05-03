@@ -21,21 +21,19 @@
 
 .dashboard-card {
     background: var(--bg-surface);
-    border-radius: var(--radius-card);
+    border-radius: 0;
     padding: var(--spacing-card);
     display: flex;
     align-items: center;
     gap: var(--space-xl);
     transition: var(--transition-normal);
-    border: var(--border-width) solid var(--border-light);
+    /* border: var(--border-width) solid var(--border-light); */
     cursor: pointer;
-    box-shadow: var(--shadow-card);
 }
 
 .dashboard-card:hover {
     background: var(--bg-surface-hover);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover);
 }
 
 .card-icon {
@@ -43,7 +41,7 @@
     width: 60px;
     height: 60px;
     background: var(--accent-light);
-    border-radius: var(--radius-card);
+    border-radius:0;
     display: flex;
     align-items: center;
     justify-content: center;

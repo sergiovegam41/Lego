@@ -23,6 +23,7 @@ return new class {
             $table->integer('display_order')->default(0);
             $table->integer('level')->default(0);
             $table->boolean('is_visible')->default(true);
+            $table->boolean('is_dynamic')->default(false);
             $table->timestamps();
             
             // Indexes para performance (sin foreign key por ahora)
@@ -30,6 +31,7 @@ return new class {
             $table->index('level');
             $table->index(['parent_id', 'display_order']);
             $table->index('is_visible');
+            $table->index('is_dynamic');
         });
         
         // Create trigger for updated_at

@@ -23,7 +23,7 @@ services:
       - lego-network
 
   db:
-    image: postgres:latest
+    image: postgres:17
     container_name: lego-postgres-db
     restart: unless-stopped
     environment:

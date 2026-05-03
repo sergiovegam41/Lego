@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * - PUT    /api/resource/{id}   → update($id)
  * - DELETE /api/resource/{id}   → delete($id)
  */
-class AbstractCrudController
+abstract class AbstractCrudController
 {
     protected string $modelClass;
     protected ApiCrudResource $config;
