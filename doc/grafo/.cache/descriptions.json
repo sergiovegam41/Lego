@@ -1,4 +1,214 @@
 {
+    "App/Controllers/Auth/Contracts/AbstractAuthCoreContract.php": {
+        "hash": "efa4e7dc48dc46dffed5414e19757882",
+        "description": "Define el contrato base para operaciones de autenticación, especificando métodos abstractos para login, refresh token, logout, registro, inicio de sesión por código y obtención de perfil.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:18+00:00"
+    },
+    "App/Controllers/Auth/DTOs/AuthActions.php": {
+        "hash": "38316e13c7cb4bc9feaec1e6c0c311fb",
+        "description": "Define constantes para acciones de autenticación como login, registro y logout.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:23+00:00"
+    },
+    "App/Controllers/Auth/DTOs/AuthRequestDTO.php": {
+        "hash": "db597530cd11ed5ec582f93470923b13",
+        "description": "Encapsula los datos de la solicitud de autenticación, incluyendo el grupo de autenticación, la acción y el objeto Request.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:26+00:00"
+    },
+    "App/Controllers/Auth/Providers/AuthGroups/Admin/AdminAuthGroupProvider.php": {
+        "hash": "1213732c6bd546e0aa51115554ec2ea9",
+        "description": "Orquesta el flujo de autenticación y registro para usuarios del grupo administrativo, utilizando servicios core de autenticación y validando datos de entrada.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:29+00:00"
+    },
+    "App/Controllers/Auth/Providers/AuthGroups/Admin/Middlewares/AdminMiddlewares.php": {
+        "hash": "d8cb826724cfb1183517189df7581080",
+        "description": "Verifica si un usuario está autenticado y redirige a la página de login si no lo está.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:31+00:00"
+    },
+    "App/Controllers/Auth/Providers/AuthGroups/Api/ApiAuthGroupProvider.php": {
+        "hash": "6e34016f2d7d4f5315558b6fab10914d",
+        "description": "Define el proveedor de autenticación para APIs, gestionando operaciones de login, registro y gestión de tokens específicas para usuarios externos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:33+00:00"
+    },
+    "App/Controllers/Auth/Providers/AuthGroups/Constants/AuthGroupsIDs.php": {
+        "hash": "6a502cdae1cdf0bdcce5134d2836b8f3",
+        "description": "Define constantes de identificación para grupos de autenticación, asegurando que los valores sean inmutables.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:35+00:00"
+    },
+    "App/Controllers/Auth/Providers/AuthGroupsProvider.php": {
+        "hash": "8db4c0b876980700e517f4b3c7e27cfc",
+        "description": "Orquesta la autenticación delegando solicitudes a providers específicos según el grupo y acción de autenticación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:38+00:00"
+    },
+    "App/Controllers/AuthGroups/Controllers/AuthGroupsController.php": {
+        "hash": "66e461dd5ccb76210e3707afe4f238eb",
+        "description": "Orquesta las operaciones CRUD para la gestión de grupos de autenticación, manejando solicitudes HTTP y respondiendo con formatos JSON.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:22+00:00"
+    },
+    "App/Controllers/ComponentsController.php": {
+        "hash": "5681e107428e309953b53430d494d37e",
+        "description": "Orquesta la renderización de componentes UI a través de endpoints RESTful, validando parámetros y gestionando excepciones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:41+00:00"
+    },
+    "App/Controllers/ExampleCrud/Controllers/ExampleCrudController.php": {
+        "hash": "a0d599e56e6be071d7b0d70bd49eb6b3",
+        "description": "Orquesta operaciones CRUD para la entidad ExampleCrud, incluyendo gestión de imágenes y validación de datos, encapsulando las respuestas HTTP con ResponseDTO.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:46+00:00"
+    },
+    "App/Controllers/Files/Controllers/FilesController.php": {
+        "hash": "d007de9f6579e32e85d56b7fdacdc7aa",
+        "description": "Gestiona las operaciones CRUD de archivos, incluyendo subir, eliminar, obtener y listar archivos, utilizando el servicio FileService para encapsular la lógica de negocio.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:51+00:00"
+    },
+    "App/Controllers/Menu/Controllers/MenuItemHierarchyController.php": {
+        "hash": "0d9a7491c6deff5538d48553b14478e8",
+        "description": "Obtiene y devuelve la jerarquía completa de un item de menú, incluyendo sus ancestros, hijos y hermanos, con sus respectivas relaciones y datos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:55+00:00"
+    },
+    "App/Controllers/Menu/Controllers/MenuSearchController.php": {
+        "hash": "62e01eddae854abcd5e7e435319c6f68",
+        "description": "Orquesta la búsqueda de items del menú desde la base de datos, aplicando filtros y formateando resultados para devolverlos como respuesta JSON.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:58+00:00"
+    },
+    "App/Controllers/Menu/Controllers/MenuStructureController.php": {
+        "hash": "626caa04ac0bdec9d25aefeaa82dd880",
+        "description": "Obtiene y filtra la estructura del menú en formato JSON para el frontend, considerando los permisos de rol del usuario actual.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:01+00:00"
+    },
+    "App/Controllers/Menu/Controllers/MenuSystemItemsController.php": {
+        "hash": "42e85743c13b10afcdaba83a78513bb6",
+        "description": "Define el controlador para obtener y formatear items de menú ocultos del sistema, excluyendo aquellos dinámicos o con profundidad excesiva.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:05+00:00"
+    },
+    "App/Controllers/MenuConfig/Controllers/MenuConfigController.php": {
+        "hash": "1ff6dc39e3d35acd80774062582ef614",
+        "description": "Gestiona las operaciones CRUD del menú de navegación, permitiendo listar, actualizar y crear items con validación y manejo de roles.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:09+00:00"
+    },
+    "App/Controllers/RolesConfig/Controllers/RolesConfigController.php": {
+        "hash": "96de468e1d36ac6fbf41dde557f5f8f7",
+        "description": "Orquesta las operaciones CRUD para la gestión de roles mediante endpoints RESTful, validando y normalizando datos antes de interactuar con el modelo Role.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:13+00:00"
+    },
+    "App/Controllers/Storage/Controllers/StorageController.php": {
+        "hash": "d6c46f15e791b54309312c6b27702190",
+        "description": "Orquesta endpoints REST para operaciones CRUD de archivos de almacenamiento, utilizando un proveedor y validador específicos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:17+00:00"
+    },
+    "App/Controllers/Storage/Providers/StorageProvider.php": {
+        "hash": "265067641bddc8ae477322965f6473bd",
+        "description": "Orquesta operaciones de almacenamiento, encapsulando la lógica de negocio y transformación de datos entre el controlador y el servicio de almacenamiento.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:21+00:00"
+    },
+    "App/Controllers/Storage/Rules/StorageRules.php": {
+        "hash": "3948f69b2dbdfe4c619a74f2e756de10",
+        "description": "Define y aplica reglas de validación para operaciones de almacenamiento utilizando Rakit Validator, asegurando integridad y consistencia en uploads, eliminaciones, listados y obtención de archivos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:25+00:00"
+    },
+    "App/Controllers/Tools/Controllers/ToolsController.php": {
+        "hash": "1d2e503ce16292687449247a0d039c56",
+        "description": "Gestiona las operaciones CRUD de herramientas, incluyendo listado, obtención, creación, actualización y eliminación, junto con sus características e imágenes asociadas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:30+00:00"
+    },
+    "App/Controllers/UsersConfig/Controllers/UsersConfigController.php": {
+        "hash": "025e912efef337d8a97cf5fe4a585c29",
+        "description": "Orquesta operaciones CRUD para usuarios, gestionando solicitudes HTTP y respondiendo con formatos JSON.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:33+00:00"
+    },
+    "App/Models/AuthGroup.php": {
+        "hash": "df69728a02fe2597f168b2e7484bae7f",
+        "description": "Define el modelo de grupos de autenticación, gestionando sus atributos y proporcionando métodos para filtrar y buscar grupos activos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:35+00:00"
+    },
+    "App/Models/EntityFile.php": {
+        "hash": "92847c89c09a9445468a27f3b7ad6995",
+        "description": "Representa y gestiona archivos almacenados en MinIO, permitiendo su reutilización independiente sin acoplamiento a entidades específicas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:38+00:00"
+    },
+    "App/Models/EntityFileAssociation.php": {
+        "hash": "07d54a3952294b6e378ef2e9ead9c258",
+        "description": "Gestiona la asociación polimórfica entre entidades y archivos, permitiendo que cualquier entidad tenga archivos sin necesidad de tablas intermedias específicas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:42+00:00"
+    },
+    "App/Models/ExampleCrud.php": {
+        "hash": "3c3322af3e6766f920cc378daf796b8c",
+        "description": "Define un modelo Eloquent para gestionar operaciones de lectura CRUD con paginación, filtros y búsqueda, expone automáticamente endpoints API GET-ONLY y encapsula lógica de acceso a datos y relaciones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:46+00:00"
+    },
+    "App/Models/ExampleCrudImage.php": {
+        "hash": "d21ec37fa480200e80d6fb805149c752",
+        "description": "Define el modelo Eloquent para gestionar imágenes asociadas a registros de ExampleCrud, con relaciones y métodos para acceso y manipulación de datos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:49+00:00"
+    },
+    "App/Models/MenuItem.php": {
+        "hash": "dc372c5fe897e28af17f0451e2af785b",
+        "description": "Define y gestiona la estructura jerárquica de un menú con múltiples niveles, incluyendo relaciones padre-hijo, ordenamiento y visibilidad, utilizando Eloquent ORM.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:54+00:00"
+    },
+    "App/Models/Role.php": {
+        "hash": "f41eb6d5de100eb019ae495a03b86084",
+        "description": "Define y gestiona roles de usuarios por grupo de autenticación, permitiendo la asignación masiva de atributos y consultas filtradas y paginadas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:34:57+00:00"
+    },
+    "App/Models/Tool.php": {
+        "hash": "35838326de3330685d72d3b0538d2de8",
+        "description": "Define el modelo Eloquent para herramientas, gestionando sus atributos, relaciones y proporcionando métodos de acceso y alcances personalizados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:00+00:00"
+    },
+    "App/Models/ToolFeature.php": {
+        "hash": "7f1e55d714486aff5ca32b16d380c138",
+        "description": "Define el modelo de características para herramientas, permitiendo la asignación masiva de atributos y gestionando relaciones con herramientas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:02+00:00"
+    },
+    "App/Models/User.php": {
+        "hash": "c7b63cbe81d2df8d3e7a57c1d1c97a84",
+        "description": "Define el modelo de usuario del sistema, gestionando sus atributos, relaciones y exposición a través de una API con filtros y paginación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:05+00:00"
+    },
+    "App/Models/UserSession.php": {
+        "hash": "ed2107ac4c79fc8b44474843d8b8473c",
+        "description": "Gestiona el ciclo de vida y validación de sesiones de usuario, incluyendo la activación, invalidación y verificación de tokens de acceso y refresco.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:08+00:00"
+    },
+    "App/Utils/RedisClient.php": {
+        "hash": "796a92bbdc42f98d7adec0065cb5c987",
+        "description": "Encapsula la conexión y el acceso a un servidor Redis utilizando el patrón Singleton, proporcionando una instancia única y centralizada de Predis\\Client.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:11+00:00"
+    },
     "Core/Attributes/ApiComponent.php": {
         "hash": "de44dbddc7fa8bc47289ff1266419854",
         "description": "Define un atributo para marcar clases como componentes de API, especificando la ruta, métodos HTTP y requerimiento de autenticación.",
@@ -148,5 +358,683 @@
         "description": "Define el contrato para componentes de pantalla en LEGO, especificando métodos para obtener metadata y propiedades únicas como ID y ruta.",
         "model": "qwen2.5-coder:14b",
         "updated_at": "2026-05-09T00:30:27+00:00"
+    },
+    "Core/Controllers/AbstractCrudController.php": {
+        "hash": "00537d26d40e6981d96b6049ae63c3fd",
+        "description": "Define un controlador abstracto genérico para API REST, que gestiona operaciones CRUD automáticamente para modelos decorados con #[ApiCrudResource], aplicando filtros, búsqueda, ordenamiento y paginación según la configuración del atributo.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:33+00:00"
+    },
+    "Core/Controllers/AbstractGetController.php": {
+        "hash": "9f3bcc15a25c8dbc1d79f0e08509e84e",
+        "description": "Define un controlador abstracto para operaciones de solo lectura (GET) en recursos, encapsulando listado y obtención con paginación, filtros, búsqueda y manejo de errores.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:38+00:00"
+    },
+    "Core/Controllers/CoreController.php": {
+        "hash": "32f3a01c4bf3a5fa0beffcef7e582e3f",
+        "description": "Define la clase abstracta base de controladores, encapsulando métodos HTTP y mapeo automático de rutas desde directorios y archivos JSON.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:41+00:00"
+    },
+    "Core/Controllers/CoreViewController.php": {
+        "hash": "c55dc8e62c3164be1f691806681e076d",
+        "description": "Define la clase abstracta base para controladores, validando y ejecutando métodos HTTP definidos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:43+00:00"
+    },
+    "Core/Controllers/DefaultCrudController.php": {
+        "hash": "42d439b68c6bc2400aef31a0671e3c05",
+        "description": "Sirve como implementación concreta vacía de AbstractCrudController, usada por ApiCrudRouter cuando el modelo no especifica un controlador custom.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:45+00:00"
+    },
+    "Core/Controllers/DefaultGetController.php": {
+        "hash": "e862e76577d8fce39f5bd3b170a3a7d4",
+        "description": "Sirve como implementación concreta vacía de AbstractGetController, usada por ApiGetRouter cuando el modelo no especifica un controlador custom.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:48+00:00"
+    },
+    "Core/Controllers/RestfulController.php": {
+        "hash": "e6a6ca021a4e3d383443b17457327c50",
+        "description": "Abstrae la lógica común de controladores REST, gestionando métodos HTTP, validaciones y respuestas consistentes para que las subclases solo implementen la lógica de negocio.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:53+00:00"
+    },
+    "Core/Dtos/ScriptCoreDTO.php": {
+        "hash": "ae0877b013c34be6368f72041d4a8bc2",
+        "description": "Encapsula los datos necesarios para la ejecución de un script, incluyendo su ruta y argumentos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:55+00:00"
+    },
+    "Core/Exceptions/ComponentIdCollisionException.php": {
+        "hash": "0b9d58df04f5b3067c4ec441626d99fb",
+        "description": "Lanza una excepción cuando dos componentes intentan usar el mismo ID.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:56+00:00"
+    },
+    "Core/Helpers/ActionButtons.php": {
+        "hash": "97b367f97e2a668867273e7541f86d90",
+        "description": "Genera cellRenderers de botones de acción dinámicos para tablas, utilizando el sistema de componentes del framework Lego y optimizando la carga de assets.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:00+00:00"
+    },
+    "Core/Helpers/LegoHelpers.php": {
+        "hash": "be71f664417ada18677cf12377cd1a7e",
+        "description": "Proporciona métodos estáticos para redirigir a rutas y verificar la autenticación del usuario, encapsulando operaciones comunes de gestión de sesiones y respuestas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:03+00:00"
+    },
+    "Core/Helpers/MenuHelper.php": {
+        "hash": "b5425c85de14406ad2d1e903279c5d34",
+        "description": "Proporciona métodos estáticos para obtener información de menú desde la base de datos, como parent_id, metadata y verificación de existencia de screen_ids.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:07+00:00"
+    },
+    "Core/Interfaces/DynamicComponentInterface.php": {
+        "hash": "c7831aedacd8ece0bb89a0d6a36029cc",
+        "description": "Define la interfaz para componentes dinámicos que pueden ser renderizados desde JavaScript mediante parámetros específicos, garantizando un ID único y soportando el batch rendering.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:10+00:00"
+    },
+    "Core/Models/La.php": {
+        "hash": "23615d85cacb28e3fac9e9897fcfaefa",
+        "description": "Evalúa si un string es igual a \"ES\" o \"EN\", retornando el valor si es válido o false si no lo es.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:12+00:00"
+    },
+    "Core/Models/Messages.php": {
+        "hash": "195b8344da0915f708dd9c8d40f2d9ee",
+        "description": "Define constantes de mensajes estándar para respuestas y errores en la aplicación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:14+00:00"
+    },
+    "Core/Models/Model.php": {
+        "hash": "4033b67725e7508e1543636936215c59",
+        "description": "Define la clase abstracta base para modelos, encapsulando operaciones CRUD y métodos de consulta SQL dinámica.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:18+00:00"
+    },
+    "Core/Models/ResponseDTO.php": {
+        "hash": "ece9fba9495d674f952df8d45d3eb881",
+        "description": "Encapsula la estructura de respuesta HTTP con campos para éxito, mensaje, datos y código de estado.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:19+00:00"
+    },
+    "Core/Models/StatusCodes.php": {
+        "hash": "082a5cbcbe8d43247064c8863387f7aa",
+        "description": "Define constantes y métodos para manejar códigos de estado HTTP, incluyendo mensajes asociados y validaciones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:22+00:00"
+    },
+    "Core/Registry/ScreenRegistry.php": {
+        "hash": "a4b3493d64f69fbfcb3dee30446c5a18",
+        "description": "Registra y gestiona la metadata de todos los screens LEGO, proporcionando métodos para obtener estructuras de menú y verificar visibilidad.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:36+00:00"
+    },
+    "Core/Response.php": {
+        "hash": "5380ad43380c4c5afb95a7b0748ed4e9",
+        "description": "Encapsula la generación de respuestas HTTP, proporcionando métodos estáticos para enviar JSON y HTML con códigos de estado específicos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:39+00:00"
+    },
+    "Core/Router.php": {
+        "hash": "9c576639c6ce18b09793f11694f68d57",
+        "description": "Centraliza la lógica de routing en tres capas para manejar API, componentes SPA y páginas web completas, permitiendo que public/index.php sea prescindible según el entorno.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:43+00:00"
+    },
+    "Core/Routing/ApiControllerRouter.php": {
+        "hash": "c69798d2a2c37372bd4928a2ddab8d03",
+        "description": "Registra automáticamente rutas de API desde controladores con el atributo #[ApiRoutes], soportando múltiples métodos HTTP y presets personalizados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:47+00:00"
+    },
+    "Core/Routing/ApiCrudRouter.php": {
+        "hash": "705d887c51c2d8034c1352ef6248f7c5",
+        "description": "Registra automáticamente rutas CRUD para modelos con el atributo #[ApiCrudResource] mediante introspección de PHP attributes.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:50+00:00"
+    },
+    "Core/Routing/ApiGetRouter.php": {
+        "hash": "48e4b4632d8436cfee1c834c32f1920b",
+        "description": "Registra automáticamente rutas GET para modelos con el atributo #[ApiGetResource], utilizando introspección de PHP attributes y conectando con AbstractGetController.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:54+00:00"
+    },
+    "Core/Services/ApiRouteDiscovery.php": {
+        "hash": "9b51488d27c011fddf86e0c6c4d269a7",
+        "description": "Descubre y registra automáticamente todas las rutas API de componentes utilizando introspección de atributos y escaneo recursivo de directorios.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:57+00:00"
+    },
+    "Core/Services/AuthServicesCore.php": {
+        "hash": "dc6db59286b046ab89a3da1d3191645a",
+        "description": "Gestiona el proceso de autenticación y autorización, incluyendo login, generación y renovación de tokens JWT, almacenamiento en Redis y validación de sesiones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:02+00:00"
+    },
+    "Core/Services/File/FileService.php": {
+        "hash": "b29f4d0fc57058096975cf067077563f",
+        "description": "Gestiona la subida, eliminación y obtención de archivos, validando tipos y tamaños, y asocia archivos a entidades de manera polimórfica.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:07+00:00"
+    },
+    "Core/Services/Graph/AbstractOpenAiProvider.php": {
+        "hash": "62e7eb4cf91f897564d15a7fee9af7b8",
+        "description": "Define la clase abstracta base para proveedores de servicios de IA OpenAI, encapsulando métodos comunes para generar descripciones y análisis de código PHP utilizando modelos de lenguaje grandes.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:12+00:00"
+    },
+    "Core/Services/Graph/DeepAnalyzer.php": {
+        "hash": "8d041f3a3792469390d1ebcf0b50ef7c",
+        "description": "Orquesta el análisis profundo de nodos importantes en un grafo, utilizando un proveedor LLM y caché, y proporciona estadísticas detalladas del proceso.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:16+00:00"
+    },
+    "Core/Services/Graph/DescriptionCache.php": {
+        "hash": "83ddaf8ce2117ea12a96746705e35469",
+        "description": "Gestiona el almacenamiento y recuperación de descripciones de archivos en caché, validando hashes y actualizando registros según cambios.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:18+00:00"
+    },
+    "Core/Services/Graph/Graph.php": {
+        "hash": "688dc3336d63d3db5919787c6fe5a74b",
+        "description": "Administra y consulta un grafo dirigido, permitiendo la adición de nodos con metadatos y aristas con tipos y metadatos adicionales, ofreciendo métodos para obtener estadísticas del grafo.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:22+00:00"
+    },
+    "Core/Services/Graph/GraphScanner.php": {
+        "hash": "8d4d89ad11106bef792202559d1e4273",
+        "description": "Escanea y analiza archivos PHP para construir un grafo de dependencias entre clases, interfaces, traits y otros componentes del proyecto.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:27+00:00"
+    },
+    "Core/Services/Graph/GroqProvider.php": {
+        "hash": "eddad1cc3f93594240f18ea5f2d3b42a",
+        "description": "Proporciona servicios de comunicación con la API de Groq, gestionando autenticación y endpoints específicos para solicitudes de chat.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:29+00:00"
+    },
+    "Core/Services/Graph/ImportanceCriteria.php": {
+        "hash": "186a073ef99ceca61a7a3d774e6f8012",
+        "description": "Determina la importancia de nodos en un grafo basado en criterios como tipo, ubicación y conexiones, filtrando aquellos que cumplen con los requisitos establecidos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:33+00:00"
+    },
+    "Core/Services/Graph/LlmProvider.php": {
+        "hash": "ca6f38398fb167321f85961323b81260",
+        "description": "Define la interfaz para proveedores de modelos de lenguaje grande, especificando métodos para obtener el modelo y el nombre del proveedor, así como descripciones técnicas y profundas de clases PHP.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:37+00:00"
+    },
+    "Core/Services/Graph/LlmProviderFactory.php": {
+        "hash": "a2fefe50005587e95ddc6003ccc7eeb9",
+        "description": "Crea y configura instancias de proveedores de LLM basadas en variables de entorno, validando requisitos específicos para cada uno.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:40+00:00"
+    },
+    "Core/Services/Graph/MermaidValidator.php": {
+        "hash": "bc3c44a09e6372fcb670d62e5922de7a",
+        "description": "Valida la sintaxis básica de bloques Mermaid y procesa respuestas Markdown para asegurar diagramas válidos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:43+00:00"
+    },
+    "Core/Services/Graph/ObsidianRenderer.php": {
+        "hash": "3e9cb7423dc48dbd2b92ff2f123bd80a",
+        "description": "Renderiza y actualiza gráficos de componentes en formato Markdown, manejando relaciones entre nodos y generando archivos con metadatos y descripciones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:47+00:00"
+    },
+    "Core/Services/Graph/OllamaProvider.php": {
+        "hash": "b20e087b3cb3ab331eca450954a054f4",
+        "description": "Define un proveedor específico para el servicio de chat de Ollama, heredando de AbstractOpenAiProvider y configurando endpoints y timeouts personalizados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:49+00:00"
+    },
+    "Core/Services/Graph/PromptLibrary.php": {
+        "hash": "a9e1833d03f29e9cb7359c7b51d699eb",
+        "description": "Carga y devuelve el contenido de archivos markdown de habilidades desde un directorio específico, lanzando una excepción si no se encuentra el archivo.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:51+00:00"
+    },
+    "Core/Services/Storage/MinioClient.php": {
+        "hash": "4bd38fc91fff3e469376577a8656c54c",
+        "description": "Proporciona un wrapper simplificado del SDK de AWS S3 para interactuar con MinIO, encapsulando operaciones comunes de almacenamiento como subir, descargar y listar archivos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:55+00:00"
+    },
+    "Core/Services/Storage/StorageConfig.php": {
+        "hash": "7305d5a241813d65dd121ab6ce54a43b",
+        "description": "Define y encapsula la configuración de almacenamiento para MinIO/S3, proporcionando acceso centralizado a parámetros como host, credenciales y restricciones de archivos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:32:58+00:00"
+    },
+    "Core/Services/Storage/StorageException.php": {
+        "hash": "f24a1fb51b936f1b179087ea582c4925",
+        "description": "Define y encapsula excepciones personalizadas para errores específicos del sistema de almacenamiento MinIO/S3, permitiendo un manejo granular de problemas como conexiones fallidas, archivos no encontrados o subidas erróneas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:01+00:00"
+    },
+    "Core/Services/Storage/StorageService.php": {
+        "hash": "5355e70d92522aff8233cffe51021e51",
+        "description": "Proporciona una API simplificada para el sistema de almacenamiento, encapsulando operaciones CRUD y validaciones de archivos utilizando MinIO.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:05+00:00"
+    },
+    "Core/Traits/ComponentContextTrait.php": {
+        "hash": "d1df25d536f7ec17d05f9ba0637c20c6",
+        "description": "Proporciona un contexto automático para componentes UI, derivando información como rutas y relaciones desde atributos y estructura de carpetas, y expone esta información al JavaScript para uso en el frontend.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:09+00:00"
+    },
+    "Core/Traits/ScreenTrait.php": {
+        "hash": "bb65c0757764e52dfc36e7648e6b0eb7",
+        "description": "Define y gestiona las propiedades de un screen, proporcionando métodos para obtener metadata desde la base de datos o constantes predeterminadas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:12+00:00"
+    },
+    "Core/Types/DimensionUnit.php": {
+        "hash": "6e2be496effd6b35129036941504ccab",
+        "description": "Define las unidades de medida permitidas para dimensiones de componentes, incluyendo pixels, porcentaje, flex y auto.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:13+00:00"
+    },
+    "Core/Types/DimensionValue.php": {
+        "hash": "f38726106c681fdde5f6b517884c289f",
+        "description": "Define y gestiona valores de dimensión con unidades explícitas, asegurando la consistencia y validación de tipos en aplicaciones web.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:33:16+00:00"
+    },
+    "Core/providers/Middleware.php": {
+        "hash": "7c06a605c0d6ecb86f2f24a89f61ea8c",
+        "description": "Define un trait para establecer middlewares, encapsulando la lógica de configuración y posiblemente la autenticación de usuarios.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:25+00:00"
+    },
+    "Core/providers/Request.php": {
+        "hash": "6dbfc34a42d0789649c57c86cb09fbdd",
+        "description": "Encapsula la gestión de solicitudes HTTP, incluyendo la carga de datos, validación de reglas y manejo de errores.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:27+00:00"
+    },
+    "Core/providers/StringMethods.php": {
+        "hash": "2cff5470499800abb61a34b98420ffde",
+        "description": "Proporciona métodos para manipular y formatear cadenas de texto, incluyendo la conversión a camelCase, la limpieza HTML, y el formato de fechas en español.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:31+00:00"
+    },
+    "Core/providers/TimeSet.php": {
+        "hash": "f20bbb3a470119cda45d190e80356cc7",
+        "description": "Establece la zona horaria del servidor a 'America/Bogota'.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:31:33+00:00"
+    },
+    "components/App/AuthGroupsConfig/AuthGroupsConfigComponent.php": {
+        "hash": "756d2e6fdc7f25c85bb4faf118631014",
+        "description": "Define y renderiza la interfaz de lista para grupos de autenticación, incluyendo columnas y acciones de tabla.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:14+00:00"
+    },
+    "components/App/AuthGroupsConfig/childs/AuthGroupsConfigCreate/AuthGroupsConfigCreateComponent.php": {
+        "hash": "80bdff49ae1f160d7e5f38847f789e98",
+        "description": "Define un componente de interfaz para crear grupos de autenticación, encapsulando la estructura del formulario y sus elementos visuales.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:17+00:00"
+    },
+    "components/App/AuthGroupsConfig/childs/AuthGroupsConfigEdit/AuthGroupsConfigEditComponent.php": {
+        "hash": "13f52aeef71e4ed5d254a26d07f66803",
+        "description": "Define un componente de edición para grupos de autenticación, renderizando un formulario con campos para el ID, nombre y descripción del grupo, y gestionando la visualización condicional según la disponibilidad del ID.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:21+00:00"
+    },
+    "components/App/ExampleCrud/ExampleCrudComponent.php": {
+        "hash": "d6839eaf829241a8828760bee2bdb1d4",
+        "description": "Define un componente de interfaz de usuario para operaciones CRUD de ejemplo, implementando ScreenInterface y utilizando TableComponent con columnas y acciones personalizadas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:32+00:00"
+    },
+    "components/App/ExampleCrud/childs/ExampleCreate/ExampleCreateComponent.php": {
+        "hash": "db371536aa1b3407ea522995b3f252c2",
+        "description": "Define un componente de formulario para la creación de registros, implementando ScreenInterface y renderizando campos de entrada como texto, área de texto, select y FilePond.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:25+00:00"
+    },
+    "components/App/ExampleCrud/childs/ExampleEdit/ExampleEditComponent.php": {
+        "hash": "89ef134cd555fe957624813c9076a61f",
+        "description": "Define un componente de edición para registros, gestionando la interfaz de usuario y los elementos de formulario dinámicos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:28+00:00"
+    },
+    "components/App/MenuConfig/MenuConfigComponent.php": {
+        "hash": "4b97fc37d6d3e58e7f1385b18df08da1",
+        "description": "Define y gestiona la configuración del menú de navegación, permitiendo editar nombre, icono, orden y nivel de los items, con interfaz de usuario para arrastrar y reordenar elementos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:37+00:00"
+    },
+    "components/App/RolesConfig/RolesConfigComponent.php": {
+        "hash": "3d6daa1ffe7d1b6bc4e5581142d029ce",
+        "description": "Define un componente de interfaz para gestionar roles, mostrando una tabla con opciones de creación, edición y eliminación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:48+00:00"
+    },
+    "components/App/RolesConfig/childs/RolesConfigCreate/RolesConfigCreateComponent.php": {
+        "hash": "75a78f24dce4d3e2c7b943a9de5bcc14",
+        "description": "Define un componente de interfaz de usuario para crear roles, encapsulando la lógica de renderizado de formularios y la obtención de grupos de autenticación desde la base de datos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:42+00:00"
+    },
+    "components/App/RolesConfig/childs/RolesConfigEdit/RolesConfigEditComponent.php": {
+        "hash": "8cb00f18662edaab42b0935276c57cee",
+        "description": "Define un componente de formulario para editar roles, gestionando la carga de datos y renderizado del formulario con componentes reutilizables.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:45+00:00"
+    },
+    "components/App/ToolsCrud/ToolsCrudComponent.php": {
+        "hash": "fa2f9eb8c3a8d593460ea43f65d4be39",
+        "description": "Define un componente de tabla CRUD para herramientas, implementando ScreenInterface y gestionando columnas, filas y acciones con server-side pagination.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:59+00:00"
+    },
+    "components/App/ToolsCrud/childs/ToolsCreate/ToolsCreateComponent.php": {
+        "hash": "ea4b7ac152ecb0868b00cd5a20441c24",
+        "description": "Define un componente de formulario para crear herramientas, encapsulando la interfaz y la lógica de renderizado de campos como nombre, descripción e imágenes.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:52+00:00"
+    },
+    "components/App/ToolsCrud/childs/ToolsEdit/ToolsEditComponent.php": {
+        "hash": "49efb531d9a5be64a15cafd4d765176f",
+        "description": "Renderiza y gestiona el formulario de edición de herramientas, incluyendo validaciones y componentes dinámicos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:35:55+00:00"
+    },
+    "components/App/UsersConfig/UsersConfigComponent.php": {
+        "hash": "124250286c7c9de9b8d48a4036adec7a",
+        "description": "Define un componente de configuración de usuarios con una tabla interactiva para listar, editar y eliminar usuarios del sistema.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:06+00:00"
+    },
+    "components/App/UsersConfig/childs/UsersConfigCreate/UsersConfigCreateComponent.php": {
+        "hash": "e563cdf8c569d0dcedd175d098127caf",
+        "description": "Define un componente de interfaz de usuario para crear usuarios, encapsulando la lógica de renderizado de formularios y la obtención de datos de grupos de autenticación y roles.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:03+00:00"
+    },
+    "components/Core/Automation/AutomationComponent.php": {
+        "hash": "0a5a6da87009317a3279d762ba86ce20",
+        "description": "Define un componente de automatización que encapsula la integración con un iframe externo (n8n) y registra los assets CSS/JS necesarios, sin requerir configuración adicional.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:10+00:00"
+    },
+    "components/Core/Home/Collections/MenuItemCollection.php": {
+        "hash": "85ee511ee7db48ce2dc0637f373c3791",
+        "description": "Encapsula y gestiona una colección tipada de MenuItemDto, proporcionando métodos para iterar, contar, filtrar y convertir a JSON la estructura del menú.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:13+00:00"
+    },
+    "components/Core/Home/Components/HeaderComponent/HeaderComponent.php": {
+        "hash": "c390e5499ca49961ebadee70cb79e82f",
+        "description": "Renderiza la barra superior de la aplicación con información del usuario, notificaciones y botones de acción utilizando componentes reutilizables.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:17+00:00"
+    },
+    "components/Core/Home/Components/MainComponent/MainComponent.php": {
+        "hash": "56efcc530bfbdebf413dab0451496831",
+        "description": "Renderiza el layout principal de la aplicación SPA, incluyendo MenuComponent y HeaderComponent, y carga dinámicamente el menú desde la base de datos o usa un menú por defecto si falla.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:22+00:00"
+    },
+    "components/Core/Home/Components/MenuComponent/MenuComponent.php": {
+        "hash": "7fe3cffe1ca0233cac821f4c0618b369",
+        "description": "Renderiza un sidebar navegable con menú multinivel, aceptando una colección de items y opciones de personalización como colapsable, redimensionable y buscador.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:29+00:00"
+    },
+    "components/Core/Home/Components/MenuComponent/features/MenuItemComponent/MenuItemComponent.php": {
+        "hash": "838a56bbe55b5b3c2b6789fa697df560",
+        "description": "Renderiza un item de menú recursivo con soporte para submenús y iconos personalizados, gestionando niveles de anidación y estructura HTML correspondiente.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:25+00:00"
+    },
+    "components/Core/Home/Dtos/MenuItemDto.php": {
+        "hash": "a01aebf1509dacff05e02e20ade426f6",
+        "description": "Representa un elemento de menú con sus propiedades y métodos para serialización recursiva de hijos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:31+00:00"
+    },
+    "components/Core/Home/HomeComponent.php": {
+        "hash": "428df607cb8fc2915ccb9f5f880bddb7",
+        "description": "Define el componente de la página de inicio del dashboard, gestionando la carga de assets CSS y JS y renderizando la interfaz HTML con cards de estadísticas, automatización, actividades y configuración.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:35+00:00"
+    },
+    "components/Core/Login/LoginComponent.php": {
+        "hash": "d47f96e0609c3af7644b4c318630467f",
+        "description": "Renderiza la interfaz de inicio de sesión del sistema, gestionando el tema y los assets necesarios.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:39+00:00"
+    },
+    "components/Core/Screen/ScreenComponent.php": {
+        "hash": "da3383f486ad990318df3abae0078bd5",
+        "description": "Define la clase base para todas las ventanas LEGO, proporcionando un contenedor identificable con data-screen-id y estructura consistente para el window manager, junto con hooks para funcionalidad adicional y integración automática con e...",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:44+00:00"
+    },
+    "components/shared/Buttons/Buttons/_ide_helper.php": {
+        "hash": "5695c44be71e74abc7cb8ba407329403",
+        "description": "Define la clase `IconButton` como alias de `IconButtonComponent`, facilitando el autocompletado del IDE sin cargar código en runtime.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:46+00:00"
+    },
+    "components/shared/Buttons/IconButtonComponent/IconButtonComponent.php": {
+        "hash": "8ac67394ea88ea92aa1dd40aae9f521d",
+        "description": "Define un componente de botón de ícono reutilizable con soporte para renderizado dinámico tanto en PHP como en JavaScript, gestionando sus propiedades y assets asociados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:50+00:00"
+    },
+    "components/shared/Essentials/ColumnComponent/ColumnComponent.php": {
+        "hash": "6c62a8a43edbba53e01ff83d358b6b07",
+        "description": "Organiza y renderiza componentes hijos de manera vertical con configuraciones flexibles de espaciado, alineación y scroll.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:53+00:00"
+    },
+    "components/shared/Essentials/DivComponent/DivComponent.php": {
+        "hash": "4efad29c5ee2f4fd30cffc75e0f37a3d",
+        "description": "Define un componente de interfaz de usuario que actúa como contenedor genérico con soporte completo para estilos inline y composición de hijos, similar a un `<div>` pero con flexibilidad adicional.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:36:58+00:00"
+    },
+    "components/shared/Essentials/Essentials/_ide_helper.php": {
+        "hash": "743c396c638a50a5837ba33898199704",
+        "description": "Define clases para componentes UI básicos como Column, Row, Div y Grid, extendiendo funcionalidades de componentes más específicos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:00+00:00"
+    },
+    "components/shared/Essentials/GridComponent/GridComponent.php": {
+        "hash": "cc01afb1dccf1ad835faf820f46e5442",
+        "description": "Define un componente de cuadrícula CSS Grid flexible, permitiendo configurar columnas, filas, espaciado y alineación para organizar hijos de manera responsive.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:04+00:00"
+    },
+    "components/shared/Essentials/ImageGalleryComponent/ImageGalleryComponent.php": {
+        "hash": "d1364c73a2bbef7bf49e2baf58301876",
+        "description": "Gestiona la carga, visualización y manipulación de imágenes en un componente de galería, incluyendo drag & drop, preview, ordenamiento, marcado principal y eliminación, con integración a MinIO.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:10+00:00"
+    },
+    "components/shared/Essentials/RowComponent/RowComponent.php": {
+        "hash": "d454bd022d6eb85d0d49cabaf4b0fcb7",
+        "description": "Define un componente de layout horizontal que organiza hijos en fila con configuraciones flexibles para espaciado, alineación y comportamiento de desplazamiento.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:13+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Collections/ColumnCollection.php": {
+        "hash": "bd15ffdf932dc3ee9f0d65b8ce6852cb",
+        "description": "Encapsula y gestiona una colección inmutable de objetos ColumnDto, proporcionando métodos para convertirlos a configuraciones de AG Grid y normalizar anchos porcentuales.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:17+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Collections/RowActionsCollection.php": {
+        "hash": "fb0109f3ce4b454686641686f75c664c",
+        "description": "Encapsula y gestiona una colección inmutable de acciones de fila para tablas, proporcionando métodos para obtener, convertir y verificar acciones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:20+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Dtos/ColumnDto.php": {
+        "hash": "591bb67527c7e62d10d62159abf24260",
+        "description": "Define un DTO inmutable para configurar columnas de AG Grid, encapsulando propiedades como ancho, ordenamiento y renderizado, validando configuraciones y manteniendo consistencia dimensional.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:24+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Dtos/RowActionDto.php": {
+        "hash": "6a063da132927c663a67560c713d64a7",
+        "description": "Define un DTO para acciones personalizables de filas en tablas, encapsulando propiedades como ID, etiqueta, icono y comportamiento, convirtiéndolas a array para JavaScript.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:28+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/ActionButtonsRenderer.php": {
+        "hash": "f85fe0f7f8afa718bd2c1bddf11cd6f0",
+        "description": "Genera y renderiza botones de acción (editar, eliminar, personalizados) para tablas, con soporte a temas oscuros y tooltips informativos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:33+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/BooleanRenderer.php": {
+        "hash": "45d2349735d808cc0f0abfc71b4967f0",
+        "description": "Renderiza valores booleanos en tablas con iconos y texto personalizables, soportando múltiples estilos y formatos de entrada.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:37+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/CellRenderer.php": {
+        "hash": "13c27f0b3978a8a27874aa0c1630e26a",
+        "description": "Define la clase abstracta base para renderizar celdas en AG Grid, encapsulando la generación de código JavaScript y el manejo de temas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:40+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/CurrencyRenderer.php": {
+        "hash": "6b49de7819e868cc5856b9302d279a62",
+        "description": "Formatea valores numéricos como moneda con símbolo, separadores y decimales configurables, soportando múltiples monedas y estilos visuales para valores negativos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:44+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/DateRenderer.php": {
+        "hash": "7db0d155afa94dcc4db1685e73283a8e",
+        "description": "Formatea fechas de manera consistente y configurable, soportando múltiples formatos, locales y representaciones relativas.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:47+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/ImageRenderer.php": {
+        "hash": "a662a1d16e1ff42131af7d7030d78396",
+        "description": "Renderiza imágenes como thumbnails con opciones de preview, tamaño y forma configurable, y soporta lazy loading y placeholders.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:50+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/StatusBadgeRenderer.php": {
+        "hash": "986ae41789d053b7edacc176a4f1b7d2",
+        "description": "Renderiza badges de estado visualmente consistentes para campos de tabla, soportando múltiples estados con colores y etiquetas personalizables.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:54+00:00"
+    },
+    "components/shared/Essentials/TableComponent/Renderers/StockLevelRenderer.php": {
+        "hash": "b9260c361e6403e190310c916f6677bd",
+        "description": "Renderiza niveles de stock con indicadores visuales, colores y badges según umbrales configurables, incluyendo opcionalmente barras de progreso.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:37:58+00:00"
+    },
+    "components/shared/Essentials/TableComponent/TableComponent.php": {
+        "hash": "41770f2b3c8becde97a57fddbc9a4b84",
+        "description": "Define un componente de tabla avanzada con AG Grid, soportando ordenamiento, filtrado, paginación y acciones personalizables, con opciones para modo model-driven y exportación a CSV/Excel.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:04+00:00"
+    },
+    "components/shared/Forms/ButtonComponent/ButtonComponent.php": {
+        "hash": "7e22e77f7d12e29d852eaf190c050099",
+        "description": "Define un componente de botón con múltiples estados, variantes y configuraciones, renderizando HTML semántico y gestionando assets CSS/JS.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:07+00:00"
+    },
+    "components/shared/Forms/CheckboxComponent/CheckboxComponent.php": {
+        "hash": "8c57028eacc04340028300538baa6871",
+        "description": "Define un componente de checkbox con soporte para estados, validación y diseño personalizado, encapsulando la renderización HTML y manejo de atributos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:10+00:00"
+    },
+    "components/shared/Forms/FilePondComponent/FilePondComponent.php": {
+        "hash": "aa62f092290768cd3bb22f00100725d6",
+        "description": "Define un componente de carga de archivos genérico y reutilizable con FilePond, integrado con MinIO Storage, que permite múltiples características como carga múltiple, preview instantáneo, validación client-side y eliminación individual.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:15+00:00"
+    },
+    "components/shared/Forms/FormActionsComponent/FormActionsComponent.php": {
+        "hash": "33827df684e059b0abc06d2073993e36",
+        "description": "Encapsula la presentación de botones de acción en formularios con múltiples layouts y diseño responsivo, facilitando la organización y renderizado de elementos hijos como botones.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:18+00:00"
+    },
+    "components/shared/Forms/FormComponent/FormComponent.php": {
+        "hash": "af21182bec1062545a5fa1586b1e1be4",
+        "description": "Encapsula la creación y renderizado de formularios con validación automática, manejo de eventos y soporte para componentes hijos.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:21+00:00"
+    },
+    "components/shared/Forms/FormGroupComponent/FormGroupComponent.php": {
+        "hash": "12e2251fc09357812772a3bce8ceb6b7",
+        "description": "Agrupa y renderiza componentes de formulario hijos con título y descripción, aplicando un estilo visual consistente.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:24+00:00"
+    },
+    "components/shared/Forms/FormRowComponent/FormRowComponent.php": {
+        "hash": "3c9ac49590a594e5ebca9d0fb6b2b454",
+        "description": "Define un componente de interfaz de usuario que organiza horizontalmente campos de formulario con distribución automática y espaciado configurable, siendo responsive para dispositivos móviles.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:27+00:00"
+    },
+    "components/shared/Forms/Forms/_ide_helper.php": {
+        "hash": "fcafd16638b70c45dcbb601f1efad503",
+        "description": "Define clases para componentes de formulario reutilizables, encapsulando sus respectivas funcionalidades y permitiendo un fácil mantenimiento y expansión.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:30+00:00"
+    },
+    "components/shared/Forms/InputTextComponent/InputTextComponent.php": {
+        "hash": "ddca7ccd08522557477670c48320f6e5",
+        "description": "Define un componente de entrada de texto con validación, contador de caracteres y estilos Lego, encapsulando la lógica de renderizado y atributos HTML.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:33+00:00"
+    },
+    "components/shared/Forms/RadioComponent/RadioComponent.php": {
+        "hash": "c2a8327d548aaf5cf662d929f92b09c5",
+        "description": "Define un componente de radio button con soporte para grupos, validación y diseño personalizado, encapsulando la renderización HTML y manejo de estados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:36+00:00"
+    },
+    "components/shared/Forms/SelectComponent/SelectComponent.php": {
+        "hash": "6a6eda2e7ee7a7b31e485d5e74cba287",
+        "description": "Define un componente de selección dropdown con búsqueda y opciones dinámicas, encapsulando la renderización HTML y el manejo de estados como múltiple, deshabilitado y error.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:41+00:00"
+    },
+    "components/shared/Forms/TextAreaComponent/TextAreaComponent.php": {
+        "hash": "b02abc3b30955102d936fdfcfaab1499",
+        "description": "Define un componente de interfaz de usuario para textareas con soporte para contador de caracteres, auto-resize, validación y estados visuales.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:44+00:00"
+    },
+    "components/shared/FragmentComponent/FragmentComponent.php": {
+        "hash": "50c2669df02ed061a82babd8b313fe79",
+        "description": "Encapsula múltiples componentes UI sin agregar un wrapper HTML al DOM, permitiendo la composición lógica y el renderizado eficiente de elementos relacionados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:47+00:00"
+    },
+    "components/shared/Navigation/BreadcrumbComponent/BreadcrumbComponent.php": {
+        "hash": "e083952e77dccda908f4332dcccfae34",
+        "description": "Renderiza un componente de breadcrumb HTML dinámico, permitiendo configurar elementos y estilos personalizados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:49+00:00"
+    },
+    "components/shared/Navigation/Navigation/_ide_helper.php": {
+        "hash": "264411ab409d3f893fb7387cd636a2dc",
+        "description": "Define la clase `Breadcrumb` como alias de `BreadcrumbComponent`, facilitando el autocompletado del IDE sin cargar código en tiempo de ejecución.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:38:52+00:00"
     }
 }
