@@ -1,0 +1,152 @@
+{
+    "Core/Attributes/ApiComponent.php": {
+        "hash": "de44dbddc7fa8bc47289ff1266419854",
+        "description": "Define un atributo para marcar clases como componentes de API, especificando la ruta, métodos HTTP y requerimiento de autenticación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:23+00:00"
+    },
+    "Core/Attributes/ApiCrudResource.php": {
+        "hash": "818eda68a58662d2b8e14a142657fb22",
+        "description": "Define un atributo para modelos que genera automáticamente rutas REST con paginación, filtros y ordenamiento.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:26+00:00"
+    },
+    "Core/Attributes/ApiGetResource.php": {
+        "hash": "1a40ac619f83921d7a7b53a2d215bc9d",
+        "description": "Define un atributo para modelos que expone endpoints de API de solo lectura, gestionando rutas GET con paginación, filtros y búsqueda.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:30+00:00"
+    },
+    "Core/Attributes/ApiRoutes.php": {
+        "hash": "258cf878251b4611552fa337a7531dea",
+        "description": "Define y registra automáticamente rutas de controladores API con presets y acciones personalizables, aplicando middlewares y prefijos según configuración.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-07T19:25:30+00:00"
+    },
+    "Core/Bootstrap/RegisterDynamicComponents.php": {
+        "hash": "2abab530cd324f5fa772330dad4d399e",
+        "description": "Registra automáticamente los componentes dinámicos al crear instancias temporales de cada uno, asegurando que estén disponibles para JavaScript antes de su uso.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-07T19:27:21+00:00"
+    },
+    "Core/Commands/CommandRouter.php": {
+        "hash": "53380b487ec152dcc4fef5f54b89b966",
+        "description": "Rutea y ejecuta comandos CLI, descubriendolos automáticamente desde el directorio Commands y proporcionando ayuda detallada.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-07T19:29:11+00:00"
+    },
+    "Core/Commands/ConfigResetCommand.php": {
+        "hash": "f9b20d80edc9dce9723b4c1f36e5c101",
+        "description": "Resetea la configuración de Lego a valores por defecto, con opciones para resetear solo el menú y sin confirmación.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-07T19:30:51+00:00"
+    },
+    "Core/Commands/CoreCommand.php": {
+        "hash": "8c0ae1e75b14f33faf511f484bd60f75",
+        "description": "Define la clase abstracta base para todos los comandos CLI en el framework Lego, proporcionando una interfaz estándar para la creación y ejecución de comandos con soporte para argumentos, opciones y mensajes de salida.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-07T19:34:21+00:00"
+    },
+    "Core/Commands/DocsGraphCommand.php": {
+        "hash": "e3a087c23b9d49ae5f0058c61af5872c",
+        "description": "Genera un grafo del código fuente como notas de Obsidian con wikilinks, incluyendo descripciones y análisis profundos utilizando LLMs.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:35+00:00"
+    },
+    "Core/Commands/HelpCommand.php": {
+        "hash": "260d15742f0427624c0ca3ed2e049e4d",
+        "description": "Muestra información de ayuda para comandos, ya sea general o específica según el argumento proporcionado.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:37+00:00"
+    },
+    "Core/Commands/InitCommand.php": {
+        "hash": "0d7728e944f5af09db1e9d7f671d7d0e",
+        "description": "Orquesta la inicialización del framework Lego, ejecutando migraciones, mapeo de rutas y configuración de almacenamiento, informando el éxito o errores durante el proceso.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:41+00:00"
+    },
+    "Core/Commands/InitStorageCommand.php": {
+        "hash": "43794401bfe9feba0a5c7f9ad15f859c",
+        "description": "Inicializa el sistema de almacenamiento MinIO, creando buckets, aplicando políticas y estructurando carpetas automáticamente.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:44+00:00"
+    },
+    "Core/Commands/MakeComponentCommand.php": {
+        "hash": "25a7a1a60c96d839d1dbbfb5e258334d",
+        "description": "Orquesta la creación de nuevos componentes Lego, generando archivos PHP, CSS y JS con estructura predefinida.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:47+00:00"
+    },
+    "Core/Commands/MapRoutesCommand.php": {
+        "hash": "294aa7372b00bc817182995fb763a9d8",
+        "description": "Mapea y registra todas las rutas de la aplicación, guardando el resultado en un archivo JSON especificado.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:50+00:00"
+    },
+    "Core/Commands/MigrateCommand.php": {
+        "hash": "6c0b57e7e6d42f73191f38ad327f8d87",
+        "description": "Orquesta la ejecución de migraciones de base de datos, gestionando el orden y registro de cambios estructurales.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:53+00:00"
+    },
+    "Core/Commands/MigrateDownCommand.php": {
+        "hash": "4cd37449ad4b83c6e18dfea96f67934d",
+        "description": "Orquesta el rollback de migraciones, permitiendo revertir la última batch o una específica, gestionando la interacción con la base de datos y los archivos de migración.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:56+00:00"
+    },
+    "Core/Commands/MigrateStatusCommand.php": {
+        "hash": "1dc019b00544f55275160f8861932359",
+        "description": "Muestra el estado de las migraciones, indicando cuáles han sido ejecutadas y cuáles están pendientes.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:29:59+00:00"
+    },
+    "Core/Commands/MigrateUpCommand.php": {
+        "hash": "283995a954d523404382e83f93847cb4",
+        "description": "Ejecuta migraciones de base de datos hacia arriba, aplicando cambios específicos o pendientes según los parámetros proporcionados.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:02+00:00"
+    },
+    "Core/Commands/StorageCheckCommand.php": {
+        "hash": "549e3913803faafe73326e6df40d0d27",
+        "description": "Verifica el estado del sistema de almacenamiento MinIO, mostrando estadísticas y configuración actual.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:05+00:00"
+    },
+    "Core/Components/ComponentRegistry.php": {
+        "hash": "460b4c9793855e05e92a2ff0e2f697a1",
+        "description": "Registra y gestiona componentes dinámicos, validando colisiones de IDs y proporcionando métodos para renderizar individualmente o por lotes.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:09+00:00"
+    },
+    "Core/Components/CoreComponent/CoreComponent.php": {
+        "hash": "a7e92c88ee109ce513cc3f966f288947",
+        "description": "Define la clase abstracta base de todos los componentes Lego, encapsulando la carga de assets CSS/JS y el ciclo de renderizado.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:13+00:00"
+    },
+    "Core/Components/Table/TableConfig.php": {
+        "hash": "6f17a30b9c7f657b1a458f44a59c01c1",
+        "description": "Define y encapsula la configuración de un componente de tabla, detectando automáticamente parámetros desde modelos decorados con #[ApiGetResource] o permitiendo una configuración manual.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:17+00:00"
+    },
+    "Core/Config/MenuStructure.php": {
+        "hash": "725ff470981eddbd4da4d95f61e1be1d",
+        "description": "Define la estructura del menú de navegación para el dashboard, utilizando constantes de los componentes y calculando automáticamente propiedades como parent_id y level basado en la jerarquía anidada.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:22+00:00"
+    },
+    "Core/Contracts/CoreControllerContract.php": {
+        "hash": "25a9376fa7aa6aac3d95be54ce3bbd1d",
+        "description": "Define la interfaz base para controladores del núcleo, estableciendo constantes de rutas y métodos a implementar.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:25+00:00"
+    },
+    "Core/Contracts/ScreenInterface.php": {
+        "hash": "380dc2b7e2d1b5bb7474b64492469ca1",
+        "description": "Define el contrato para componentes de pantalla en LEGO, especificando métodos para obtener metadata y propiedades únicas como ID y ruta.",
+        "model": "qwen2.5-coder:14b",
+        "updated_at": "2026-05-09T00:30:27+00:00"
+    }
+}

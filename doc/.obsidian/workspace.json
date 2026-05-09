@@ -1,0 +1,220 @@
+{
+  "main": {
+    "id": "44f2657f0a050e7e",
+    "type": "split",
+    "children": [
+      {
+        "id": "31e2c046b5dacfde",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d4190d1ec1accff8",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a366138fd8d295a0",
+    "type": "split",
+    "children": [
+      {
+        "id": "dda2be3f20fb1629",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e389126727033062",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "18d49457653309c0",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "45c7ec6e219a04be",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 235.49999618530273
+  },
+  "right": {
+    "id": "a4c9452a2c2f753f",
+    "type": "split",
+    "children": [
+      {
+        "id": "96d25a04590de9ae",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c586c833d39b5d3a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "87dd996e5bd022bd",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "00c40f4edf8da48f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "f93b2118a8cc2933",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "2a700bd42e1439a8",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "d4190d1ec1accff8",
+  "lastOpenFiles": [
+    "grafo/nodos/screen-interface.md",
+    "grafo/nodos/core-controller-contract.md",
+    "grafo/nodos/menu-structure.md",
+    "grafo/nodos/table-config.md",
+    "grafo/nodos/core-component.md",
+    "grafo/nodos/component-registry.md",
+    "grafo/nodos/storage-check-command.md",
+    "grafo/nodos/migrate-up-command.md",
+    "grafo/nodos/migrate-status-command.md",
+    "grafo/nodos/migrate-down-command.md",
+    "grafo/nodos/migrate-command.md",
+    "grafo/nodos/map-routes-command.md",
+    "grafo/nodos/make-component-command.md",
+    "grafo/nodos/init-storage-command.md",
+    "grafo/nodos/init-command.md",
+    "grafo/nodos/help-command.md",
+    "grafo/nodos/docs-graph-command.md",
+    "grafo/nodos/core-command.md",
+    "grafo/nodos/config-reset-command.md",
+    "grafo/nodos/command-router.md",
+    "grafo/nodos/register-dynamic-components.md",
+    "grafo/nodos/api-routes.md",
+    "grafo/nodos/api-get-resource.md",
+    "grafo/nodos/api-crud-resource.md",
+    "grafo/nodos/api-component.md",
+    "grafo/nodos/response.md",
+    "Untitled 2.canvas",
+    "Untitled 1.canvas",
+    "TagsRoutes/reports",
+    "TagsRoutes/logs",
+    "TagsRoutes",
+    "Untitled.base",
+    "Untitled.canvas",
+    "grafo/nodos",
+    "grafo",
+    "frontend",
+    "componentes",
+    "arquitectura"
+  ]
+}
