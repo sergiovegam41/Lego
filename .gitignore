@@ -44,3 +44,9 @@ phpunit.xml
 # Temporary files
 /tmp
 *.temp
+
+# Generated artifacts
+composer.phar
+cookies.txt
+components/shared/*/*/_ide_helper.php
+doc/.obsidian/workspace.json
