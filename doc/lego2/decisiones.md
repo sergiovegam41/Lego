@@ -50,3 +50,15 @@ Principios de referencia: P1 a P6, definidos en [../plan-lego-2.md](../plan-lego
 | D20 | Confirmación | El token de un solo uso queda atado al usuario, la acción, el registro y la entrada validada, y expira en 5 minutos. | Un token emitido para borrar un registro no puede borrar otro. Lo detectó un test. |
 | D21 | Auditoría | Se registran todas las acciones que cambian datos y todos los rechazos por permiso; las de solo lectura no. | Evita ruido en `action_log` sin perder trazabilidad de cambios. |
 | D22 | Altas parciales | Al crear, un campo opcional omitido conserva el valor por defecto de la base de datos; al editar, solo cambian los campos enviados. | Forzar nulos rompía columnas con default. Lo detectó un test. |
+
+## Fase 4 (2026-10-15)
+
+Aplicadas por defecto las recomendaciones C1 a C9 de [pendientes.md](pendientes.md), a confirmar por el dueño.
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| D23 | Rutas del cliente | La URL de una pantalla es la misma en página y en fragmento: `/clients/5` y `/component/clients/5`. La clave de instancia es la ruta; la query es su estado. | Una sola tabla de rutas para servidor y cliente; enlaces compartibles; F5 funciona. |
+| D24 | Envío de formularios con JavaScript | El formulario con JS usa la API de acciones (`POST /api/actions/{name}`), igual que la CLI y los futuros agentes. Sin JS usa el POST de la pantalla. | Una sola forma de ejecutar acciones desde el navegador, y errores por campo en JSON. |
+| D25 | Valores por defecto de campos | `Field::default()` define el valor de una entrada vacía; al crear, un campo opcional vacío se omite. | Un formulario envía todos los campos como texto; sin esto, una columna `NOT NULL` con default fallaba. |
+| D26 | Caché | Páginas, fragmentos y JSON llevan `Cache-Control: no-store`; los assets con `?v=` se cachean un año. | Las respuestas dependen de la sesión; los assets se versionan por fecha de modificación. |
+| D27 | Tema | El tema sigue al sistema por defecto; el botón del shell lo fija y lo guarda en `localStorage`, solo como preferencia del navegador. | Preferencia personal sin estado en servidor. |

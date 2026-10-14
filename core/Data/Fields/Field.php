@@ -30,6 +30,8 @@ abstract class Field
 
     protected ?string $help = null;
 
+    protected mixed $default = null;
+
     final public function __construct(public readonly string $name, public readonly string $label)
     {
         if (preg_match('/^[a-z][a-z0-9_]*$/', $name) !== 1) {
@@ -97,6 +99,19 @@ abstract class Field
         return $this;
     }
 
+    /** Value stored when the input is empty, e.g. Number::make('visits', 'Visitas')->default(0). */
+    public function default(mixed $value): static
+    {
+        $this->default = $value === null ? null : $this->cast($value);
+
+        return $this;
+    }
+
+    public function defaultValue(): mixed
+    {
+        return $this->default;
+    }
+
     public function isRequired(): bool
     {
         return $this->required;
@@ -128,14 +143,14 @@ abstract class Field
     }
 
     /**
-     * Raw input to stored value; null for empty input.
+     * Raw input to stored value; the default (null unless set) for empty input.
      *
      * @throws InvalidValue
      */
     public function normalize(mixed $raw): mixed
     {
         if ($raw === null || (is_string($raw) && trim($raw) === '')) {
-            return null;
+            return $this->default;
         }
 
         return $this->cast($raw);
@@ -156,7 +171,7 @@ abstract class Field
         }
 
         return array_filter(
-            ['title' => $this->label, 'description' => $this->help, ...$schema],
+            ['title' => $this->label, 'description' => $this->help, ...$schema, 'default' => $this->default],
             static fn (mixed $v): bool => $v !== null,
         );
     }

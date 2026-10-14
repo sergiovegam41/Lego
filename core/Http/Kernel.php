@@ -62,6 +62,11 @@ final class Kernel
             $response = $this->errors->render($e, $request, $traceId);
         }
 
+        // Pages, fragments and JSON depend on the session: never cache them.
+        if ($response->header('cache-control') === null) {
+            $response = $response->withHeader('cache-control', 'no-store');
+        }
+
         if ($issuedCsrf !== null) {
             $response = $response->withCookie($this->csrf->cookieFor($issuedCsrf));
         }

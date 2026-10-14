@@ -78,7 +78,7 @@ De esa clase se derivan rutas, menú, permisos, endpoints, tabla, formularios, v
 
 ## Fases
 
-Estado al 2026-10-15: fases 0 a 3 terminadas en la rama `lego-2`. Siguiente: fase 4. Guía de módulos: [modulos.md](modulos.md).
+Estado al 2026-10-15: fases 0 a 4 terminadas en la rama `lego-2`. Siguiente: fase 5. Guías: [modulos.md](modulos.md), [frontend.md](frontend.md). Pendientes del dueño: [lego2/pendientes.md](lego2/pendientes.md).
 
 Cada fase termina con tests en verde, revisión de código, commit, despliegue en el mini PC y un checkpoint contigo antes de la siguiente.
 

@@ -67,7 +67,7 @@ final class RecordList extends Component
         $pagination = $this->pagination($meta);
 
         return <<<HTML
-            <section class="lego-records" data-module="{$moduleName}">
+            <section class="lego-records" data-module="{$moduleName}" data-lego="table">
               <header class="lego-records__header">
                 <h1>{$title}</h1>
                 <span class="lego-records__count">{$total} registros</span>

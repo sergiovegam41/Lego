@@ -1,10 +1,9 @@
 .lego-welcome {
-  min-height: 60vh;
+  min-height: 50vh;
   display: grid;
   place-content: center;
-  gap: 0.5rem;
+  gap: var(--lego-space-2);
   text-align: center;
-  font-family: system-ui, sans-serif;
 }
 
 .lego-welcome h1 {
@@ -13,6 +12,6 @@
 }
 
 .lego-welcome__version {
-  opacity: 0.6;
-  font-family: ui-monospace, monospace;
+  color: var(--lego-text-muted);
+  font-family: var(--lego-font-mono);
 }

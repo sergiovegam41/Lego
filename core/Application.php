@@ -153,7 +153,7 @@ final class Application
 
         $home = fn (Request $r): Response => $this->moduleRoutes->respond($r, 'Inicio', new Welcome(self::VERSION, $r->user->name));
         $this->router->get('/', $home);
-        $this->router->get('/component/welcome', $home);
+        $this->router->get('/component', $home);
 
         $this->router->get('/health', fn (): Response => $this->db->isReachable()
             ? Response::json(['status' => 'ok', 'version' => self::VERSION, 'database' => 'ok'])

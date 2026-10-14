@@ -96,9 +96,9 @@ it('serves a screen module inside the layout and as a fragment', function () {
     $denied = app(guard: FakeGuard::as(['clients.view']))->handle(Request::create('GET', '/reports'));
 
     expect($page->status)->toBe(200)
-        ->and($page->body)->toContain('class="lego-layout"')
+        ->and($page->body)->toContain('class="lego-shell"')
         ->and($page->body)->toContain('<h1>Informes</h1>')
-        ->and($fragment->body)->not->toContain('lego-layout')
+        ->and($fragment->body)->not->toContain('lego-shell')
         ->and($fragment->body)->toContain('<h1>Informes</h1>')
         ->and($denied->status)->toBe(403);
 });

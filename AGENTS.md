@@ -16,6 +16,8 @@ Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/p
 | `core/Http/` | Router, Request, Response, Kernel, errores y archivos estáticos. |
 | `core/View/` | `Component`, recolección de assets y documentos. |
 | `core/Ui/` | Componentes del framework con su CSS y JS al lado. Se sirven en `/_lego/`. |
+| `core/Ui/Shell/`, `core/Ui/js/` | Shell, raíz de pantalla y cliente en módulos ES (`lego.js`, `ui/*.js`). Guía: [doc/frontend.md](doc/frontend.md). |
+| `core/Ui/Theme/tokens.css` | Único lugar con colores, espacios y radios; tema claro y oscuro. |
 | `core/Console/` | La CLI `php lego`, sobre symfony/console. |
 | `core/Auth/` | Usuarios, roles, permisos, sesiones en Postgres, login y la única puerta de autorización (`Gate`). |
 | `core/Database/` | Conexión Eloquent, migrador y migraciones del núcleo. |
@@ -47,6 +49,7 @@ Las decisiones vinculantes están en [doc/lego2/decisiones.md](doc/lego2/decisio
 11. **Toda autorización pasa por `Gate::authorize()`.** No se comparan roles a mano.
 12. **Un módulo nuevo no toca el núcleo.** Se crea con `php lego make:module` y se declara con `#[Module]`. Sus campos viven solo en `fields()`.
 13. **Toda operación de negocio es una acción** y corre por `ActionExecutor::execute()`, venga de una pantalla, de la API o de la CLI. Lo que no es CRUD se declara con `#[Action]` en el modelo.
+14. **El frontend son módulos ES nativos sin build.** Nada en `window`, sin `eval` ni `<script>` en línea, `fetch` solo en `lego.js`, y todo listener con `ctx.signal`. Los colores salen de `tokens.css`.
 
 ## Comandos
 

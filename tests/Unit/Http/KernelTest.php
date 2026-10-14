@@ -28,7 +28,7 @@ it('answers 401 to anonymous fragments and API calls', function () {
     $app = app();
     $app->router->get('/api/private', fn () => ['secret' => true]);
 
-    $fragment = $app->handle(Request::create('GET', '/component/welcome'));
+    $fragment = $app->handle(Request::create('GET', '/component'));
     $api = $app->handle(Request::create('GET', '/api/private'));
 
     expect($fragment->status)->toBe(401)
@@ -118,7 +118,7 @@ it('serves framework assets without a session', function () {
 });
 
 it('returns a component as a fragment on the component layer', function () {
-    $response = app(guard: FakeGuard::as())->handle(Request::create('GET', '/component/welcome'));
+    $response = app(guard: FakeGuard::as())->handle(Request::create('GET', '/component'));
 
     expect($response->status)->toBe(200)
         ->and($response->body)->not->toContain('<!doctype')

@@ -123,3 +123,49 @@ it('answers anonymous requests to closed routes with 401 or a login redirect', f
         expect($status)->toBeIn([302, 401], "{$route->method} {$route->path} answered {$status}");
     }
 });
+
+/** @return array<string, string> JS files of the core, path => source */
+function coreScripts(): array
+{
+    $files = [];
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(basePath('core'), FilesystemIterator::SKIP_DOTS));
+    foreach ($iterator as $file) {
+        if ($file->getExtension() === 'js') {
+            $files[str_replace('\\', '/', substr($file->getPathname(), strlen(basePath()) + 1))] = (string) file_get_contents($file->getPathname());
+        }
+    }
+    ksort($files);
+
+    return $files;
+}
+
+it('keeps the frontend free of dangerous or global patterns', function () {
+    expect(coreScripts())->not->toBeEmpty();
+
+    foreach (coreScripts() as $path => $source) {
+        expect($source)
+            ->not->toMatch('/\bnew Function\b|\beval\s*\(/', "{$path} evaluates code")
+            ->not->toMatch('/\bwindow\.[A-Za-z_$][\w$]*\s*=(?!=)/', "{$path} writes a global")
+            ->not->toMatch('/\bdocument\.write\b/', "{$path} uses document.write")
+            ->not->toMatch('/\bconsole\.(log|debug)\b/', "{$path} logs to the console")
+            ->not->toMatch('/\b(alert|prompt)\s*\(|window\.confirm\s*\(/', "{$path} opens a blocking browser dialog");
+        expect(str_starts_with(ltrim($source), '/**'))->toBeTrue("{$path} needs a header comment");
+    }
+});
+
+it('calls fetch only from lego.js', function () {
+    foreach (coreScripts() as $path => $source) {
+        if ($path !== 'core/Ui/js/lego.js') {
+            expect($source)->not->toMatch('/\bfetch\s*\(/', "{$path} calls fetch directly; use api() or fetchFragment()");
+        }
+    }
+});
+
+it('writes no inline executable scripts in components', function () {
+    foreach (phpFilesIn('core') as $file) {
+        $source = (string) file_get_contents($file);
+        preg_match_all('/<script(?![^>]*\b(src=|type="application\/json"|type="importmap"))[^>]*>/', $source, $matches);
+
+        expect($matches[0])->toBe([], "Inline script in {$file}");
+    }
+});

@@ -10,7 +10,7 @@ use Lego\View\Component;
 /** Sign-in form. A plain HTML form: it works without JavaScript. */
 final class Login extends Component
 {
-    protected array $styles = ['login.css'];
+    protected array $styles = ['../Theme/tokens.css', 'login.css'];
 
     public function __construct(
         private readonly string $csrfToken,

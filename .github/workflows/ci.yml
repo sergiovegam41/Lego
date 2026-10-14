@@ -67,6 +67,19 @@ jobs:
       - name: Run tests
         run: composer test
 
+  browser:
+    name: Browser tests (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run browser tests
+        run: docker compose -f compose.test.yml run --rm browser
+
+      - name: Stop
+        if: always()
+        run: docker compose -f compose.test.yml down -v
+
   docker:
     name: Docker image and compose
     runs-on: ubuntu-latest

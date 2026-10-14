@@ -37,3 +37,47 @@ services:
       db-test:
         condition: service_healthy
     command: sh -c "composer install --no-interaction --no-progress --quiet && vendor/bin/pest"
+
+  # Browser tests: `docker compose -f compose.test.yml run --rm browser`
+  web-test:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+      target: test
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      APP_URL: http://web-test:8000
+      APP_DEBUG: "true"
+      DB_HOST: db-test
+      DB_PORT: "5432"
+      DB_DATABASE: lego_test
+      DB_USERNAME: lego
+      DB_PASSWORD: lego
+      COMPOSER_HOME: /tmp/composer
+      PHP_CLI_SERVER_WORKERS: "4"
+    depends_on:
+      db-test:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction --no-progress --quiet && php tests/Browser/seed.php && php -S 0.0.0.0:8000 -t public tests/Browser/server.php"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8000/login') === false ? 1 : 0);"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+
+  browser:
+    image: mcr.microsoft.com/playwright/python:v1.49.1-noble
+    init: true
+    ipc: host
+    working_dir: /app
+    volumes:
+      - .:/app:ro
+    environment:
+      LEGO_URL: http://web-test:8000
+    depends_on:
+      web-test:
+        condition: service_healthy
+    command: sh -c "pip install --quiet --break-system-packages playwright==1.49.1 && python tests/Browser/test_shell.py"

@@ -197,12 +197,12 @@ describe('screens', function () {
         $fragment = $app->handle(Request::create('GET', '/component/clients'));
 
         expect($page->status)->toBe(200)
-            ->and($page->body)->toContain('class="lego-layout"')
+            ->and($page->body)->toContain('class="lego-shell"')
             ->and($page->body)->toContain('Florería Lima')
             ->and($page->body)->toContain('1.234,50')
             ->and($page->body)->toContain('data-lego-actions="clients"')
             ->and($page->body)->toContain('href="/clients/new"')
-            ->and($fragment->body)->not->toContain('lego-layout')
+            ->and($fragment->body)->not->toContain('lego-shell')
             ->and($fragment->body)->toContain('Florería Lima');
     });
 
@@ -317,4 +317,49 @@ it('scaffolds a module that lints and migrates', function () {
     rmdir("{$dir}/SalesOrders/migrations");
     rmdir("{$dir}/SalesOrders");
     rmdir($dir);
+});
+
+describe('screen contract for the shell', function () {
+    it('gives every open form its own ids so create and edit can coexist', function () {
+        [$app] = actingAs(['clients.*']);
+        $client = newClient();
+
+        $create = $app->handle(Request::create('GET', '/component/clients/new'))->body;
+        $edit = $app->handle(Request::create('GET', '/component/clients/' . $client->id))->body;
+
+        preg_match_all('/\bid="([^"]+)"/', $create, $createIds);
+        preg_match_all('/\bid="([^"]+)"/', $edit, $editIds);
+
+        expect($createIds[1])->toContain('lg-clients-new-name')
+            ->and($editIds[1])->toContain('lg-clients-' . $client->id . '-name')
+            ->and(array_intersect($createIds[1], $editIds[1]))->toBe([])
+            ->and(count($editIds[1]))->toBe(count(array_unique($editIds[1])));
+    });
+
+    it('describes each screen for tabs, history and the action forms', function () {
+        [$app] = actingAs(['clients.*']);
+        $client = newClient();
+
+        $edit = $app->handle(Request::create('GET', '/component/clients/' . $client->id))->body;
+        $list = $app->handle(Request::create('GET', '/component/clients?sort=name&dir=asc'))->body;
+
+        expect($edit)->toContain('data-lego-key="clients/' . $client->id . '"')
+            ->and($edit)->toContain('data-lego-title="Florería Lima · Clientes"')
+            ->and($edit)->toContain('data-lego-record="' . $client->id . '"')
+            ->and($edit)->toContain('data-lego="form" data-lego-action="clients_update" data-lego-module="clients" data-lego-record="' . $client->id . '" data-lego-after="list"')
+            ->and($edit)->toContain('data-lego-action="clients_delete"')
+            ->and($edit)->toContain('data-lego-action="clients_block"')
+            ->and($edit)->toContain('data-lego-close')
+            ->and($list)->toContain('data-lego-url="/clients?sort=name&amp;dir=asc"')
+            ->and($list)->toContain('data-lego="table"');
+    });
+
+    it('keeps the default of an empty optional field on create', function () {
+        [$app] = actingAs(['clients.*']);
+
+        $result = api($app, 'clients_create', ['name' => 'Vacía', 'email' => 'vacia@example.com', 'visits' => '', 'credit' => '', 'since' => '']);
+
+        expect($result['http'])->toBe(201)
+            ->and($result['data'])->toMatchArray(['visits' => 0, 'credit' => null, 'since' => null]);
+    });
 });

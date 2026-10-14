@@ -13,7 +13,8 @@ namespace Lego\View;
  */
 final class Document
 {
-    public static function page(string $title, Component|string $body, string $lang = 'es', string $csrfToken = ''): string
+    /** @param string $head Extra trusted markup for <head>, placed before asset tags (e.g. an import map). */
+    public static function page(string $title, Component|string $body, string $lang = 'es', string $csrfToken = '', string $head = ''): string
     {
         [$html, $assets] = Assets::collect(static fn (): string => (string) $body);
         $title = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -30,6 +31,7 @@ final class Document
             <meta name="color-scheme" content="light dark">
             <title>{$title}</title>
             {$csrf}
+            {$head}
             {$tags}
             </head>
             <body>

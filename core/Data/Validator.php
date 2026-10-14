@@ -60,7 +60,8 @@ final class Validator
 
             if ($fieldErrors !== []) {
                 $errors[$name] = $fieldErrors;
-            } else {
+            } elseif ($mode === self::UPDATE || $value !== null) {
+                // On create an empty optional field is left out, like an omitted one.
                 $clean[$name] = $value;
             }
         }

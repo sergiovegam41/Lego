@@ -16,7 +16,9 @@ use Lego\Errors\ValidationFailed;
 use Lego\Http\Request;
 use Lego\Http\Response;
 use Lego\Http\Router;
-use Lego\Ui\Layout\Layout;
+use Lego\Http\Layer;
+use Lego\Ui\Shell\Screen;
+use Lego\Ui\Shell\Shell;
 use Lego\Ui\Records\ConfirmAction;
 use Lego\Ui\Records\RecordForm;
 use Lego\Ui\Records\RecordList;
@@ -62,16 +64,33 @@ final class ModuleRoutes
         }
     }
 
-    /** Wraps a screen in the layout, or returns it alone on the component layer. */
-    public function respond(Request $request, string $title, Component $content, int $status = 200): Response
-    {
-        if ($request->path === '/component' || str_starts_with($request->path, '/component/')) {
-            return Response::html(Document::fragment($content), $status);
+    /**
+     * Wraps content in its Screen root and returns it as a fragment on the
+     * component layer, or inside the shell as a full page otherwise.
+     */
+    public function respond(
+        Request $request,
+        string $title,
+        Component $content,
+        int $status = 200,
+        ?ModuleDefinition $module = null,
+        ?int $record = null,
+    ): Response {
+        $key = Screen::keyFor($request->path);
+        $path = $key === 'home' ? '/' : '/' . $key;
+        $url = $request->query === [] ? $path : $path . '?' . http_build_query($request->query);
+        $screen = new Screen($key, $url, $title, $content, $module?->name, $record);
+
+        if ($request->layer() === Layer::Component) {
+            return Response::html(Document::fragment($screen), $status);
         }
 
-        $layout = new Layout($request->user, $this->menu->for($request->user, $request->path), $request->csrfToken, $content);
+        $shell = new Shell($request->user, $this->menu->for($request->user, $path), $request->csrfToken, $screen);
 
-        return Response::html(Document::page($title . ' · Lego', $layout, csrfToken: $request->csrfToken), $status);
+        return Response::html(
+            Document::page($title . ' · Lego', $shell, csrfToken: $request->csrfToken, head: Shell::importMap()),
+            $status,
+        );
     }
 
     private function catalog(Request $request): Response
@@ -103,7 +122,7 @@ final class ModuleRoutes
             /** @var Component $screen */
             $screen = new ($module->class)();
 
-            return $this->respond($request, $module->label, $screen);
+            return $this->respond($request, $module->label, $screen, module: $module);
         };
 
         $router->get($module->url(), $handler);
@@ -151,15 +170,15 @@ final class ModuleRoutes
         $input = array_intersect_key($request->query, array_flip(['q', 'sort', 'dir', 'page']));
         $result = $this->execute($request, $module->name . '_list', $input);
 
-        return $this->respond($request, $module->label, new RecordList($module, $this->fields($module), $result->data, $this->allowed($request, $module)));
+        return $this->respond($request, $module->label, new RecordList($module, $this->fields($module), $result->data, $this->allowed($request, $module)), module: $module);
     }
 
     private function createForm(Request $request, ModuleDefinition $module, array $values = [], array $errors = [], int $status = 200): Response
     {
         $this->gate->authorize($request->user, $module->permission('create'));
-        $form = new RecordForm($module, $this->fields($module), RecordForm::CREATE, $request->csrfToken, $values, $errors, $this->allowed($request, $module));
+        $form = new RecordForm($module, $this->fields($module), RecordForm::CREATE, $request->csrfToken, $values, $errors, $this->allowed($request, $module), domPrefix: Screen::domPrefix(Screen::keyFor($request->path)));
 
-        return $this->respond($request, 'Nuevo · ' . $module->label, $form, $status);
+        return $this->respond($request, 'Nuevo · ' . $module->label, $form, $status, $module);
     }
 
     private function create(Request $request, ModuleDefinition $module): Response
@@ -184,9 +203,9 @@ final class ModuleRoutes
             }
         }
 
-        $form = new RecordForm($module, $this->fields($module), RecordForm::UPDATE, $request->csrfToken, $values, $errors, $this->allowed($request, $module), $id, $actionErrors);
+        $form = new RecordForm($module, $this->fields($module), RecordForm::UPDATE, $request->csrfToken, $values, $errors, $this->allowed($request, $module), $id, $actionErrors, Screen::domPrefix(Screen::keyFor($request->path)));
 
-        return $this->respond($request, $module->label . ' #' . $id, $form, $status);
+        return $this->respond($request, self::recordTitle($module, $this->fields($module), $data, $id), $form, $status, $module, $id);
     }
 
     private function update(Request $request, ModuleDefinition $module): Response
@@ -246,7 +265,7 @@ final class ModuleRoutes
             $resend,
         );
 
-        return $this->respond($request, 'Confirmar', $screen);
+        return $this->respond($request, 'Confirmar', $screen, module: $module);
     }
 
     /** @param array<string, mixed> $input */
@@ -268,6 +287,23 @@ final class ModuleRoutes
         $class = $module->class;
 
         return $class::fields();
+    }
+
+    /**
+     * "Florería Lima · Clientes": the first non-empty text field names the record.
+     *
+     * @param list<\Lego\Data\Fields\Field> $fields
+     * @param array<string, mixed>          $data
+     */
+    private static function recordTitle(ModuleDefinition $module, array $fields, array $data, int $id): string
+    {
+        foreach ($fields as $field) {
+            if (in_array($field->type(), ['text', 'email'], true) && ($label = $field->display($data[$field->name] ?? null)) !== '') {
+                return $label . ' · ' . $module->label;
+            }
+        }
+
+        return $module->label . ' #' . $id;
     }
 
     private static function id(Request $request): int

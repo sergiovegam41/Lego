@@ -33,7 +33,7 @@ final class Client extends Record
             Boolean::make('active', 'Activo'),
             Select::make('tier', 'Nivel')->options(['basic' => 'Básico', 'gold' => 'Oro']),
             Date::make('since', 'Cliente desde'),
-            Number::make('visits', 'Visitas')->integer()->min(0)->hideInTable(),
+            Number::make('visits', 'Visitas')->integer()->min(0)->default(0)->hideInTable(),
             TextArea::make('notes', 'Notas')->hideInTable(),
         ];
     }

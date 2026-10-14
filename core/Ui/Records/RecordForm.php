@@ -45,6 +45,7 @@ final class RecordForm extends Component
         private readonly array $allowed = [],
         private readonly ?int $id = null,
         private readonly array $actionErrors = [],
+        private readonly string $domPrefix = 'lg-',
     ) {
     }
 
@@ -54,7 +55,7 @@ final class RecordForm extends Component
         $editable = in_array($this->mode === self::CREATE ? 'create' : 'update', $operations, true);
         $base = $this->module->url();
         $action = self::e($this->mode === self::CREATE ? $base . '/new' : $base . '/' . $this->id);
-        $title = self::e(($this->mode === self::CREATE ? 'Nuevo registro' : 'Registro #' . $this->id) . ' · ' . $this->module->label);
+        $title = self::e($this->mode === self::CREATE ? 'Nuevo · ' . $this->module->label : $this->module->label . ' #' . $this->id);
         $csrf = $this->csrfField();
 
         $inputs = '';
@@ -70,15 +71,16 @@ final class RecordForm extends Component
         $extra = $this->mode === self::UPDATE ? $this->recordActions($operations) : '';
         $catalog = new ActionCatalog($this->module->name, $this->allowed);
         $moduleName = self::e($this->module->name);
+        $behavior = $this->behavior($this->mode === self::CREATE ? 'create' : 'update', 'list');
 
         return <<<HTML
             <section class="lego-records" data-module="{$moduleName}">
               <header class="lego-records__header"><h1>{$title}</h1></header>
               {$summary}
-              <form class="lego-records__form" method="post" action="{$action}" novalidate>
+              <form class="lego-records__form" method="post" action="{$action}" novalidate {$behavior} data-lego-dirty>
                 {$csrf}
                 {$inputs}
-                <div class="lego-records__buttons">{$save}<a class="lego-button" href="{$back}">Volver</a></div>
+                <div class="lego-records__buttons">{$save}<a class="lego-button" href="{$back}" data-lego-close>Volver</a></div>
               </form>
               {$extra}
               {$catalog}
@@ -89,7 +91,7 @@ final class RecordForm extends Component
     private function fieldRow(Field $field, bool $editable): string
     {
         $name = self::e($field->name);
-        $id = 'field-' . $name;
+        $id = $this->domPrefix . $name;
         $errors = $this->errors[$field->name] ?? [];
         $describedBy = $errors === [] ? '' : " aria-invalid=\"true\" aria-describedby=\"{$id}-error\"";
         $disabled = $editable ? '' : ' disabled';
@@ -118,7 +120,7 @@ final class RecordForm extends Component
         $errorLine = $messages === '' ? '' : "<p class=\"lego-field__error\" id=\"{$id}-error\">" . trim($messages) . '</p>';
         $label = self::e($field->label) . ($field->isRequired() ? ' <span aria-hidden="true">*</span>' : '');
 
-        return "<div class=\"lego-field lego-field--{$field->type()}\"><label for=\"{$id}\">{$label}</label>{$control}{$help}{$errorLine}</div>";
+        return "<div class=\"lego-field lego-field--{$field->type()}\" data-field=\"{$name}\"><label for=\"{$id}\">{$label}</label>{$control}{$help}{$errorLine}</div>";
     }
 
     private function options(Field $field, string $value): string
@@ -153,7 +155,7 @@ final class RecordForm extends Component
         }
 
         if (in_array('delete', $operations, true)) {
-            $html .= '<form class="lego-records__action" method="post" action="' . self::e($base . '/delete') . '">'
+            $html .= '<form class="lego-records__action" method="post" action="' . self::e($base . '/delete') . '" ' . $this->behavior('delete', 'list') . '>'
                 . $this->csrfField()
                 . '<button class="lego-button lego-button--danger" type="submit">Eliminar</button></form>';
         }
@@ -170,7 +172,7 @@ final class RecordForm extends Component
                 continue;
             }
             $type = is_array($schema['type']) ? $schema['type'][0] : $schema['type'];
-            $id = 'action-' . self::e($action->name) . '-' . self::e($name);
+            $id = $this->domPrefix . self::e($action->operation) . '-' . self::e($name);
             $label = self::e($schema['title'] ?? str_replace('_', ' ', (string) $name));
             $required = in_array($name, $action->inputSchema['required'] ?? [], true) ? ' required' : '';
             $control = match ($type) {
@@ -181,14 +183,27 @@ final class RecordForm extends Component
             $error = isset($errors[$name])
                 ? '<p class="lego-field__error">' . self::e(implode(' ', array_column($errors[$name], 'message'))) . '</p>'
                 : '';
-            $inputs .= "<div class=\"lego-field\"><label for=\"{$id}\">{$label}</label>{$control}{$error}</div>";
+            $inputs .= "<div class=\"lego-field\" data-field=\"" . self::e($name) . "\"><label for=\"{$id}\">{$label}</label>{$control}{$error}</div>";
         }
 
         $class = $action->destructive ? 'lego-button lego-button--danger' : 'lego-button';
 
-        return '<form class="lego-records__action" method="post" action="' . self::e($url) . '" data-action="' . self::e($action->name) . '">'
+        return '<form class="lego-records__action" method="post" action="' . self::e($url) . '" data-action="' . self::e($action->name) . '" '
+            . $this->behavior($action->operation, 'reload') . '>'
             . $this->csrfField() . $inputs
             . '<button class="' . $class . '" type="submit" title="' . self::e($action->description) . '">' . self::e($action->label) . '</button></form>';
+    }
+
+    /**
+     * Attributes read by lego/ui/form.js: run the action through the JSON API
+     * and then go back to the list ("list") or reload this screen ("reload").
+     */
+    private function behavior(string $operation, string $after): string
+    {
+        return 'data-lego="form" data-lego-action="' . self::e($this->module->name . '_' . $operation) . '"'
+            . ' data-lego-module="' . self::e($this->module->name) . '"'
+            . ($this->id === null ? '' : ' data-lego-record="' . $this->id . '"')
+            . ' data-lego-after="' . $after . '" data-lego-list="' . self::e($this->module->url()) . '"';
     }
 
     private function csrfField(): string
