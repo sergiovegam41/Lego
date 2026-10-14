@@ -21,14 +21,19 @@ El compose no fija nombres de contenedor ni puertos del host, para que varias in
 | `APP_DEBUG` | no | `false` |
 | `DB_DATABASE`, `DB_USERNAME` | no | `lego` |
 | `LEGO_MIGRATE_ON_START` | no | `true` |
+| `LEGO_ADMIN_EMAIL` | no | vacío; si se define, crea el primer administrador al arrancar cuando no hay usuarios |
+| `LEGO_ADMIN_PASSWORD` | no | vacío; si falta se genera y se imprime una vez en el log del contenedor `app` |
+| `LEGO_SESSION_IDLE_MINUTES` | no | `480` |
+| `LEGO_SESSION_ABSOLUTE_DAYS` | no | `30` |
 
 ## Dokploy
 
 1. Crear un servicio de tipo **Compose** apuntando a este repositorio y a la rama deseada.
 2. Ruta del compose: `docker-compose.yml`.
-3. En **Environment**, definir al menos `DB_PASSWORD` y `APP_URL`.
+3. En **Environment**, definir al menos `DB_PASSWORD`, `APP_URL` y `LEGO_ADMIN_EMAIL`. Con `APP_URL` en https las cookies son `Secure` y usan el prefijo `__Host-`.
 4. En **Domains**, asignar el dominio al servicio `web`, puerto `80`.
 5. Desplegar. Los redeploys conservan la base de datos porque vive en un volumen con nombre.
+6. Si no se definió `LEGO_ADMIN_PASSWORD`, la contraseña generada aparece una sola vez en el log del servicio `app`. Para cambiarla después: `php lego user:password <correo>` desde la terminal del contenedor.
 
 Si el proyecto de Dokploy no usa despliegues aislados, el servicio `web` debe estar también en la red `dokploy-network` para que Traefik lo alcance. Ver la documentación de Dokploy sobre Docker Compose.
 
@@ -49,4 +54,11 @@ Requiere PHP 8.3 y Composer.
 composer install
 php lego serve           # http://127.0.0.1:8000
 composer test
+```
+
+Los tests de base de datos se omiten si no hay Postgres. Para correr la suite completa con Docker:
+
+```bash
+docker compose -f compose.test.yml run --rm tests
+docker compose -f compose.test.yml down -v
 ```

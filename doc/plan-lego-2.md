@@ -78,6 +78,8 @@ De esa clase se derivan rutas, menú, permisos, endpoints, tabla, formularios, v
 
 ## Fases
 
+Estado al 2026-10-14: fases 0, 1 y 2 terminadas en la rama `lego-2`. Siguiente: fase 3.
+
 Cada fase termina con tests en verde, revisión de código, commit, despliegue en el mini PC y un checkpoint contigo antes de la siguiente.
 
 ### Fase 0. Cerrar el diagnóstico y decidir

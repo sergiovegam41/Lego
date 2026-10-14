@@ -96,3 +96,30 @@ it('writes output only from Response::send', function () {
             ->not->toMatch('/^\s*(echo|print|exit|die)\b/m', "Direct output or exit in {$file}");
     }
 });
+
+it('keeps every route closed except an explicit allowlist', function () {
+    $public = [];
+    foreach (app()->router->routes() as $route) {
+        if ($route->access() === Lego\Http\Access::Public) {
+            $public[] = $route->method . ' ' . $route->path;
+        }
+    }
+    sort($public);
+
+    // Adding a public route is a security decision: update this list on purpose.
+    expect($public)->toBe(['GET /health', 'GET /login', 'POST /login']);
+});
+
+it('answers anonymous requests to closed routes with 401 or a login redirect', function () {
+    $app = app();
+    foreach ($app->router->routes() as $route) {
+        if ($route->access() === Lego\Http\Access::Public) {
+            continue;
+        }
+
+        $path = preg_replace('/\{[^}]+\}/', '1', $route->path);
+        $status = $app->handle(Lego\Http\Request::create($route->method, $path))->status;
+
+        expect($status)->toBeIn([302, 401], "{$route->method} {$route->path} answered {$status}");
+    }
+});

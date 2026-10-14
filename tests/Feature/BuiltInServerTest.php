@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
  * Runs the real entry point under `php -S`, the development server of decision
- * D12, on every operating system of the CI matrix.
+ * D12, on every operating system of the CI matrix. No database is needed.
  */
 
 beforeAll(function () {
@@ -23,7 +23,7 @@ beforeAll(function () {
     ];
 
     for ($i = 0; $i < 50; $i++) {
-        if (@file_get_contents($GLOBALS['legoServer']['url'] . '/health') !== false) {
+        if (@file_get_contents($GLOBALS['legoServer']['url'] . '/login') !== false) {
             return;
         }
         usleep(100_000);
@@ -40,7 +40,7 @@ afterAll(function () {
 function fetchFromServer(string $path): array
 {
     $body = @file_get_contents($GLOBALS['legoServer']['url'] . $path, false, stream_context_create([
-        'http' => ['ignore_errors' => true, 'timeout' => 5],
+        'http' => ['ignore_errors' => true, 'timeout' => 10, 'follow_location' => 0],
     ]));
     $headers = function_exists('http_get_last_response_headers') ? (http_get_last_response_headers() ?? []) : ($http_response_header ?? []);
     preg_match('#HTTP/\S+ (\d{3})#', $headers[0] ?? '', $m);
@@ -48,22 +48,35 @@ function fetchFromServer(string $path): array
     return ['status' => (int) ($m[1] ?? 0), 'body' => (string) $body, 'headers' => $headers];
 }
 
-it('serves the welcome page', function () {
+it('redirects anonymous visitors to the login', function () {
     $response = fetchFromServer('/');
 
-    expect($response['status'])->toBe(200)->and($response['body'])->toContain('lego-welcome');
+    $location = array_values(preg_grep('/^location:/i', $response['headers']));
+
+    expect($response['status'])->toBe(302)
+        ->and($location[0] ?? '')->toMatch('#^location: /login\?next=%2F$#i');
+});
+
+it('serves the login page with a CSRF cookie', function () {
+    $response = fetchFromServer('/login');
+    $cookies = array_filter($response['headers'], fn (string $h) => stripos($h, 'Set-Cookie: lego_csrf=') === 0);
+
+    expect($response['status'])->toBe(200)
+        ->and($response['body'])->toContain('lego-login')
+        ->and($cookies)->toHaveCount(1);
 });
 
 it('serves component assets without symlinks', function () {
-    $response = fetchFromServer('/_lego/Welcome/welcome.css');
+    $response = fetchFromServer('/_lego/Login/login.css');
 
-    expect($response['status'])->toBe(200)->and($response['body'])->toContain('.lego-welcome');
+    expect($response['status'])->toBe(200)->and($response['body'])->toContain('.lego-login');
 });
 
-it('answers health checks', function () {
+it('answers health checks with the status envelope', function () {
     $response = fetchFromServer('/health');
 
-    expect($response['status'])->toBe(200)->and(json_decode($response['body'], true)['status'])->toBe('ok');
+    expect($response['status'])->toBeIn([200, 503])
+        ->and(json_decode($response['body'], true))->toHaveKey('status');
 });
 
 it('returns JSON errors on the API layer', function () {

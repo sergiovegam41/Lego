@@ -13,12 +13,13 @@ namespace Lego\View;
  */
 final class Document
 {
-    public static function page(string $title, Component|string $body, string $lang = 'es'): string
+    public static function page(string $title, Component|string $body, string $lang = 'es', string $csrfToken = ''): string
     {
         [$html, $assets] = Assets::collect(static fn (): string => (string) $body);
         $title = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $lang = htmlspecialchars($lang, ENT_QUOTES);
         $tags = $assets->tags();
+        $csrf = $csrfToken === '' ? '' : '<meta name="csrf-token" content="' . htmlspecialchars($csrfToken, ENT_QUOTES) . '">';
 
         return <<<HTML
             <!doctype html>
@@ -28,6 +29,7 @@ final class Document
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <meta name="color-scheme" content="light dark">
             <title>{$title}</title>
+            {$csrf}
             {$tags}
             </head>
             <body>

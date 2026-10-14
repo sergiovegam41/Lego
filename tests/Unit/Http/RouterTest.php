@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Lego\Errors\HttpError;
+use Lego\Http\Access;
 use Lego\Http\Request;
 use Lego\Http\Router;
 
@@ -17,7 +18,7 @@ function routerWith(string $method, string $path): Router
 it('matches a static path', function () {
     $match = routerWith('GET', '/users')->match(Request::create('GET', '/users'));
 
-    expect($match['params'])->toBe([]);
+    expect($match['params'])->toBe([])->and($match['route']->path)->toBe('/users');
 });
 
 it('captures named parameters', function () {
@@ -31,15 +32,11 @@ it('does not let a parameter span several segments', function () {
 })->throws(HttpError::class);
 
 it('ignores a trailing slash', function () {
-    $match = routerWith('GET', '/users/')->match(Request::create('GET', '/users/'));
-
-    expect($match)->toHaveKey('handler');
+    expect(routerWith('GET', '/users/')->match(Request::create('GET', '/users/')))->toHaveKey('route');
 });
 
 it('answers HEAD with the GET route', function () {
-    $match = routerWith('GET', '/users')->match(Request::create('HEAD', '/users'));
-
-    expect($match)->toHaveKey('handler');
+    expect(routerWith('GET', '/users')->match(Request::create('HEAD', '/users')))->toHaveKey('route');
 });
 
 it('throws 404 when nothing matches', function () {
@@ -47,7 +44,7 @@ it('throws 404 when nothing matches', function () {
         routerWith('GET', '/users')->match(Request::create('GET', '/nope'));
         $this->fail('Expected an HttpError');
     } catch (HttpError $e) {
-        expect($e->status())->toBe(404)->and($e->errorCode())->toBe("not_found");
+        expect($e->status())->toBe(404)->and($e->errorCode())->toBe('not_found');
     }
 });
 
@@ -65,5 +62,29 @@ it('treats regex characters in paths literally', function () {
 })->throws(HttpError::class);
 
 it('lists its routes', function () {
-    expect(routerWith('POST', '/x/')->routes())->toBe([['method' => 'POST', 'path' => '/x']]);
+    [$route] = routerWith('POST', '/x/')->routes();
+
+    expect($route->method)->toBe('POST')->and($route->path)->toBe('/x');
 });
+
+it('closes routes by default', function () {
+    [$route] = routerWith('GET', '/x')->routes();
+
+    expect($route->access())->toBe(Access::Authenticated)->and($route->permission())->toBeNull();
+});
+
+it('opens a route only when marked public', function () {
+    $route = (new Router())->get('/x', fn () => 'x')->public();
+
+    expect($route->access())->toBe(Access::Public);
+});
+
+it('can require a permission', function () {
+    $route = (new Router())->get('/x', fn () => 'x')->can('clients.create');
+
+    expect($route->access())->toBe(Access::Authenticated)->and($route->permission())->toBe('clients.create');
+});
+
+it('rejects malformed permission names', function () {
+    (new Router())->get('/x', fn () => 'x')->can('Not A Permission');
+})->throws(InvalidArgumentException::class);

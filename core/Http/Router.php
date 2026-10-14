@@ -4,46 +4,40 @@ declare(strict_types=1);
 
 namespace Lego\Http;
 
-use Closure;
 use Lego\Errors\MethodNotAllowed;
 use Lego\Errors\NotFound;
 
 /**
- * Maps a method and a path to a handler.
+ * Maps a method and a path to a Route.
  *
  * Patterns use {name} placeholders that match one path segment. HEAD requests
- * are answered by GET routes. A handler receives the Request and returns a
- * Response, a string (HTML) or an array (JSON).
+ * are answered by GET routes. Every route starts closed (Access::Authenticated);
+ * see Route::public() and Route::can().
  */
 final class Router
 {
-    /** @var list<array{method: string, path: string, regex: string, handler: Closure}> */
+    /** @var list<Route> */
     private array $routes = [];
 
-    public function get(string $path, callable $handler): void
+    public function get(string $path, callable $handler): Route
     {
-        $this->add('GET', $path, $handler);
+        return $this->add('GET', $path, $handler);
     }
 
-    public function post(string $path, callable $handler): void
+    public function post(string $path, callable $handler): Route
     {
-        $this->add('POST', $path, $handler);
+        return $this->add('POST', $path, $handler);
     }
 
-    public function add(string $method, string $path, callable $handler): void
+    public function add(string $method, string $path, callable $handler): Route
     {
         $path = Request::normalizePath($path);
 
-        $this->routes[] = [
-            'method' => strtoupper($method),
-            'path' => $path,
-            'regex' => self::compile($path),
-            'handler' => $handler(...),
-        ];
+        return $this->routes[] = new Route(strtoupper($method), $path, self::compile($path), $handler(...));
     }
 
     /**
-     * @return array{handler: Closure, params: array<string, string>}
+     * @return array{route: Route, params: array<string, string>}
      *
      * @throws NotFound         when no path matches.
      * @throws MethodNotAllowed when the path only matches other methods.
@@ -54,17 +48,15 @@ final class Router
         $allowed = [];
 
         foreach ($this->routes as $route) {
-            if (preg_match($route['regex'], $request->path, $matches) !== 1) {
+            if (preg_match($route->regex, $request->path, $matches) !== 1) {
                 continue;
             }
-            if ($route['method'] !== $method) {
-                $allowed[] = $route['method'];
+            if ($route->method !== $method) {
+                $allowed[] = $route->method;
                 continue;
             }
 
-            $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-
-            return ['handler' => $route['handler'], 'params' => $params];
+            return ['route' => $route, 'params' => array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY)];
         }
 
         if ($allowed !== []) {
@@ -74,13 +66,10 @@ final class Router
         throw new NotFound();
     }
 
-    /** @return list<array{method: string, path: string}> */
+    /** @return list<Route> */
     public function routes(): array
     {
-        return array_map(
-            static fn (array $route): array => ['method' => $route['method'], 'path' => $route['path']],
-            $this->routes,
-        );
+        return $this->routes;
     }
 
     private static function compile(string $path): string

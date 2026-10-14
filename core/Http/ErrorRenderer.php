@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Http;
 
 use Lego\Errors\HttpError;
+use Lego\Errors\Unauthenticated;
 use Lego\Log\Logger;
 use Lego\View\Document;
 use Throwable;
@@ -14,7 +15,8 @@ use Throwable;
  *
  * - Api: the JSON envelope {"status": "error", "error": {"code", "message"}, "trace_id"}.
  * - Component: a .lego-error fragment with data-status, data-code and data-trace-id.
- * - Page: a minimal HTML document with the same fragment.
+ * - Page: a minimal HTML document with the same fragment. A GET without a
+ *   session is redirected to /login?next=<path> instead.
  *
  * HttpError messages are safe to show. Any other Throwable is logged and
  * becomes a generic 500 whose details only appear when debug is on.
@@ -29,6 +31,10 @@ final class ErrorRenderer
 
     public function render(Throwable $e, Request $request, string $traceId): Response
     {
+        if ($e instanceof Unauthenticated && $request->layer() === Layer::Page && $request->method === 'GET') {
+            return Response::redirect('/login?' . http_build_query(['next' => $request->fullPath()]));
+        }
+
         if ($e instanceof HttpError) {
             [$status, $code, $message, $headers] = [$e->status(), $e->errorCode(), $e->getMessage(), $e->headers()];
         } else {

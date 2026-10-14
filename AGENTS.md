@@ -17,6 +17,9 @@ Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/p
 | `core/View/` | `Component`, recolección de assets y documentos. |
 | `core/Ui/` | Componentes del framework con su CSS y JS al lado. Se sirven en `/_lego/`. |
 | `core/Console/` | La CLI `php lego`, sobre symfony/console. |
+| `core/Auth/` | Usuarios, roles, permisos, sesiones en Postgres, login y la única puerta de autorización (`Gate`). |
+| `core/Database/` | Conexión Eloquent, migrador y migraciones del núcleo. |
+| `core/Audit/` | Registro de acciones `action_log`, compartido por personas, CLI y agentes. |
 | `modules/` | Módulos de la aplicación, una carpeta cada uno, namespace `Modules\`. Se sirven en `/_modules/`. |
 | `public/index.php` | Única entrada HTTP, para nginx y para `php -S`. |
 | `tests/` | Pest: `Unit`, `Feature`, `Architecture`. |
@@ -36,6 +39,9 @@ Las decisiones vinculantes están en [doc/lego2/decisiones.md](doc/lego2/decisio
 6. **Los assets van junto al componente** y se declaran en `$styles` y `$scripts` con rutas relativas a su carpeta. Nada de symlinks ni copias a `public/`.
 7. **Configuración solo por variables de entorno.** `.env` es opcional.
 8. **Todo cambio llega con tests** y `composer test` en verde.
+9. **Toda ruta está cerrada por defecto.** Exige sesión salvo que se marque `->public()`, y puede exigir un permiso con `->can('modulo.operacion')`. Un test fija la lista de rutas públicas.
+10. **Toda petición que modifica datos lleva token CSRF**, en el campo `_csrf` o en la cabecera `X-CSRF-Token`. El token está en `$request->csrfToken` y en `<meta name="csrf-token">`.
+11. **Toda autorización pasa por `Gate::authorize()`.** No se comparan roles a mano.
 
 ## Comandos
 
@@ -44,6 +50,10 @@ composer install
 composer test            # todas las suites
 php lego serve           # servidor de desarrollo en http://127.0.0.1:8000
 php lego routes          # rutas registradas
+php lego migrate         # aplica migraciones (también migrate:status y migrate:rollback)
+php lego install --email=admin@ejemplo.com   # primer administrador; idempotente
+php lego user:password ana@ejemplo.com      # contraseña nueva y cierra sus sesiones
+docker compose -f compose.test.yml run --rm tests   # suite completa con Postgres
 docker compose -f docker-compose.yml -f compose.local.yml up -d --build
 ```
 

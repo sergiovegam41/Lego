@@ -1,0 +1,39 @@
+# Full test suite, including the PostgreSQL tests, on any machine with Docker:
+#   docker compose -f compose.test.yml run --rm tests
+#   docker compose -f compose.test.yml down -v
+services:
+  db-test:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: lego_test
+      POSTGRES_USER: lego
+      POSTGRES_PASSWORD: lego
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lego -d lego_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  tests:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+      target: test
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DB_HOST: db-test
+      DB_PORT: "5432"
+      DB_DATABASE: lego_test
+      DB_USERNAME: lego
+      DB_PASSWORD: lego
+      LEGO_REQUIRE_DB: "true"
+      COMPOSER_HOME: /tmp/composer
+    depends_on:
+      db-test:
+        condition: service_healthy
+    command: sh -c "composer install --no-interaction --no-progress --quiet && vendor/bin/pest"

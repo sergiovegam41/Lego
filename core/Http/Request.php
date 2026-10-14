@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Lego\Http;
 
+use Lego\Auth\Identity;
+
 /**
  * Immutable HTTP request.
  *
  * Built once from PHP globals in production and from Request::create() in tests,
- * so nothing else in the framework reads $_SERVER, $_GET or $_POST.
+ * so nothing else in the framework reads $_SERVER, $_GET or $_POST. The kernel
+ * enriches it with route parameters, the signed-in user, the CSRF token and
+ * the trace id through the with*() methods.
  */
 final class Request
 {
@@ -31,6 +35,10 @@ final class Request
         public readonly array $cookies = [],
         public readonly array $params = [],
         public readonly bool $malformedBody = false,
+        public readonly ?string $ip = null,
+        public readonly ?Identity $user = null,
+        public readonly string $csrfToken = '',
+        public readonly string $traceId = '',
     ) {
         $normalized = [];
         foreach ($headers as $name => $value) {
@@ -70,26 +78,8 @@ final class Request
             headers: $headers,
             cookies: array_map('strval', $_COOKIE),
             malformedBody: $malformed,
+            ip: isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : null,
         );
-    }
-
-    /**
-     * Decodes a JSON body. An empty body is an empty object; anything that is
-     * not a JSON object marks the request as malformed (answered with 400).
-     *
-     * @return array{0: array<string, mixed>, 1: bool}
-     */
-    public static function decodeJson(string $raw): array
-    {
-        if (trim($raw) === '') {
-            return [[], false];
-        }
-
-        $decoded = json_decode($raw, true);
-
-        $isObject = $decoded === [] || (is_array($decoded) && !array_is_list($decoded));
-
-        return $isObject ? [$decoded, false] : [[], true];
     }
 
     /**
@@ -116,7 +106,26 @@ final class Request
             body: $body,
             headers: $headers,
             cookies: $cookies,
+            ip: '127.0.0.1',
         );
+    }
+
+    /**
+     * Decodes a JSON body. An empty body is an empty object; anything that is
+     * not a JSON object marks the request as malformed (answered with 400).
+     *
+     * @return array{0: array<string, mixed>, 1: bool}
+     */
+    public static function decodeJson(string $raw): array
+    {
+        if (trim($raw) === '') {
+            return [[], false];
+        }
+
+        $decoded = json_decode($raw, true);
+        $isObject = $decoded === [] || (is_array($decoded) && !array_is_list($decoded));
+
+        return $isObject ? [$decoded, false] : [[], true];
     }
 
     /**
@@ -132,6 +141,12 @@ final class Request
     public function layer(): Layer
     {
         return Layer::fromPath($this->path);
+    }
+
+    /** Path plus query string, as the browser requested it. */
+    public function fullPath(): string
+    {
+        return $this->query === [] ? $this->path : $this->path . '?' . http_build_query($this->query);
     }
 
     public function header(string $name, ?string $default = null): ?string
@@ -168,15 +183,41 @@ final class Request
     /** @param array<string, string> $params */
     public function withParams(array $params): self
     {
-        return new self(
-            $this->method,
-            $this->path,
-            $this->query,
-            $this->body,
-            $this->headers,
-            $this->cookies,
-            $params,
-            $this->malformedBody,
-        );
+        return $this->with(['params' => $params]);
+    }
+
+    public function withUser(?Identity $user): self
+    {
+        return $this->with(['user' => $user]);
+    }
+
+    public function withCsrfToken(string $token): self
+    {
+        return $this->with(['csrfToken' => $token]);
+    }
+
+    public function withTraceId(string $traceId): self
+    {
+        return $this->with(['traceId' => $traceId]);
+    }
+
+    /** @param array<string, mixed> $changes */
+    private function with(array $changes): self
+    {
+        return new self(...[
+            'method' => $this->method,
+            'path' => $this->path,
+            'query' => $this->query,
+            'body' => $this->body,
+            'headers' => $this->headers,
+            'cookies' => $this->cookies,
+            'params' => $this->params,
+            'malformedBody' => $this->malformedBody,
+            'ip' => $this->ip,
+            'user' => $this->user,
+            'csrfToken' => $this->csrfToken,
+            'traceId' => $this->traceId,
+            ...$changes,
+        ]);
     }
 }

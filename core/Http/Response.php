@@ -15,11 +15,15 @@ final class Response
     /** @var array<string, string> */
     private readonly array $headers;
 
-    /** @param array<string, string> $headers */
+    /**
+     * @param array<string, string> $headers
+     * @param list<string>          $cookies Complete Set-Cookie header values.
+     */
     public function __construct(
         public readonly string $body = '',
         public readonly int $status = 200,
         array $headers = [],
+        private readonly array $cookies = [],
     ) {
         $normalized = [];
         foreach ($headers as $name => $value) {
@@ -45,6 +49,7 @@ final class Response
         return new self($text, $status, ['content-type' => 'text/plain; charset=utf-8']);
     }
 
+    /** Redirect; 303 after a form POST so the browser follows with GET. */
     public static function redirect(string $location, int $status = 302): self
     {
         return new self('', $status, ['location' => $location]);
@@ -66,14 +71,26 @@ final class Response
         return $this->headers;
     }
 
+    /** @return list<string> */
+    public function cookies(): array
+    {
+        return $this->cookies;
+    }
+
     public function withHeader(string $name, string $value): self
     {
-        return new self($this->body, $this->status, [...$this->headers, strtolower($name) => $value]);
+        return new self($this->body, $this->status, [...$this->headers, strtolower($name) => $value], $this->cookies);
     }
 
     public function withBody(string $body): self
     {
-        return new self($body, $this->status, $this->headers);
+        return new self($body, $this->status, $this->headers, $this->cookies);
+    }
+
+    /** Adds a Set-Cookie header, usually built by CookiePolicy. */
+    public function withCookie(string $setCookie): self
+    {
+        return new self($this->body, $this->status, $this->headers, [...$this->cookies, $setCookie]);
     }
 
     public function send(bool $includeBody = true): void
@@ -82,6 +99,9 @@ final class Response
             http_response_code($this->status);
             foreach ($this->headers as $name => $value) {
                 header($name . ': ' . $value);
+            }
+            foreach ($this->cookies as $cookie) {
+                header('set-cookie: ' . $cookie, false);
             }
         }
 
