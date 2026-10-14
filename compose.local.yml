@@ -1,0 +1,6 @@
+# Local and home-server override: publishes the web service on a host port.
+#   docker compose -f docker-compose.yml -f compose.local.yml up -d --build
+services:
+  web:
+    ports:
+      - "${LEGO_HTTP_PORT:-8080}:80"

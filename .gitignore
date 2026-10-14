@@ -1,52 +1,22 @@
-# Dependencies
-/vendor
-composer.lock
-
-# Environment
+/vendor/
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
-# IDE and editors
-.vscode/
+.phpunit.cache/
+.phpunit.result.cache
+/coverage/
+tests/.server.log
+
 .idea/
-*.sublime-project
-*.sublime-workspace
-.phpactor.json
-
-# OS files
+.vscode/
 .DS_Store
 Thumbs.db
 *.swp
-*~
 
-# Backup files
-*.bak
-*.backup
-*.old
-*.tmp
-
-# Logs
-*.log
-/logs
-/storage/logs
-
-# Cache
-/storage/cache
-/storage/sessions
-/storage/views
-
-# Testing
-.phpunit.result.cache
-phpunit.xml
-/coverage
-
-# Temporary files
-/tmp
-*.temp
-
-# Generated artifacts
-composer.phar
-cookies.txt
-components/shared/*/*/_ide_helper.php
+# Obsidian workspace state
 doc/.obsidian/workspace.json
+
+# Lego 1 generated files kept out of git
+legacy/components/shared/*/*/_ide_helper.php
+legacy/doc/.obsidian/workspace.json

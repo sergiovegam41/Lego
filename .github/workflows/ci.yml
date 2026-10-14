@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [lego-2, main]
+  pull_request:
+
+jobs:
+  tests:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run tests
+        run: composer test
+
+  docker:
+    name: Docker image and compose
+    runs-on: ubuntu-latest
+    env:
+      DB_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start
+        run: docker compose -f docker-compose.yml -f compose.local.yml up -d --build --wait --wait-timeout 120
+
+      - name: Smoke test
+        run: |
+          curl -fsS http://localhost:8080/health
+          curl -fsS http://localhost:8080/ | grep -q lego-welcome
+          curl -fsS http://localhost:8080/_lego/Welcome/welcome.css | grep -q lego-welcome
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/_lego/Welcome/Welcome.php)" = "404"
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop
+        if: always()
+        run: docker compose down -v

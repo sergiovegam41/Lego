@@ -1,2 +1,12 @@
-# IDE Helpers - Archivos generados automáticamente
-**/_ide_helper.php linguist-generated=true
+# Normalize line endings so shell scripts and Docker files work after a
+# checkout on Windows.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

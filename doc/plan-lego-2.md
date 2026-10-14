@@ -142,7 +142,7 @@ Objetivo: la experiencia de navegar entre módulos sin recargar y sin perder est
 
 - Frontend solo con módulos ES nativos. Sin funciones globales, sin `new Function`, un solo bus de eventos.
 - La URL es la fuente de verdad: `pushState`, botón atrás y enlaces directos a cada módulo y registro.
-- Los módulos abiertos siguen montados en el DOM para conservar scroll, filtros y formularios a medio escribir. La lista de abiertos se restaura tras F5 desde `sessionStorage`.
+- Los módulos abiertos siguen montados en el DOM para conservar scroll, filtros y formularios a medio escribir mientras no se recargue la página. Tras F5 solo se restaura el módulo activo, indicado por la URL (D8).
 - Ciclo de vida por instancia con `AbortController`. Todo se busca dentro de la raíz del módulo, así que crear y editar pueden estar abiertos a la vez.
 - Tabla genérica renderizada en servidor con orden, filtro y paginación por query string, mejorada con un módulo JS pequeño.
 - Formulario genérico desde los campos, con errores de validación por campo devueltos por el servidor.
@@ -150,7 +150,7 @@ Objetivo: la experiencia de navegar entre módulos sin recargar y sin perder est
 - Un solo archivo de tokens CSS, con los temas que decidas en la fase 0.
 - Las tres acciones de UI fijas para la futura IA: navegar, abrir registro y aplicar filtro, más el bloque `ui` en las respuestas de acciones.
 
-Criterio de salida: test de navegador que abre tres módulos, edita un registro, usa el botón atrás, recarga con F5 y recupera el estado.
+Criterio de salida: test de navegador que abre tres módulos, edita un registro, usa el botón atrás y, tras F5, vuelve al módulo de la URL.
 
 ### Fase 5. Traer lo que vale y borrar el resto
 

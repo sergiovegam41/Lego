@@ -1,0 +1,14 @@
+.git
+.github
+.claude
+.env
+.env.*
+!.env.example
+vendor
+legacy
+doc
+tests
+node_modules
+*.md
+docker-compose*.yml
+compose.*.yml
