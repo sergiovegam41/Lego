@@ -157,6 +157,14 @@ def test_reload_restores_only_the_active_screen(page):
     expect(page.locator(".lego-shell__tab")).to_have_count(1)
 
 
+def test_loads_the_self_hosted_fonts(page):
+    loaded = page.evaluate("""async () => {
+        await document.fonts.ready;
+        return [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replaceAll('"', ''));
+    }""")
+    assert "Instrument Sans" in loaded, loaded
+
+
 def test_theme_toggle_switches_and_persists(page):
     before = page.evaluate("getComputedStyle(document.body).backgroundColor")
     page.click("[data-lego-theme-toggle]")
@@ -235,6 +243,7 @@ TESTS = [
     test_asks_before_closing_a_screen_with_unsaved_changes,
     test_searches_and_deletes_after_confirming_in_a_dialog,
     test_reload_restores_only_the_active_screen,
+    test_loads_the_self_hosted_fonts,
     test_theme_toggle_switches_and_persists,
     test_creates_a_role_by_checking_permissions,
     test_creates_a_user_and_shows_the_generated_password_once,

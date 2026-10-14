@@ -85,3 +85,12 @@ Aplicadas por defecto las recomendaciones C1 a C9 de [pendientes.md](pendientes.
 | D38 | Cabeceras | CSP estricta con nonce por respuesta para el import map, sin `unsafe-inline`. `Permissions-Policy: tools=()` salvo que la IA esté activa (`tools=(self)`), más cámara, micrófono, geolocalización, pagos y USB apagados. `SecurityHeaders` las arma en un solo lugar. | WebMCP se bloquea antes de que corra un script; sin scripts de terceros no hay inyección de tools. |
 | D39 | Catálogo por pantalla | El catálogo embebido (`data-lego-actions`) lo emite `Screen`, una vez por pantalla de módulo, con la marca `agent` por acción. `lego.js` lo expone con `screenActions()` y añade `UI_ACTIONS` y `runUiAction()` para navegar, abrir y filtrar. | Un solo lugar para el catálogo; el adaptador futuro no necesita otro fetch ni tocar módulos. |
 | D40 | Qué no se construye | Ni `tools.js`, ni endpoint MCP, ni chat, ni límites de tasa de agentes, ni deshacer. Se revisa WebMCP después de TPAC 2026. | No hay consumidor estable; construirlo ahora sería código que nadie usa (P5). |
+
+## Identidad visual (2026-10-17)
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| D41 | Sistema visual | Se adopta el sistema v1.0, dirección 2a ([../identidad.md](../identidad.md)): retícula de 4 px, símbolo de cuatro celdas con el acento abajo a la derecha, paleta cálida con acento verde azulado, Instrument Sans e IBM Plex Mono, radios de 6 px como máximo y sombras solo para lo que flota. | Identidad propia, sobria y técnica, que no evoca a The LEGO Group. |
+| D42 | Nombres de tokens | Los valores del sistema entran con el prefijo `--lego-*` y el cambio de tema por clase en `html` (`.dark`/`.light`), no con `--bg` y `[data-theme]` como en la entrega de diseño. | Una sola convención, la que ya usan los componentes y el JavaScript del tema (P2). |
+| D43 | Fuentes | Autoalojadas en `core/Ui/Theme/fonts/`, solo el subconjunto latino, con su licencia OFL al lado. | La CSP solo admite el mismo origen y el despliegue no depende de terceros. |
+| D44 | Colores fuera de los tokens | Un test prohíbe colores literales, nombres de fuente y definiciones de tokens en cualquier CSS que no sea `tokens.css`, también en `modules/`. | La regla 14 de AGENTS.md pasa de convención a verificación. |

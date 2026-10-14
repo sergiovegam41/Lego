@@ -7,11 +7,17 @@
 }
 
 .lego-welcome h1 {
+  margin: 0 0 var(--lego-space-4);
+  font-size: var(--lego-text-3xl);
+  line-height: 1;
+}
+
+.lego-welcome p {
   margin: 0;
-  font-size: 3rem;
+  color: var(--lego-text-muted);
 }
 
 .lego-welcome__version {
-  color: var(--lego-text-muted);
   font-family: var(--lego-font-mono);
+  font-size: var(--lego-text-sm);
 }

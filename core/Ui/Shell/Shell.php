@@ -6,6 +6,7 @@ namespace Lego\Ui\Shell;
 
 use Lego\Auth\Identity;
 use Lego\Http\Csrf;
+use Lego\Ui\Brand\Logo;
 use Lego\View\Assets;
 use Lego\View\Component;
 
@@ -58,18 +59,19 @@ final class Shell extends Component
         $field = Csrf::FIELD;
         $csrf = self::e($this->csrfToken);
         $homeCurrent = $this->screen->key === 'home' ? ' aria-current="page"' : '';
+        $logo = new Logo();
 
         return <<<HTML
             <div class="lego-shell">
               <aside class="lego-shell__sidebar">
-                <a class="lego-shell__brand" href="/" data-lego-nav{$homeCurrent}>Lego</a>
+                <a class="lego-shell__brand" href="/" data-lego-nav{$homeCurrent} aria-label="Inicio">{$logo}</a>
                 <nav class="lego-shell__menu" aria-label="Módulos"><ul>{$items}</ul></nav>
               </aside>
               <header class="lego-shell__header">
                 <nav class="lego-shell__tabs" data-lego-tabs aria-label="Pantallas abiertas"></nav>
                 <div class="lego-shell__session">
                   <button class="lego-button" type="button" data-lego-theme-toggle aria-label="Cambiar tema">◐</button>
-                  <span>{$name}</span>
+                  <span class="lego-shell__user">{$name}</span>
                   <form method="post" action="/logout">
                     <input type="hidden" name="{$field}" value="{$csrf}">
                     <button class="lego-button" type="submit">Cerrar sesión</button>

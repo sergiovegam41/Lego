@@ -50,9 +50,12 @@ final class RecordList extends Component
             $cells = '';
             foreach ($columns as $index => $field) {
                 $value = self::e($field->display($item[$field->name] ?? null));
-                $cells .= $index === 0 && (isset($can['update']) || isset($can['get']))
-                    ? '<td><a href="' . self::e($url . '/' . $item['id']) . '">' . ($value === '' ? '#' . self::e($item['id']) : $value) . '</a></td>'
-                    : "<td>{$value}</td>";
+                $cells .= match (true) {
+                    $index === 0 && (isset($can['update']) || isset($can['get'])) => '<td><a href="' . self::e($url . '/' . $item['id']) . '">' . ($value === '' ? '#' . self::e($item['id']) : $value) . '</a></td>',
+                    $field->type() === 'boolean' => '<td><span class="lego-badge' . (($item[$field->name] ?? false) ? ' lego-badge--success' : '') . "\">{$value}</span></td>",
+                    in_array($field->type(), ['number', 'money'], true) => "<td class=\"lego-records__num\">{$value}</td>",
+                    default => "<td>{$value}</td>",
+                };
             }
             $rows .= '<tr data-id="' . self::e($item['id']) . '">' . $cells . '</tr>';
         }
@@ -97,10 +100,10 @@ final class RecordList extends Component
 
         return <<<HTML
             <form class="lego-records__search" method="get" action="{$action}" role="search">
-              <input type="search" name="q" value="{$q}" placeholder="Buscar" aria-label="Buscar">
+              <input class="lego-input" type="search" name="q" value="{$q}" placeholder="Buscar" aria-label="Buscar">
               <input type="hidden" name="sort" value="{$sort}">
               <input type="hidden" name="dir" value="{$dir}">
-              <button type="submit">Buscar</button>
+              <button class="lego-button" type="submit">Buscar</button>
             </form>
             HTML;
     }
@@ -131,7 +134,7 @@ final class RecordList extends Component
         $link = function (int $page, string $text) use ($meta): string {
             $query = http_build_query(array_filter(['q' => $meta['q'], 'sort' => $meta['sort'], 'dir' => $meta['dir'], 'page' => $page]));
 
-            return '<a href="' . self::e($this->module->url() . '?' . $query) . '">' . $text . '</a>';
+            return '<a class="lego-button" href="' . self::e($this->module->url() . '?' . $query) . '">' . $text . '</a>';
         };
 
         $page = (int) $meta['page'];

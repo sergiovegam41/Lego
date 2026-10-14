@@ -169,3 +169,27 @@ it('writes no inline executable scripts in components', function () {
         expect($matches[0])->toBe([], "Inline script in {$file}");
     }
 });
+
+it('takes every color and font from the design tokens', function () {
+    $sheets = [];
+    foreach (['core', 'modules'] as $root) {
+        if (!is_dir(basePath($root))) {
+            continue;
+        }
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(basePath($root), FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            if ($file->getExtension() === 'css' && $file->getFilename() !== 'tokens.css') {
+                $sheets[] = $file->getPathname();
+            }
+        }
+    }
+    expect($sheets)->not->toBeEmpty();
+
+    foreach ($sheets as $sheet) {
+        $source = (string) preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents($sheet));
+        expect($source)
+            ->not->toMatch('/#[0-9a-fA-F]{3,8}\b|\b(rgba?|hsla?|oklch)\(/', "{$sheet} writes a color; use a --lego-* token")
+            ->not->toMatch('/font-family:\s*+(?!var\()/', "{$sheet} names a font; use --lego-font or --lego-font-mono")
+            ->not->toMatch('/--lego-[\w-]+\s*:/', "{$sheet} defines a token; tokens live only in tokens.css");
+    }
+});

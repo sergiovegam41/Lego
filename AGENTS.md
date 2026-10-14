@@ -17,7 +17,8 @@ Estado: **Lego 2.0.0-alpha** en la rama `lego-2`. El plan está en [doc/plan-leg
 | `core/View/` | `Component`, recolección de assets y documentos. |
 | `core/Ui/` | Componentes del framework con su CSS y JS al lado. Se sirven en `/_lego/`. |
 | `core/Ui/Shell/`, `core/Ui/js/` | Shell, raíz de pantalla y cliente en módulos ES (`lego.js`, `ui/*.js`). Guía: [doc/frontend.md](doc/frontend.md). |
-| `core/Ui/Theme/tokens.css` | Único lugar con colores, espacios y radios; tema claro y oscuro. |
+| `core/Ui/Theme/tokens.css` | Único lugar con colores, tipografía, espacios, radios y sombras; tema claro y oscuro. Fuentes autoalojadas en `fonts/`. Guía: [doc/identidad.md](doc/identidad.md). |
+| `core/Ui/Brand/` | Logo (componente) y favicon. |
 | `core/Console/` | La CLI `php lego`, sobre symfony/console. |
 | `core/Auth/` | Usuarios, roles, permisos, sesiones en Postgres, login y la única puerta de autorización (`Gate`). |
 | `core/Database/` | Conexión Eloquent, migrador y migraciones del núcleo. |

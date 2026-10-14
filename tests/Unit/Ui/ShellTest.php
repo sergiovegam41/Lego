@@ -56,3 +56,21 @@ it('answers 401 without redirecting when a fragment is requested without a sessi
 
     expect($response->status)->toBe(401)->and($response->header('location'))->toBeNull();
 });
+
+it('brands every page with the logo, the favicon and the self-hosted fonts', function () {
+    $app = app(guard: FakeGuard::as());
+    $home = $app->handle(Request::create('GET', '/'))->body;
+    $login = app()->handle(Request::create('GET', '/login'))->body;
+    preg_match('#href="(/_lego/Theme/tokens\.css[^"]*)"#', $home, $tokens);
+    $css = $app->handle(Request::create('GET', $tokens[1]))->body;
+    preg_match_all('#url\("(fonts/[^"]+)"\)#', $css, $fonts);
+
+    expect($home)->toContain('class="lego-logo__accent" x="5" y="5"')
+        ->and($home)->toContain('<link rel="icon" href="/_lego/Brand/favicon.svg"')
+        ->and($login)->toContain('class="lego-logo"')
+        ->and($app->handle(Request::create('GET', '/_lego/Brand/favicon.svg'))->header('content-type'))->toBe('image/svg+xml')
+        ->and($fonts[1])->toHaveCount(5);
+    foreach ($fonts[1] as $font) {
+        expect($app->handle(Request::create('GET', '/_lego/Theme/' . $font))->header('content-type'))->toBe('font/woff2');
+    }
+});

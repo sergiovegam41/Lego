@@ -29,6 +29,7 @@ final class Document
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <meta name="color-scheme" content="light dark">
+            <link rel="icon" href="/_lego/Brand/favicon.svg" type="image/svg+xml">
             <title>{$title}</title>
             {$csrf}
             {$head}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lego\Ui\Welcome;
 
+use Lego\Ui\Brand\Logo;
 use Lego\View\Component;
 
 /** Home screen: a greeting until modules provide a dashboard. */
@@ -19,10 +20,11 @@ final class Welcome extends Component
     {
         $version = self::e($this->version);
         $name = self::e($this->userName);
+        $logo = new Logo();
 
         return <<<HTML
             <section class="lego-welcome">
-              <h1>Lego</h1>
+              <h1>{$logo}</h1>
               <p>Hola, {$name}.</p>
               <p>Componentes, módulos declarativos y acciones.</p>
               <p class="lego-welcome__version">v{$version}</p>

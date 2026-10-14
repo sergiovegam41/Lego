@@ -9,46 +9,42 @@
   width: min(22rem, 100%);
   display: grid;
   gap: var(--lego-space-4);
-  padding: var(--lego-space-6);
+  padding: var(--lego-space-8);
   border: 1px solid var(--lego-border);
   border-radius: var(--lego-radius-lg);
   background: var(--lego-surface);
-  box-shadow: var(--lego-shadow);
 }
 
-.lego-login__card h1 {
+.lego-login__card > .lego-logo {
+  margin-bottom: var(--lego-space-4);
+  font-size: var(--lego-text-xl);
+}
+
+.lego-login__title h1 {
   margin: 0;
-  text-align: center;
+  font-size: var(--lego-text-xl);
+  line-height: 1.75rem;
+}
+
+.lego-login__title p {
+  margin: var(--lego-space-1) 0 0;
+  color: var(--lego-text-muted);
 }
 
 .lego-login__card label {
   display: grid;
   gap: var(--lego-space-1);
-  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.lego-login__card input,
-.lego-login__card button {
-  padding: var(--lego-space-2) var(--lego-space-3);
-  border: 1px solid var(--lego-border);
-  border-radius: var(--lego-radius);
-  background: var(--lego-surface);
-  color: var(--lego-text);
-  font: inherit;
-}
-
-.lego-login__card button {
-  background: var(--lego-accent);
-  border-color: var(--lego-accent);
-  color: var(--lego-accent-text);
-  font-weight: 600;
-  cursor: pointer;
+.lego-login__card .lego-button {
+  margin-top: var(--lego-space-2);
 }
 
 .lego-login__error {
   margin: 0;
   padding: var(--lego-space-2) var(--lego-space-3);
-  border: 1px solid var(--lego-danger);
   border-radius: var(--lego-radius);
+  background: var(--lego-danger-soft);
   color: var(--lego-danger);
 }

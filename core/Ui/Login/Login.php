@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Ui\Login;
 
 use Lego\Http\Csrf;
+use Lego\Ui\Brand\Logo;
 use Lego\View\Component;
 
 /** Sign-in form. A plain HTML form: it works without JavaScript. */
@@ -26,6 +27,7 @@ final class Login extends Component
         $csrf = self::e($this->csrfToken);
         $next = self::e($this->next);
         $email = self::e($this->email);
+        $logo = new Logo();
         $error = $this->error === null
             ? ''
             : '<p class="lego-login__error" role="alert">' . self::e($this->error) . '</p>';
@@ -33,17 +35,21 @@ final class Login extends Component
         return <<<HTML
             <main class="lego-login">
               <form class="lego-login__card" method="post" action="/login">
-                <h1>Lego</h1>
+                {$logo}
+                <div class="lego-login__title">
+                  <h1>Iniciar sesión</h1>
+                  <p>Entra con tu usuario del panel.</p>
+                </div>
                 {$error}
                 <input type="hidden" name="{$field}" value="{$csrf}">
                 <input type="hidden" name="next" value="{$next}">
                 <label>Correo
-                  <input type="email" name="email" value="{$email}" autocomplete="username" required autofocus>
+                  <input class="lego-input" type="email" name="email" value="{$email}" autocomplete="username" required autofocus>
                 </label>
                 <label>Contraseña
-                  <input type="password" name="password" autocomplete="current-password" required>
+                  <input class="lego-input" type="password" name="password" autocomplete="current-password" required>
                 </label>
-                <button type="submit">Iniciar sesión</button>
+                <button class="lego-button lego-button--primary" type="submit">Entrar</button>
               </form>
             </main>
             HTML;

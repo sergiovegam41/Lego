@@ -12,6 +12,8 @@ Cosas que dependen de ti. Se actualiza en cada fase. Cuando resuelvas algo, dím
 | U4 | Fase 1 | Decidir si apagamos Lego 1 en el mini PC (puerto 8080). | Ocupa memoria y ya no se usa para revisar. |
 | U5 | Fase 5 | Decidir si `lego-2` pasa a ser la rama principal (fusionar en `main` o cambiar la rama por defecto en GitHub). | `main` sigue teniendo Lego 1; quien entre al repo ve la versión vieja. |
 | U6 | Fase 5 | Decidir el presupuesto de tamaño del núcleo. El plan pedía 3.500 líneas de PHP; hoy son unas 5.100 sin comentarios ni líneas vacías. El test de métricas fija 5.300 como techo provisional. | Bajar a 3.500 implica recortar funcionalidad (por ejemplo, la CLI o la pantalla sin JavaScript); subir la meta es aceptar el tamaño actual. |
+| U7 | Identidad | Decidir si el nombre "Lego" se mantiene en un proyecto público, por ser marca registrada de The LEGO Group. | Si cambia, conviene antes de publicar la identidad. |
+| U8 | Identidad | Generar la portada del README (1280 × 640) y la imagen para redes con la nueva marca. | La entrega de diseño la muestra, pero no hay archivo exportado. |
 
 ## Decisiones tomadas por defecto, a confirmar
 
@@ -32,3 +34,7 @@ Las apliqué con mi recomendación para no frenar el avance. Si alguna no te con
 | C11 | 6 | Usuarios y Roles no aceptan escrituras de agentes (sin `agentWrites`): un asistente nunca crea usuarios ni cambia permisos. | Permitirlo con confirmación. |
 | C12 | 6 | Las descripciones de acciones, que lee la IA, van en español como la interfaz. | Escribirlas en inglés, como el código. |
 | C13 | 6 | `Cross-Origin-Opener-Policy` y HSTS solo se envían en HTTPS: en HTTP el navegador las ignora y Chrome registra un error. | Enviarlas siempre. |
+| C14 | Identidad | El foco del teclado es un contorno de 2 px en color de acento; los campos además muestran el anillo suave de 3 px del diseño. | Solo el anillo suave de `--accent-soft`, que en claro casi no contrasta. |
+| C15 | Identidad | Los booleanos de las tablas se muestran como badge: "Sí" en verde, "No" neutro. | Texto plano. |
+| C16 | Identidad | Los iconos del sistema (y Lucide para ampliarlos) quedan para después; el menú sigue sin iconos. | Integrarlos ya como sprite SVG. |
+| C17 | Identidad | No se usó el lema de la portada de la entrega ("inspirado en Flutter y Angular"), que describe a Lego 1. | Escribir un lema nuevo para la portada del README. |
