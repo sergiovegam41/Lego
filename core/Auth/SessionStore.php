@@ -6,6 +6,7 @@ namespace Lego\Auth;
 
 use DateTimeImmutable;
 use Lego\Database\Database;
+use Lego\Modules\Users\User;
 use Lego\Support\Clock;
 
 /**

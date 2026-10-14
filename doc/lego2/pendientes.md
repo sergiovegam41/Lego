@@ -10,6 +10,8 @@ Cosas que dependen de ti. Se actualiza en cada fase. Cuando resuelvas algo, dím
 | U2 | Fase 2 | Cambiar la contraseña del admin del mini PC: `docker exec lego2-app-1 php lego user:password admin@lego.local`. | La contraseña generada quedó en el log del contenedor y en el chat. |
 | U3 | Limpieza | Decidir qué hacer con `cookies.txt`, que estuvo versionado en el historial de Lego 1. | Contiene una cookie de sesión antigua. Si el repo es público, conviene invalidarla y, si quieres, reescribir el historial. |
 | U4 | Fase 1 | Decidir si apagamos Lego 1 en el mini PC (puerto 8080). | Ocupa memoria y ya no se usa para revisar. |
+| U5 | Fase 5 | Decidir si `lego-2` pasa a ser la rama principal (fusionar en `main` o cambiar la rama por defecto en GitHub). | `main` sigue teniendo Lego 1; quien entre al repo ve la versión vieja. |
+| U6 | Fase 5 | Decidir el presupuesto de tamaño del núcleo. El plan pedía 3.500 líneas de PHP; hoy son unas 5.100 sin comentarios ni líneas vacías. El test de métricas fija 5.300 como techo provisional. | Bajar a 3.500 implica recortar funcionalidad (por ejemplo, la CLI o la pantalla sin JavaScript); subir la meta es aceptar el tamaño actual. |
 
 ## Decisiones tomadas por defecto, a confirmar
 

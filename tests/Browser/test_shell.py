@@ -166,6 +166,40 @@ def test_theme_toggle_switches_and_persists(page):
     assert page.evaluate("getComputedStyle(document.body).backgroundColor") == after, "the theme was not kept"
 
 
+def test_creates_a_role_by_checking_permissions(page):
+    page.click('[data-lego-nav][data-module="roles"]')
+    expect(page).to_have_url(url("/roles"))
+    active(page).locator("a", has_text="Nuevo").click()
+    form = screen(page, "roles/new").locator('form[data-lego="form"]').first
+    form.locator('input[name="name"]').fill(f"sales_{RUN}")
+    form.locator('input[name="label"]').fill(f"Ventas {RUN}")
+    form.locator("label", has_text="Clientes: ver").locator("input").check()
+    form.locator("label", has_text="Clientes: crear").locator("input").check()
+    form.locator('button[type="submit"]').click()
+    expect(page).to_have_url(re.compile(r"/roles(\?.*)?$"))
+    active(page).locator("tbody a", has_text=f"sales_{RUN}").click()
+    checked = active(page).locator('input[name="permissions[]"]:checked')
+    expect(checked).to_have_count(2)
+
+
+def test_creates_a_user_and_shows_the_generated_password_once(page):
+    page.click('[data-lego-nav][data-module="users"]')
+    active(page).locator("a", has_text="Nuevo").click()
+    form = screen(page, "users/new").locator('form[data-lego="form"]').first
+    form.locator('input[name="name"]').fill(f"Usuario {RUN}")
+    form.locator('input[name="email"]').fill(f"user-{RUN}@example.com")
+    form.locator('select[name="role_id"]').select_option(label=f"Ventas {RUN}")
+    form.locator('button[type="submit"]').click()
+    expect(active(page).locator("tbody")).to_contain_text(f"user-{RUN}@example.com")
+    active(page).locator("tbody a", has_text=f"Usuario {RUN}").click()
+    active(page).locator('form[data-lego-action="users_reset_password"] button').click()
+    page.locator("dialog[data-lego-dialog] [data-lego-confirm]").click()
+    notice = page.locator("dialog[data-lego-notice]")
+    expect(notice).to_contain_text(f"Contraseña nueva para user-{RUN}@example.com:")
+    notice.locator("button").click()
+    expect(page.locator("dialog[data-lego-notice]")).to_have_count(0)
+
+
 def test_expired_session_sends_navigation_to_the_login(page):
     page.context.clear_cookies()
     # Home is not open yet, so the shell has to fetch it and gets a 401.
@@ -186,6 +220,8 @@ TESTS = [
     test_searches_and_deletes_after_confirming_in_a_dialog,
     test_reload_restores_only_the_active_screen,
     test_theme_toggle_switches_and_persists,
+    test_creates_a_role_by_checking_permissions,
+    test_creates_a_user_and_shows_the_generated_password_once,
     test_expired_session_sends_navigation_to_the_login,
 ]
 

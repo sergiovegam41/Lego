@@ -15,7 +15,9 @@ use Attribute;
  *     public function block(string $reason): void
  *
  * Parameters must be scalar (string, int, float, bool); they become the
- * action's input schema. The permission is "<module>.<method_in_snake_case>".
+ * action's input schema. A parameter typed Lego\Auth\Identity receives the
+ * user running the action instead. The permission is
+ * "<module>.<method_in_snake_case>".
  */
 #[Attribute(Attribute::TARGET_METHOD)]
 final class Action

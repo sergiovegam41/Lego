@@ -126,3 +126,22 @@
 .lego-field [aria-invalid="true"] {
   border-color: var(--lego-danger);
 }
+
+.lego-field--checklist {
+  margin: 0;
+  padding: var(--lego-space-3);
+  border: 1px solid var(--lego-border);
+  border-radius: var(--lego-radius);
+}
+
+.lego-checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--lego-space-2);
+}
+
+.lego-checklist__item {
+  display: flex;
+  gap: var(--lego-space-2);
+  align-items: center;
+}

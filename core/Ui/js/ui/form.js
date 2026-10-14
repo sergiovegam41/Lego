@@ -12,7 +12,7 @@
  * Without JavaScript the same form posts to the server and works as well.
  */
 import { EVENTS } from 'lego';
-import { confirm, toast } from 'lego/ui/dialog.js';
+import { confirm, notice, toast } from 'lego/ui/dialog.js';
 
 export function mount(form, ctx) {
   const { signal } = ctx;
@@ -42,8 +42,7 @@ export function mount(form, ctx) {
 
 async function submit(form, ctx) {
   clearErrors(form);
-  const input = Object.fromEntries(new FormData(form));
-  delete input._csrf;
+  const input = readInput(form);
   if (form.dataset.legoRecord) {
     input.id = Number(form.dataset.legoRecord);
   }
@@ -61,17 +60,40 @@ async function submit(form, ctx) {
   if (result.status === 'ok') {
     ctx.setDirty(false);
     ctx.emit(EVENTS.DATA_CHANGED, { module: form.dataset.legoModule, list: form.dataset.legoList, action, from: ctx.key });
+    // An action may return a message the user must read (e.g. a new password).
+    if (typeof result.data?.message === 'string') {
+      await notice(result.data.message);
+    }
     if (form.dataset.legoAfter === 'list') {
       await ctx.navigate(form.dataset.legoList);
       await ctx.close({ force: true });
     } else {
-      toast('Hecho.');
+      if (typeof result.data?.message !== 'string') {
+        toast('Hecho.');
+      }
       await ctx.reload();
     }
     return;
   }
 
   showErrors(form, result.error ?? { message: 'No se pudo completar la acción.' });
+}
+
+/** Form fields as an object; repeated "name[]" fields become arrays without empty values. */
+function readInput(form) {
+  const data = new FormData(form);
+  const input = {};
+  for (const name of new Set(data.keys())) {
+    if (name === '_csrf') {
+      continue;
+    }
+    if (name.endsWith('[]')) {
+      input[name.slice(0, -2)] = data.getAll(name).filter((value) => value !== '');
+    } else {
+      input[name] = data.getAll(name).at(-1);
+    }
+  }
+  return input;
 }
 
 function clearErrors(form) {

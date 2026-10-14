@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Action;
 
 use Illuminate\Database\Eloquent\Builder;
+use Lego\Auth\Identity;
 use Lego\Data\Record;
 use Lego\Data\Validator;
 use Lego\Errors\ValidationFailed;
@@ -66,10 +67,11 @@ final class ResourceActions
                 description: "Crea un registro en {$module->label}.",
                 permission: $module->permission('create'),
                 scope: ActionDefinition::COLLECTION,
-                inputSchema: self::fieldsSchema($class, requireRequired: true),
+                inputSchema: static fn (): array => self::fieldsSchema($class, requireRequired: true),
                 prepare: fn (array $input): array => $this->validator->validate($class, $input, Validator::CREATE),
-                run: static function (array $clean) use ($class): array {
+                run: static function (array $clean, ?Record $none, Identity $user) use ($class): array {
                     $record = new $class();
+                    $record->beforeChange('create', $clean, $user);
                     $record->forceFill($clean)->save();
 
                     return $record->refresh()->toData();
@@ -85,9 +87,10 @@ final class ResourceActions
                 description: "Modifica los campos indicados de un registro de {$module->label}.",
                 permission: $module->permission('update'),
                 scope: ActionDefinition::RECORD,
-                inputSchema: self::withId(self::fieldsSchema($class, requireRequired: false)),
+                inputSchema: static fn (): array => self::withId(self::fieldsSchema($class, requireRequired: false)),
                 prepare: fn (array $input, Record $record): array => $this->validator->validate($class, $input, Validator::UPDATE, $record, ['id']),
-                run: static function (array $clean, Record $record): array {
+                run: static function (array $clean, Record $record, Identity $user): array {
+                    $record->beforeChange('update', $clean, $user);
                     $record->forceFill($clean)->save();
 
                     return $record->refresh()->toData();
@@ -106,7 +109,8 @@ final class ResourceActions
                 scope: ActionDefinition::RECORD,
                 inputSchema: self::idSchema(),
                 prepare: static fn (): array => [],
-                run: static function (array $clean, Record $record): array {
+                run: static function (array $clean, Record $record, Identity $user): array {
+                    $record->beforeChange('delete', [], $user);
                     $id = $record->getKey();
                     $record->delete();
 

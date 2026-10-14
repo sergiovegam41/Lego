@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Action;
 
 use Illuminate\Support\Str;
+use Lego\Auth\Identity;
 use Lego\Data\Record;
 use Lego\Errors\ValidationFailed;
 use Lego\Module\ModuleDefinition;
@@ -46,14 +47,23 @@ final class CustomActions
             throw new LogicException("#[Action] {$method->class}::{$method->getName()} uses a reserved CRUD name.");
         }
 
-        $parameters = $method->getParameters();
-        foreach ($parameters as $parameter) {
+        // A parameter typed Identity receives the acting user; it is not input.
+        $actor = null;
+        $parameters = [];
+        foreach ($method->getParameters() as $parameter) {
+            $type = $parameter->getType();
+            if ($type instanceof ReflectionNamedType && $type->getName() === Identity::class) {
+                $actor = $parameter->getName();
+                continue;
+            }
             $this->assertSupported($method, $parameter);
+            $parameters[] = $parameter;
         }
 
         $scope = $method->isStatic() ? ActionDefinition::COLLECTION : ActionDefinition::RECORD;
         $name = $method->getName();
         $class = $module->class;
+        $withActor = static fn (array $clean, Identity $user): array => $actor === null ? $clean : [...$clean, $actor => $user];
 
         return new ActionDefinition(
             name: $module->name . '_' . $operation,
@@ -66,8 +76,8 @@ final class CustomActions
             inputSchema: $this->schema($parameters, $scope),
             prepare: fn (array $input): array => $this->bind($parameters, $input, $scope),
             run: $method->isStatic()
-                ? static fn (array $clean): mixed => [$class, $name](...$clean)
-                : static fn (array $clean, Record $record): mixed => $record->$name(...$clean),
+                ? static fn (array $clean, ?Record $none, Identity $user): mixed => [$class, $name](...$withActor($clean, $user))
+                : static fn (array $clean, Record $record, Identity $user): mixed => $record->$name(...$withActor($clean, $user)),
             readOnly: $action->readOnly,
             destructive: $action->destructive,
             idempotent: $action->idempotent,

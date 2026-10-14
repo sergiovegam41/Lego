@@ -182,8 +182,12 @@ abstract class Field
         return $value === null ? '' : (string) $value;
     }
 
-    /** Value as it goes into a form input. */
-    public function formValue(mixed $value): string
+    /**
+     * Value as it goes into a form: a string, or a list for multi-value fields.
+     *
+     * @return string|list<string>
+     */
+    public function formValue(mixed $value): string|array
     {
         return $value === null ? '' : (string) $value;
     }

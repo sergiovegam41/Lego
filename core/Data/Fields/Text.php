@@ -11,6 +11,9 @@ class Text extends Field
 
     protected ?int $maxLength = 255;
 
+    /** @var array{0: string, 1: string}|null regex and message */
+    protected ?array $pattern = null;
+
     public function type(): string
     {
         return 'text';
@@ -35,6 +38,14 @@ class Text extends Field
         return $this->maxLength;
     }
 
+    /** Requires the value to match a regular expression, e.g. ->pattern('/^[a-z_]+$/', 'Solo minúsculas y guion bajo.'). */
+    public function pattern(string $regex, string $message): static
+    {
+        $this->pattern = [$regex, $message];
+
+        return $this;
+    }
+
     protected function cast(mixed $raw): mixed
     {
         if (!is_scalar($raw)) {
@@ -53,6 +64,9 @@ class Text extends Field
         }
         if ($this->maxLength !== null && $length > $this->maxLength) {
             $errors[] = ['rule' => 'max', 'params' => ['max' => $this->maxLength], 'message' => "Debe tener como máximo {$this->maxLength} caracteres."];
+        }
+        if ($this->pattern !== null && preg_match($this->pattern[0], (string) $value) !== 1) {
+            $errors[] = ['rule' => 'pattern', 'message' => $this->pattern[1]];
         }
 
         return $errors;

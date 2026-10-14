@@ -11,6 +11,7 @@ use Lego\Auth\Authenticator;
 use Lego\Auth\Gate;
 use Lego\Auth\Guard;
 use Lego\Auth\LoginController;
+use Lego\Auth\PermissionCatalog;
 use Lego\Auth\SessionGuard;
 use Lego\Auth\SessionStore;
 use Lego\Database\Database;
@@ -46,7 +47,7 @@ use Lego\View\Assets;
  */
 final class Application
 {
-    public const VERSION = '2.0.0-dev';
+    public const VERSION = '2.0.0-alpha';
 
     public readonly Router $router;
 
@@ -106,8 +107,12 @@ final class Application
         $this->sessionGuard = new SessionGuard($this->sessions, $cookies);
 
         $this->gate = new Gate();
-        $this->modules = new ModuleRegistry($this->modulesPath, $modulesNamespace);
+        $this->modules = new ModuleRegistry([
+            $basePath . '/core/Modules' => 'Lego\\Modules\\',
+            $this->modulesPath => $modulesNamespace,
+        ]);
         $this->actions = new ActionRegistry($this->modules);
+        PermissionCatalog::use(PermissionCatalog::build($this->modules, $this->actions));
         $this->executor = new ActionExecutor($this->actions, $this->modules, $this->gate, $this->actionLog, $this->db, $clock);
         $this->menu = new Menu($this->modules, $this->gate);
 

@@ -81,7 +81,7 @@ final class ActionExecutor
         }
 
         try {
-            $data = $this->db->connection()->transaction(static fn (): mixed => ($action->run)($clean, $record));
+            $data = $this->db->connection()->transaction(static fn (): mixed => ($action->run)($clean, $record, $user));
         } catch (Throwable $e) {
             if (!$action->readOnly && !$e instanceof HttpError) {
                 $this->log->record($action->name, $via, ActionLog::ERROR, $user->id, $subject, $clean, $traceId, $ip);

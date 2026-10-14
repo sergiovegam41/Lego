@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Lego\Application;
 use Lego\Auth\Passwords;
-use Lego\Auth\Role;
-use Lego\Auth\User;
+use Lego\Modules\Roles\Role;
+use Lego\Modules\Users\User;
 use Lego\Console\Console;
 use Lego\Database\Migration;
 use Lego\Environment;

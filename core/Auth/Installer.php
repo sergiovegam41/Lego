@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Lego\Auth;
 
 use InvalidArgumentException;
+use Lego\Modules\Roles\Role;
+use Lego\Modules\Users\User;
 
 /**
  * First-run setup: an "admin" role with every permission and one active

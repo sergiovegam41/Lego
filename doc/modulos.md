@@ -63,9 +63,10 @@ final class Client extends Record
 | `Money` | importe exacto como texto `"1500.00"` | `min()`, `max()` |
 | `Boolean` | sí o no; vacío es no | |
 | `Date` | fecha `AAAA-MM-DD` | fecha real |
-| `Select` | una de las opciones | `options()` |
+| `Select` | una de las opciones | `options()` o `optionsFrom(fn () => ...)` si salen de la base de datos |
+| `Checklist` | varias opciones, como lista JSON | `options()` o `optionsFrom()`; el modelo castea la columna a `array` |
 
-Modificadores comunes: `required()`, `unique()`, `searchable()`, `sortable()`, `hideInTable()` y `help('texto')`.
+Modificadores comunes: `required()`, `unique()`, `searchable()`, `sortable()`, `hideInTable()`, `default(valor)` y `help('texto')`. `Text` acepta además `pattern(regex, mensaje)`.
 
 Al crear, un campo opcional que no se envía conserva el valor por defecto de la base de datos. Al editar, solo cambian los campos enviados.
 
@@ -100,6 +101,38 @@ public function block(#[Param('Motivo')] string $reason): void
 - El nombre y el permiso salen del método: `block` da la acción `clients_block` y el permiso `clients.block`.
 - `BusinessRuleViolation` responde 409 con un código estable y un mensaje para el usuario.
 - La pantalla de edición muestra un formulario para cada acción que el usuario puede ejecutar.
+
+Si una acción necesita saber quién la ejecuta, basta un parámetro de tipo `Identity`. No forma parte de la entrada; Lego lo rellena con el usuario actual:
+
+```php
+#[Action(label: 'Asignarme')]
+public function assignToMe(Identity $by): void
+{
+    $this->forceFill(['owner_id' => $by->id])->save();
+}
+```
+
+Si una acción devuelve `['message' => '…']`, la pantalla muestra ese mensaje antes de seguir. Así se entrega, por ejemplo, una contraseña generada.
+
+## Reglas de negocio sobre el CRUD
+
+Para reglas que el formulario no puede expresar, el modelo sobrescribe `beforeChange()`. Corre dentro de la transacción, antes de crear, editar o borrar, y recibe al usuario que actúa:
+
+```php
+public function beforeChange(string $operation, array $clean, Identity $by): void
+{
+    if ($operation === 'delete' && $this->invoices()->exists()) {
+        throw new BusinessRuleViolation('client_has_invoices', 'El cliente tiene facturas.');
+    }
+}
+```
+
+## Módulos del núcleo
+
+Usuarios y Roles viven en `core/Modules/` y están hechos con estas mismas piezas. Sirven de ejemplo real:
+
+- **Usuarios.** Un usuario nuevo no tiene contraseña utilizable hasta que un administrador ejecuta "Restablecer contraseña". Esa acción muestra la clave una sola vez y cierra sus sesiones. Nadie puede eliminarse, desactivarse ni cambiarse el rol a sí mismo.
+- **Roles.** Los permisos se eligen con casillas entre los que existen de verdad. Lego los deduce de los módulos y sus acciones (`PermissionCatalog`). El rol `admin` conserva `*` y no se puede renombrar ni borrar. Un rol en uso tampoco se puede borrar.
 
 ## Un módulo que es solo una pantalla
 

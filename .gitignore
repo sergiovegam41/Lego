@@ -16,7 +16,3 @@ Thumbs.db
 
 # Obsidian workspace state
 doc/.obsidian/workspace.json
-
-# Lego 1 generated files kept out of git
-legacy/components/shared/*/*/_ide_helper.php
-legacy/doc/.obsidian/workspace.json

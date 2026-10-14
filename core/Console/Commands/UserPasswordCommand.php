@@ -7,7 +7,7 @@ namespace Lego\Console\Commands;
 use Lego\Application;
 use Lego\Audit\ActionLog;
 use Lego\Auth\Passwords;
-use Lego\Auth\User;
+use Lego\Modules\Users\User;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

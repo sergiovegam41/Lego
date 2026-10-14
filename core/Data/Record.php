@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Data;
 
 use Illuminate\Database\Eloquent\Model;
+use Lego\Auth\Identity;
 use Lego\Data\Fields\Field;
 use LogicException;
 
@@ -42,6 +43,18 @@ abstract class Record extends Model
         }
 
         return $map;
+    }
+
+    /**
+     * Business rules for the CRUD actions, checked before the change and
+     * inside its transaction. Throw BusinessRuleViolation to refuse.
+     *
+     * @param string               $operation create, update or delete
+     * @param array<string, mixed> $clean     validated input (empty for delete)
+     * @param Identity             $by        the user acting
+     */
+    public function beforeChange(string $operation, array $clean, Identity $by): void
+    {
     }
 
     /** Short human name of this record for messages, e.g. «Florería Lima». */

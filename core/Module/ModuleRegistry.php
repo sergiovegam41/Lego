@@ -11,8 +11,11 @@ use LogicException;
 use ReflectionClass;
 
 /**
- * Discovers modules: every folder modules/<Name>/ whose top-level PHP files
+ * Discovers modules: every folder <root>/<Name>/ whose top-level PHP files
  * contain exactly one class with #[Module]. No registration anywhere else.
+ *
+ * There are two roots: core/Modules (Users, Roles) and the application's
+ * modules/ folder. Both follow the same convention; names must not repeat.
  */
 final class ModuleRegistry
 {
@@ -22,15 +25,18 @@ final class ModuleRegistry
     /** @var array<string, ModuleDefinition> */
     private array $modules = [];
 
-    /**
-     * @param string $path      Folder that holds the modules.
-     * @param string $namespace PSR-4 namespace mapped to that folder, e.g. "Modules\".
-     */
-    public function __construct(private readonly string $path, private readonly string $namespace = 'Modules\\')
+    /** @param array<string, string> $roots folder => PSR-4 namespace, e.g. ['/app/modules' => 'Modules\\'] */
+    public function __construct(array $roots)
     {
-        foreach (glob(rtrim($path, '/\\') . '/*', GLOB_ONLYDIR) ?: [] as $folder) {
-            $definition = $this->inspect($folder);
-            if ($definition !== null) {
+        foreach ($roots as $path => $namespace) {
+            foreach (glob(rtrim($path, '/\\') . '/*', GLOB_ONLYDIR) ?: [] as $folder) {
+                $definition = $this->inspect($folder, $namespace);
+                if ($definition === null) {
+                    continue;
+                }
+                if (isset($this->modules[$definition->name])) {
+                    throw new LogicException("Module \"{$definition->name}\" is defined twice: {$this->modules[$definition->name]->class} and {$definition->class}.");
+                }
                 $this->modules[$definition->name] = $definition;
             }
         }
@@ -49,12 +55,7 @@ final class ModuleRegistry
         return $this->modules[$name] ?? null;
     }
 
-    public function path(): string
-    {
-        return $this->path;
-    }
-
-    private function inspect(string $folder): ?ModuleDefinition
+    private function inspect(string $folder, string $namespace): ?ModuleDefinition
     {
         $folderName = basename($folder);
         if (preg_match('/^[A-Z][A-Za-z0-9]*$/', $folderName) !== 1) {
@@ -63,7 +64,7 @@ final class ModuleRegistry
 
         $found = [];
         foreach (glob($folder . '/*.php') ?: [] as $file) {
-            $class = $this->namespace . $folderName . '\\' . basename($file, '.php');
+            $class = $namespace . $folderName . '\\' . basename($file, '.php');
             if (!class_exists($class)) {
                 continue;
             }

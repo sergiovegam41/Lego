@@ -6,9 +6,9 @@ use Lego\Auth\Authenticator;
 use Lego\Auth\Installer;
 use Lego\Auth\InvalidCredentials;
 use Lego\Auth\Passwords;
-use Lego\Auth\Role;
+use Lego\Modules\Roles\Role;
 use Lego\Auth\SessionStore;
-use Lego\Auth\User;
+use Lego\Modules\Users\User;
 use Lego\Errors\TooManyRequests;
 use Tests\Support\FrozenClock;
 

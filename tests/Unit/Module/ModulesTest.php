@@ -14,7 +14,7 @@ use Tests\Support\FakeGuard;
 
 function fixtureModules(): ModuleRegistry
 {
-    return new ModuleRegistry(fixture('Modules'), 'Tests\\Fixtures\\Modules\\');
+    return new ModuleRegistry([fixture('Modules') => 'Tests\\Fixtures\\Modules\\']);
 }
 
 it('discovers modules from their folders, in menu order', function () {
@@ -30,7 +30,7 @@ it('discovers modules from their folders, in menu order', function () {
 });
 
 it('rejects modules whose name collides with core routes', function () {
-    new ModuleRegistry(fixture('InvalidModules'), 'Tests\\Fixtures\\InvalidModules\\');
+    new ModuleRegistry([fixture('InvalidModules') => 'Tests\\Fixtures\\InvalidModules\\']);
 })->throws(LogicException::class, 'reserved');
 
 it('builds CRUD and custom actions with names, permissions and annotations', function () {
@@ -55,10 +55,10 @@ it('builds CRUD and custom actions with names, permissions and annotations', fun
 
 it('derives input schemas from fields and method signatures', function () {
     $actions = new ActionRegistry(fixtureModules());
-    $create = $actions->get('clients_create')->inputSchema;
-    $update = $actions->get('clients_update')->inputSchema;
-    $block = $actions->get('clients_block')->inputSchema;
-    $visit = $actions->get('clients_register_visit')->inputSchema;
+    $create = $actions->get('clients_create')->inputSchema();
+    $update = $actions->get('clients_update')->inputSchema();
+    $block = $actions->get('clients_block')->inputSchema();
+    $visit = $actions->get('clients_register_visit')->inputSchema();
 
     expect($create['required'])->toBe(['name', 'email'])
         ->and($create['additionalProperties'])->toBeFalse()
@@ -104,7 +104,43 @@ it('serves a screen module inside the layout and as a fragment', function () {
 });
 
 it('keeps every module in the repository valid', function () {
-    $modules = new ModuleRegistry(basePath('modules'));
+    $modules = new ModuleRegistry([basePath('core/Modules') => 'Lego\\Modules\\', basePath('modules') => 'Modules\\']);
 
-    expect(new ActionRegistry($modules))->toBeInstanceOf(ActionRegistry::class);
+    expect(new ActionRegistry($modules))->toBeInstanceOf(ActionRegistry::class)
+        ->and(array_slice(array_keys($modules->all()), 0, 2))->toBe(['users', 'roles']);
+});
+
+it('ships Users and Roles as core modules built like any other', function () {
+    $modules = new ModuleRegistry([basePath('core/Modules') => 'Lego\\Modules\\']);
+    $actions = array_keys((new ActionRegistry($modules))->all());
+
+    expect(array_keys($modules->all()))->toBe(['users', 'roles'])
+        ->and($actions)->toContain('users_create', 'users_reset_password', 'roles_update', 'roles_delete')
+        ->and($modules->get('users')->url())->toBe('/users');
+});
+
+it('rejects two modules with the same name in different roots', function () {
+    new ModuleRegistry([fixture('Modules') => 'Tests\\Fixtures\\Modules\\', fixture('Modules') . '/' => 'Tests\\Fixtures\\Modules\\']);
+})->throws(LogicException::class, 'defined twice');
+
+it('builds the permission catalog from modules and actions', function () {
+    $modules = new ModuleRegistry([fixture('Modules') => 'Tests\\Fixtures\\Modules\\']);
+    $catalog = Lego\Auth\PermissionCatalog::build($modules, new ActionRegistry($modules))->all();
+
+    expect($catalog)->toMatchArray([
+        '*' => 'Todo (administrador)',
+        'clients.*' => 'Clientes: todo',
+        'clients.view' => 'Clientes: ver',
+        'clients.create' => 'Clientes: crear',
+        'clients.block' => 'Clientes: bloquear',
+        'reports.view' => 'Informes: ver',
+    ]);
+});
+
+it('boots without touching the database', function () {
+    // app() points at a port that refuses connections: any query at boot would throw.
+    $app = app();
+
+    expect($app->modules->get('users'))->not->toBeNull()
+        ->and($app->actions->get('users_create'))->not->toBeNull();
 });

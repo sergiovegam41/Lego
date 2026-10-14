@@ -5,7 +5,6 @@
 .env.*
 !.env.example
 vendor
-legacy
 doc
 tests
 node_modules

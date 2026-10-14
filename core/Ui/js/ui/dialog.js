@@ -50,3 +50,41 @@ export function toast(message, { timeout = 2500 } = {}) {
   document.body.append(element);
   setTimeout(() => element.remove(), timeout);
 }
+
+/** Shows a message that must be read before going on, with a single button. */
+export function notice(message, { okLabel = 'Entendido' } = {}) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'lego-dialog';
+    dialog.dataset.legoDialog = '';
+    dialog.dataset.legoNotice = '';
+
+    const text = document.createElement('p');
+    text.textContent = message;
+    text.style.userSelect = 'all';
+
+    const buttons = document.createElement('div');
+    buttons.className = 'lego-dialog__buttons';
+    const ok = document.createElement('button');
+    ok.type = 'button';
+    ok.className = 'lego-button lego-button--primary';
+    ok.textContent = okLabel;
+    buttons.append(ok);
+    dialog.append(text, buttons);
+
+    const finish = () => {
+      dialog.close();
+      dialog.remove();
+      resolve();
+    };
+    ok.addEventListener('click', finish);
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      finish();
+    });
+
+    document.body.append(dialog);
+    dialog.showModal();
+    ok.focus();
+  });
+}

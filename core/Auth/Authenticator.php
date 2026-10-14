@@ -7,6 +7,7 @@ namespace Lego\Auth;
 use Lego\Audit\ActionLog;
 use Lego\Database\Database;
 use Lego\Errors\TooManyRequests;
+use Lego\Modules\Users\User;
 use Lego\Support\Clock;
 
 /**

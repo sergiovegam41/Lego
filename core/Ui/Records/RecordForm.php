@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Ui\Records;
 
 use Lego\Action\ActionDefinition;
+use Lego\Data\Fields\Checklist;
 use Lego\Data\Fields\Field;
 use Lego\Data\Fields\Number;
 use Lego\Data\Fields\Select;
@@ -30,7 +31,7 @@ final class RecordForm extends Component
 
     /**
      * @param list<Field>                                    $fields
-     * @param array<string, string>                          $values      Field name => form value.
+     * @param array<string, string|list<string>>             $values      Field name => form value.
      * @param array<string, list<array{message: string}>>    $errors      Field name => errors.
      * @param list<ActionDefinition>                         $allowed     Actions of this module the user may run.
      * @param array<string, array<string, list<array{message: string}>>> $actionErrors Action name => field errors.
@@ -97,6 +98,10 @@ final class RecordForm extends Component
         $disabled = $editable ? '' : ' disabled';
         $required = $field->isRequired() && $editable ? ' required' : '';
         $value = $this->values[$field->name] ?? '';
+        if ($field instanceof Checklist) {
+            return $this->checklistRow($field, is_array($value) ? $value : [], $id, $editable, $errors);
+        }
+        $value = is_array($value) ? '' : $value;
         $attributes = "id=\"{$id}\" name=\"{$name}\"{$required}{$disabled}{$describedBy}";
 
         $control = match ($field->type()) {
@@ -121,6 +126,34 @@ final class RecordForm extends Component
         $label = self::e($field->label) . ($field->isRequired() ? ' <span aria-hidden="true">*</span>' : '');
 
         return "<div class=\"lego-field lego-field--{$field->type()}\" data-field=\"{$name}\"><label for=\"{$id}\">{$label}</label>{$control}{$help}{$errorLine}</div>";
+    }
+
+    /**
+     * Checkboxes for a Checklist, sent as name[]. The leading empty value makes
+     * "nothing checked" reach the server as an empty list.
+     *
+     * @param list<string>                     $checked
+     * @param list<array{message: string}>     $errors
+     */
+    private function checklistRow(Checklist $field, array $checked, string $id, bool $editable, array $errors): string
+    {
+        $name = self::e($field->name);
+        $disabled = $editable ? '' : ' disabled';
+        $boxes = "<input type=\"hidden\" name=\"{$name}[]\" value=\"\"{$disabled}>";
+        $index = 0;
+        foreach ($field->choices() as $value => $label) {
+            $boxId = $id . '-' . $index++;
+            $on = in_array((string) $value, $checked, true) ? ' checked' : '';
+            $boxes .= "<label class=\"lego-checklist__item\" for=\"{$boxId}\"><input type=\"checkbox\" id=\"{$boxId}\" name=\"{$name}[]\" value=\""
+                . self::e($value) . "\"{$on}{$disabled}> " . self::e($label) . '</label>';
+        }
+
+        $error = $errors === []
+            ? ''
+            : "<p class=\"lego-field__error\" id=\"{$id}-error\">" . self::e(implode(' ', array_column($errors, 'message'))) . '</p>';
+
+        return "<fieldset class=\"lego-field lego-field--checklist\" data-field=\"{$name}\"><legend>" . self::e($field->label)
+            . "</legend><div class=\"lego-checklist\">{$boxes}</div>{$error}</fieldset>";
     }
 
     private function options(Field $field, string $value): string
@@ -167,14 +200,14 @@ final class RecordForm extends Component
     {
         $errors = $this->actionErrors[$action->name] ?? [];
         $inputs = '';
-        foreach ($action->inputSchema['properties'] ?? [] as $name => $schema) {
+        foreach ($action->inputSchema()['properties'] ?? [] as $name => $schema) {
             if ($name === 'id') {
                 continue;
             }
             $type = is_array($schema['type']) ? $schema['type'][0] : $schema['type'];
             $id = $this->domPrefix . self::e($action->operation) . '-' . self::e($name);
             $label = self::e($schema['title'] ?? str_replace('_', ' ', (string) $name));
-            $required = in_array($name, $action->inputSchema['required'] ?? [], true) ? ' required' : '';
+            $required = in_array($name, $action->inputSchema()['required'] ?? [], true) ? ' required' : '';
             $control = match ($type) {
                 'boolean' => "<input type=\"hidden\" name=\"{$name}\" value=\"0\"><input type=\"checkbox\" id=\"{$id}\" name=\"{$name}\" value=\"1\">",
                 'integer', 'number' => "<input type=\"number\" id=\"{$id}\" name=\"{$name}\"" . ($type === 'integer' ? ' step="1"' : ' step="any"') . "{$required}>",

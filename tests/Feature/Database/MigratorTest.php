@@ -28,7 +28,7 @@ it('rolls back the last batch and applies it again', function () {
     $reverted = coreMigrator()->rollback();
 
     expect($reverted)->toHaveCount(count(coreMigrator()->files()))
-        ->and($reverted[0])->toEndWith('create_clients_table')
+        ->and($reverted[0])->toBe(array_key_last(coreMigrator()->files()))
         ->and($schema->hasTable('users'))->toBeFalse();
 
     $applied = coreMigrator()->migrate();

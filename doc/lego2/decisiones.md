@@ -62,3 +62,14 @@ Aplicadas por defecto las recomendaciones C1 a C9 de [pendientes.md](pendientes.
 | D25 | Valores por defecto de campos | `Field::default()` define el valor de una entrada vacía; al crear, un campo opcional vacío se omite. | Un formulario envía todos los campos como texto; sin esto, una columna `NOT NULL` con default fallaba. |
 | D26 | Caché | Páginas, fragmentos y JSON llevan `Cache-Control: no-store`; los assets con `?v=` se cachean un año. | Las respuestas dependen de la sesión; los assets se versionan por fecha de modificación. |
 | D27 | Tema | El tema sigue al sistema por defecto; el botón del shell lo fija y lo guarda en `localStorage`, solo como preferencia del navegador. | Preferencia personal sin estado en servidor. |
+
+## Fase 5 (2026-10-16)
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| D28 | Usuarios y Roles | Son módulos del núcleo en `core/Modules/`, descubiertos con la misma convención de carpeta que `modules/`. Los modelos `User` y `Role` pasan a `Lego\Modules\*`. | Un módulo propio de Lego sirve de ejemplo real y no hay una segunda forma de hacer pantallas de administración (P2). |
+| D29 | Contraseñas desde la UI | No se escriben en formularios. Un usuario nuevo empieza sin contraseña utilizable; "Restablecer contraseña" genera una, la muestra una vez y cierra sus sesiones. | Evita contraseñas débiles elegidas a mano y su paso por formularios y logs. |
+| D30 | Reglas de negocio del CRUD | `Record::beforeChange($operation, $clean, $by)` y parámetros `Identity` en `#[Action]` reciben al usuario que actúa. | Reglas como "no puedes borrarte" necesitan saber quién actúa, sin salir del modelo. |
+| D31 | Esquemas de entrada perezosos | El esquema JSON de una acción se calcula la primera vez que se pide, no al arrancar. | Las opciones de un campo pueden venir de la base de datos; arrancar no debe consultarla. Lo detectó un test. |
+| D32 | Catálogo de permisos | Se deduce de los módulos y sus acciones (`PermissionCatalog`); un rol solo puede otorgar permisos que existen. | Sin lista de permisos mantenida a mano (P1, P3). |
+| D33 | Breadcrumb y botón de icono de Lego 1 | No se portan. Las pestañas del shell y los botones con tokens cubren su función. | Lo marcado "keep" en la auditoría quedó obsoleto con el shell de la fase 4 (P5). |

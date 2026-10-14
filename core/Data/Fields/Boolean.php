@@ -19,7 +19,7 @@ final class Boolean extends Field
     public function normalize(mixed $raw): mixed
     {
         if ($raw === null || $raw === '') {
-            return false;
+            return $this->default ?? false;
         }
 
         return $this->cast($raw);

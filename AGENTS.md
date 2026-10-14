@@ -6,7 +6,7 @@ Puerta de entrada única para personas y agentes de IA que trabajan en Lego. Si 
 
 Framework PHP 8.3 para paneles de administración. Un componente es una clase PHP con parámetros tipados que devuelve HTML. Los módulos se declaran en una carpeta y el framework deduce rutas, menú, permisos y acciones.
 
-Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/plan-lego-2.md](doc/plan-lego-2.md).
+Estado: **Lego 2.0.0-alpha** en la rama `lego-2`. El plan está en [doc/plan-lego-2.md](doc/plan-lego-2.md) y lo pendiente del dueño en [doc/lego2/pendientes.md](doc/lego2/pendientes.md).
 
 ## Mapa
 
@@ -22,6 +22,7 @@ Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/p
 | `core/Auth/` | Usuarios, roles, permisos, sesiones en Postgres, login y la única puerta de autorización (`Gate`). |
 | `core/Database/` | Conexión Eloquent, migrador y migraciones del núcleo. |
 | `core/Audit/` | Registro de acciones `action_log`, compartido por personas, CLI y agentes. |
+| `core/Modules/` | Módulos del núcleo, Usuarios y Roles, hechos con las mismas piezas que un módulo de la app. |
 | `core/Module/` | Descubrimiento de módulos (`#[Module]`), menú y rutas de cada módulo. |
 | `core/Data/` | `Record`, los tipos de campo y el `Validator`. |
 | `core/Action/` | Acciones: CRUD automático, `#[Action]`, registro y el único ejecutor (`ActionExecutor`). |
@@ -30,7 +31,6 @@ Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/p
 | `tests/` | Pest: `Unit`, `Feature`, `Architecture`. |
 | `docker/`, `docker-compose.yml` | Imagen y despliegue. Ver [doc/despliegue.md](doc/despliegue.md). |
 | `doc/` | Documentación en español. |
-| `legacy/` | Lego 1, solo lectura. Se borra al terminar la migración. No lo modifiques ni lo importes. |
 
 ## Reglas
 

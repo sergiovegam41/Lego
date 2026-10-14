@@ -19,6 +19,7 @@ use Lego\Http\Router;
 use Lego\Http\Layer;
 use Lego\Ui\Shell\Screen;
 use Lego\Ui\Shell\Shell;
+use Lego\Ui\Records\ActionMessage;
 use Lego\Ui\Records\ConfirmAction;
 use Lego\Ui\Records\RecordForm;
 use Lego\Ui\Records\RecordList;
@@ -247,7 +248,12 @@ final class ModuleRoutes
             return $this->confirm($request, $module, $result);
         }
 
-        return Response::redirect($isRecord ? $module->url() . '/' . self::id($request) : $module->url(), 303);
+        $back = $isRecord ? $module->url() . '/' . self::id($request) : $module->url();
+        if (is_array($result->data) && is_string($result->data['message'] ?? null)) {
+            return $this->respond($request, $action->label, new ActionMessage($result->data['message'], $back), module: $module);
+        }
+
+        return Response::redirect($back, 303);
     }
 
     private function confirm(Request $request, ModuleDefinition $module, ActionResult $result): Response
@@ -313,13 +319,18 @@ final class ModuleRoutes
         return $id === false ? throw new NotFound() : $id;
     }
 
-    /** @return array<string, string> Submitted form values, for re-rendering. */
+    /** @return array<string, string|list<string>> Submitted form values, for re-rendering. */
     private static function submitted(Request $request): array
     {
         $values = [];
         foreach ($request->body as $name => $value) {
-            if ($name !== '_csrf' && is_scalar($value)) {
+            if ($name === '_csrf') {
+                continue;
+            }
+            if (is_scalar($value)) {
                 $values[(string) $name] = (string) $value;
+            } elseif (is_array($value) && array_is_list($value)) {
+                $values[(string) $name] = array_map('strval', array_filter($value, 'is_scalar'));
             }
         }
 

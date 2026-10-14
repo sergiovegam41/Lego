@@ -1,38 +1,77 @@
 # Lego
 
-Framework PHP para paneles de administración, construido con componentes, módulos declarativos y acciones.
+Framework PHP para paneles de administración. Un componente es una clase PHP que devuelve HTML. Un módulo es una carpeta con un modelo y una migración, y de ahí Lego deduce pantallas, menú, permisos, API y comandos.
 
-> **Lego 2 está en construcción** en la rama `lego-2`. Lego 1 vive en `legacy/` hasta terminar la migración.
+**Versión:** 2.0.0-alpha.
+
+## En 30 segundos
+
+```bash
+php lego make:module Clients --label=Clientes
+php lego migrate
+```
+
+Con eso, `/clients` tiene lista con búsqueda y orden, alta, edición y borrado con confirmación. También aparece en el menú, tiene permisos `clients.*`, responde en `POST /api/actions/clients_create` y se puede usar desde la consola:
+
+```bash
+php lego run clients_create --as=ana@ejemplo.com --set name="Florería Lima"
+```
+
+Los campos se declaran una sola vez:
 
 ```php
-final class Card extends Component
+#[Module(label: 'Clientes', icon: 'people-outline')]
+final class Client extends Record
 {
-    protected array $styles = ['card.css'];
-
-    public function __construct(private string $title) {}
-
-    protected function render(): string
+    public static function fields(): array
     {
-        return '<article class="card">' . self::e($this->title) . '</article>';
+        return [
+            Text::make('name', 'Nombre')->required()->searchable()->sortable(),
+            Email::make('email', 'Correo')->required()->unique(),
+            Money::make('credit', 'Crédito')->min(0),
+        ];
     }
 }
 ```
+
+## Qué trae
+
+- **Navegación sin recargar.** Pantallas abiertas como pestañas que conservan su estado. La URL siempre manda, así que atrás, adelante, F5 y los enlaces directos funcionan.
+- **Seguro por defecto.** Sesiones en PostgreSQL, CSRF en toda modificación, rutas cerradas salvo las marcadas públicas y permisos por módulo y operación.
+- **Una sola forma de ejecutar acciones** desde la pantalla, la API y la CLI. Todas pasan por validación, confirmación de lo destructivo y auditoría.
+- **Usuarios y Roles incluidos**, hechos como un módulo más.
+- **Sin build.** Módulos ES nativos y CSS con tokens, con tema claro y oscuro.
+- **Listo para desplegar.** Imagen Docker autocontenida, configuración por variables de entorno y compatible con Dokploy.
+- **Preparado para IA.** Cada acción tiene nombre, descripción, esquema de entrada y anotaciones; cada pantalla publica su catálogo de acciones.
 
 ## Empezar
 
 ```bash
 composer install
-php lego serve      # http://127.0.0.1:8000
-composer test
+cp .env.example .env            # completar DB_*
+php lego install --email=admin@ejemplo.com
+php lego serve                  # http://127.0.0.1:8000
 ```
 
 Con Docker, en local o en Dokploy: [doc/despliegue.md](doc/despliegue.md).
 
 ## Documentación
 
-- [AGENTS.md](AGENTS.md): mapa del repositorio y reglas, para personas y agentes de IA.
-- [doc/plan-lego-2.md](doc/plan-lego-2.md): plan por fases.
-- [doc/lego2/decisiones.md](doc/lego2/decisiones.md): decisiones de diseño.
+| Documento | Para qué |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Mapa del repositorio y reglas, para personas y agentes de IA |
+| [doc/modulos.md](doc/modulos.md) | Crear módulos, campos y acciones |
+| [doc/frontend.md](doc/frontend.md) | Shell, pantallas abiertas y JavaScript |
+| [doc/despliegue.md](doc/despliegue.md) | Docker, Dokploy y tests |
+| [doc/lego2/decisiones.md](doc/lego2/decisiones.md) | Decisiones de diseño y su porqué |
+
+## Tests
+
+```bash
+composer test                                       # sin base de datos se omiten los de Postgres
+docker compose -f compose.test.yml run --rm tests   # suite completa con Postgres
+docker compose -f compose.test.yml run --rm browser # escenarios de navegador con Playwright
+```
 
 ## Licencia
 
