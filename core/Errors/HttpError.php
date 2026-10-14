@@ -27,6 +27,16 @@ abstract class HttpError extends RuntimeException
 
     abstract protected function defaultMessage(): string;
 
+    /**
+     * Extra keys merged into the error envelope, e.g. "fields" for validation.
+     *
+     * @return array<string, mixed>
+     */
+    public function details(): array
+    {
+        return [];
+    }
+
     /** @return array<string, string> */
     public function headers(): array
     {

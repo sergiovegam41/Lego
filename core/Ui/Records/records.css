@@ -1,0 +1,125 @@
+.lego-records {
+  display: grid;
+  gap: 1rem;
+}
+
+.lego-records__header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.lego-records__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.lego-records__count {
+  opacity: 0.6;
+}
+
+.lego-records__header .lego-button {
+  margin-left: auto;
+}
+
+.lego-records__search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lego-records__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lego-records__table th,
+.lego-records__table td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.lego-records__table th a,
+.lego-records__table td a {
+  color: inherit;
+}
+
+.lego-records__empty {
+  text-align: center;
+  opacity: 0.6;
+}
+
+.lego-records__pages {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.lego-records__form,
+.lego-records__action {
+  display: grid;
+  gap: 1rem;
+  max-width: 36rem;
+}
+
+.lego-records__actions {
+  display: grid;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.lego-records__buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.lego-records__alert,
+.lego-field__error {
+  margin: 0;
+  color: color-mix(in srgb, crimson 85%, currentColor);
+}
+
+.lego-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lego-field--boolean {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.lego-field input,
+.lego-field select,
+.lego-field textarea,
+.lego-records__search input,
+.lego-button {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.lego-field input[aria-invalid="true"],
+.lego-field select[aria-invalid="true"],
+.lego-field textarea[aria-invalid="true"] {
+  border-color: crimson;
+}
+
+.lego-button {
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.lego-button--primary {
+  font-weight: 600;
+}
+
+.lego-button--danger {
+  border-color: crimson;
+  color: crimson;
+}

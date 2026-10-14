@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lego;
 
+use Lego\Action\ActionExecutor;
+use Lego\Action\ActionRegistry;
 use Lego\Audit\ActionLog;
 use Lego\Auth\Authenticator;
 use Lego\Auth\Gate;
@@ -22,11 +24,13 @@ use Lego\Http\Response;
 use Lego\Http\Router;
 use Lego\Http\StaticFiles;
 use Lego\Log\Logger;
+use Lego\Module\Menu;
+use Lego\Module\ModuleRegistry;
+use Lego\Module\ModuleRoutes;
 use Lego\Support\Clock;
 use Lego\Support\SystemClock;
 use Lego\Ui\Welcome\Welcome;
 use Lego\View\Assets;
-use Lego\View\Document;
 
 /**
  * Wires the framework together for one base path.
@@ -56,6 +60,20 @@ final class Application
 
     public readonly SessionGuard $sessionGuard;
 
+    public readonly Gate $gate;
+
+    public readonly ModuleRegistry $modules;
+
+    public readonly ActionRegistry $actions;
+
+    public readonly ActionExecutor $executor;
+
+    public readonly string $modulesPath;
+
+    private readonly Menu $menu;
+
+    private ModuleRoutes $moduleRoutes;
+
     private readonly Kernel $kernel;
 
     public function __construct(
@@ -65,10 +83,13 @@ final class Application
         ?Database $db = null,
         ?Guard $guard = null,
         public readonly Clock $clock = new SystemClock(),
+        ?string $modulesPath = null,
+        string $modulesNamespace = 'Modules\\',
     ) {
+        $this->modulesPath = $modulesPath ?? $basePath . '/modules';
         $mounts = [
             '/_lego/' => $basePath . '/core/Ui',
-            '/_modules/' => $basePath . '/modules',
+            '/_modules/' => $this->modulesPath,
         ];
         Assets::mount($mounts);
 
@@ -84,6 +105,12 @@ final class Application
         $this->auth = new Authenticator($this->db, $this->sessions, $this->actionLog, $clock);
         $this->sessionGuard = new SessionGuard($this->sessions, $cookies);
 
+        $this->gate = new Gate();
+        $this->modules = new ModuleRegistry($this->modulesPath, $modulesNamespace);
+        $this->actions = new ActionRegistry($this->modules);
+        $this->executor = new ActionExecutor($this->actions, $this->modules, $this->gate, $this->actionLog, $this->db, $clock);
+        $this->menu = new Menu($this->modules, $this->gate);
+
         $this->router = new Router();
         $this->kernel = new Kernel(
             $this->router,
@@ -91,10 +118,12 @@ final class Application
             new ErrorRenderer($logger, $env->debug()),
             $guard ?? $this->sessionGuard,
             new Csrf($cookies),
-            new Gate(),
+            $this->gate,
         );
 
         $this->registerCoreRoutes();
+        $this->moduleRoutes = new ModuleRoutes($this->modules, $this->actions, $this->executor, $this->gate, $this->menu);
+        $this->moduleRoutes->register($this->router);
     }
 
     public static function boot(string $basePath): self
@@ -111,7 +140,7 @@ final class Application
     public function migrator(): Migrator
     {
         $paths = [$this->basePath . '/core/Database/migrations'];
-        foreach (glob($this->basePath . '/modules/*/migrations', GLOB_ONLYDIR) ?: [] as $path) {
+        foreach (glob($this->modulesPath . '/*/migrations', GLOB_ONLYDIR) ?: [] as $path) {
             $paths[] = $path;
         }
 
@@ -122,11 +151,9 @@ final class Application
     {
         (new LoginController($this->auth, $this->sessionGuard))->register($this->router);
 
-        $this->router->get('/', static fn (Request $r): Response => Response::html(
-            Document::page('Lego', new Welcome(self::VERSION, $r->user, $r->csrfToken), csrfToken: $r->csrfToken),
-        ));
-
-        $this->router->get('/component/welcome', static fn (Request $r): Welcome => new Welcome(self::VERSION, $r->user, $r->csrfToken));
+        $home = fn (Request $r): Response => $this->moduleRoutes->respond($r, 'Inicio', new Welcome(self::VERSION, $r->user->name));
+        $this->router->get('/', $home);
+        $this->router->get('/component/welcome', $home);
 
         $this->router->get('/health', fn (): Response => $this->db->isReachable()
             ? Response::json(['status' => 'ok', 'version' => self::VERSION, 'database' => 'ok'])

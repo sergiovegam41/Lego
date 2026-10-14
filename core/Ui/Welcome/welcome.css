@@ -1,5 +1,5 @@
 .lego-welcome {
-  min-height: 100vh;
+  min-height: 60vh;
   display: grid;
   place-content: center;
   gap: 0.5rem;

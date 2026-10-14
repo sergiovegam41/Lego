@@ -6,7 +6,7 @@ use Lego\Database\Migrator;
 
 function coreMigrator(): Migrator
 {
-    return new Migrator(testDatabase(), [basePath('core/Database/migrations')]);
+    return new Migrator(testDatabase(), testMigrationPaths());
 }
 
 it('has every core migration applied in the first batch', function () {
@@ -28,7 +28,7 @@ it('rolls back the last batch and applies it again', function () {
     $reverted = coreMigrator()->rollback();
 
     expect($reverted)->toHaveCount(count(coreMigrator()->files()))
-        ->and($reverted[0])->toEndWith('create_action_log_table')
+        ->and($reverted[0])->toEndWith('create_clients_table')
         ->and($schema->hasTable('users'))->toBeFalse();
 
     $applied = coreMigrator()->migrate();

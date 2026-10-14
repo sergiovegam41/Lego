@@ -38,7 +38,15 @@ function app(array $env = [], $log = null, ?Guard $guard = null): Application
 {
     $env = new Environment(['APP_DEBUG' => 'false', 'DB_HOST' => '127.0.0.1', 'DB_PORT' => '1', ...$env]);
 
-    return new Application(basePath(), $env, new Logger($log ?? fopen('php://memory', 'w+b')), new Database($env), $guard);
+    return new Application(
+        basePath(),
+        $env,
+        new Logger($log ?? fopen('php://memory', 'w+b')),
+        new Database($env),
+        $guard,
+        modulesPath: fixture('Modules'),
+        modulesNamespace: 'Tests\\Fixtures\\Modules\\',
+    );
 }
 
 /**
@@ -78,7 +86,7 @@ function testDatabase(): Database
 
     $candidate->connection()->statement('DROP SCHEMA IF EXISTS public CASCADE');
     $candidate->connection()->statement('CREATE SCHEMA public');
-    (new Migrator($candidate, [basePath('core/Database/migrations')]))->migrate();
+    (new Migrator($candidate, testMigrationPaths()))->migrate();
 
     return $db = $candidate;
 }
@@ -88,7 +96,22 @@ function dbApp(?Clock $clock = null, array $env = []): Application
 {
     $env = new Environment(['APP_DEBUG' => 'false', 'APP_URL' => 'http://localhost', ...$env]);
 
-    return new Application(basePath(), $env, new Logger(fopen('php://memory', 'w+b')), testDatabase(), null, $clock ?? new SystemClock());
+    return new Application(
+        basePath(),
+        $env,
+        new Logger(fopen('php://memory', 'w+b')),
+        testDatabase(),
+        null,
+        $clock ?? new SystemClock(),
+        modulesPath: fixture('Modules'),
+        modulesNamespace: 'Tests\\Fixtures\\Modules\\',
+    );
+}
+
+/** @return list<string> Core migrations plus the test modules' migrations. */
+function testMigrationPaths(): array
+{
+    return [basePath('core/Database/migrations'), fixture('Modules/Clients/migrations')];
 }
 
 /**
@@ -109,3 +132,16 @@ function cookiesFrom(Response $response): array
 }
 
 pest()->extend(Tests\Support\DatabaseTestCase::class)->in('Feature/Database');
+
+/**
+ * A request that carries a matching CSRF cookie and header.
+ *
+ * @param array<string, mixed>  $body
+ * @param array<string, string> $headers
+ */
+function csrfRequest(string $method, string $uri, array $body = [], array $headers = []): Lego\Http\Request
+{
+    $token = str_repeat('ab', 32);
+
+    return Lego\Http\Request::create($method, $uri, $body, ['X-CSRF-Token' => $token, ...$headers], ['lego_csrf' => $token]);
+}

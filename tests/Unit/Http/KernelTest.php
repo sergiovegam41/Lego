@@ -7,14 +7,6 @@ use Lego\Http\Request;
 use Lego\Http\Response;
 use Tests\Support\FakeGuard;
 
-/** A request that carries a valid CSRF cookie and header. */
-function withCsrf(string $method, string $uri, array $body = [], array $headers = []): Request
-{
-    $token = str_repeat('ab', 32);
-
-    return Request::create($method, $uri, $body, ['X-CSRF-Token' => $token, ...$headers], ['lego_csrf' => $token]);
-}
-
 it('redirects anonymous page requests to the login with the original path', function () {
     $response = app()->handle(Request::create('GET', '/?tab=2'));
 
@@ -84,8 +76,8 @@ it('rejects unsafe requests without a matching CSRF token', function (Request $r
     'no token' => fn () => Request::create('POST', '/api/things'),
     'header without cookie' => fn () => Request::create('POST', '/api/things', headers: ['X-CSRF-Token' => str_repeat('ab', 32)]),
     'wrong token' => fn () => Request::create('POST', '/api/things', headers: ['X-CSRF-Token' => str_repeat('cd', 32)], cookies: ['lego_csrf' => str_repeat('ab', 32)]),
-    'other origin' => fn () => withCsrf('POST', '/api/things', headers: ['Origin' => 'https://evil.example', 'Host' => 'lego.test']),
-    'opaque origin' => fn () => withCsrf('POST', '/api/things', headers: ['Origin' => 'null']),
+    'other origin' => fn () => csrfRequest('POST', '/api/things', headers: ['Origin' => 'https://evil.example', 'Host' => 'lego.test']),
+    'opaque origin' => fn () => csrfRequest('POST', '/api/things', headers: ['Origin' => 'null']),
 ]);
 
 it('accepts unsafe requests with a matching CSRF token in header or form field', function () {
@@ -93,7 +85,7 @@ it('accepts unsafe requests with a matching CSRF token in header or form field',
     $app->router->post('/api/things', fn () => ['ok' => true]);
     $token = str_repeat('ab', 32);
 
-    $header = $app->handle(withCsrf('POST', '/api/things', headers: ['Origin' => 'http://lego.test', 'Host' => 'lego.test']));
+    $header = $app->handle(csrfRequest('POST', '/api/things', headers: ['Origin' => 'http://lego.test', 'Host' => 'lego.test']));
     $field = $app->handle(Request::create('POST', '/api/things', ['_csrf' => $token], cookies: ['lego_csrf' => $token]));
 
     expect($header->status)->toBe(200)->and($field->status)->toBe(200);

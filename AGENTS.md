@@ -20,7 +20,10 @@ Estado: **Lego 2 en construcción** en la rama `lego-2`. El plan está en [doc/p
 | `core/Auth/` | Usuarios, roles, permisos, sesiones en Postgres, login y la única puerta de autorización (`Gate`). |
 | `core/Database/` | Conexión Eloquent, migrador y migraciones del núcleo. |
 | `core/Audit/` | Registro de acciones `action_log`, compartido por personas, CLI y agentes. |
-| `modules/` | Módulos de la aplicación, una carpeta cada uno, namespace `Modules\`. Se sirven en `/_modules/`. |
+| `core/Module/` | Descubrimiento de módulos (`#[Module]`), menú y rutas de cada módulo. |
+| `core/Data/` | `Record`, los tipos de campo y el `Validator`. |
+| `core/Action/` | Acciones: CRUD automático, `#[Action]`, registro y el único ejecutor (`ActionExecutor`). |
+| `modules/` | Módulos de la aplicación, una carpeta cada uno, namespace `Modules\`. Se sirven en `/_modules/`. Guía: [doc/modulos.md](doc/modulos.md). |
 | `public/index.php` | Única entrada HTTP, para nginx y para `php -S`. |
 | `tests/` | Pest: `Unit`, `Feature`, `Architecture`. |
 | `docker/`, `docker-compose.yml` | Imagen y despliegue. Ver [doc/despliegue.md](doc/despliegue.md). |
@@ -42,6 +45,8 @@ Las decisiones vinculantes están en [doc/lego2/decisiones.md](doc/lego2/decisio
 9. **Toda ruta está cerrada por defecto.** Exige sesión salvo que se marque `->public()`, y puede exigir un permiso con `->can('modulo.operacion')`. Un test fija la lista de rutas públicas.
 10. **Toda petición que modifica datos lleva token CSRF**, en el campo `_csrf` o en la cabecera `X-CSRF-Token`. El token está en `$request->csrfToken` y en `<meta name="csrf-token">`.
 11. **Toda autorización pasa por `Gate::authorize()`.** No se comparan roles a mano.
+12. **Un módulo nuevo no toca el núcleo.** Se crea con `php lego make:module` y se declara con `#[Module]`. Sus campos viven solo en `fields()`.
+13. **Toda operación de negocio es una acción** y corre por `ActionExecutor::execute()`, venga de una pantalla, de la API o de la CLI. Lo que no es CRUD se declara con `#[Action]` en el modelo.
 
 ## Comandos
 
@@ -53,6 +58,9 @@ php lego routes          # rutas registradas
 php lego migrate         # aplica migraciones (también migrate:status y migrate:rollback)
 php lego install --email=admin@ejemplo.com   # primer administrador; idempotente
 php lego user:password ana@ejemplo.com      # contraseña nueva y cierra sus sesiones
+php lego make:module Clients --label=Clientes   # módulo nuevo con modelo y migración
+php lego actions                              # acciones de todos los módulos (--json para el esquema)
+php lego run clients_create --as=ana@ejemplo.com --set name=Lima   # ejecutar una acción como un usuario
 docker compose -f compose.test.yml run --rm tests   # suite completa con Postgres
 docker compose -f docker-compose.yml -f compose.local.yml up -d --build
 ```

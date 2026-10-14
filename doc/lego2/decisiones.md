@@ -40,3 +40,13 @@ Principios de referencia: P1 a P6, definidos en [../plan-lego-2.md](../plan-lego
 | D15 | CSS por módulo | Permitido solo con el prefijo del módulo y sin redefinir tokens globales, verificado por test de arquitectura. | Flexibilidad sin repetir el desorden de hoy. |
 | D16 | Despliegue | Compatible con Dokploy, portable y replicable. Una imagen de app autocontenida con el código dentro, sin bind mounts; toda la configuración por variables de entorno; arranque que corre migraciones de forma idempotente; healthcheck HTTP; datos solo en volúmenes con nombre; compose sin `container_name` ni puertos fijos del host, listo para el proxy de Dokploy. El mismo compose sirve en el mini PC y en Dokploy. | Desplegar en cualquier servidor con un clic o un comando, sin pasos manuales. P6. |
 | D17 | Sobre de respuesta y errores | Un solo sobre JSON: `status` (`ok`, `error`, `confirmation_required`), `data`, `error {code, message, fields}`, `trace_id` y `debug` solo con `APP_DEBUG`. Errores como subclases de `HttpError` con código estable en inglés y mensaje en español sin datos internos. Cualquier otro `Throwable` es 500 `internal_error` con código de referencia, y se registra en stderr. Cada respuesta lleva `X-Trace-Id`. | Hoy conviven 8 formatos y los errores filtran SQL y trazas. Propuesta de [../auditoria-2026-10-13/validation-errors.md](../auditoria-2026-10-13/validation-errors.md). |
+
+## Fase 3 (2026-10-15)
+
+| # | Tema | Decisión | Por qué |
+|---|---|---|---|
+| D18 | Declarar un módulo | `#[Module]` sobre un `Record` basta para tener CRUD; no hay un atributo `#[Resource]` aparte. Sobre un `Component`, el módulo es una sola pantalla. | Un concepto menos (P1, P5). `operations:` limita el CRUD cuando hace falta. |
+| D19 | Nombres de acciones | `<módulo>_<verbo>` en snake_case: `clients_create`, `clients_block`. El permiso es `<módulo>.<verbo>`. | Es el formato que aceptan las herramientas de OpenAI, Anthropic y WebMCP; el punto queda para los permisos. |
+| D20 | Confirmación | El token de un solo uso queda atado al usuario, la acción, el registro y la entrada validada, y expira en 5 minutos. | Un token emitido para borrar un registro no puede borrar otro. Lo detectó un test. |
+| D21 | Auditoría | Se registran todas las acciones que cambian datos y todos los rechazos por permiso; las de solo lectura no. | Evita ruido en `action_log` sin perder trazabilidad de cambios. |
+| D22 | Altas parciales | Al crear, un campo opcional omitido conserva el valor por defecto de la base de datos; al editar, solo cambian los campos enviados. | Forzar nulos rompía columnas con default. Lo detectó un test. |

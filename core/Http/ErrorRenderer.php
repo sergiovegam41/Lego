@@ -37,12 +37,14 @@ final class ErrorRenderer
 
         if ($e instanceof HttpError) {
             [$status, $code, $message, $headers] = [$e->status(), $e->errorCode(), $e->getMessage(), $e->headers()];
+            $details = $e->details();
         } else {
             $this->logger->exception($e, ['trace_id' => $traceId, 'method' => $request->method, 'path' => $request->path]);
             $status = 500;
             $code = 'internal_error';
             $message = "Ha ocurrido un error inesperado. Código de referencia: {$traceId}.";
             $headers = [];
+            $details = [];
         }
 
         $debug = $this->debug && !$e instanceof HttpError ? self::debugInfo($e) : null;
@@ -50,7 +52,7 @@ final class ErrorRenderer
         $response = match ($request->layer()) {
             Layer::Api => Response::json(array_filter([
                 'status' => 'error',
-                'error' => ['code' => $code, 'message' => $message],
+                'error' => ['code' => $code, 'message' => $message, ...$details],
                 'trace_id' => $traceId,
                 'debug' => $debug,
             ], static fn (mixed $value): bool => $value !== null), $status),
