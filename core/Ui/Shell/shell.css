@@ -66,14 +66,14 @@
 .lego-shell__tabs {
   display: flex;
   gap: var(--lego-space-4);
-  overflow-x: auto;
+  overflow: auto hidden;
+  scrollbar-width: none; /* many tabs still scroll sideways, without a bar */
   flex: 1;
 }
 
 .lego-shell__tab {
   display: inline-flex;
   align-items: center;
-  margin-bottom: -1px;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
