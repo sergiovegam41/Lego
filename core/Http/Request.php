@@ -39,6 +39,7 @@ final class Request
         public readonly ?Identity $user = null,
         public readonly string $csrfToken = '',
         public readonly string $traceId = '',
+        public readonly string $cspNonce = '',
     ) {
         $normalized = [];
         foreach ($headers as $name => $value) {
@@ -201,6 +202,12 @@ final class Request
         return $this->with(['traceId' => $traceId]);
     }
 
+    /** Nonce that inline scripts of this response must carry to pass the CSP. */
+    public function withCspNonce(string $nonce): self
+    {
+        return $this->with(['cspNonce' => $nonce]);
+    }
+
     /** @param array<string, mixed> $changes */
     private function with(array $changes): self
     {
@@ -217,6 +224,7 @@ final class Request
             'user' => $this->user,
             'csrfToken' => $this->csrfToken,
             'traceId' => $this->traceId,
+            'cspNonce' => $this->cspNonce,
             ...$changes,
         ]);
     }

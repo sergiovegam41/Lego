@@ -200,6 +200,22 @@ def test_creates_a_user_and_shows_the_generated_password_once(page):
     expect(page.locator("dialog[data-lego-notice]")).to_have_count(0)
 
 
+def test_exposes_screen_and_ui_actions_for_an_assistant(page):
+    lego = "import(JSON.parse(document.querySelector('script[type=importmap]').textContent).imports.lego)"
+    page.evaluate("window.legoTestMarker = 43")
+    page.evaluate(f"(async () => (await {lego}).runUiAction('ui_navigate', {{module: 'clients'}}))()")
+    expect(page).to_have_url(url("/clients"))
+    page.evaluate(f"(async () => (await {lego}).runUiAction('ui_set_filter', {{module: 'clients', q: 'zzz', dir: 'asc'}}))()")
+    expect(page).to_have_url(url("/clients?q=zzz&dir=asc"))
+    actions = page.evaluate(f"(async () => (await {lego}).screenActions())()")
+    names = [a["name"] for a in actions]
+    assert "clients_list" in names and "clients_delete" in names, names
+    assert all(a["agent"] is False for a in actions), "agents are off in the tests"
+    error = page.evaluate(f"(async () => (await {lego}).runUiAction('ui_navigate', {{module: 'secret'}}).then(() => '', e => e.message))()")
+    assert "Unknown or forbidden module" in error, error
+    assert page.evaluate("window.legoTestMarker") == 43, "the page reloaded"
+
+
 def test_expired_session_sends_navigation_to_the_login(page):
     page.context.clear_cookies()
     # Home is not open yet, so the shell has to fetch it and gets a 401.
@@ -222,6 +238,7 @@ TESTS = [
     test_theme_toggle_switches_and_persists,
     test_creates_a_role_by_checking_permissions,
     test_creates_a_user_and_shows_the_generated_password_once,
+    test_exposes_screen_and_ui_actions_for_an_assistant,
     test_expired_session_sends_navigation_to_the_login,
 ]
 
@@ -249,7 +266,10 @@ def main():
         # Chrome logs every non-2xx response. 401 (expired session), 409, 422
         # (validation) and 428 (confirmation) are part of the protocol, not bugs.
         expected = re.compile(r"Failed to load resource: the server responded with a status of (401|409|422|428)\b")
-        real_errors = [e for e in js_errors if not expected.search(e)]
+        # Chrome warns about Permissions-Policy features it does not know yet,
+        # such as "tools" (WebMCP), which Lego sends ahead of the standard.
+        unknown_feature = re.compile(r"Unrecognized feature: 'tools'")
+        real_errors = [e for e in js_errors if not expected.search(e) and not unknown_feature.search(e)]
         if real_errors:
             failures += 1
             print("  ✗ no JavaScript errors")

@@ -25,7 +25,7 @@ Estado: **Lego 2.0.0-alpha** en la rama `lego-2`. El plan está en [doc/plan-leg
 | `core/Modules/` | Módulos del núcleo, Usuarios y Roles, hechos con las mismas piezas que un módulo de la app. |
 | `core/Module/` | Descubrimiento de módulos (`#[Module]`), menú y rutas de cada módulo. |
 | `core/Data/` | `Record`, los tipos de campo y el `Validator`. |
-| `core/Action/` | Acciones: CRUD automático, `#[Action]`, registro y el único ejecutor (`ActionExecutor`). |
+| `core/Action/` | Acciones: CRUD automático, `#[Action]`, registro, el único ejecutor (`ActionExecutor`) y la política para asistentes de IA (`AgentPolicy`). Guía: [doc/ia.md](doc/ia.md). |
 | `modules/` | Módulos de la aplicación, una carpeta cada uno, namespace `Modules\`. Se sirven en `/_modules/`. Guía: [doc/modulos.md](doc/modulos.md). |
 | `public/index.php` | Única entrada HTTP, para nginx y para `php -S`. |
 | `tests/` | Pest: `Unit`, `Feature`, `Architecture`. |
@@ -50,6 +50,7 @@ Las decisiones vinculantes están en [doc/lego2/decisiones.md](doc/lego2/decisio
 12. **Un módulo nuevo no toca el núcleo.** Se crea con `php lego make:module` y se declara con `#[Module]`. Sus campos viven solo en `fields()`.
 13. **Toda operación de negocio es una acción** y corre por `ActionExecutor::execute()`, venga de una pantalla, de la API o de la CLI. Lo que no es CRUD se declara con `#[Action]` en el modelo.
 14. **El frontend son módulos ES nativos sin build.** Nada en `window`, sin `eval` ni `<script>` en línea, `fetch` solo en `lego.js`, y todo listener con `ctx.signal`. Los colores salen de `tokens.css`.
+15. **Toda acción se describe para una IA.** Descripción en frase, cada parámetro con título o descripción, y anotaciones honestas: `destructive` o `external` llevan `confirm`. Un asistente actúa con la sesión del usuario; `X-Lego-Channel: agent` solo restringe y audita. Ver [doc/ia.md](doc/ia.md).
 
 ## Comandos
 

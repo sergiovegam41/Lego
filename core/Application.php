@@ -6,6 +6,7 @@ namespace Lego;
 
 use Lego\Action\ActionExecutor;
 use Lego\Action\ActionRegistry;
+use Lego\Action\AgentPolicy;
 use Lego\Audit\ActionLog;
 use Lego\Auth\Authenticator;
 use Lego\Auth\Gate;
@@ -23,6 +24,7 @@ use Lego\Http\Kernel;
 use Lego\Http\Request;
 use Lego\Http\Response;
 use Lego\Http\Router;
+use Lego\Http\SecurityHeaders;
 use Lego\Http\StaticFiles;
 use Lego\Log\Logger;
 use Lego\Module\Menu;
@@ -44,6 +46,7 @@ use Lego\View\Assets;
  * - APP_URL                      https:// enables Secure and __Host- cookies
  * - LEGO_SESSION_IDLE_MINUTES    idle session lifetime, default 480
  * - LEGO_SESSION_ABSOLUTE_DAYS   maximum session lifetime, default 30
+ * - LEGO_AGENT_ACCESS            off (default), read or write: what AI agents may run (AgentPolicy)
  */
 final class Application
 {
@@ -68,6 +71,8 @@ final class Application
     public readonly ActionRegistry $actions;
 
     public readonly ActionExecutor $executor;
+
+    public readonly AgentPolicy $agents;
 
     public readonly string $modulesPath;
 
@@ -113,7 +118,8 @@ final class Application
         ]);
         $this->actions = new ActionRegistry($this->modules);
         PermissionCatalog::use(PermissionCatalog::build($this->modules, $this->actions));
-        $this->executor = new ActionExecutor($this->actions, $this->modules, $this->gate, $this->actionLog, $this->db, $clock);
+        $this->agents = new AgentPolicy((string) $env->get('LEGO_AGENT_ACCESS', AgentPolicy::OFF), $this->modules);
+        $this->executor = new ActionExecutor($this->actions, $this->modules, $this->gate, $this->actionLog, $this->db, $clock, $this->agents);
         $this->menu = new Menu($this->modules, $this->gate);
 
         $this->router = new Router();
@@ -124,10 +130,11 @@ final class Application
             $guard ?? $this->sessionGuard,
             new Csrf($cookies),
             $this->gate,
+            new SecurityHeaders(https: $cookies->secure, agentTools: $this->agents->enabled()),
         );
 
         $this->registerCoreRoutes();
-        $this->moduleRoutes = new ModuleRoutes($this->modules, $this->actions, $this->executor, $this->gate, $this->menu);
+        $this->moduleRoutes = new ModuleRoutes($this->modules, $this->actions, $this->executor, $this->gate, $this->menu, $this->agents);
         $this->moduleRoutes->register($this->router);
     }
 

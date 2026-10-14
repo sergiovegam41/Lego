@@ -81,6 +81,8 @@ Las acciones se llaman `<módulo>_<verbo>`: `clients_list`, `clients_get`, `clie
 
 Para limitar las operaciones: `#[Module(label: 'Clientes', operations: ['list', 'get'])]`.
 
+Para que un asistente de IA pueda escribir en el módulo cuando `LEGO_AGENT_ACCESS=write`: `#[Module(label: 'Notas', agentWrites: true)]`. Ver [ia.md](ia.md).
+
 ## Acciones propias
 
 Lo que no es CRUD se declara con `#[Action]` sobre un método del modelo:
@@ -99,13 +101,15 @@ public function block(#[Param('Motivo')] string $reason): void
 - Un método de instancia actúa sobre un registro, y la entrada lleva su `id`. Un método estático actúa sobre el módulo entero.
 - Los parámetros deben ser `string`, `int`, `float` o `bool`. Forman el esquema de entrada.
 - El nombre y el permiso salen del método: `block` da la acción `clients_block` y el permiso `clients.block`.
+- La descripción es obligatoria: es lo que lee un asistente de IA para decidir si usar la acción. Escríbela como una frase para alguien que no conoce la app. `#[Param('Título', 'Descripción.')]` describe cada parámetro. Ver [ia.md](ia.md).
+- Si la acción manda algo fuera de la app (correo, webhook), declárala `external: true`; Lego exige entonces `confirm: true`.
 - `BusinessRuleViolation` responde 409 con un código estable y un mensaje para el usuario.
 - La pantalla de edición muestra un formulario para cada acción que el usuario puede ejecutar.
 
 Si una acción necesita saber quién la ejecuta, basta un parámetro de tipo `Identity`. No forma parte de la entrada; Lego lo rellena con el usuario actual:
 
 ```php
-#[Action(label: 'Asignarme')]
+#[Action(label: 'Asignarme', description: 'Asigna el cliente a quien ejecuta la acción.')]
 public function assignToMe(Identity $by): void
 {
     $this->forceFill(['owner_id' => $by->id])->save();

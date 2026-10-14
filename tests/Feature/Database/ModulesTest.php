@@ -17,7 +17,7 @@ use Tests\Fixtures\Modules\Clients\Client;
 use Tests\Support\FakeGuard;
 
 /** A real user (the audit log references it) and an app acting as that user. */
-function actingAs(array $permissions, string $email = 'ana@example.com'): array
+function actingAs(array $permissions, string $email = 'ana@example.com', array $env = []): array
 {
     $role = Role::query()->create(['name' => 'role_' . md5($email), 'label' => 'Rol', 'permissions' => $permissions]);
     $user = User::query()->create([
@@ -29,7 +29,7 @@ function actingAs(array $permissions, string $email = 'ana@example.com'): array
     $identity = $user->load('role')->toIdentity();
     $app = new Application(
         basePath(),
-        new Environment(['APP_DEBUG' => 'false', 'APP_URL' => 'http://localhost']),
+        new Environment(['APP_DEBUG' => 'false', 'APP_URL' => 'http://localhost', ...$env]),
         new Logger(fopen('php://memory', 'w+b')),
         testDatabase(),
         new FakeGuard($identity),
@@ -41,9 +41,9 @@ function actingAs(array $permissions, string $email = 'ana@example.com'): array
 }
 
 /** @return array<string, mixed> */
-function api(Application $app, string $action, array $input = []): array
+function api(Application $app, string $action, array $input = [], array $headers = []): array
 {
-    $response = $app->handle(csrfRequest('POST', '/api/actions/' . $action, $input));
+    $response = $app->handle(csrfRequest('POST', '/api/actions/' . $action, $input, $headers));
 
     return [...json_decode($response->body, true), 'http' => $response->status];
 }
@@ -185,6 +185,58 @@ describe('JSON API', function () {
         expect(api($app, 'clients_nope')['http'])->toBe(404)
             ->and(api($app, 'clients_get', ['id' => 999])['http'])->toBe(404)
             ->and(api($app, 'clients_get')['http'])->toBe(422);
+    });
+});
+
+describe('AI agents', function () {
+    $agent = ['X-Lego-Channel' => 'agent'];
+
+    it('refuses every agent call while agents are off and audits it as agent', function () use ($agent) {
+        [$app] = actingAs(['clients.*']);
+
+        $result = api($app, 'clients_list', [], $agent);
+        $log = testDatabase()->connection()->table('action_log')->where('action', 'clients_list')->first();
+
+        expect($result['http'])->toBe(403)
+            ->and($result['error']['code'])->toBe('agent_not_allowed')
+            ->and($log->via)->toBe('agent')
+            ->and($log->status)->toBe('denied');
+    });
+
+    it('lets agents read but not write in read mode', function () use ($agent) {
+        [$app] = actingAs(['clients.*'], env: ['LEGO_AGENT_ACCESS' => 'read']);
+        newClient();
+
+        $list = api($app, 'clients_list', [], $agent);
+        $create = api($app, 'clients_create', ['name' => 'X', 'email' => 'x@example.com'], $agent);
+
+        expect($list['http'])->toBe(200)
+            ->and($list['data']['meta']['total'])->toBe(1)
+            ->and($create['http'])->toBe(403)
+            ->and(Client::query()->count())->toBe(1);
+    });
+
+    it('needs the module opt-in for agent writes even in write mode', function () use ($agent) {
+        [$app] = actingAs(['clients.*'], env: ['LEGO_AGENT_ACCESS' => 'write']);
+
+        $create = api($app, 'clients_create', ['name' => 'X', 'email' => 'x@example.com'], $agent);
+        $human = api($app, 'clients_create', ['name' => 'X', 'email' => 'x@example.com']);
+
+        expect($create['error']['code'])->toBe('agent_not_allowed')
+            ->and($human['http'])->toBe(201);
+    });
+
+    it('shows agents only their actions and marks them in the catalog', function () use ($agent) {
+        [$app] = actingAs(['clients.*'], env: ['LEGO_AGENT_ACCESS' => 'read']);
+
+        $forAgent = json_decode($app->handle(Request::create('GET', '/api/actions', headers: $agent))->body, true)['data'];
+        $forHuman = json_decode($app->handle(Request::create('GET', '/api/actions'))->body, true)['data'];
+        $flags = array_column($forHuman, 'agent', 'name');
+
+        expect(array_column($forAgent, 'name'))->toBe(['clients_list', 'clients_get', 'clients_count_active'])
+            ->and($flags['clients_list'])->toBeTrue()
+            ->and($flags['clients_create'])->toBeFalse()
+            ->and($forHuman[0]['annotations'])->toHaveKeys(['read_only', 'untrusted_content', 'external']);
     });
 });
 

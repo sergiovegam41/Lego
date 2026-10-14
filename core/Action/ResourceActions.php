@@ -56,6 +56,7 @@ final class ResourceActions
                 run: static fn (array $clean, Record $record): array => $record->toData(),
                 readOnly: true,
                 idempotent: true,
+                untrustedContent: self::hasFreeText($class),
             );
         }
         if ($module->allows('create')) {
@@ -118,6 +119,7 @@ final class ResourceActions
                 },
                 destructive: true,
                 confirm: true,
+                idempotent: true,
             );
         }
 
@@ -143,10 +145,10 @@ final class ResourceActions
                 'type' => 'object',
                 'properties' => array_filter([
                     'q' => $searchable === [] ? null : ['type' => 'string', 'description' => 'Texto a buscar en: ' . implode(', ', $searchable)],
-                    'sort' => ['type' => 'string', 'enum' => ['id', ...$sortable]],
-                    'dir' => ['type' => 'string', 'enum' => ['asc', 'desc']],
-                    'page' => ['type' => 'integer', 'minimum' => 1],
-                    'per_page' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_PER_PAGE],
+                    'sort' => ['type' => 'string', 'enum' => ['id', ...$sortable], 'description' => 'Campo por el que ordenar.'],
+                    'dir' => ['type' => 'string', 'enum' => ['asc', 'desc'], 'description' => 'Sentido del orden.'],
+                    'page' => ['type' => 'integer', 'minimum' => 1, 'description' => 'Página, empezando en 1.'],
+                    'per_page' => ['type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_PER_PAGE, 'description' => 'Registros por página.'],
                 ]),
                 'additionalProperties' => false,
             ],
@@ -183,7 +185,25 @@ final class ResourceActions
             },
             readOnly: true,
             idempotent: true,
+            untrustedContent: self::hasFreeText($class),
         );
+    }
+
+    /**
+     * True when the record has text fields people type freely: an agent must
+     * treat what it reads from them as data, never as instructions.
+     *
+     * @param class-string<Record> $class
+     */
+    private static function hasFreeText(string $class): bool
+    {
+        foreach ($class::fields() as $field) {
+            if (in_array($field->type(), ['text', 'textarea', 'email'], true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -25,6 +25,7 @@ services:
       LEGO_ADMIN_PASSWORD: ${LEGO_ADMIN_PASSWORD:-}
       LEGO_SESSION_IDLE_MINUTES: ${LEGO_SESSION_IDLE_MINUTES:-480}
       LEGO_SESSION_ABSOLUTE_DAYS: ${LEGO_SESSION_ABSOLUTE_DAYS:-30}
+      LEGO_AGENT_ACCESS: ${LEGO_AGENT_ACCESS:-off}
     depends_on:
       db:
         condition: service_healthy

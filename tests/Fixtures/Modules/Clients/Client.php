@@ -51,7 +51,7 @@ final class Client extends Record
     }
 
     #[Action(label: 'Registrar visita', description: 'Suma visitas al contador del cliente.')]
-    public function registerVisit(int $times = 1): int
+    public function registerVisit(#[Param('Veces', 'Cuántas visitas sumar.')] int $times = 1): int
     {
         $this->forceFill(['visits' => (int) $this->visits + $times])->save();
 

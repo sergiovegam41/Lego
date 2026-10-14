@@ -66,7 +66,7 @@ it('derives input schemas from fields and method signatures', function () {
         ->and($update['required'])->toBe(['id'])
         ->and($block['required'])->toBe(['id', 'reason'])
         ->and($block['properties']['reason'])->toBe(['title' => 'Motivo', 'type' => 'string'])
-        ->and($visit['properties']['times'])->toBe(['type' => 'integer', 'default' => 1])
+        ->and($visit['properties']['times'])->toBe(['title' => 'Veces', 'description' => 'Cuántas visitas sumar.', 'type' => 'integer', 'default' => 1])
         ->and($visit['required'])->toBe(['id']);
 });
 

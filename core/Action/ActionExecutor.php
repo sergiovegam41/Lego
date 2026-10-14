@@ -22,6 +22,7 @@ use Throwable;
  * The only way an action runs, whatever the surface (UI, API, CLI, agent):
  *
  *   1. find the action                         -> 404
+ *      calls from AI agents pass the AgentPolicy -> 403 agent_not_allowed
  *   2. load the record for record actions      -> 422 without id, 404 if missing
  *   3. authorize through the Gate              -> 403, audited as denied
  *   4. validate the input (prepare)            -> 422 with per-field errors
@@ -43,6 +44,7 @@ final class ActionExecutor
         private readonly ActionLog $log,
         private readonly Database $db,
         private readonly Clock $clock,
+        private readonly ?AgentPolicy $agents = null,
     ) {
     }
 
@@ -58,6 +60,11 @@ final class ActionExecutor
         $action = $this->actions->get($name) ?? throw new NotFound('La acción no existe.');
         $token = $input['confirmation_token'] ?? null;
         $input = array_diff_key($input, array_flip(self::CONTROL_KEYS));
+
+        if ($via === ActionLog::VIA_AGENT && !($this->agents?->allows($action) ?? false)) {
+            $this->log->record($action->name, $via, ActionLog::DENIED, $user->id, $action->module, $input, $traceId, $ip);
+            throw new Forbidden('Esta acción no está disponible para asistentes de IA.', 'agent_not_allowed');
+        }
 
         $record = $action->needsRecord() ? $this->loadRecord($action, $input) : null;
         $subject = $record === null ? $action->module : $action->module . ':' . $record->getKey();

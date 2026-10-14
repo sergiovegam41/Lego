@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lego\Ui\Shell;
 
+use Lego\Ui\Records\ActionCatalog;
 use Lego\View\Component;
 
 /**
@@ -15,6 +16,9 @@ use Lego\View\Component;
  * - data-lego-title   title for tabs and document.title
  * - data-lego-module  module name, when the screen belongs to one
  * - data-lego-record  record id, when the screen shows one record
+ *
+ * Module screens also embed the catalog of actions the user may run there
+ * (<script type="application/json" data-lego-actions>).
  */
 final class Screen extends Component
 {
@@ -25,6 +29,7 @@ final class Screen extends Component
         private readonly Component $content,
         private readonly ?string $module = null,
         private readonly ?int $record = null,
+        private readonly ?array $actions = null,
     ) {
     }
 
@@ -61,6 +66,8 @@ final class Screen extends Component
             }
         }
 
-        return "<section{$html}>{$this->content}</section>";
+        $catalog = $this->actions === null ? '' : (string) new ActionCatalog($this->module ?? $this->key, $this->actions);
+
+        return "<section{$html}>{$this->content}{$catalog}</section>";
     }
 }

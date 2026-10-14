@@ -46,6 +46,13 @@ final class CustomActions
         if (in_array($operation, ['list', 'get', 'create', 'update', 'delete', 'view'], true)) {
             throw new LogicException("#[Action] {$method->class}::{$method->getName()} uses a reserved CRUD name.");
         }
+        // People read the label; agents decide from the description (doc/ia.md).
+        if (trim($action->description) === '') {
+            throw new LogicException("#[Action] {$method->class}::{$method->getName()} needs a description.");
+        }
+        if ($action->external && !$action->confirm) {
+            throw new LogicException("#[Action] {$method->class}::{$method->getName()} is external, so it must also confirm.");
+        }
 
         // A parameter typed Identity receives the acting user; it is not input.
         $actor = null;
@@ -70,7 +77,7 @@ final class CustomActions
             module: $module->name,
             operation: $operation,
             label: $action->label,
-            description: $action->description !== '' ? $action->description : $action->label,
+            description: $action->description,
             permission: $module->permission($operation),
             scope: $scope,
             inputSchema: $this->schema($parameters, $scope),
@@ -82,6 +89,8 @@ final class CustomActions
             destructive: $action->destructive,
             idempotent: $action->idempotent,
             confirm: $action->confirm,
+            untrustedContent: $action->untrustedContent,
+            external: $action->external,
         );
     }
 

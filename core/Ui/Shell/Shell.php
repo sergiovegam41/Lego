@@ -36,12 +36,13 @@ final class Shell extends Component
      * Import map that lets ES modules write `import { api } from 'lego'` and
      * `import('lego/ui/table.js')` with no build step (decision B10).
      */
-    public static function importMap(): string
+    public static function importMap(string $nonce): string
     {
         $core = Assets::url(__DIR__ . '/../js/lego.js');
         $map = ['imports' => ['lego' => $core, 'lego/' => dirname(strtok($core, '?') ?: $core) . '/']];
 
-        return '<script type="importmap">' . json_encode($map, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) . '</script>';
+        return '<script type="importmap" nonce="' . htmlspecialchars($nonce, ENT_QUOTES) . '">'
+            . json_encode($map, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) . '</script>';
     }
 
     protected function render(): string

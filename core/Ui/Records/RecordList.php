@@ -62,7 +62,6 @@ final class RecordList extends Component
 
         $title = self::e($this->module->label);
         $total = (int) $meta['total'];
-        $catalog = new ActionCatalog($this->module->name, $this->allowed);
         $moduleName = self::e($this->module->name);
         $pagination = $this->pagination($meta);
 
@@ -79,7 +78,6 @@ final class RecordList extends Component
                 <tbody>{$rows}</tbody>
               </table>
               {$pagination}
-              {$catalog}
             </section>
             HTML;
     }

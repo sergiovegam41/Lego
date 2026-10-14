@@ -29,6 +29,8 @@ final class Action
         public bool $destructive = false,
         public bool $idempotent = false,
         public bool $confirm = false,
+        public bool $untrustedContent = false,
+        public bool $external = false,
     ) {
     }
 }

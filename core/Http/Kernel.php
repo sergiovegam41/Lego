@@ -25,17 +25,12 @@ use UnexpectedValueException;
  *   6. handler
  * Any exception becomes an error response for the request's layer.
  *
- * Every response carries X-Trace-Id and basic security headers. The CSRF
+ * Every response carries X-Trace-Id and the SecurityHeaders (CSP with a
+ * per-request nonce, Permissions-Policy). The CSRF
  * cookie is issued on the first request that lacks it.
  */
 final class Kernel
 {
-    private const SECURITY_HEADERS = [
-        'x-content-type-options' => 'nosniff',
-        'x-frame-options' => 'DENY',
-        'referrer-policy' => 'same-origin',
-    ];
-
     public function __construct(
         private readonly Router $router,
         private readonly StaticFiles $staticFiles,
@@ -43,13 +38,15 @@ final class Kernel
         private readonly Guard $guard,
         private readonly Csrf $csrf,
         private readonly Gate $gate,
+        private readonly SecurityHeaders $security = new SecurityHeaders(),
     ) {
     }
 
     public function handle(Request $request): Response
     {
         $traceId = bin2hex(random_bytes(8));
-        $request = $request->withTraceId($traceId);
+        $nonce = base64_encode(random_bytes(16));
+        $request = $request->withTraceId($traceId)->withCspNonce($nonce);
         $issuedCsrf = null;
 
         try {
@@ -70,7 +67,7 @@ final class Kernel
         if ($issuedCsrf !== null) {
             $response = $response->withCookie($this->csrf->cookieFor($issuedCsrf));
         }
-        foreach ([...self::SECURITY_HEADERS, 'x-trace-id' => $traceId] as $name => $value) {
+        foreach ([...$this->security->for($nonce), 'x-trace-id' => $traceId] as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
 

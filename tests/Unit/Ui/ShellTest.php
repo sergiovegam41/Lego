@@ -19,7 +19,7 @@ it('derives instance keys and DOM prefixes from paths', function (string $path, 
 it('renders the shell with the active screen, the import map and one module script', function () {
     $page = app(guard: FakeGuard::as())->handle(Request::create('GET', '/reports'))->body;
 
-    preg_match('#<script type="importmap">(.*?)</script>#', $page, $map);
+    preg_match('#<script type="importmap" nonce="[^"]+">(.*?)</script>#', $page, $map);
     $imports = json_decode($map[1] ?? '{}', true)['imports'] ?? [];
 
     expect($imports['lego'] ?? '')->toMatch('#^/_lego/js/lego\.js\?v=[0-9a-f]+$#')

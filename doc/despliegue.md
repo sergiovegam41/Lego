@@ -25,6 +25,7 @@ El compose no fija nombres de contenedor ni puertos del host, para que varias in
 | `LEGO_ADMIN_PASSWORD` | no | vacío; si falta se genera y se imprime una vez en el log del contenedor `app` |
 | `LEGO_SESSION_IDLE_MINUTES` | no | `480` |
 | `LEGO_SESSION_ABSOLUTE_DAYS` | no | `30` |
+| `LEGO_AGENT_ACCESS` | no | `off`; `read` o `write` habilita asistentes de IA, ver [ia.md](ia.md) |
 
 ## Dokploy
 

@@ -13,6 +13,11 @@ use Closure;
  * - prepare(input, record) validates and returns the clean input.
  * - run(clean, record, user) performs the action as that user and returns its data.
  * The executor runs them with authorization, confirmation and audit around.
+ *
+ * Annotations are Lego's own vocabulary (doc/ia.md maps them to WebMCP and
+ * MCP): readOnly, destructive, idempotent, confirm, untrustedContent (the
+ * output carries free text written by users) and external (it talks to the
+ * outside world: email, webhooks). They describe; the server enforces.
  */
 final class ActionDefinition
 {
@@ -45,6 +50,8 @@ final class ActionDefinition
         public readonly bool $destructive = false,
         public readonly bool $idempotent = false,
         public readonly bool $confirm = false,
+        public readonly bool $untrustedContent = false,
+        public readonly bool $external = false,
     ) {
     }
 
@@ -75,6 +82,8 @@ final class ActionDefinition
                 'destructive' => $this->destructive,
                 'idempotent' => $this->idempotent,
                 'confirm' => $this->confirm,
+                'untrusted_content' => $this->untrustedContent,
+                'external' => $this->external,
             ],
         ];
     }

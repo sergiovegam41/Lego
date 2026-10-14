@@ -70,7 +70,6 @@ final class RecordForm extends Component
         $save = $editable ? '<button class="lego-button lego-button--primary" type="submit">Guardar</button>' : '';
         $back = self::e($base);
         $extra = $this->mode === self::UPDATE ? $this->recordActions($operations) : '';
-        $catalog = new ActionCatalog($this->module->name, $this->allowed);
         $moduleName = self::e($this->module->name);
         $behavior = $this->behavior($this->mode === self::CREATE ? 'create' : 'update', 'list');
 
@@ -84,7 +83,6 @@ final class RecordForm extends Component
                 <div class="lego-records__buttons">{$save}<a class="lego-button" href="{$back}" data-lego-close>Volver</a></div>
               </form>
               {$extra}
-              {$catalog}
             </section>
             HTML;
     }

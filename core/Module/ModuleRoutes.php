@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lego\Module;
 
 use Lego\Action\ActionDefinition;
+use Lego\Action\AgentPolicy;
 use Lego\Action\ActionExecutor;
 use Lego\Action\ActionRegistry;
 use Lego\Action\ActionResult;
@@ -52,6 +53,7 @@ final class ModuleRoutes
         private readonly ActionExecutor $executor,
         private readonly Gate $gate,
         private readonly Menu $menu,
+        private readonly AgentPolicy $agents,
     ) {
     }
 
@@ -80,7 +82,8 @@ final class ModuleRoutes
         $key = Screen::keyFor($request->path);
         $path = $key === 'home' ? '/' : '/' . $key;
         $url = $request->query === [] ? $path : $path . '?' . http_build_query($request->query);
-        $screen = new Screen($key, $url, $title, $content, $module?->name, $record);
+        $actions = $module === null ? null : array_map($this->describe(...), $this->allowed($request, $module));
+        $screen = new Screen($key, $url, $title, $content, $module?->name, $record, $actions);
 
         if ($request->layer() === Layer::Component) {
             return Response::html(Document::fragment($screen), $status);
@@ -89,17 +92,24 @@ final class ModuleRoutes
         $shell = new Shell($request->user, $this->menu->for($request->user, $path), $request->csrfToken, $screen);
 
         return Response::html(
-            Document::page($title . ' · Lego', $shell, csrfToken: $request->csrfToken, head: Shell::importMap()),
+            Document::page($title . ' · Lego', $shell, csrfToken: $request->csrfToken, head: Shell::importMap($request->cspNonce)),
             $status,
         );
     }
 
+    /**
+     * Actions the user may run. With X-Lego-Channel: agent, only those the
+     * AgentPolicy exposes to AI agents.
+     */
     private function catalog(Request $request): Response
     {
         $module = $request->query('module');
         $actions = $this->actions->allowedFor($request->user, $this->gate, is_string($module) ? $module : null);
+        if (self::via($request) === ActionLog::VIA_AGENT) {
+            $actions = array_values(array_filter($actions, $this->agents->allows(...)));
+        }
 
-        return Response::json(['status' => 'ok', 'data' => array_map(static fn (ActionDefinition $a): array => $a->toArray(), $actions)]);
+        return Response::json(['status' => 'ok', 'data' => array_map($this->describe(...), $actions)]);
     }
 
     private function run(Request $request): Response
@@ -108,12 +118,24 @@ final class ModuleRoutes
             (string) $request->param('name'),
             $request->body,
             $request->user,
-            ActionLog::VIA_API,
+            self::via($request),
             $request->traceId,
             $request->ip,
         );
 
         return Response::json($result->toArray(), $result->httpStatus());
+    }
+
+    /** Catalog entry: the action plus whether AI agents may run it here. */
+    private function describe(ActionDefinition $action): array
+    {
+        return [...$action->toArray(), 'agent' => $this->agents->allows($action)];
+    }
+
+    /** The channel mark is only used to deny and to audit, never to grant. */
+    private static function via(Request $request): string
+    {
+        return strtolower((string) $request->header('x-lego-channel')) === 'agent' ? ActionLog::VIA_AGENT : ActionLog::VIA_API;
     }
 
     private function registerScreen(Router $router, ModuleDefinition $module): void

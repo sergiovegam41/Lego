@@ -22,6 +22,7 @@ final readonly class ModuleDefinition
         public string $class,
         public string $path,
         public array $operations,
+        public bool $agentWrites = false,
     ) {
     }
 

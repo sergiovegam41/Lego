@@ -41,12 +41,14 @@ Un mapa de importación permite escribir `import { api } from 'lego'` y `import(
 ## API de `lego.js`
 
 ```js
-import { openModule, closeModule, reloadModule, api, bus, EVENTS } from 'lego';
+import { openModule, closeModule, reloadModule, api, bus, EVENTS, screenActions, runUiAction } from 'lego';
 
 await openModule('/clients/5');                  // abre o activa; la URL manda
 await closeModule('clients/5');                  // pregunta si hay cambios sin guardar
 await reloadModule('clients');                   // vuelve a pedir la pantalla al servidor
 const result = await api('clients_update', { id: 5, credit: 99 });   // sobre de respuesta + http
+screenActions();                                 // catálogo de acciones de la pantalla activa
+await runUiAction('ui_set_filter', { module: 'clients', q: 'lima' });   // acciones de UI_ACTIONS
 bus.addEventListener(EVENTS.DATA_CHANGED, (e) => console.info(e.detail));
 ```
 

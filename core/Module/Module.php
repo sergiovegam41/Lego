@@ -19,13 +19,18 @@ final class Module
 {
     public const OPERATIONS = ['list', 'get', 'create', 'update', 'delete'];
 
-    /** @param list<string> $operations Subset of OPERATIONS for Record modules. */
+    /**
+     * @param list<string> $operations  Subset of OPERATIONS for Record modules.
+     * @param bool         $agentWrites Let AI agents run this module's write actions
+     *                                  when LEGO_AGENT_ACCESS=write (see AgentPolicy).
+     */
     public function __construct(
         public string $label,
         public string $icon = 'square',
         public int $order = 100,
         public string $description = '',
         public array $operations = self::OPERATIONS,
+        public bool $agentWrites = false,
     ) {
     }
 }

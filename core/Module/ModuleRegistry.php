@@ -94,6 +94,7 @@ final class ModuleRegistry
             class: $class,
             path: $folder,
             operations: is_subclass_of($class, Record::class) ? array_values($module->operations) : [],
+            agentWrites: $module->agentWrites,
         );
     }
 

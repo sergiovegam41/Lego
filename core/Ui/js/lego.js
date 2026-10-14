@@ -24,6 +24,59 @@ export const EVENTS = Object.freeze({
 
 export const MAX_OPEN = 10;
 
+/**
+ * Screen actions for a future AI integration (doc/ia.md): the same
+ * navigation a person does, described like server actions. They only move
+ * between screens the user can already open; the server checks every request.
+ */
+export const UI_ACTIONS = Object.freeze([
+  {
+    name: 'ui_navigate',
+    label: 'Ir a un módulo',
+    description: 'Abre la pantalla principal de un módulo del menú, o el inicio con module "home".',
+    input_schema: {
+      type: 'object',
+      properties: { module: { type: 'string', description: 'Nombre del módulo, p. ej. clients, o home.' } },
+      required: ['module'],
+      additionalProperties: false,
+    },
+    annotations: { read_only: true, destructive: false, idempotent: true, confirm: false, untrusted_content: false, external: false },
+  },
+  {
+    name: 'ui_open_record',
+    label: 'Abrir un registro',
+    description: 'Abre la pantalla de un registro de un módulo, con su formulario y sus acciones.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        module: { type: 'string', description: 'Nombre del módulo, p. ej. clients.' },
+        id: { type: 'integer', minimum: 1 },
+      },
+      required: ['module', 'id'],
+      additionalProperties: false,
+    },
+    annotations: { read_only: true, destructive: false, idempotent: true, confirm: false, untrusted_content: false, external: false },
+  },
+  {
+    name: 'ui_set_filter',
+    label: 'Buscar u ordenar una lista',
+    description: 'Muestra la lista de un módulo con una búsqueda, un orden o una página, sin crear historial.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        module: { type: 'string', description: 'Nombre del módulo, p. ej. clients.' },
+        q: { type: 'string', description: 'Texto a buscar.' },
+        sort: { type: 'string', description: 'Columna por la que ordenar.' },
+        dir: { type: 'string', enum: ['asc', 'desc'], description: 'Sentido del orden.' },
+        page: { type: 'integer', minimum: 1, description: 'Página, empezando en 1.' },
+      },
+      required: ['module'],
+      additionalProperties: false,
+    },
+    annotations: { read_only: true, destructive: false, idempotent: true, confirm: false, untrusted_content: false, external: false },
+  },
+]);
+
 export class LegoHttpError extends Error {
   constructor(status, body) {
     super(`HTTP ${status}`);
@@ -86,11 +139,15 @@ export async function fetchFragment(url, { signal } = {}) {
  * Runs an action through POST /api/actions/{name}. Returns the response
  * envelope with `http` added; only 401 and network failures throw.
  */
-export async function api(action, input = {}, { signal } = {}) {
+export async function api(action, input = {}, { signal, agent = false } = {}) {
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': csrfToken() };
+  if (agent) {
+    headers['X-Lego-Channel'] = 'agent'; // only narrows what may run and marks the audit log (doc/ia.md)
+  }
   const response = await fetch('/api/actions/' + encodeURIComponent(action), {
     method: 'POST',
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': csrfToken() },
+    headers,
     body: JSON.stringify(input),
     signal,
   });
@@ -158,6 +215,46 @@ export async function closeModule(key = active, { force = false } = {}) {
     renderTabs();
   }
   return true;
+}
+
+/** Server actions of the active screen, from its embedded catalog (each with an `agent` flag). */
+export function screenActions() {
+  return open.get(active)?.props?.actions ?? [];
+}
+
+/** Runs one of UI_ACTIONS. Only modules present in the user's menu can be opened. */
+export async function runUiAction(name, input = {}) {
+  const menu = new Map(
+    [...document.querySelectorAll('[data-lego-nav][data-module]')].map((link) => [link.dataset.module, new URL(link.href).pathname]),
+  );
+  const base = input.module === 'home' ? '/' : menu.get(input.module);
+  if (!base) {
+    throw new Error(`Unknown or forbidden module: ${input.module}`);
+  }
+
+  switch (name) {
+    case 'ui_navigate':
+      return openModule(base);
+    case 'ui_open_record': {
+      const id = Number(input.id);
+      if (!Number.isInteger(id) || id < 1) {
+        throw new Error('id must be a positive integer');
+      }
+      return openModule(`${base}/${id}`);
+    }
+    case 'ui_set_filter': {
+      const params = new URLSearchParams();
+      for (const key of ['q', 'sort', 'dir', 'page']) {
+        if (input[key] !== undefined && input[key] !== '') {
+          params.set(key, String(input[key]));
+        }
+      }
+      const query = params.toString();
+      return openModule(base + (query ? `?${query}` : ''), { replace: true });
+    }
+    default:
+      throw new Error(`Unknown UI action: ${name}`);
+  }
 }
 
 export async function reloadModule(key = active) {
@@ -240,13 +337,14 @@ function mount(instance) {
   const controller = instance.controller ?? new AbortController();
   instance.controller = controller;
   const { signal } = controller;
+  instance.props = readProps(instance.root);
   const ctx = {
     key: instance.key,
     get url() {
       return instance.url;
     },
     signal,
-    props: readProps(instance.root),
+    props: instance.props,
     navigate: (url, options) => openModule(url, options),
     close: (options) => closeModule(instance.key, options),
     reload: () => reloadModule(instance.key),

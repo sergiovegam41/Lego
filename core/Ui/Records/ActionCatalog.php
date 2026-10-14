@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Lego\Ui\Records;
 
-use Lego\Action\ActionDefinition;
 use Lego\View\Component;
 
 /**
  * Embeds in the screen's HTML the actions the current user may run here, as
- * inert JSON. Scripts and future AI integrations read this catalog instead of
- * asking the server again (see doc/investigacion-webmcp-2026-10-13.md).
+ * inert JSON (each entry is ActionDefinition::toArray() plus "agent": whether
+ * AI agents may run it). Scripts and future AI integrations read this catalog
+ * instead of asking the server again (see doc/ia.md).
  */
 final class ActionCatalog extends Component
 {
-    /** @param list<ActionDefinition> $actions */
-    public function __construct(private readonly string $module, private readonly array $actions)
+    /** @param list<array<string, mixed>> $entries */
+    public function __construct(private readonly string $module, private readonly array $entries)
     {
     }
 
     protected function render(): string
     {
         $json = json_encode(
-            array_map(static fn (ActionDefinition $a): array => $a->toArray(), $this->actions),
+            $this->entries,
             JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
         );
 

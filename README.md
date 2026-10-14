@@ -62,6 +62,7 @@ Con Docker, en local o en Dokploy: [doc/despliegue.md](doc/despliegue.md).
 | [AGENTS.md](AGENTS.md) | Mapa del repositorio y reglas, para personas y agentes de IA |
 | [doc/modulos.md](doc/modulos.md) | Crear módulos, campos y acciones |
 | [doc/frontend.md](doc/frontend.md) | Shell, pantallas abiertas y JavaScript |
+| [doc/ia.md](doc/ia.md) | Preparación para asistentes de IA: catálogo, anotaciones y activación |
 | [doc/despliegue.md](doc/despliegue.md) | Docker, Dokploy y tests |
 | [doc/lego2/decisiones.md](doc/lego2/decisiones.md) | Decisiones de diseño y su porqué |
 

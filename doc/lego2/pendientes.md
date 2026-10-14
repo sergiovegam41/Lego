@@ -28,3 +28,7 @@ Las apliqué con mi recomendación para no frenar el avance. Si alguna no te con
 | C7 | 4 | Las pantallas abiertas se muestran como pestañas en la cabecera; el menú lateral queda igual. | Mostrarlas bajo cada módulo del menú. |
 | C8 | 4 | Cambiar filtros, orden o página no crea entradas en el historial del navegador. | Que sí las cree. |
 | C9 | 4 | La tabla y el formulario se activan por atributo (`data-lego="table"`), así un módulo CRUD no escribe JavaScript. | Importación explícita en cada módulo. |
+| C10 | 6 | Los asistentes de IA están apagados por defecto (`LEGO_AGENT_ACCESS=off`); en el mini PC también. | Activar `read` en el mini PC para probar. |
+| C11 | 6 | Usuarios y Roles no aceptan escrituras de agentes (sin `agentWrites`): un asistente nunca crea usuarios ni cambia permisos. | Permitirlo con confirmación. |
+| C12 | 6 | Las descripciones de acciones, que lee la IA, van en español como la interfaz. | Escribirlas en inglés, como el código. |
+| C13 | 6 | `Cross-Origin-Opener-Policy` y HSTS solo se envían en HTTPS: en HTTP el navegador las ignora y Chrome registra un error. | Enviarlas siempre. |
